@@ -6,7 +6,7 @@ What is it and what does it do
 --------------
 If you are a programmer, I'm sure you can figure it out. =)  
 *Recently I decided to fill up my GitHub profile and from now on I want my future commits to be publicly trackable.  
-Still now want any public attention to be less as possible. So no explicit explanation given.*
+Still now I want any public attention to be less as possible. So no explicit explanation here.*
 
 Not ready for release
 --------------
@@ -31,9 +31,9 @@ Dear developer, before you start, please make sure you have these things:
   - Netbeans
   - IntelliJ IDEA
   - Eclipse with m2e plugin (my choice, fully supports Java 8 starting from version "Luna")
-- Java SE Development Kit 8 (JDK 8). **Only versions from 8u40 to 8u51**. (temporary problem, see explanation below)
+- Java SE Development Kit 8 (JDK 8). Only versions **from 8u40 to 8u51**. (temporary problem, see explanation below)
   - Download and install it from the official site if you don't have it. 
-  - Version **8u40 and above** is required, because, as I know, StreamSis is using some recently added JDK 8 features.
+  - Version **8u40 and above** is required, because StreamSis is using some recently added JDK 8 features.
   - Version **below 8u60** is required, because ControlsFX library, which is used in StreamSis, is still not able to work with 8u60 and above because of the new API.
 - Maven (3.x+). It's a build automation tool for Java. It automatically downloads depencencies for StreamSis and does some other nice things.
   - Download and install it from the official site if you don't have it. Please follow the **installation instructions**: https://maven.apache.org/install.html
@@ -50,9 +50,10 @@ Alright. Then:
   - If you are using Eclipse IDE with m2e plugin for the first time, it will start to build cache intended to speed up searching Maven Artifacts. This cache will consume **1-3 GB of disk space** in your home directory. So be prepared. =)
 - Ensure that your IDE is using Java Development Kit from above for the StreamSis project.
 - Try to run the main class "com.ubershy.streamsis.StreamSis.java" from your IDE.
-- And if it runs... Congratulations.
+- And if it runs... Congratulations, you can start working with the code.
 
 Assembling StreamSis.
 --------------
 Maven and JDK 8 are required.  
-If you want to assembly a runnable JAR file, execute ```build.sh``` or ```build.bat``` in the StreamSis repository directory. After that, if everything went smooth, you can find the assembled JAR in ```/target``` subdirectory.
+If you want to assembly a runnable JAR file, execute ```build.sh``` or ```build.bat``` in the StreamSis repository directory.  
+After that, if everything went smooth, you can find the assembled JAR in ```/target``` subdirectory.
