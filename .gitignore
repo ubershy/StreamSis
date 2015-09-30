@@ -1,0 +1,8 @@
+/.settings
+/bin
+/*.log
+/target
+/nicethings
+/src-gen
+.classpath
+/.project

@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+/** 
+ * StreamSis
+ * Copyright (C) 2015 Eva Balycheva
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+-->
+
+<?import javafx.scene.input.*?>
+<?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<VBox fx:id="rootNode" maxWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ubershy.streamsis.gui.controllers.FullModeController">
+  <children>
+    <MenuBar VBox.vgrow="NEVER">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#newProject" text="New Project">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#openProject" text="Open Project…">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+            <Menu fx:id="openRecentMenu" mnemonicParsing="false" text="Open Recent" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#saveProject" text="Save">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#saveProjectAs" text="Save As…">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+                     </accelerator></MenuItem>
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Settings…">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="COMMA" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#quitApplication" text="Quit">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="Q" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="View">
+          <items>
+            <MenuItem mnemonicParsing="false" text="Compact Mode" />
+                  <MenuItem mnemonicParsing="false" text="Variables">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                  <MenuItem mnemonicParsing="false" text="Global Actors" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+                  <MenuItem mnemonicParsing="false" text="Check for updates" />
+            <MenuItem mnemonicParsing="false" text="About StreamSis =)" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+      <ToolBar prefHeight="50.0" prefWidth="200.0">
+         <items>
+            <Button fx:id="startStopButton" alignment="CENTER" mnemonicParsing="false" onAction="#startStopProject" prefHeight="50.0" prefWidth="50.0" text="Start" textAlignment="CENTER" />
+            <Separator orientation="VERTICAL" prefHeight="50.0" />
+            <Button alignment="CENTER" layoutX="74.0" layoutY="10.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="70.0" text="Global Actors" textAlignment="CENTER" wrapText="true" />
+            <Button alignment="CENTER" mnemonicParsing="false" prefHeight="50.0" prefWidth="70.0" text="Current Variables" textAlignment="CENTER" wrapText="true" />
+            <Button fx:id="showCompactModeButton" alignment="CENTER" mnemonicParsing="false" onAction="#showCompactMode" prefHeight="50.0" prefWidth="70.0" text="Compact Mode" textAlignment="CENTER" wrapText="true" />
+            <Separator layoutX="276.0" layoutY="10.0" orientation="VERTICAL" prefHeight="50.0" />
+            <GridPane prefHeight="50.0" prefWidth="100.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Button alignment="CENTER" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" textAlignment="CENTER" wrapText="true">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                     <graphic>
+                        <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" prefHeight="50.0" prefWidth="50.0" text="🔇" textAlignment="CENTER" textFill="#545454">
+                           <font>
+                              <Font size="32.0" />
+                           </font>
+                        </Label>
+                     </graphic>
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin></Button>
+                  <Button alignment="CENTER" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                     <graphic>
+                        <Label alignment="CENTER" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" prefHeight="50.0" prefWidth="50.0" text="◼" textAlignment="CENTER" textFill="#535353">
+                           <font>
+                              <Font size="32.0" />
+                           </font>
+                        </Label>
+                     </graphic></Button>
+               </children>
+            </GridPane>
+            <BorderPane prefHeight="50.0" prefWidth="120.0">
+               <center>
+                  <Slider fx:id="volumeSlider" blockIncrement="1.0" majorTickUnit="20.0" minorTickCount="19" onMouseReleased="#setVolume" prefHeight="30.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" BorderPane.alignment="CENTER" />
+               </center>
+               <top>
+                  <Label fx:id="volumeLabel" text="Volume" BorderPane.alignment="CENTER" />
+               </top>
+            </BorderPane>
+            <Pane HBox.hgrow="ALWAYS" />
+            <BorderPane prefHeight="50.0" prefWidth="120.0">
+               <bottom>
+                  <Label text="Status" BorderPane.alignment="CENTER">
+                     <padding>
+                        <Insets bottom="8.0" />
+                     </padding>
+                  </Label>
+               </bottom>
+               <center>
+                  <ProgressBar prefHeight="0.0" prefWidth="82.0" progress="0.0" BorderPane.alignment="CENTER">
+                     <padding>
+                        <Insets top="5.0" />
+                     </padding>
+                  </ProgressBar>
+               </center>
+               <top>
+                  <Label text="Streaming Program" BorderPane.alignment="CENTER" />
+               </top>
+            </BorderPane>
+            <Separator orientation="VERTICAL" prefHeight="50.0" />
+            <Button alignment="CENTER" mnemonicParsing="false" prefHeight="50.0" text="Settings" textAlignment="CENTER" wrapText="true" />
+            <Button fx:id="loveButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#makeSomeLove" prefHeight="50.0" prefWidth="50.0" text="Love" textAlignment="CENTER" wrapText="true">
+               <graphic>
+                  <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" prefHeight="50.0" prefWidth="50.0" text="♥" textAlignment="CENTER" textFill="#ff69b4">
+                     <font>
+                        <Font size="45.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </Label>
+               </graphic>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets bottom="15.0" />
+               </padding>
+               <tooltip>
+                  <Tooltip text="Love Button" />
+               </tooltip>
+            </Button>
+            <Button fx:id="testButton" alignment="CENTER" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#testThing" prefHeight="50.0" prefWidth="50.0" text="Test" textAlignment="CENTER" />
+         </items>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </ToolBar>
+      <VBox fx:id="notificationPaneContainer" maxHeight="1.7976931348623157E308" minHeight="100.0" VBox.vgrow="ALWAYS">
+         <children>
+            <VBox fx:id="editableContentBox" VBox.vgrow="ALWAYS">
+               <children>
+                  <GridPane fx:id="gridPane" alignment="TOP_CENTER" hgap="5.0" minHeight="100.0" VBox.vgrow="ALWAYS">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints maxHeight="20.0" minHeight="20.0" prefHeight="20.0" />
+                      <RowConstraints vgrow="ALWAYS" />
+                    </rowConstraints>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                     <children>
+                        <Label text="SisScenes" GridPane.valignment="BOTTOM" />
+                        <Label text="SisScene's Actors" GridPane.columnIndex="1" GridPane.valignment="BOTTOM" />
+                        <Label text="Actor's Trigger" GridPane.columnIndex="2" GridPane.valignment="BOTTOM" />
+                        <Label text="Actor's &quot;On&quot; Actions" GridPane.columnIndex="3" GridPane.valignment="BOTTOM" />
+                        <Label text="Actor's &quot;Off&quot; Actions" GridPane.columnIndex="4" GridPane.valignment="BOTTOM" />
+                     </children>
+                  </GridPane>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+      <Accordion VBox.vgrow="NEVER">
+        <panes>
+          <TitledPane expanded="false" text="Open Element Editor Panel">
+               <content>
+                  <GridPane alignment="TOP_CENTER" hgap="5.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints />
+                     </rowConstraints>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                     <children>
+                        <BorderPane minHeight="200.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.vgrow="ALWAYS" />
+                        <GridPane hgap="10.0" vgap="10.0" GridPane.columnIndex="4">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <Button defaultButton="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="100.0" text="Close">
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </Button>
+                              <Button disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="100.0" text="Perform Test" GridPane.rowIndex="1" />
+                              <Button disable="true" layoutX="10.0" layoutY="82.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="100.0" text="Undo All Changes" GridPane.rowIndex="2" />
+                           </children>
+                        </GridPane>
+                        <VBox>
+                           <children>
+                              <Label alignment="TOP_LEFT" contentDisplay="CENTER" rotate="-0.0" text="Information" textAlignment="CENTER" wrapText="true">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin></Label>
+                              <Label alignment="TOP_LEFT" layoutX="10.0" layoutY="10.0" text="Element is OK." wrapText="true" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </GridPane>
+               </content>
+          </TitledPane>
+        </panes>
+      </Accordion>
+      <HBox maxHeight="20.0" minHeight="20.0" prefHeight="20.0">
+         <children>
+            <Label text="Current SisScene:" />
+            <Pane HBox.hgrow="ALWAYS" />
+            <Label text="Project Status:" />
+         </children>
+      </HBox>
+  </children>
+</VBox>

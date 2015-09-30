@@ -1,0 +1,40 @@
+/* A failed dream of nice ProgressIndicators near items in ListView. Unfortunately they're too much CPU intensive.
+ * Saving this style for the time when I'll be smarter or JavaFX will improve CPU effectiveness of ProgressIndicators.
+ * Also here are some useful thingies:
+ * cuteProgressIndicator.setPrefSize(15, 24);
+ * And ActorCell setPrefSize(20, 20);
+ * */
+
+#cuteprogress{
+	-fx-scale-x: 0.5;
+	-fx-scale-y: 0.5;
+	-fx-scale-z: 0.5;
+	-fx-translate-y: 1.5;
+}
+
+#cuteprogress .percentage {
+	-fx-fill: null;
+	-fx-font-size: 0;
+}
+
+#cuteprogress .indicator {
+	-fx-scale-x: 4.0;
+	-fx-scale-y: 4.0;
+	-fx-scale-z: 1.0;
+	-fx-translate-y: 8.5;
+}
+
+#cuteprogress .progress {
+	-fx-scale-x: 10.0;
+	-fx-scale-y: 10.0;
+	-fx-scale-z: 1.0;
+	-fx-translate-y: 8.5;
+}
+
+#cuteprogress .tick {
+	-fx-scale-x: 1.0;
+	-fx-scale-y: 1.0;
+	-fx-scale-z: 1.0;
+	-fx-translate-y: 8.5;
+}
+

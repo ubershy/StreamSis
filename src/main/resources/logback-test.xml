@@ -1,0 +1,38 @@
+<configuration>
+
+	<!-- Debugging LogBack configuration: logback-test.xml -->
+	<!-- Note: logback-test.xml has logging priority over logback.xml -->
+	<!-- logback-test.xml must be automatically excluded by Maven during "mvn package assembly:single" -->
+	
+	<define name="LogsDirectory" class="com.ubershy.streamsis.LogsDirectoryFinder" />
+	
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LogsDirectory}/StreamSis-debug.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<fileNamePattern>${LogsDirectory}/StreamSis-debug.%i.old.log</fileNamePattern>
+			<minIndex>0</minIndex>
+			<maxIndex>0</maxIndex>
+		</rollingPolicy>
+		<triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<maxFileSize>10MB</maxFileSize>
+		</triggeringPolicy>
+		<encoder>
+			<pattern>%-30(%date %level)[%thread] %logger{10} [%file:%line] %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%-40(%d{HH:mm:ss.SSS} %level %class{0}) %msg %n</pattern>
+			<!-- <pattern>%-20(%d{HH:mm:ss.SSS} %level)[%thread] %msg %n</pattern> -->
+			<!-- <pattern>%date %msg%n</pattern> -->
+		</encoder>
+	</appender>
+
+	<root level="info">
+		<appender-ref ref="FILE" />
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>

@@ -1,0 +1,43 @@
+﻿Hearts: 
+normal ♥
+strange ❤
+growing 💗
+horisontal stripes 💙  
+diag stripes 1 💚 
+diag stripes 2 💛   
+vertical stripes 💜
+empty ♡
+with sparkles 💖
+with arrow 💘
+beating 💓
+two hearts 💕
+broken 💔
+
+Misc:
+pain 💢
+kiss 💋
+ribbon 🎀
+poo 💩
+lock 🔒
+unlock 🔓
+camera 📹
+flower ✿
+flower2 ❀
+lightning ⚡
+yinyang ☯
+
+Speakers:
+max 🔊
+mid 🔉
+min 🔈
+disabled 🔇
+
+Animals:
+ladybug 🐞
+snail 🐌
+rabbit 🐇
+
+
+
+http://unicode-table.com/en/blocks/miscellaneous-symbols-and-pictographs/
+http://unicode-table.com/en/blocks/miscellaneous-symbols/

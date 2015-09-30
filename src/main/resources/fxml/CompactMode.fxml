@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/** 
+ * StreamSis
+ * Copyright (C) 2015 Eva Balycheva
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+--> 
+<?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<VBox fx:id="rootNode" maxHeight="1000.0" maxWidth="1000.0" minHeight="100.0" minWidth="100.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ubershy.streamsis.gui.controllers.CompactModeController">
+  <children>
+      <ToolBar prefHeight="20.0" prefWidth="200.0">
+         <items>
+            <Button fx:id="startButton" alignment="CENTER" mnemonicParsing="false" onAction="#startProject" prefHeight="30.0" text="Start" textAlignment="CENTER" />
+            <Separator orientation="VERTICAL" prefHeight="30.0" />
+            <Button alignment="CENTER" mnemonicParsing="false" prefHeight="30.0" text="Vars" textAlignment="CENTER" wrapText="true" />
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#showFullMode" prefHeight="30.0" text="Full Mode" textAlignment="CENTER" wrapText="true" />
+            <Separator layoutX="276.0" layoutY="10.0" orientation="VERTICAL" prefHeight="30.0" />
+            <GridPane prefHeight="30.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Button alignment="CENTER" mnemonicParsing="false" prefHeight="30.0" text="Mute" textAlignment="CENTER" wrapText="true" />
+                  <Button alignment="CENTER" mnemonicParsing="false" prefHeight="30.0" text="Stop" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" />
+               </children>
+            </GridPane>
+            <BorderPane prefHeight="30.0" prefWidth="70.0">
+               <center>
+                  <Slider blockIncrement="5.0" minorTickCount="0" prefHeight="30.0" showTickLabels="true" showTickMarks="true" BorderPane.alignment="CENTER" />
+               </center>
+            </BorderPane>
+            <Pane prefHeight="30.0" HBox.hgrow="ALWAYS" />
+         </items>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </ToolBar>
+      <VBox prefWidth="100.0" VBox.vgrow="ALWAYS">
+         <children>
+            <GridPane alignment="TOP_CENTER" hgap="5.0" VBox.vgrow="ALWAYS">
+              <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints maxHeight="20.0" minHeight="20.0" prefHeight="20.0" />
+                <RowConstraints />
+              </rowConstraints>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+               <children>
+                  <ListView fx:id="actorList" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+                  <Label fx:id="currentScene" text="Current SisScene's Actors" GridPane.valignment="BOTTOM" />
+               </children>
+            </GridPane>
+         </children>
+      </VBox>
+  </children>
+</VBox>
