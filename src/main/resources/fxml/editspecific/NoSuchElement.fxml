@@ -45,12 +45,12 @@
             <DropShadow blurType="GAUSSIAN" color="#00000099" height="12.0" offsetY="2.0" radius="5.5" spread="0.12" width="12.0" />
          </effect>
       </Label>
-      <Label text="💩">
+      <Label text="ಠ_ಠ">
          <font>
-            <Font size="38.0" />
+            <Font size="28.0" />
          </font>
          <effect>
-            <DropShadow color="#833504" height="12.0" radius="5.5" spread="0.16" width="12.0" />
+            <DropShadow color="#000000a6" height="6.0" offsetY="2.0" radius="2.5" spread="0.15" width="6.0" />
          </effect>
       </Label>
    </children>
