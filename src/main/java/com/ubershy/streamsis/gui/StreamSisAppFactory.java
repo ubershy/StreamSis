@@ -17,6 +17,8 @@
  */
 package com.ubershy.streamsis.gui;
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -400,7 +402,7 @@ public class StreamSisAppFactory {
 					.getResource(toBuild));
 			loader.load();
 			controller = loader.getController();
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new RuntimeException("Unable to build controller :" + toBuild, e);
 		}
 		return controller;
