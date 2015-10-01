@@ -32,6 +32,7 @@ import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.project.AbstractCuteNode;
 
 import javafx.scene.media.AudioClip;
+import javafx.scene.media.MediaException;
 
 /**
  * Sound Action. <br>
@@ -81,7 +82,8 @@ public class SoundAction extends AbstractCuteNode implements Action {
 	 *            the volume playback from 0 to 1
 	 */
 	@JsonCreator
-	public SoundAction(@JsonProperty("soundPath") String soundFilePath, @JsonProperty("volume") double volume) {
+	public SoundAction(@JsonProperty("soundPath") String soundFilePath,
+			@JsonProperty("volume") double volume) {
 		this.volume = volume;
 		this.soundPath = soundFilePath;
 	}
@@ -131,6 +133,10 @@ public class SoundAction extends AbstractCuteNode implements Action {
 		AudioClip result = null;
 		try {
 			result = new AudioClip(URISoundPath);
+		} catch (MediaException e) {
+			elementInfo.setAsSick(
+					"Compressed WAVE sound file detected.\nSuch files can't be played:\n"
+							+ soundPath);
 		} catch (Exception e) {
 			elementInfo.setAsBroken("Can't initialize sound file " + soundPath);
 		}
@@ -145,7 +151,8 @@ public class SoundAction extends AbstractCuteNode implements Action {
 		if (soundToPlay != null) {
 			soundToPlay.setVolume(volume * globalVolume);
 			soundToPlay.play();
-			logger.info(String.format("Playing(%.2f): %s", soundToPlay.getVolume(), Paths.get(URI.create(soundToPlay.getSource()))));
+			logger.info(String.format("Playing(%.2f): %s", soundToPlay.getVolume(),
+					Paths.get(URI.create(soundToPlay.getSource()))));
 		} else {
 			logger.error("Can't play the sound. AudioClip is not defined.");
 		}
