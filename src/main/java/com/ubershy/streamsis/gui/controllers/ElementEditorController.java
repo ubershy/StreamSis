@@ -206,7 +206,7 @@ public class ElementEditorController implements Initializable {
 		case SICK:
 			unhealthyPane.setVisible(true);
 			unhealthyPane.setManaged(true);
-			statusLabel.setTextFill(Color.YELLOW);
+			statusLabel.setTextFill(Color.GOLDENROD);
 			break;
 		default:
 			break;
