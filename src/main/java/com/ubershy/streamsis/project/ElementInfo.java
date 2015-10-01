@@ -339,7 +339,7 @@ public class ElementInfo {
 		elementStateProperty.set(ElementState.NEEDINIT);
 		whyUnhealthyProperty.set(whyUnhealthy);
 		String name = (nameProperty.get().isEmpty()) ? "NONAME" : nameProperty.get();
-		logger.info("Name: " + name + "' of type: '" + objectSimpleName + "' is broken: "
+		logger.info("Name: '" + name + "' of type: '" + objectSimpleName + "' is broken: "
 				+ whyUnhealthy);
 	}
 
@@ -386,7 +386,7 @@ public class ElementInfo {
 		whyUnhealthyProperty.set(whyUnhealthy);
 		String name = (nameProperty.get().isEmpty()) ? "NONAME" : nameProperty.get();
 		logger.info(
-				"Name: " + name + "' of type: '" + objectSimpleName + "' is sick: " + whyUnhealthy);
+				"Name: '" + name + "' of type: '" + objectSimpleName + "' is sick: " + whyUnhealthy);
 	}
 
 	/**
