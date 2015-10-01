@@ -104,9 +104,9 @@
                   <Label alignment="TOP_LEFT" contentDisplay="CENTER" text="Status" wrapText="true" />
                   <Label fx:id="statusLabel" alignment="TOP_LEFT" text="-" wrapText="true" />
                   <Separator prefWidth="200.0" />
-                  <ScrollPane fx:id="unhealthyPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent;">
+                  <ScrollPane fx:id="unhealthyPane" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
                      <content>
-                        <Label fx:id="whyUnhealthyLabel" alignment="TOP_LEFT" textFill="#909090" wrapText="true" />
+                        <Label fx:id="whyUnhealthyLabel" alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" textFill="#909090" wrapText="true" />
                      </content>
                   </ScrollPane>
                </children>
