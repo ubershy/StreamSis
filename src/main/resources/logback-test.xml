@@ -18,8 +18,8 @@
 			<maxFileSize>10MB</maxFileSize>
 		</triggeringPolicy>
 		<encoder>
-			<pattern>%-30(%date %level)[%thread] %logger{10} [%file:%line] %msg%n
-			</pattern>
+			<pattern>%-40(%d{HH:mm:ss.SSS} %level %class{0}) %msg %n</pattern>
+			<!--<pattern>%-30(%date %level)[%thread] %logger{10} [%file:%line] %msg%n</pattern>-->
 		</encoder>
 	</appender>
 
@@ -31,7 +31,7 @@
 		</encoder>
 	</appender>
 
-	<root level="info">
+	<root level="debug">
 		<appender-ref ref="FILE" />
 		<appender-ref ref="STDOUT" />
 	</root>
