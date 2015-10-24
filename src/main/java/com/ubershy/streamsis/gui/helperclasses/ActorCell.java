@@ -388,9 +388,9 @@ public class ActorCell extends ListCell<Actor> {
 		Color heartColor = null;
 		switch (elementHealth) {
 		case BROKEN:
-			heartColor = Color.BLACK;
+			heartColor = Color.INDIGO;
 			setHeartText(heartBrokenCharacter);
-			setHeartEffect("-fx-effect: dropshadow(gaussian, hotpink, 5,0,0,0);");
+			setHeartEffect("-fx-effect: dropshadow(gaussian, hotpink, 3,0,0,0);");
 			break;
 		case HEALTHY:
 			heartColor = Color.HOTPINK; // default color for heart of the healthy Actor
