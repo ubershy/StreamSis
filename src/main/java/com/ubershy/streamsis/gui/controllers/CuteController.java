@@ -74,4 +74,9 @@ public interface CuteController {
 	 *            the ValidationSupport to use.
 	 */
 	public void setValidationSupport(ValidationSupport validationSupport);
+
+	/**
+	 * Unbinds all view's controls from CuteElement's properties.
+	 */
+	public void unbindFromCuteElement();
 }

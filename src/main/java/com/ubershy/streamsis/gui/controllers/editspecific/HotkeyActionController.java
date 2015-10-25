@@ -49,6 +49,12 @@ import javafx.scene.layout.GridPane;
 
 public class HotkeyActionController extends AbstractCuteController {
 
+	protected HotkeyAction hkAction;
+
+	protected ObjectProperty<KeyCodeCombination> keyCombinationProperty = new SimpleObjectProperty<KeyCodeCombination>();
+
+	protected StringProperty keysProperty = new SimpleStringProperty("");
+
 	@FXML
 	protected TextField keyTextField;
 
@@ -58,13 +64,16 @@ public class HotkeyActionController extends AbstractCuteController {
 	@FXML
 	protected GridPane root;
 
-	protected HotkeyAction hkAction;
-
-	protected StringProperty keysProperty = new SimpleStringProperty("");
-
 	protected ValidationSupport validationSupport;
 
-	protected ObjectProperty<KeyCodeCombination> keyCombinationProperty = new SimpleObjectProperty<KeyCodeCombination>();
+	/*
+	 * @inheritDoc
+	 */
+	@Override
+	public void apply() {
+		hkAction.keysProperty().set(keyCombinationProperty.get().getName());
+		hkAction.init();
+	}
 
 	/*
 	 * @inheritDoc
@@ -142,15 +151,31 @@ public class HotkeyActionController extends AbstractCuteController {
 		});
 	}
 
-	protected void setNewModifiers(ArrayList<ModifierValue> modifiers) {
-		keyCombinationProperty.set(new KeyCodeCombination(getCurrentKeyCode(), modifiers.get(0),
-				modifiers.get(1), modifiers.get(2), modifiers.get(3), modifiers.get(4)));
+	protected String extractFullHotkeyFromKeyCombination(KeyCodeCombination kb) {
+		return kb.getDisplayText();
 	}
 
-	protected void setNewKeyCode(KeyCode keycode) {
-		ArrayList<ModifierValue> modifiers = getCurrentModifiers();
-		keyCombinationProperty.set(new KeyCodeCombination(keycode, modifiers.get(0),
-				modifiers.get(1), modifiers.get(2), modifiers.get(3), modifiers.get(4)));
+	protected String extractKeyFromKeyCombination(KeyCodeCombination kb) {
+		if (kb.getCode().equals(KeyCode.CLEAR)) {
+			// in HotkeyAction KeyCode.Clear is used as empty KeyCode
+			return "";
+		}
+		return kb.getCode().getName();
+	}
+
+	protected String extractModifiersFromKeyCombination(KeyCodeCombination kb) {
+		ModifierValue downMod = ModifierValue.DOWN;
+		// If any modifier exist
+		if (kb.getAlt() == downMod || kb.getShortcut() == downMod || kb.getShift() == downMod) {
+			String FullHotkey = extractFullHotkeyFromKeyCombination(kb);
+			int lastPlusSignIndex = FullHotkey.lastIndexOf("+");
+			return FullHotkey.substring(0, lastPlusSignIndex);
+		}
+		return "";
+	}
+
+	protected KeyCode getCurrentKeyCode() {
+		return keyCombinationProperty.get().getCode();
 	}
 
 	protected ArrayList<ModifierValue> getCurrentModifiers() {
@@ -162,8 +187,12 @@ public class HotkeyActionController extends AbstractCuteController {
 		return modifiers;
 	}
 
-	protected KeyCode getCurrentKeyCode() {
-		return keyCombinationProperty.get().getCode();
+	@Override
+	/*
+	 * @inheritDoc
+	 */
+	public Node getView() {
+		return root;
 	}
 
 	protected KeyCodeCombination parseKeyCodeCombinationFromString(String stringToParse) {
@@ -180,31 +209,19 @@ public class HotkeyActionController extends AbstractCuteController {
 	/*
 	 * @inheritDoc
 	 */
-	public Node getView() {
-		return root;
-	}
-
-	protected boolean validatekeyEmptiness(Control c, String newValue) {
-		if (newValue.isEmpty())
-			return true;
-		return false;
-	}
-
-	@Override
-	/*
-	 * @inheritDoc
-	 */
 	public void reset() {
 		keyCombinationProperty.set(parseKeyCodeCombinationFromString(keysProperty.get()));
 	}
 
-	/*
-	 * @inheritDoc
-	 */
-	@Override
-	public void apply() {
-		hkAction.keysProperty().set(keyCombinationProperty.get().getName());
-		hkAction.init();
+	protected void setNewKeyCode(KeyCode keycode) {
+		ArrayList<ModifierValue> modifiers = getCurrentModifiers();
+		keyCombinationProperty.set(new KeyCodeCombination(keycode, modifiers.get(0),
+				modifiers.get(1), modifiers.get(2), modifiers.get(3), modifiers.get(4)));
+	}
+
+	protected void setNewModifiers(ArrayList<ModifierValue> modifiers) {
+		keyCombinationProperty.set(new KeyCodeCombination(getCurrentKeyCode(), modifiers.get(0),
+				modifiers.get(1), modifiers.get(2), modifiers.get(3), modifiers.get(4)));
 	}
 
 	/*
@@ -228,27 +245,18 @@ public class HotkeyActionController extends AbstractCuteController {
 		this.validationSupport.registerValidator(keyTextField, keyTextFieldValidator);
 	}
 
-	protected String extractFullHotkeyFromKeyCombination(KeyCodeCombination kb) {
-		return kb.getDisplayText();
+	/*
+	 * @inheritDoc
+	 */
+	@Override
+	public void unbindFromCuteElement() {
+		keysProperty.unbind();
 	}
 
-	protected String extractKeyFromKeyCombination(KeyCodeCombination kb) {
-		if (kb.getCode().equals(KeyCode.CLEAR)) {
-			// in HotkeyAction KeyCode.Clear is used as empty KeyCode
-			return "";
-		}
-		return kb.getCode().getName();
-	}
-
-	protected String extractModifiersFromKeyCombination(KeyCodeCombination kb) {
-		ModifierValue downMod = ModifierValue.DOWN;
-		// If any modifier exist
-		if (kb.getAlt() == downMod || kb.getShortcut() == downMod || kb.getShift() == downMod) {
-			String FullHotkey = extractFullHotkeyFromKeyCombination(kb);
-			int lastPlusSignIndex = FullHotkey.lastIndexOf("+");
-			return FullHotkey.substring(0, lastPlusSignIndex);
-		}
-		return "";
+	protected boolean validatekeyEmptiness(Control c, String newValue) {
+		if (newValue.isEmpty())
+			return true;
+		return false;
 	}
 
 }

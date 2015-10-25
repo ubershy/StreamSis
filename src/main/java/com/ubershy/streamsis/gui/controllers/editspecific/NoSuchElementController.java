@@ -33,20 +33,12 @@ public class NoSuchElementController extends AbstractCuteController {
     /*
 	 * @inheritDoc
 	 */
-    @Override
-	public Node getView() {
-		return root;
+	@Override
+	public void apply() {
+		// Nothing to apply
 	}
 
     /*
-	 * @inheritDoc
-	 */
-	@Override
-	public void reset() {
-		// Nothing to reset
-	}
-
-	/*
 	 * @inheritDoc
 	 */
 	@Override
@@ -57,9 +49,17 @@ public class NoSuchElementController extends AbstractCuteController {
 	/*
 	 * @inheritDoc
 	 */
+    @Override
+	public Node getView() {
+		return root;
+	}
+
+	/*
+	 * @inheritDoc
+	 */
 	@Override
-	public void apply() {
-		// Nothing to apply
+	public void reset() {
+		// Nothing to reset
 	}
 	
 	/*
@@ -68,5 +68,13 @@ public class NoSuchElementController extends AbstractCuteController {
 	@Override
 	public void setValidationSupport(ValidationSupport validationSupport) {
 		// Nothing to validate
+	}
+	
+	/*
+	 * @inheritDoc
+	 */
+	@Override
+	public void unbindFromCuteElement() {
+		// nothing to unbind
 	}
 }

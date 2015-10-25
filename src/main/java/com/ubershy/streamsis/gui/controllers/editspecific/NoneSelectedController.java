@@ -39,18 +39,34 @@ public class NoneSelectedController extends AbstractCuteController implements In
 	@FXML
 	private VBox root;
 
+	/*
+	 * @inheritDoc
+	 */
 	@Override
-	public void initialize(URL url, ResourceBundle resourceBundle) {
-		ThreeDotsAnimation pPaneDotsAnimation = new ThreeDotsAnimation("", propertiesPaneDots, 1);
-		pPaneDotsAnimation.play();
+	public void apply() {
+		// Nothing to apply
 	}
 	
 	/*
 	 * @inheritDoc
 	 */
 	@Override
+	public void bindToCuteElement(CuteElement element) {
+		// Nothing to set
+	}
+
+	/*
+	 * @inheritDoc
+	 */
+	@Override
 	public Node getView() {
 		return root;
+	}
+
+	@Override
+	public void initialize(URL url, ResourceBundle resourceBundle) {
+		ThreeDotsAnimation pPaneDotsAnimation = new ThreeDotsAnimation("", propertiesPaneDots, 1);
+		pPaneDotsAnimation.play();
 	}
 
 	/*
@@ -65,23 +81,15 @@ public class NoneSelectedController extends AbstractCuteController implements In
 	 * @inheritDoc
 	 */
 	@Override
-	public void bindToCuteElement(CuteElement element) {
-		// Nothing to set
-	}
-
-	/*
-	 * @inheritDoc
-	 */
-	@Override
-	public void apply() {
-		// Nothing to apply
-	}
-
-	/*
-	 * @inheritDoc
-	 */
-	@Override
 	public void setValidationSupport(ValidationSupport validationSupport) {
 		// Nothing to validate
+	}
+
+	/*
+	 * @inheritDoc
+	 */
+	@Override
+	public void unbindFromCuteElement() {
+		// nothing to unbind
 	}
 }

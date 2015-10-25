@@ -152,6 +152,7 @@ public class PropsWithNameController implements Initializable {
 		elementNameProperty.unbind();
 		// Lets clean the cell from the previous view, if it exists
 		if (currentCuteController != null) {
+			currentCuteController.unbindFromCuteElement();
 			root.getChildren().remove(currentCuteController.getView());
 		}
 		currentElement = newElement;
