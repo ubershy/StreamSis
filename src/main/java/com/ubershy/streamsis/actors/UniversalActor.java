@@ -42,7 +42,7 @@ import javafx.concurrent.Worker.State;
  * <p>
  * Note: <br>
  * UniversalActor <b>is not</b> working in Universal Studios and never will be. <br>
- * Even if it has such a name. <br>
+ * Even if he has such a name. <br>
  * He just can do simultaneously all the things his predecessors were able to do. <br>
  * That's why he is Universal. <br>
  * <i>RIP: SwitchingActor, RepeatingActor, StoppingActor. I will never forget you. </i>
@@ -179,7 +179,15 @@ public class UniversalActor extends AbstractActor implements Actor {
 
 	@Override
 	public void checkAndAct() {
+		// Actor breaks during init() if checker is found broken.
+		// So if this method executes, we can assume that the checker is not broken.
 		boolean state = checkers.get(0).check();
+		if (checkers.get(0).getElementInfo().isBroken()) { // broke during execution
+			this.stop();
+			elementInfo.setAsBroken("Checker broke during execution. "
+					+ "The Actor was stopped and set as broken for safety");
+			return;
+		}
 		if (!isSwitchOn.get() && state) {
 			logger.info(elementInfo.getName() + ": Target aquired!");
 			runEnable();

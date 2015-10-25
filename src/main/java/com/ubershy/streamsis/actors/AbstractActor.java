@@ -45,7 +45,8 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 	 * <p>
 	 * <b>Why?</b> <br>
 	 * Because Actor can have only one Checker assigned. <br>
-	 * The list is needed only for {@link #getChildren()} method. This allows easy editing in GUI for Checker {@link TreeView}.
+	 * The list is needed only for {@link #getChildren()} method. This allows easy editing in GUI
+	 * for Checker {@link TreeView}.
 	 */
 	@JsonProperty
 	protected final ObservableList<Checker> checkers = FXCollections.observableArrayList();
@@ -72,7 +73,10 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 	@JsonProperty
 	protected boolean doOffRepeat;
 
-	/** The Actor's Switch that is turning <b>On</b> when Actor's Checker returns true and <b>Off</b> when Actor's Checker returns false */
+	/**
+	 * The Actor's Switch that is turning <b>On</b> when Actor's Checker returns true and <b>Off</b>
+	 * when Actor's Checker returns false
+	 */
 	@JsonIgnore
 	protected BooleanProperty isSwitchOn = new SimpleBooleanProperty(false);;
 
@@ -98,7 +102,8 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 	 * @see {@link ActorActionsRepeatingService}
 	 */
 	@JsonIgnore
-	protected ActorActionsRepeatingService onRepeatingService = new ActorActionsRepeatingService(this, true);
+	protected ActorActionsRepeatingService onRepeatingService = new ActorActionsRepeatingService(
+			this, true);
 
 	/**
 	 * The Actor's Off Actions RepeatingService.
@@ -106,7 +111,8 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 	 * @see {@link ActorActionsRepeatingService}
 	 */
 	@JsonIgnore
-	protected ActorActionsRepeatingService offRepeatingService = new ActorActionsRepeatingService(this, false);
+	protected ActorActionsRepeatingService offRepeatingService = new ActorActionsRepeatingService(
+			this, false);
 
 	/** The list of Actor's External children needed just for {@link #getChildren()} method. */
 	@JsonIgnore
@@ -202,14 +208,46 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 
 	public void executeOnActions() {
 		for (Action a : onActions) {
-			a.execute();
+			if (!executeAction(a, true)) {
+				return; // the problem occurred, so lets not execute any other actions
+			}
 		}
 	}
 
 	public void executeOffActions() {
 		for (Action a : offActions) {
-			a.execute();
+			if (!executeAction(a, false)) {
+				return; // the problem occurred, so lets not execute any other actions
+			}
 		}
+	}
+
+	/**
+	 * Execute the chosen action. Action that is already broken will just be passed. If Action
+	 * breaks during execution, it will break the Actor and stop it.
+	 *
+	 * @param a
+	 *            the Action to execute
+	 * @param onOrOff
+	 *            tells if this Action is executed under 'On Actions' or 'Off Actions' to generate
+	 *            good 'broken' message.
+	 * @return true, if the Action executed normally or if is was already broken, <br>
+	 *         false, if the Action broke during execution.
+	 */
+	private boolean executeAction(Action a, boolean onOrOff) {
+		String actionsType = onOrOff ? "On" : "Off";
+		ElementInfo aInfo = a.getElementInfo();
+		if (!aInfo.isBroken()) {
+			a.execute();
+			if (a.getElementInfo().isBroken()) {
+				this.stop();
+				elementInfo.setAsBroken(
+						"One of the '" + actionsType + " Actions' broke during execution. "
+								+ "The Actor was stopped and set as broken for safety");
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public boolean isDoOnRepeat() {
@@ -240,10 +278,14 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 	}
 
 	private ObservableList<CuteNode> generateExternalChildrenList() {
-		CuteNodeContainer checkersContainer = new CuteNodeContainer(checkers, "Checker", AddableChildrenTypeInfo.CHECKER, MaxAddableChildrenCount.ONE);
-		CuteNodeContainer onActionsContainer = new CuteNodeContainer(onActions, "On Actions", AddableChildrenTypeInfo.ACTION, MaxAddableChildrenCount.INFINITY);
-		CuteNodeContainer offActionsContainer = new CuteNodeContainer(offActions, "Off Actions", AddableChildrenTypeInfo.ACTION, MaxAddableChildrenCount.INFINITY);
-		ObservableList<CuteNode> result = FXCollections.observableArrayList(checkersContainer, onActionsContainer, offActionsContainer);
+		CuteNodeContainer checkersContainer = new CuteNodeContainer(checkers, "Checker",
+				AddableChildrenTypeInfo.CHECKER, MaxAddableChildrenCount.ONE);
+		CuteNodeContainer onActionsContainer = new CuteNodeContainer(onActions, "On Actions",
+				AddableChildrenTypeInfo.ACTION, MaxAddableChildrenCount.INFINITY);
+		CuteNodeContainer offActionsContainer = new CuteNodeContainer(offActions, "Off Actions",
+				AddableChildrenTypeInfo.ACTION, MaxAddableChildrenCount.INFINITY);
+		ObservableList<CuteNode> result = FXCollections.observableArrayList(checkersContainer,
+				onActionsContainer, offActionsContainer);
 		return result;
 	}
 }
