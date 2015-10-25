@@ -668,10 +668,6 @@ public class CuteProject implements Serializable {
 			stopCurrentActors();
 			isStarted.set(false);
 			logger.info("Project '" + getName() + "' stopped");
-			// Maybe some problems occurred during working Project
-			// So lets initialize everything after stopping
-			// This will instantly show broken CuteElements to User
-			init();
 		}
 	}
 
