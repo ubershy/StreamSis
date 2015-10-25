@@ -99,7 +99,7 @@ public class HotkeyAction extends AbstractCuteNode implements Action {
 
 	/** The {@link Robot} to use to simulate keys. */
 	@JsonIgnore
-	protected Robot robot;
+	protected Robot robot = getRobot();
 
 	/**
 	 * The actual {@link KeyEvent} to simulate when the {@link KeyCombination.getShortcut()} key is
@@ -129,14 +129,9 @@ public class HotkeyAction extends AbstractCuteNode implements Action {
 	@JsonCreator
 	public HotkeyAction(@JsonProperty("keys") String keys) {
 		this.keysProperty.set(keys);
-		try {
-			robot = new Robot();
-		} catch (AWTException e) {
-			// :o
-		}
 		shortcutKeyEvent = defineShortcutKeyEvent();
 	}
-
+	
 	/**
 	 * This method finds {@link KeyEvent} representation for "Shortcut" key. In Linux/Windows it's
 	 * "control" keyboard key. <br>
@@ -194,6 +189,18 @@ public class HotkeyAction extends AbstractCuteNode implements Action {
 	@JsonProperty("keys")
 	public String getHotkey() {
 		return keysProperty.get();
+	}
+
+	private Robot getRobot() {
+		Robot beepboopbeep = null;
+		try {
+			beepboopbeep = new Robot();
+		} catch (AWTException e) {
+			String error = "Can't initialize Robot for hotkeys";
+			logger.error(error, e);
+			throw new RuntimeException(error); // lets just crash if something like that happens
+		}
+		return beepboopbeep;
 	}
 
 	@Override
