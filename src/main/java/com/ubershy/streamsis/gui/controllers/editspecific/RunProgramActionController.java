@@ -111,7 +111,6 @@ public class RunProgramActionController extends AbstractCuteController {
 		});
 		argumentsProperty.addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
 			Platform.runLater(() -> {
-				System.out.println("jaja");
 				argumentsTextField.setText(newValue);
 			});
 		});
@@ -196,7 +195,6 @@ public class RunProgramActionController extends AbstractCuteController {
 					validPathResult);
 			GUIUtil.reportToButtonStateManager(action.getPath(), newValue, c, finalResult,
 					buttonStateManager);
-			workingDirTextField.setText("");
 			return finalResult;
 		};
 		Validator<String> argumentsFieldValidator = (c, newValue) -> {

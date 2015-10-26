@@ -181,7 +181,7 @@ public class RunProgramAction extends AbstractCuteNode implements Action {
 						success = false;
 					}
 				} catch (IOException e) {
-					elementInfo.setAsBroken("Something is wrong "
+					elementInfo.setAsBroken("Something is wrong. "
 							+ "Is it really a program(not an ordinary file) located on the "
 							+ "chosen path?");
 					success = false;
@@ -344,12 +344,11 @@ public class RunProgramAction extends AbstractCuteNode implements Action {
 	 * Sets the {@link #pathProperty()} value.
 	 *
 	 * @param path
-	 *            the new path
+	 *            the new path of the program to execute
 	 */
 	@JsonProperty("path")
 	public void setPath(String path) {
 		this.pathProperty.set(path);
-		setWorkingDir(""); // lets reset working dir
 	}
 
 	/**
