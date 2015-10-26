@@ -32,21 +32,22 @@ import com.ubershy.streamsis.actions.DelayedActions;
 import com.ubershy.streamsis.actions.MultiFileCopyAction;
 import com.ubershy.streamsis.actions.MultiSoundAction;
 import com.ubershy.streamsis.actions.OBSHotkeyAction;
+import com.ubershy.streamsis.actions.RunProgramAction;
 import com.ubershy.streamsis.actions.SwitchSisSceneAction;
 import com.ubershy.streamsis.actions.VariableSetterAction;
 import com.ubershy.streamsis.actions.VariableSwitchAction;
 import com.ubershy.streamsis.actors.ActorBuilder;
 import com.ubershy.streamsis.actors.UniversalActor;
+import com.ubershy.streamsis.checkers.AbstractRelationToNumberChecker.BooleanNumberOperator;
 import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.checkers.Coordinates;
 import com.ubershy.streamsis.checkers.LogicalChecker;
 import com.ubershy.streamsis.checkers.RegionChecker;
 import com.ubershy.streamsis.checkers.RelationToPreviousNumberChecker;
-import com.ubershy.streamsis.checkers.AbstractRelationToNumberChecker.BooleanNumberOperator;
 import com.ubershy.streamsis.counters.TrueCheckerCounter;
 import com.ubershy.streamsis.project.CuteProject;
-import com.ubershy.streamsis.project.SisScene;
 import com.ubershy.streamsis.project.ProjectSerializator;
+import com.ubershy.streamsis.project.SisScene;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -92,11 +93,11 @@ public final class Playground {
 
 		if (!Util.checkDirectory(resourcesLocation)) {
 			logger.error("Programmer. You can't generate 'TestProject' hardcoded project.\n"
-					+ "Directory with resource files not found:\n" + resourcesLocation);
+					+ "The directory with resource files not found:\n" + resourcesLocation);
 			return;
 		}
 
-		logger.info("Generating hardcoded project 'TestProject' based on resources located in "
+		logger.info("Generating hardcoded project 'TestProject' based on resources located in:\n"
 				+ resourcesLocation);
 
 		CuteProject project = new CuteProject("TestProject");
@@ -110,9 +111,14 @@ public final class Playground {
 		uniTestActor.addOnAction(
 				new MultiSoundAction(resourcesLocation + "UniTest\\Sounds\\", 1.0, true));
 		// uniTestActor.addOnAction(new HotkeyAction(closeWindow));
-
+		uniTestActor.addOnAction(new RunProgramAction("cmd.exe",
+				"/C \"" + resourcesLocation + "Scripts\\curl_lamp_set_hue.bat\" " + "307", "",
+				false));
+		uniTestActor.addOffAction(new RunProgramAction("cmd.exe",
+				"/C \"" + resourcesLocation + "Scripts\\curl_lamp_set_hue.bat\" " + "180", "",
+				false));
 		Checker checker1 = new RegionChecker(new Coordinates(1320, 480, 600, 600),
-				resourcesLocation + "UniTest\\Targets\\transparencytest.png", 0.99f);
+				resourcesLocation + "UniTest\\Targets\\transparencytest.png", 0.999f);
 		// LogicalChecker uniChecker = LogicalChecker.createOr(new Checker[] { checker1 });
 		uniTestActor.setChecker(checker1);
 
@@ -144,7 +150,7 @@ public final class Playground {
 
 		if (!Util.checkDirectory(resourcesLocation)) {
 			logger.error("Programmer. You can't generate 'Default' hardcoded project.\n"
-					+ "Directory with resource files not found:\n" + resourcesLocation);
+					+ "The directory with resource files not found:\n" + resourcesLocation);
 			return;
 		}
 
@@ -153,9 +159,9 @@ public final class Playground {
 		String resourcesLocation = "D:\\1SRC\\My Pictures\\3PHOTOSHOP\\twitch\\SEresources\\";
 
 		ActorBuilder actorBuilder = new ActorBuilder(resourcesLocation);
-		logger.info("Generating hardcoded project 'Default' based on resources located in "
+		logger.info("Generating hardcoded project 'Default' based on resources located in:\n"
 				+ resourcesLocation
-				+ "\nIf you see too many messages about something broken in console (>30) then"
+				+ "\nIf you see too many messages about something broken in console (>35) then"
 				+ " it probably means you don't have required resource files for generating."
 				+ "\nIf you don't see so many, everything is okay. ;)");
 
@@ -166,9 +172,9 @@ public final class Playground {
 		String hkDeathMatch = new KeyCodeCombination(KeyCode.PAGE_DOWN, altMod).getName();
 		String hkIkaMusume = new KeyCodeCombination(KeyCode.F1, altMod).getName();
 		String hkSniper = new KeyCodeCombination(KeyCode.F3, altMod).getName();
+		String hkMessing = new KeyCodeCombination(KeyCode.F7, altMod).getName();
 
-		// lets make mvpActor intentionally broken
-		UniversalActor mvpActor = actorBuilder.createUniversalActor("MVP", -1, 0, false, false,
+		UniversalActor mvpActor = actorBuilder.createUniversalActor("MVP", 2000, 0, false, false,
 				new Coordinates(563, 158, 80, 80), 0.7f, true, false, true);
 		UniversalActor deathActor = actorBuilder.createUniversalActor("Death", 1000, 0, false,
 				false, new Coordinates(1740, 72, 178, 176), 0.75f, false, false, true);
@@ -218,6 +224,18 @@ public final class Playground {
 		sniperActor.clearOffActions();
 		sniperActor.addOffAction(new VariableSwitchAction("currentMode", sniperUndoHotkey));
 
+		// For now lets not include messingActor in the project
+		UniversalActor messingActor = new UniversalActor("Messing", 150, 0, false, false,
+				new RegionChecker(new Coordinates(2020, 20, 40, 40, 0),
+						resourcesLocation + "Messing\\Targets\\toFind.png", 0.8f),
+				null, null);
+		messingActor.addOnAction(new OBSHotkeyAction(hkMessing));
+		TreeMap<String, Action> messingUndoHotkey = new TreeMap<String, Action>();
+		messingUndoHotkey.put("Match", new OBSHotkeyAction(hkMatch));
+		messingUndoHotkey.put("Deathmatch", new OBSHotkeyAction(hkDeathMatch));
+		messingUndoHotkey.put("CSGOMenu", new OBSHotkeyAction(hkMenu));
+		messingActor.addOffAction(new VariableSwitchAction("currentMode", messingUndoHotkey));
+
 		UniversalActor killActor = actorBuilder.createUniversalActor("Kill", 500, 0, false, false,
 				new Coordinates(1400, 72, 344, 176), 0.75f, false, false, true);
 		ArrayList<Checker> killminiCheckers = new ArrayList<Checker>();
@@ -237,15 +255,22 @@ public final class Playground {
 		// killActor.setChecker(killminiCheckers[0]);
 		killActor.setChecker(killChecker);
 
-		UniversalActor lobbyHotkeyActor = new UniversalActor("Lobby", 1000, 0, false, false,
+		UniversalActor lobbyActor = new UniversalActor("Lobby", 150, 0, false, false,
 				new RegionChecker(new Coordinates(707, 160, 53, 23),
 						resourcesLocation + "Lobby\\Targets\\lobby.png", 0.7f),
 				new Action[] { new OBSHotkeyAction(hkLobby) }, null);
+		lobbyActor.addOnAction(new RunProgramAction("C:\\Windows\\System32\\cmd.exe",
+				"/C \"" + resourcesLocation + "Scripts\\curl_lamp_set_hue.bat\" " + "307", "",
+				false));
 
-		UniversalActor menuHotkeyActor = new UniversalActor("Menu", 1000, 0, false, false,
+		UniversalActor menuActor = new UniversalActor("Menu", 1000, 0, false, false,
 				new RegionChecker(new Coordinates(704, 364, 63, 33),
 						resourcesLocation + "Menu\\Targets\\menu.png", 0.7f),
 				new Action[] { new OBSHotkeyAction(hkMenu) }, null);
+		menuActor.addOnAction(new VariableSetterAction("currentMode", "CSGOMenu"));
+		menuActor.addOnAction(new RunProgramAction("C:\\Windows\\System32\\cmd.exe",
+				"/C \"" + resourcesLocation + "Scripts\\curl_lamp_set_hue.bat\" " + "180", "",
+				false));
 
 		UniversalActor competitiveHotkeyActor = new UniversalActor("Competitive", 300, 0, false,
 				false,
@@ -268,13 +293,20 @@ public final class Playground {
 				new Action[] { new OBSHotkeyAction(hkMatch) }, null);
 		casualHotkeyActor.addOnAction(new VariableSetterAction("currentMode", "Match"));
 
+		float musumePrecision = 0.965f;
+		Checker[] musumeCheckers = new Checker[] {
+				new RegionChecker(new Coordinates(53, 1026, 1, 1),
+						resourcesLocation + "IkaMusume\\Targets\\musume.png", musumePrecision),
+//				new RegionChecker(new Coordinates(413, 453, 1, 1),
+//						resourcesLocation + "IkaMusume\\Targets\\musume.png", musumePrecision),
+				new RegionChecker(new Coordinates(1356, 1060, 1, 1),
+						resourcesLocation + "IkaMusume\\Targets\\musume.png", musumePrecision) };
+		Checker musumeChecker = LogicalChecker.createAnd(musumeCheckers);
 		UniversalActor IkaMusumeActor = new UniversalActor("IkaMusume", 100, 0, false, false,
-				new RegionChecker(new Coordinates(0, 500, 1, 1),
-						resourcesLocation + "IkaMusume\\Targets\\musume.png", 0.99f),
-				null, new Action[] { new OBSHotkeyAction(hkMatch) });
+				musumeChecker, null, new Action[] { new OBSHotkeyAction(hkMatch) });
 
-		IkaMusumeActor.addOnAction(
-				new MultiSoundAction(resourcesLocation + "IkaMusume\\Sounds", 0.3, true));
+		// IkaMusumeActor.addOnAction(
+		// new MultiSoundAction(resourcesLocation + "IkaMusume\\Sounds", 0.3, true));
 		IkaMusumeActor.addOnAction(new OBSHotkeyAction(hkIkaMusume));
 		IkaMusumeActor
 				.addOnAction(new DelayedActions(
@@ -301,6 +333,10 @@ public final class Playground {
 		UniversalActor changeCTActor = actorBuilder.createUniversalActor("ChangeCT", 1000, 0, false,
 				false, new Coordinates(567, 125, 35, 380), 0.65f, false, false, false);
 
+		UniversalActor poorActor = actorBuilder.createUniversalActor("Poor Actor", 1000, 0, false,
+				false, new Coordinates(567, 125, 1, 1), 0.65f, false, false, false);
+
+		// We don't need actions generated by actorBuilder. Let's wipe them.
 		changeMenuActor.clearOnActions();
 		changeMenuActor.clearOffActions();
 		changeLoadingActor.clearOnActions();
@@ -328,8 +364,8 @@ public final class Playground {
 		project.addActorToGlobalActors(smokeActor);
 		project.addActorToGlobalActors(sniperActor);
 		project.addActorToGlobalActors(killActor);
-		project.addActorToGlobalActors(lobbyHotkeyActor);
-		project.addActorToGlobalActors(menuHotkeyActor);
+		project.addActorToGlobalActors(lobbyActor);
+		project.addActorToGlobalActors(menuActor);
 		project.addActorToGlobalActors(competitiveHotkeyActor);
 		project.addActorToGlobalActors(deathmatchHotkeyActor);
 		project.addActorToGlobalActors(casualHotkeyActor);
@@ -339,9 +375,12 @@ public final class Playground {
 		project.addActorToGlobalActors(changeTeamActor);
 		project.addActorToGlobalActors(changeTActor);
 		project.addActorToGlobalActors(changeCTActor);
+		project.addActorToGlobalActors(poorActor);
+		// project.addActorToGlobalActors(messingActor);
 
 		// String[] testActors = new String[] { "UniTest"};
-		String[] menuActors = new String[] { "Lobby", "Menu", "ChangeMenu", "ChangeT", "ChangeCT" };
+		String[] menuActors = new String[] { "Lobby", "Menu", "ChangeMenu", "ChangeT", "Poor Actor",
+				"ChangeCT" };
 		String[] loadingActors = new String[] { "ChangeLoading", "ChangeCT", "ChangeT",
 				"ChangeMenu", "Menu" };
 		String[] modeSelectionActors = new String[] { "Competitive", "Casual", "Deathmatch",
@@ -356,8 +395,7 @@ public final class Playground {
 		// SisScene testSisScene = new SisScene("testSisScene", testActors);
 		SisScene menuSisScene = new SisScene("menuSisScene", menuActors);
 		SisScene loadingSisScene = new SisScene("loadingSisScene", loadingActors);
-		SisScene modeSelectionSisScene = new SisScene("modeSelectionSisScene",
-				modeSelectionActors);
+		SisScene modeSelectionSisScene = new SisScene("modeSelectionSisScene", modeSelectionActors);
 		SisScene matchTSisScene = new SisScene("matchTSisScene", matchTActors);
 		SisScene matchCTSisScene = new SisScene("matchCTSisScene", matchCTActors);
 		SisScene changeTeamSisScene = new SisScene("changeTeamSisScene", changeTeamActors);
