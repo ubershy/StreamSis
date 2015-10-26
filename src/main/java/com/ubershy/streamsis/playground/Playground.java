@@ -61,10 +61,9 @@ public final class Playground {
 
 	static final Logger logger = LoggerFactory.getLogger(Playground.class);
 
-	/** The path where structurized resources needed for project generation are located. */
-	static String resourcesLocation = "D:\\1SRC\\My Pictures\\3PHOTOSHOP\\twitch\\SEresources\\";
-
 	public static void testNewMTRegionChecker(int numOfTimes, long delay) {
+		// The path where structurized resources needed for project generation are located.
+		String resourcesLocation = "D:\\1SRC\\StreamSisProjects\\CSGO\\";
 		ActorBuilder actorBuilder = new ActorBuilder(resourcesLocation);
 		Checker checker = actorBuilder.createChecker("Kill", new Coordinates(1400, 103, 338, 33),
 				false, 0.65f);
@@ -90,6 +89,9 @@ public final class Playground {
 	 * Generate small hardcoded 'TestProject' project and save it to project file.
 	 */
 	public static void generateHardcodedTestProject() {
+		
+		// The path where structurized resources needed for project generation are located.
+		String resourcesLocation = "D:\\1SRC\\StreamSisProjects\\CSGO\\";
 
 		if (!Util.checkDirectory(resourcesLocation)) {
 			logger.error("Programmer. You can't generate 'TestProject' hardcoded project.\n"
@@ -147,6 +149,9 @@ public final class Playground {
 	 * will not be created.
 	 */
 	public static void generateHardcodedDefaultProject() {
+		
+		// The path where structurized resources needed for project generation are located.
+		String resourcesLocation = "D:\\1SRC\\StreamSisProjects\\CSGO\\";
 
 		if (!Util.checkDirectory(resourcesLocation)) {
 			logger.error("Programmer. You can't generate 'Default' hardcoded project.\n"
@@ -155,8 +160,6 @@ public final class Playground {
 		}
 
 		CuteProject project = new CuteProject("Default");
-
-		String resourcesLocation = "D:\\1SRC\\My Pictures\\3PHOTOSHOP\\twitch\\SEresources\\";
 
 		ActorBuilder actorBuilder = new ActorBuilder(resourcesLocation);
 		logger.info("Generating hardcoded project 'Default' based on resources located in:\n"
