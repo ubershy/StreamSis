@@ -55,7 +55,8 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyCombination.Modifier;
 
 /**
- * The playground for testing things.
+ * The playground for testing things and generating hardcoded Projects.
+ * Will be removed after StreamSis GUI will be finished.
  */
 public final class Playground {
 
@@ -175,7 +176,7 @@ public final class Playground {
 		String hkDeathMatch = new KeyCodeCombination(KeyCode.PAGE_DOWN, altMod).getName();
 		String hkIkaMusume = new KeyCodeCombination(KeyCode.F1, altMod).getName();
 		String hkSniper = new KeyCodeCombination(KeyCode.F3, altMod).getName();
-		String hkMessing = new KeyCodeCombination(KeyCode.F7, altMod).getName();
+		String hkPhysical = new KeyCodeCombination(KeyCode.F7, altMod).getName();
 
 		UniversalActor mvpActor = actorBuilder.createUniversalActor("MVP", 2000, 0, false, false,
 				new Coordinates(563, 158, 80, 80), 0.7f, true, false, true);
@@ -192,13 +193,13 @@ public final class Playground {
 
 		UniversalActor smokeActor = actorBuilder.createUniversalActor("Smoke", 150, 0, false, false,
 				new Coordinates(1740, 72, 178, 176), 0.85f, false, false, true);
-		float smokePrecision = 0.965f;
+		float smokePrecision = 0.970f;
 		Checker[] smokeCheckers = new Checker[] {
 				new RegionChecker(new Coordinates(53, 1026, 1, 1),
 						resourcesLocation + "Smoke\\Targets\\1.png", smokePrecision),
 				new RegionChecker(new Coordinates(413, 453, 1, 1),
 						resourcesLocation + "Smoke\\Targets\\1.png", smokePrecision),
-				new RegionChecker(new Coordinates(582, 383, 1, 1),
+				new RegionChecker(new Coordinates(950, 540, 1, 1),
 						resourcesLocation + "Smoke\\Targets\\1.png", smokePrecision),
 				new RegionChecker(new Coordinates(1356, 356, 1, 1),
 						resourcesLocation + "Smoke\\Targets\\1.png", smokePrecision) };
@@ -227,17 +228,16 @@ public final class Playground {
 		sniperActor.clearOffActions();
 		sniperActor.addOffAction(new VariableSwitchAction("currentMode", sniperUndoHotkey));
 
-		// For now lets not include messingActor in the project
-		UniversalActor messingActor = new UniversalActor("Messing", 150, 0, false, false,
-				new RegionChecker(new Coordinates(2020, 20, 40, 40, 0),
-						resourcesLocation + "Messing\\Targets\\toFind.png", 0.8f),
+		UniversalActor physicalActor = new UniversalActor("Physical", 150, 0, false, false,
+				new RegionChecker(new Coordinates(2755, 1205, 50, 50, 0),
+						resourcesLocation + "Physical\\Targets\\toFind.png", 0.8f),
 				null, null);
-		messingActor.addOnAction(new OBSHotkeyAction(hkMessing));
-		TreeMap<String, Action> messingUndoHotkey = new TreeMap<String, Action>();
-		messingUndoHotkey.put("Match", new OBSHotkeyAction(hkMatch));
-		messingUndoHotkey.put("Deathmatch", new OBSHotkeyAction(hkDeathMatch));
-		messingUndoHotkey.put("CSGOMenu", new OBSHotkeyAction(hkMenu));
-		messingActor.addOffAction(new VariableSwitchAction("currentMode", messingUndoHotkey));
+		physicalActor.addOnAction(new OBSHotkeyAction(hkPhysical));
+		TreeMap<String, Action> physicalUndoHotkey = new TreeMap<String, Action>();
+		physicalUndoHotkey.put("Match", new OBSHotkeyAction(hkMatch));
+		physicalUndoHotkey.put("Deathmatch", new OBSHotkeyAction(hkDeathMatch));
+		physicalUndoHotkey.put("CSGOMenu", new OBSHotkeyAction(hkMenu));
+		physicalActor.addOffAction(new VariableSwitchAction("currentMode", physicalUndoHotkey));
 
 		UniversalActor killActor = actorBuilder.createUniversalActor("Kill", 500, 0, false, false,
 				new Coordinates(1400, 72, 344, 176), 0.75f, false, false, true);
@@ -379,21 +379,21 @@ public final class Playground {
 		project.addActorToGlobalActors(changeTActor);
 		project.addActorToGlobalActors(changeCTActor);
 		project.addActorToGlobalActors(poorActor);
-		// project.addActorToGlobalActors(messingActor);
+		project.addActorToGlobalActors(physicalActor);
 
 		// String[] testActors = new String[] { "UniTest"};
 		String[] menuActors = new String[] { "Lobby", "Menu", "ChangeMenu", "ChangeT", "Poor Actor",
-				"ChangeCT" };
+				"ChangeCT", "Physical"};
 		String[] loadingActors = new String[] { "ChangeLoading", "ChangeCT", "ChangeT",
 				"ChangeMenu", "Menu" };
 		String[] modeSelectionActors = new String[] { "Competitive", "Casual", "Deathmatch",
 				"ChangeTeam", "ChangeMenu" };
 		String[] matchTActors = new String[] { "ChangeCT", "MVP", "IkaMusume", "WinT", "LostT",
-				"Kill", "Death", "ChangeMenu", "Smoke", "Sniper" };
+				"Kill", "Death", "ChangeMenu", "Smoke", "Sniper", "Physical" };
 		String[] matchCTActors = new String[] { "ChangeT", "MVP", "IkaMusume", "WinCT", "LostCT",
-				"Kill", "Death", "ChangeMenu", "Smoke", "Sniper" };
+				"Kill", "Death", "ChangeMenu", "Smoke", "Sniper", "Physical" };
 		String[] changeTeamActors = new String[] { "ChangeT", "ChangeCT", "ChangeMenu" };
-		String[] testActors = new String[] { "Kill" };
+		String[] testActors = new String[] { "Physical" };
 
 		// SisScene testSisScene = new SisScene("testSisScene", testActors);
 		SisScene menuSisScene = new SisScene("menuSisScene", menuActors);
