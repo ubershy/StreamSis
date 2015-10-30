@@ -55,7 +55,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyCombination.Modifier;
 
 /**
- * The playground for testing things and generating hardcoded Projects.
+ * The playground for testing things and generating hardcoded Projects.<br>
  * Will be removed after StreamSis GUI will be finished.
  */
 public final class Playground {
@@ -90,7 +90,7 @@ public final class Playground {
 	 * Generate small hardcoded 'TestProject' project and save it to project file.
 	 */
 	public static void generateHardcodedTestProject() {
-		
+
 		// The path where structurized resources needed for project generation are located.
 		String resourcesLocation = "D:\\1SRC\\StreamSisProjects\\CSGO\\";
 
@@ -206,15 +206,15 @@ public final class Playground {
 		Checker smokeChecker = LogicalChecker.createAnd(smokeCheckers);
 		smokeActor.setChecker(smokeChecker);
 
-		UniversalActor sniperActor = actorBuilder.createUniversalActor("Sniper", 50, 0, false,
+		UniversalActor sniperActor = actorBuilder.createUniversalActor("Sniper", 150, 0, false,
 				false, new Coordinates(5, 5, 1, 1), 0.9999f, false, false, true);
 		Checker[] sniperCheckers = new Checker[] {
-				new RegionChecker(new Coordinates(1800, 600, 1, 1),
-						resourcesLocation + "Sniper\\Targets\\sniper.png", 0.999f),
+				new RegionChecker(new Coordinates(1919, 1079, 1, 1),
+						resourcesLocation + "Sniper\\Targets\\sniper.png", 1.0f),
 				LogicalChecker.createNot(new RegionChecker(new Coordinates(800, 350, 1, 1),
-						resourcesLocation + "Sniper\\Targets\\sniper.png", 0.999f)),
-				new RegionChecker(new Coordinates(444, 400, 1, 1),
-						resourcesLocation + "Sniper\\Targets\\sniper.png", 0.999f) };
+						resourcesLocation + "Sniper\\Targets\\sniper.png", 1.0f)),
+				new RegionChecker(new Coordinates(1919, 0, 1, 1),
+						resourcesLocation + "Sniper\\Targets\\sniper.png", 1.0f), };
 		Checker sniperChecker = LogicalChecker.createAnd(sniperCheckers);
 		sniperActor.setChecker(sniperChecker);
 		sniperActor.clearOnActions();
@@ -229,7 +229,7 @@ public final class Playground {
 		sniperActor.addOffAction(new VariableSwitchAction("currentMode", sniperUndoHotkey));
 
 		UniversalActor physicalActor = new UniversalActor("Physical", 150, 0, false, false,
-				new RegionChecker(new Coordinates(2755, 1205, 50, 50, 0),
+				new RegionChecker(new Coordinates(2755, 1185, 80, 80, 0),
 						resourcesLocation + "Physical\\Targets\\toFind.png", 0.8f),
 				null, null);
 		physicalActor.addOnAction(new OBSHotkeyAction(hkPhysical));
