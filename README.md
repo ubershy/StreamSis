@@ -4,9 +4,10 @@
 
 What is it and what does it do
 --------------
-If you are a programmer, I'm sure you can figure it out. =)  
+No explicit explanation here.  
 *Recently I decided to fill up my GitHub profile and from now on I want my future commits to be publicly trackable.  
-Still now I want any public attention to be less as possible. So no explicit explanation here.*
+Still now I want any public attention to be less as possible.*  
+But if you are a programmer, I'm sure you can figure it out. =)  
 
 Not ready for release
 --------------
@@ -31,10 +32,8 @@ Dear developer, before you start, please make sure you have these things:
   - Netbeans
   - IntelliJ IDEA
   - Eclipse with m2e plugin (my choice, fully supports Java 8 starting from version "Luna")
-- Java SE Development Kit 8 (JDK 8). Only versions **from 8u40 to 8u51**. (temporary problem, see explanation below)
-  - Download and install it from the official site if you don't have it. 
-  - Version **8u40 and above** is required, because StreamSis is using some recently added JDK 8 features.
-  - Version **below 8u60** is required, because ControlsFX library, which is used in StreamSis, is still not able to work with 8u60 and above because of the new API.
+- Java SE Development Kit 8 (JDK 8). Any version above **8u60**.
+  - Download and install it from the official site if you don't have it.
 - Maven (3.x+). It's a build automation tool for Java. It automatically downloads depencencies for StreamSis and does some other nice things.
   - Download and install it from the official site if you don't have it. Please follow the **installation instructions**: https://maven.apache.org/install.html
 - StreamSis source code repository. 
