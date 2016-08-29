@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.Util;
 
 /**
@@ -35,7 +34,6 @@ import com.ubershy.streamsis.Util;
  * from predefined list of files. <br>
  * It can choose a particular file either <b>randomly</b> or <b>sequentially</b>.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "actnType")
 public class MultiFileCopyAction extends FileCopyAction {
 
 	static final Logger logger = LoggerFactory.getLogger(MultiFileCopyAction.class);

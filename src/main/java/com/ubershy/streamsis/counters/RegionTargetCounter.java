@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.checkers.Coordinates;
 import com.ubershy.streamsis.project.AbstractCuteNode;
@@ -39,7 +38,6 @@ import com.ubershy.streamsis.project.AbstractCuteNode;
  * For example, it can count how many shortcuts the user have on his OS desktop by finding all instances of shortcut arrow image.
  */
 @SuppressWarnings("unchecked")
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "cntrType")
 public class RegionTargetCounter extends AbstractCuteNode implements Counter {
 
 	static final Logger logger = LoggerFactory.getLogger(RegionTargetCounter.class);

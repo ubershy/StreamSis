@@ -17,10 +17,15 @@
  */
 package com.ubershy.streamsis.project;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
  * CuteElement can {@link #init()} itself and {@link #getElementInfo()} about itself.
  * <p>
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,
+		    include = JsonTypeInfo.As.PROPERTY,
+		    property = "@class")
 public interface CuteElement {
 
 	/**

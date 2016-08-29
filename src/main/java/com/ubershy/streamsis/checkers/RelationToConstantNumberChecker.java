@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.counters.Counter;
 
 /**
@@ -37,7 +36,6 @@ import com.ubershy.streamsis.counters.Counter;
  * equal than the constant number.
  */
 @SuppressWarnings("unchecked")
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "chkrType")
 public class RelationToConstantNumberChecker extends AbstractRelationToNumberChecker {
 
 	static final Logger logger = LoggerFactory.getLogger(RelationToConstantNumberChecker.class);

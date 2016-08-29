@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.project.AbstractCuteNode;
 import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.SisScene;
@@ -33,7 +32,6 @@ import com.ubershy.streamsis.project.ProjectManager;
  * This {@link Action} can switch current {@link CuteProject CuteProject's} {@link SisScene} to another one.
  */
 @SuppressWarnings("unchecked")
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "actnType")
 public class SwitchSisSceneAction extends AbstractCuteNode implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(SwitchSisSceneAction.class);

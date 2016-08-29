@@ -21,14 +21,11 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.collections.ObservableList;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.ubershy.streamsis.StreamSis;
 import com.ubershy.streamsis.actions.Action;
 import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.project.CuteNode;
 import com.ubershy.streamsis.project.ElementInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * Actor takes the <b>most important role</b> in {@link StreamSis} functioning. <br>
@@ -43,9 +40,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * <p>
  * Note: please consider that Actor's Switch (that can be On or Off) <b>is not</b> related to {@link ElementInfo ElementInfo's} isEnabled property.
  */
-
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(value = UniversalActor.class, name = "UniversalActor") })
 public interface Actor extends CuteNode {
 
 	/**

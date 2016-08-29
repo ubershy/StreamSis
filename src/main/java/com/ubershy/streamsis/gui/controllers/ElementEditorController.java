@@ -17,15 +17,21 @@
  */
 package com.ubershy.streamsis.gui.controllers;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ubershy.streamsis.gui.StreamSisAppFactory;
 import com.ubershy.streamsis.gui.animations.HorizontalShadowAnimation;
 import com.ubershy.streamsis.gui.animations.ThreeDotsAnimation;
-import com.ubershy.streamsis.gui.helperclasses.ApplyAndOkButtonsStateManager;
+import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.ElementInfo;
+import com.ubershy.streamsis.project.ElementSerializator;
+import com.ubershy.streamsis.project.ProjectManager;
 import com.ubershy.streamsis.project.ElementInfo.ElementHealth;
 
 import javafx.application.Platform;
@@ -85,7 +91,7 @@ public class ElementEditorController implements Initializable {
 
 	private PropsWithNameController propsWithNameController;
 
-	private ApplyAndOkButtonsStateManager buttonStateManager = new ApplyAndOkButtonsStateManager();
+	private CuteButtonsStatesManager buttonStateManager = new CuteButtonsStatesManager();
 
 	/** The property of last selected CuteElement */
 	public ObjectProperty<CuteElement> lastFocusedProperty = new SimpleObjectProperty<>();
@@ -103,6 +109,10 @@ public class ElementEditorController implements Initializable {
 	private HorizontalShadowAnimation whyShadowAnima;
 
 	private ThreeDotsAnimation tPaneDotsAnima;
+	
+	private CuteElement elementCopy = null;
+	
+	private CuteElement currentElement = null;
 
 	public Node getView() {
 		return root;
@@ -114,7 +124,7 @@ public class ElementEditorController implements Initializable {
 				.buildSpecificControllerByCuteElementName("NoneSelected");
 		propsWithNameController = (PropsWithNameController) StreamSisAppFactory
 				.buildControllerByRelativePath("PropsWithName.fxml");
-		propsWithNameController.setApplyAndOkButtonsStateManager(buttonStateManager);
+		propsWithNameController.setCuteButtonsStatesManager(buttonStateManager);
 		propertiesPane.setContent(noneController.getView());
 		hsShadowAnima = new HorizontalShadowAnimation(statusLabel);
 		nameShadowAnima = new HorizontalShadowAnimation(nameLabel);
@@ -122,13 +132,15 @@ public class ElementEditorController implements Initializable {
 		whyShadowAnima = new HorizontalShadowAnimation(whyUnhealthyLabel);
 		tPaneDotsAnima = new ThreeDotsAnimation("Editing", root, 1);
 		initializeAllListeners();
-		bindThingies();
+		bindButtons();
 	}
 
-	private void bindThingies() {
-		applyButton.disableProperty().bind(buttonStateManager.canApplyProperty().not());
-		OKButton.disableProperty().bind(buttonStateManager.errorsExistProperty());
-
+	private void bindButtons() {
+		applyButton.disableProperty().bind((buttonStateManager.applyButtonOnProperty().not()));
+		OKButton.disableProperty()
+				.bind(buttonStateManager.okAndPerformTestButtonsOnProperty().not());
+		performTestButton.disableProperty()
+				.bind(buttonStateManager.okAndPerformTestButtonsOnProperty().not());
 	}
 
 	private void initializeAllListeners() {
@@ -137,7 +149,7 @@ public class ElementEditorController implements Initializable {
 					if (!propertiesPane.getContent().equals(propsWithNameController.getView())) {
 						propertiesPane.setContent(propsWithNameController.getView());
 					}
-					connectToNewElement(oldValue, newValue);
+					connectToNewElement(newValue);
 				});
 		root.expandedProperty()
 				.addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
@@ -155,12 +167,13 @@ public class ElementEditorController implements Initializable {
 				.addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
 					typeShadowAnima.play();
 				});
-		elementHealthProperty.addListener((ChangeListener<ElementHealth>) (observable, oldValue, newValue) -> {
-			Platform.runLater(() -> {
-				defineElementHealthStyle(newValue);
-				hsShadowAnima.play();
-			});
-		});
+		elementHealthProperty
+				.addListener((ChangeListener<ElementHealth>) (observable, oldValue, newValue) -> {
+					Platform.runLater(() -> {
+						defineElementHealthStyle(newValue);
+						hsShadowAnima.play();
+					});
+				});
 		whyUnhealthyProperty
 				.addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
 					whyUnhealthyLabel.setText(newValue);
@@ -168,26 +181,46 @@ public class ElementEditorController implements Initializable {
 				});
 	}
 
-	private void connectToNewElement(CuteElement oldValue, CuteElement newValue) {
-		// Lets clean up after previous element
+	private void connectToNewElement(CuteElement currentElement) {
+		// Let's clean up after previous CuteElement
 		nameLabel.textProperty().unbind();
 		elementHealthProperty.unbind();
 		whyUnhealthyProperty.unbind();
+		
+		this.currentElement = currentElement;
 
-		// Lets set up initial values
-		String simpleClassName = newValue.getClass().getSimpleName();
-		ElementInfo newInfo = newValue.getElementInfo();
+		// CuteElements of higher hierarchy levels are referring to current element, and it's hard
+		// to substitute this reference. It's easier to retain this reference.
+		// Let's create a copy of the current CuteElement and work on the copy. After the user will
+		// finish editing this copy and press "Ok" or "Apply" buttons, we can transfer changes back
+		// to the original CuteElement.
+		String serializedCurrentElement = null;
+		try {
+			serializedCurrentElement = ElementSerializator.serializeToString(currentElement);
+			elementCopy = ElementSerializator.deserializeFromString(serializedCurrentElement);
+		} catch (IOException e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		
+		elementCopy.init();
+		
+		// Let's set up initial values of visible textLabels describing the CuteElement
+		String simpleClassName = elementCopy.getClass().getSimpleName();
+		ElementInfo infoOfCopyElement = elementCopy.getElementInfo();
 		typeLabel.setText(simpleClassName);
-		defineElementHealthStyle(newInfo.elementHealthProperty().get());
-		whyUnhealthyLabel.setText(newInfo.getUnhealthyMessage());
+		defineElementHealthStyle(infoOfCopyElement.elementHealthProperty().get());
+		whyUnhealthyLabel.setText(infoOfCopyElement.getUnhealthyMessage());
 
-		// Now let's bind all properties and set up the desired behavior
-		nameLabel.textProperty().bind(newInfo.nameProperty());
-		elementHealthProperty.bind(newInfo.elementHealthProperty());
-		whyUnhealthyProperty.bind(newInfo.whyUnhealthyProperty());
+		// Now let's bind all properties to visible textLabels describing the CuteElement
+		nameLabel.textProperty().bind(infoOfCopyElement.nameProperty());
+		elementHealthProperty.bind(infoOfCopyElement.elementHealthProperty());
+		whyUnhealthyProperty.bind(infoOfCopyElement.whyUnhealthyProperty());
 
-		// Lets attach new view to propertiesPane
-		propsWithNameController.setPropertiesViewByCuteElement(newValue);
+		// Let's set up propertiesPane according to CuteElement
+		propsWithNameController.setPropertiesViewByCuteElement(elementCopy);
+		
+		// Let's reset state manager of buttons
+		buttonStateManager.reset();
 	}
 
 	protected void defineElementHealthStyle(ElementHealth elementHealth) {
@@ -213,21 +246,43 @@ public class ElementEditorController implements Initializable {
 		}
 	}
 
+	private void applyChanges() {
+		// Current CuteElement's copy at this moment was modified by user, we need to transfer
+		// changes to the original CuteElement.
+		String NameOfCopyElement = elementCopy.getElementInfo().getName();
+		String NameOfCurrentElement = currentElement.getElementInfo().getName();
+		// setCuteElementNameSafely() will throw IllegalArgument exception if "name" field
+		// validation in propsWithNameController is not implemented correctly.
+		if (!NameOfCopyElement.equals(NameOfCurrentElement))
+			ProjectManager.getProject().setCuteElementNameSafely(currentElement, NameOfCopyElement);
+		// Let's apply changes from the copy to original CuteElement by copying properties
+		try {
+			PropertyUtils.copyProperties(currentElement, elementCopy);
+		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			e.printStackTrace();
+			throw new RuntimeException("For some reason can't transfer changes from copy of the "
+					+ "current CuteElement to the current CuteElement");
+		}
+		currentElement.init();
+		connectToNewElement(currentElement);
+	}
+	
 	@FXML
 	void hitApplyButton(ActionEvent event) {
-		propsWithNameController.apply();
+		applyChanges();
 	}
 
 	@FXML
 	void hitOKButton(ActionEvent event) {
 		root.expandedProperty().set(false);
-		propsWithNameController.apply();
+		applyChanges();
 	}
 
 	@FXML
 	void hitCancelButton(ActionEvent event) {
 		root.expandedProperty().set(false);
-		propsWithNameController.reset();
+		currentElement.init();
+		connectToNewElement(currentElement);
 	}
 
 }

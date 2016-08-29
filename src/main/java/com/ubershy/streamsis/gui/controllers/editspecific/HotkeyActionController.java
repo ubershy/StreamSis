@@ -25,20 +25,15 @@ import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 
 import com.ubershy.streamsis.actions.HotkeyAction;
-import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteElement;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -53,7 +48,7 @@ public class HotkeyActionController extends AbstractCuteController {
 
 	protected ObjectProperty<KeyCodeCombination> keyCombinationProperty = new SimpleObjectProperty<KeyCodeCombination>();
 
-	protected StringProperty keysProperty = new SimpleStringProperty("");
+	protected String origKeys = "";
 
 	@FXML
 	protected TextField keyTextField;
@@ -70,39 +65,34 @@ public class HotkeyActionController extends AbstractCuteController {
 	 * @inheritDoc
 	 */
 	@Override
-	public void apply() {
-		hkAction.keysProperty().set(keyCombinationProperty.get().getName());
-		hkAction.init();
-	}
-
-	/*
-	 * @inheritDoc
-	 */
-	@Override
-	public void bindToCuteElement(CuteElement element) {
-		hkAction = (HotkeyAction) element;
-		keysProperty.bind(hkAction.keysProperty());
-		keyCombinationProperty.set(parseKeyCodeCombinationFromString(keysProperty.get()));
-		keysProperty.addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
-			keyCombinationProperty.set(parseKeyCodeCombinationFromString(newValue));
-		});
+	public void bindToCuteElement(CuteElement cuteElement) {
+		hkAction = (HotkeyAction) cuteElement;
+		origKeys = hkAction.keysProperty().get();
+		keyCombinationProperty.set(parseKeyCodeCombinationFromString(origKeys));
 		StringBinding readableKey = Bindings.createStringBinding(new Callable<String>() {
 			@Override
 			public String call() throws Exception {
-				return extractKeyFromKeyCombination(keyCombinationProperty.get());
+				return keyFromKeyCombination(keyCombinationProperty.get());
 			}
 		}, keyCombinationProperty);
 		StringBinding readableModifiers = Bindings.createStringBinding(new Callable<String>() {
 			@Override
 			public String call() throws Exception {
-				String newValue = extractModifiersFromKeyCombination(keyCombinationProperty.get());
-				KeyCodeCombination originalKB = parseKeyCodeCombinationFromString(
-						keysProperty.get());
-				GUIUtil.reportToButtonStateManager(extractModifiersFromKeyCombination(originalKB),
-						newValue, modifiersTextField, null, buttonStateManager);
+				String newValue = modifiersFromKeyCombination(keyCombinationProperty.get());
+				KeyCodeCombination originalKB = parseKeyCodeCombinationFromString(origKeys);
+				buttonStateManager.reportNewValueOfControl(modifiersFromKeyCombination(originalKB),
+						newValue, modifiersTextField, null);
 				return newValue;
 			}
 		}, keyCombinationProperty);
+		StringBinding applyChangesToCuteElement = Bindings
+				.createStringBinding(new Callable<String>() {
+					@Override
+					public String call() throws Exception {
+						return keyCombinationProperty.get().getName();
+					}
+				}, keyCombinationProperty);
+		hkAction.keysProperty().bind(applyChangesToCuteElement);
 		keyTextField.textProperty().bind(readableKey);
 		modifiersTextField.textProperty().bind(readableModifiers);
 		keyTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -155,7 +145,7 @@ public class HotkeyActionController extends AbstractCuteController {
 		return kb.getDisplayText();
 	}
 
-	protected String extractKeyFromKeyCombination(KeyCodeCombination kb) {
+	protected String keyFromKeyCombination(KeyCodeCombination kb) {
 		if (kb.getCode().equals(KeyCode.CLEAR)) {
 			// in HotkeyAction KeyCode.Clear is used as empty KeyCode
 			return "";
@@ -163,7 +153,7 @@ public class HotkeyActionController extends AbstractCuteController {
 		return kb.getCode().getName();
 	}
 
-	protected String extractModifiersFromKeyCombination(KeyCodeCombination kb) {
+	protected String modifiersFromKeyCombination(KeyCodeCombination kb) {
 		ModifierValue downMod = ModifierValue.DOWN;
 		// If any modifier exist
 		if (kb.getAlt() == downMod || kb.getShortcut() == downMod || kb.getShift() == downMod) {
@@ -197,20 +187,10 @@ public class HotkeyActionController extends AbstractCuteController {
 
 	protected KeyCodeCombination parseKeyCodeCombinationFromString(String stringToParse) {
 		KeyCodeCombination kb = null;
-		if (stringToParse.isEmpty()) {
-
-		} else {
+		if (!stringToParse.isEmpty()) {
 			kb = (KeyCodeCombination) KeyCombination.keyCombination(stringToParse);
 		}
 		return kb;
-	}
-
-	@Override
-	/*
-	 * @inheritDoc
-	 */
-	public void reset() {
-		keyCombinationProperty.set(parseKeyCodeCombinationFromString(keysProperty.get()));
 	}
 
 	protected void setNewKeyCode(KeyCode keycode) {
@@ -231,32 +211,15 @@ public class HotkeyActionController extends AbstractCuteController {
 	public void setValidationSupport(ValidationSupport validationSupport) {
 		this.validationSupport = validationSupport;
 		Validator<String> keyTextFieldValidator = (c, newValue) -> {
-			// ValidationResult alreadyExistanceResult = ValidationResult.fromErrorIf(c,
-			// "The name is already taken. Please choose another one",
-			// validateNameAlreadyExistence(c, newValue));
 			ValidationResult emptyResult = ValidationResult.fromErrorIf(c,
-					"Please choose a keyboard key", validatekeyEmptiness(c, newValue));
+					"Please choose a keyboard key", newValue.isEmpty());
 			ValidationResult finalResult = ValidationResult.fromResults(emptyResult);
-			KeyCodeCombination kb = parseKeyCodeCombinationFromString(keysProperty.get());
-			GUIUtil.reportToButtonStateManager(extractKeyFromKeyCombination(kb), newValue, c,
-					finalResult, buttonStateManager);
+			KeyCodeCombination OrigKK = parseKeyCodeCombinationFromString(origKeys);
+			buttonStateManager.reportNewValueOfControl(keyFromKeyCombination(OrigKK), newValue, c,
+					finalResult);
 			return finalResult;
 		};
 		this.validationSupport.registerValidator(keyTextField, keyTextFieldValidator);
-	}
-
-	/*
-	 * @inheritDoc
-	 */
-	@Override
-	public void unbindFromCuteElement() {
-		keysProperty.unbind();
-	}
-
-	protected boolean validatekeyEmptiness(Control c, String newValue) {
-		if (newValue.isEmpty())
-			return true;
-		return false;
 	}
 
 }

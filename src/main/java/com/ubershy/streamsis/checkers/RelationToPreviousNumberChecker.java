@@ -21,7 +21,6 @@ import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.counters.Counter;
 
 /**
@@ -34,7 +33,6 @@ import com.ubershy.streamsis.counters.Counter;
  * The user must set initial value for "previous Counter's result".
  */
 @SuppressWarnings("unchecked")
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "chkrType")
 public class RelationToPreviousNumberChecker extends AbstractRelationToNumberChecker {
 	
 	public RelationToPreviousNumberChecker() {

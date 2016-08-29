@@ -22,8 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 import javafx.scene.input.KeyCodeCombination;
 
 /**
@@ -39,7 +37,6 @@ import javafx.scene.input.KeyCodeCombination;
  * @see {@link HotkeyAction}
  */
 @SuppressWarnings("unchecked")
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "actnType")
 public class OBSHotkeyAction extends HotkeyAction implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(OBSHotkeyAction.class);

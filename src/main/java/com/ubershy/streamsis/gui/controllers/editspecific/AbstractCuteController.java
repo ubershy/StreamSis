@@ -18,18 +18,18 @@
 package com.ubershy.streamsis.gui.controllers.editspecific;
 
 import com.ubershy.streamsis.gui.controllers.CuteController;
-import com.ubershy.streamsis.gui.helperclasses.ApplyAndOkButtonsStateManager;
+import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 
 
 public abstract class AbstractCuteController implements CuteController{
 	
-	protected ApplyAndOkButtonsStateManager buttonStateManager;
+	protected CuteButtonsStatesManager buttonStateManager;
 	
 	/*
 	 * @inheritDoc
 	 */
 	@Override
-	public void setApplyAndOkButtonsStateManager(ApplyAndOkButtonsStateManager buttonStateManager) {
+	public void setCuteButtonsStatesManager(CuteButtonsStatesManager buttonStateManager) {
 		this.buttonStateManager = buttonStateManager;
 	}
 	

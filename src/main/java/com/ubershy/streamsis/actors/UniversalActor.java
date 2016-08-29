@@ -199,6 +199,7 @@ public class UniversalActor extends AbstractActor implements Actor {
 		}
 	}
 
+	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
 		if (elementInfo.getName() != null) {

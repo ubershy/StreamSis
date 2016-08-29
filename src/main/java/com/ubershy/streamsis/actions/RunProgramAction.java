@@ -28,10 +28,8 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.project.AbstractCuteNode;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -43,7 +41,6 @@ import javafx.beans.property.StringProperty;
  * directory provided by the user.
  */
 @SuppressWarnings("unchecked")
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "actnType")
 public class RunProgramAction extends AbstractCuteNode implements Action {
 
 	/** The Constant logger. */
@@ -75,10 +72,15 @@ public class RunProgramAction extends AbstractCuteNode implements Action {
 	private Process process;
 
 	/**
-	 * The working directory path of program/script execution.
+	 * The working directory path of program/script execution. If not empty, it's value will be
+	 * used as {@link #actualWorkingDir}. If empty, {@link #actualWorkingDir} will be set to the
+	 * directory of executable path ({@link #pathProperty}).
 	 */
 	@JsonIgnore
 	protected StringProperty workingDirProperty = new SimpleStringProperty("");
+	
+	/** The actual working directory. See {@link #workingDirProperty}. */
+	private String actualWorkingDir = "";
 
 	/**
 	 * Instantiates a new {@link RunProgramAction}.
@@ -158,7 +160,8 @@ public class RunProgramAction extends AbstractCuteNode implements Action {
 			if (success != false) {
 				try {
 					logger.info("Running the program: " + toExecute);
-					process = Runtime.getRuntime().exec(toExecute, null, new File(getWorkingDir()));
+					process = Runtime.getRuntime().exec(toExecute, null,
+							new File(actualWorkingDir));
 					int exitCode = process.waitFor();
 					if (exitCode == 1) {
 						BufferedReader br = new BufferedReader(
@@ -285,17 +288,19 @@ public class RunProgramAction extends AbstractCuteNode implements Action {
 			return;
 		}
 
-		if (getWorkingDir().isEmpty()) { // if it's empty, lets initialize workingDir by the
+		if (getWorkingDir().isEmpty()) { // if it's empty, lets initialize actualWorkingDir as the
 											// program directory
 			File parentToPathFile = pathFile.getAbsoluteFile().getParentFile();
 			if (parentToPathFile != null) {
-				setWorkingDir(parentToPathFile.getAbsolutePath());
+				actualWorkingDir = parentToPathFile.getAbsolutePath();
 			} else {
 				throw new RuntimeException("Can't find parent directory of the program");
 			}
 		} else { // Means the user has specified the working directory
 			if (!Util.checkDirectory(getWorkingDir())) {
 				elementInfo.setAsBroken("The working directory you have specified does not exist");
+			} else {
+				actualWorkingDir = getWorkingDir();
 			}
 		}
 	}

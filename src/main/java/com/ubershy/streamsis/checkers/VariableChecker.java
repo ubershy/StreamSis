@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.project.AbstractCuteNode;
 import com.ubershy.streamsis.project.UserVars;
 
@@ -34,7 +33,6 @@ import com.ubershy.streamsis.project.UserVars;
  * If variable is not found in UserVars, this Checker returns false;
  */
 @SuppressWarnings("unchecked")
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "chkrType")
 public class VariableChecker extends AbstractCuteNode implements Checker {
 
 	static final Logger logger = LoggerFactory.getLogger(VariableChecker.class);

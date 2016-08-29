@@ -25,9 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.project.AbstractCuteNode;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -35,7 +33,6 @@ import javafx.collections.ObservableList;
  * Delayed Actions. <br>
  * This {@link Action} executes a list of {@link Action Actions} after a specified delay in milliseconds.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "actnType")
 public class DelayedActions extends AbstractCuteNode implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(DelayedActions.class);

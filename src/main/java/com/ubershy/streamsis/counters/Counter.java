@@ -17,7 +17,6 @@
  */
 package com.ubershy.streamsis.counters;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.project.CuteNode;
 
 /**
@@ -26,7 +25,6 @@ import com.ubershy.streamsis.project.CuteNode;
  * For example, Counter may count how many ponies are located on the user's screen or how much damage they have caused to the user's life. <br>
  * In a game with ponies. If such game exists...
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "cntrType")
 public interface Counter extends CuteNode {
 
 	/**

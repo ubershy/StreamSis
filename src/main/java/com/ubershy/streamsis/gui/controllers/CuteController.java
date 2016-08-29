@@ -19,7 +19,7 @@ package com.ubershy.streamsis.gui.controllers;
 
 import org.controlsfx.validation.ValidationSupport;
 
-import com.ubershy.streamsis.gui.helperclasses.ApplyAndOkButtonsStateManager;
+import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.project.CuteElement;
 
 import javafx.scene.Node;
@@ -34,10 +34,10 @@ public interface CuteController {
 	 * Sets the {@link CuteElement} to work with and binds view's controls to CuteElement's
 	 * properties.
 	 *
-	 * @param element
+	 * @param cuteElement
 	 *            the CuteElement
 	 */
-	public void bindToCuteElement(CuteElement element);
+	public void bindToCuteElement(CuteElement cuteElement);
 
 	/**
 	 * Gets the View's Root Node corresponding to this controller.
@@ -47,27 +47,17 @@ public interface CuteController {
 	public Node getView();
 
 	/**
-	 * Resets all view's controls to original values of {@link CuteElement}'s properties.
-	 */
-	public void reset();
-
-	/**
-	 * Sets the ApplyAndOkButtonsStateManager - a thing where to report about validation errors in
-	 * controls.
+	 * Sets the CuteButtonsStatesManager - a thing where to report about validation errors and
+	 * changes in controls (user input fields).
 	 *
 	 * @param buttonStateManager
-	 *            the ApplyAndOkButtonsStateManager
+	 *            the CuteButtonsStatesManager
 	 */
-	public void setApplyAndOkButtonsStateManager(ApplyAndOkButtonsStateManager buttonStateManager);
-
-	/**
-	 * Apply changes made in controls to {@link CuteElement}.
-	 */
-	public void apply();
+	public void setCuteButtonsStatesManager(CuteButtonsStatesManager buttonStateManager);
 
 	/**
 	 * Sets the {@link ValidationSupport} to this controller. <br>
-	 * This will allow to validate nicely values in controls, by registering controls in
+	 * This will allow to nicely validate values in controls, by registering controls in
 	 * ValidationSupport.
 	 *
 	 * @param validationSupport
@@ -75,8 +65,4 @@ public interface CuteController {
 	 */
 	public void setValidationSupport(ValidationSupport validationSupport);
 
-	/**
-	 * Unbinds all view's controls from CuteElement's properties.
-	 */
-	public void unbindFromCuteElement();
 }

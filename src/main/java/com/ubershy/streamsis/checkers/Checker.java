@@ -17,7 +17,6 @@
  */
 package com.ubershy.streamsis.checkers;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.actions.Action;
 import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.counters.Counter;
@@ -36,7 +35,6 @@ import com.ubershy.streamsis.project.UserVars;
  * <p>
  * Checker extends {@link CuteNode} interface.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "chkrType")
 public interface Checker extends CuteNode {
 
 	/**

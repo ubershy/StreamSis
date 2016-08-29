@@ -43,14 +43,6 @@ public class NoneSelectedController extends AbstractCuteController implements In
 	 * @inheritDoc
 	 */
 	@Override
-	public void apply() {
-		// Nothing to apply
-	}
-	
-	/*
-	 * @inheritDoc
-	 */
-	@Override
 	public void bindToCuteElement(CuteElement element) {
 		// Nothing to set
 	}
@@ -73,23 +65,8 @@ public class NoneSelectedController extends AbstractCuteController implements In
 	 * @inheritDoc
 	 */
 	@Override
-	public void reset() {
-		// Nothing to reset
-	}
-
-	/*
-	 * @inheritDoc
-	 */
-	@Override
 	public void setValidationSupport(ValidationSupport validationSupport) {
 		// Nothing to validate
 	}
 
-	/*
-	 * @inheritDoc
-	 */
-	@Override
-	public void unbindFromCuteElement() {
-		// nothing to unbind
-	}
 }

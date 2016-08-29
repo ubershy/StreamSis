@@ -17,7 +17,6 @@
  */
 package com.ubershy.streamsis.actions;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.StreamSis;
 import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.checkers.Checker;
@@ -36,7 +35,6 @@ import com.ubershy.streamsis.project.CuteNode;
  * <p>
  * Action extends {@link CuteNode} interface.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "actnType")
 public interface Action extends CuteNode {
 
 	/**

@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.project.AbstractCuteNode;
 import com.ubershy.streamsis.project.ElementInfo;
 
@@ -50,7 +49,6 @@ import javafx.collections.ObservableList;
  * @see {@link BooleanOperator#XOR}
  * @see {@link BooleanOperator#SUB}
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "chkrType")
 public class LogicalChecker extends AbstractCuteNode implements Checker {
 
 	/**

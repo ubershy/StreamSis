@@ -141,7 +141,7 @@
 		<dependency>
 			<groupId>org.controlsfx</groupId>
 			<artifactId>controlsfx</artifactId>
-			<version>8.40.10</version>
+			<version>8.40.11</version>
 		</dependency>
 		<dependency>
 			<groupId>org.controlsfx</groupId>
@@ -157,6 +157,11 @@
 			<groupId>com.sikulix</groupId>
 			<artifactId>sikulixapi</artifactId>
 			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>commons-beanutils</groupId>
+		    <artifactId>commons-beanutils</artifactId>
+		    <version>1.8.3</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.project.AbstractCuteNode;
 
@@ -43,7 +42,6 @@ import com.ubershy.streamsis.project.AbstractCuteNode;
  * within the region. <br>
  */
 @SuppressWarnings("unchecked")
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "chkrType")
 public class MultiTargetRegionChecker extends AbstractCuteNode implements Checker {
 
 	static final Logger logger = LoggerFactory.getLogger(MultiTargetRegionChecker.class);

@@ -28,7 +28,7 @@ import org.controlsfx.validation.decoration.StyleClassValidationDecoration;
 
 import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.gui.StreamSisAppFactory;
-import com.ubershy.streamsis.gui.helperclasses.ApplyAndOkButtonsStateManager;
+import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.SisScene;
@@ -36,10 +36,6 @@ import com.ubershy.streamsis.project.ElementInfo;
 import com.ubershy.streamsis.project.ProjectManager;
 
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -54,33 +50,22 @@ import javafx.scene.layout.GridPane;
 
 public class PropsWithNameController implements Initializable {
 
-	private ApplyAndOkButtonsStateManager buttonStateManager;
+	private CuteButtonsStatesManager buttonStateManager;
 
 	private CuteController currentCuteController;
 
-	private CuteElement currentElement;
+	private CuteElement elementWorkingCopy;
 
 	@FXML
 	private TextField nameTextField;
 
 	private String originalName;
 	
-	private StringProperty elementNameProperty = new SimpleStringProperty();
-
 	@FXML
 	private GridPane root;
 
 	private ValidationSupport validationSupport = new ValidationSupport();
 
-	public void apply() {
-		String newName = nameTextField.getText();
-		ProjectManager.getProject().setCuteElementNameSafely(currentElement, newName);
-		originalName = newName;
-		buttonStateManager.reset();
-		if (currentCuteController != null) {
-			currentCuteController.apply();
-		}
-	}
 
 	public Node getView() {
 		return root;
@@ -99,8 +84,7 @@ public class PropsWithNameController implements Initializable {
 					"Please choose a name for the element", validateNameEmptiness(c, newValue));
 			ValidationResult finalResult = ValidationResult.fromResults(emptyResult,
 					alreadyExistanceResult);
-			GUIUtil.reportToButtonStateManager(originalName, newValue, c, finalResult,
-					buttonStateManager);
+			buttonStateManager.reportNewValueOfControl(originalName, newValue, c, finalResult);
 			return finalResult;
 		};
 		validationSupport.registerValidator(nameTextField, nameTextFieldValidator);
@@ -112,24 +96,14 @@ public class PropsWithNameController implements Initializable {
 				root.getScene().getStylesheets().add(url);
 			}
 		});
-
+		// Let's not allow very long names
 		UnaryOperator<Change> filter = c -> {
 			if (c.getControlNewText().length() > 30) {
 				return null;
 			}
 			return c;
 		};
-
 		nameTextField.setTextFormatter(new TextFormatter<>(filter));
-		ChangeListener<String> nameListener = new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue,
-					String newValue) {
-				nameTextField.setText(newValue);
-			}
-		};
-		elementNameProperty.addListener(nameListener);
-		
 		// Reset nameTextField on ESC key
 		nameTextField.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			@Override
@@ -143,33 +117,48 @@ public class PropsWithNameController implements Initializable {
 		});
 	}
 
-	public void setApplyAndOkButtonsStateManager(ApplyAndOkButtonsStateManager buttonStateManager) {
+	public void setCuteButtonsStatesManager(CuteButtonsStatesManager buttonStateManager) {
 		this.buttonStateManager = buttonStateManager;
+		this.buttonStateManager.needToReinitCuteElementProperty()
+				.addListener((InvalidationListener) o -> {
+					if (this.buttonStateManager.needToReinitCuteElementProperty().get()) {
+						if (currentCuteController != null) {
+							elementWorkingCopy.init();
+							this.buttonStateManager.setCuteElementAsInitialized();
+						}
+					}
+				});
 	}
 
-	public void setPropertiesViewByCuteElement(CuteElement newElement) {
-		// Lets unbind nameProperty from previous CuteElement
-		elementNameProperty.unbind();
-		// Lets clean the cell from the previous view, if it exists
+	public void setPropertiesViewByCuteElement(CuteElement newElementCopy) {
+		// Let's unbind name text field from previous CuteElement's name
+		nameTextField.textProperty().unbind();
+		// Let's clean the cell from the previous view, if it exists
 		if (currentCuteController != null) {
-			currentCuteController.unbindFromCuteElement();
 			root.getChildren().remove(currentCuteController.getView());
 		}
-		currentElement = newElement;
-		// Lets get the new controller specific to CuteElement's type
-		CuteController newController = StreamSisAppFactory
-				.buildSpecificControllerByCuteElementName(newElement.getClass().getSimpleName());
-		// Lets set the new controller and view for the cell
-		currentCuteController = newController;
-		currentCuteController.setApplyAndOkButtonsStateManager(buttonStateManager);
-		currentCuteController.bindToCuteElement(newElement);
+		// Let's remember the reference to the CuteElement's copy
+		elementWorkingCopy = newElementCopy;
+		// Let's remember original name of the CuteElement
+		ElementInfo newInfo = newElementCopy.getElementInfo();
+		originalName = newInfo.getName();
+		// Let's get the new controller specific to CuteElement's type
+		currentCuteController = StreamSisAppFactory.buildSpecificControllerByCuteElementName(
+				newElementCopy.getClass().getSimpleName());
+		// Let's set the new controller and view for the cell
+		currentCuteController.setCuteButtonsStatesManager(buttonStateManager);
+		// Bind element to CuteController's View from which the user can edit subtype-specific
+		// variables of the CuteElement's copy. Modified CuteElement's copy will be used to spread
+		// changes to original CuteElement.
+		currentCuteController.bindToCuteElement(newElementCopy);
 		currentCuteController.setValidationSupport(validationSupport);
 		root.add(currentCuteController.getView(), 0, 1);
-		// Lets set nameTextField to the new CuteElement's name
-		ElementInfo newInfo = newElement.getElementInfo();
-		originalName = newInfo.getName();
+		// Let's bind nameTextField to CuteElement's name
 		nameTextField.setText(newInfo.getName());
-		elementNameProperty.bind(newInfo.nameProperty());
+		nameTextField.textProperty().bindBidirectional(newInfo.nameProperty());
+		if (buttonStateManager.needToReinitCuteElementProperty().get())
+			newElementCopy.init();
+			buttonStateManager.setCuteElementAsInitialized();
 	}
 
 	private boolean validateNameEmptiness(Control c, String name) {
@@ -177,19 +166,21 @@ public class PropsWithNameController implements Initializable {
 	}
 
 	private boolean validateNameAlreadyExistence(Control c, String newValue) {
-		if (currentElement instanceof SisScene) {
+		if (newValue.equals(originalName))
+			return false;
+		if (elementWorkingCopy instanceof SisScene) {
 			SisScene existingSisScene = ProjectManager.getProject().getSisSceneByName(newValue);
 			if (existingSisScene != null) {
-				if (existingSisScene != currentElement) {
+				if (existingSisScene != elementWorkingCopy) {
 					// So SisScene with such name already exists, it's bad
 					return true;
 				}
 			}
 		}
-		if (currentElement instanceof Actor) {
+		if (elementWorkingCopy instanceof Actor) {
 			Actor existingActor = ProjectManager.getProject().getActorByName(newValue);
 			if (existingActor != null) {
-				if (existingActor != currentElement) {
+				if (existingActor != elementWorkingCopy) {
 					// So Actor with such name already exists, it's bad
 					return true;
 				}
@@ -199,13 +190,4 @@ public class PropsWithNameController implements Initializable {
 		return false;
 	}
 
-	/**
-	 * Resets all controls to original values of CuteElement
-	 */
-	public void reset() {
-		nameTextField.setText(originalName);
-		if (currentCuteController != null) {
-			currentCuteController.reset();
-		}
-	}
 }

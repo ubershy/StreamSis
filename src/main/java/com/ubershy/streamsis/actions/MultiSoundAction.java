@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * Multi Sound Action. <br>
@@ -36,7 +35,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * Supports ".wav", ".mp3" and ".ogg" files. <br>
  * TODO: some wav files can't be played as they have different format. Find a solution.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "actnType")
 public class MultiSoundAction extends SoundAction {
 
 	@JsonProperty

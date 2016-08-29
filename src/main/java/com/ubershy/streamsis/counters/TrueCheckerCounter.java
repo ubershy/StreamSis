@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.project.AbstractCuteNode;
 
@@ -38,7 +37,6 @@ import javafx.collections.ObservableList;
  * This {@link Counter} on {@link #count()} performs {@link Checker#check() check()} on contained {@link Checker Checkers}. <br>
  * Then it counts how many of them have returned true.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "cntrType")
 public class TrueCheckerCounter extends AbstractCuteNode implements Counter {
 
 	static final Logger logger = LoggerFactory.getLogger(TrueCheckerCounter.class);

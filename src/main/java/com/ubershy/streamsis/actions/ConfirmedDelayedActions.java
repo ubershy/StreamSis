@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.project.CuteNode;
 import com.ubershy.streamsis.project.CuteNodeContainer;
@@ -38,7 +37,6 @@ import javafx.collections.ObservableList;
  * This {@link Action} executes a list of {@link Action Actions} after a specified delay in milliseconds. <br>
  * <b>But only if contained {@link Checker} returns <i>true</i> in this moment. </b> <br>
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "actnType")
 public class ConfirmedDelayedActions extends DelayedActions {
 
 	static final Logger logger = LoggerFactory.getLogger(ConfirmedDelayedActions.class);
@@ -138,4 +136,5 @@ public class ConfirmedDelayedActions extends DelayedActions {
 	public MaxAddableChildrenCount getMaxAddableChildrenCount() {
 		return MaxAddableChildrenCount.UNDEFINEDORZERO;
 	}
+	
 }

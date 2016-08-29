@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.counters.Counter;
 import com.ubershy.streamsis.project.AbstractCuteNode;
 
@@ -36,7 +35,6 @@ import javafx.collections.ObservableList;
  * And based on comparison result, it returns true or false. <br>
  * The user must specify {@link BooleanNumberOperator} that defines type of comparison, e.g. if Counter result must be greater or equal.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "chkrType")
 public abstract class AbstractRelationToNumberChecker extends AbstractCuteNode implements Checker {
 
 	/**

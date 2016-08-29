@@ -147,30 +147,36 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 		return this.actorCheckerService;
 	}
 
+	@Override
 	@JsonProperty("checkInterval")
 	public int getCheckInterval() {
 		return checkInterval.get();
 	}
 
+	@Override
 	public IntegerProperty checkIntervalProperty() {
 		return checkInterval;
 	}
 
+	@Override
 	@JsonProperty("repeatInterval")
 	public int getRepeatInterval() {
 		return repeatInterval.get();
 	}
 
+	@Override
 	public IntegerProperty repeatIntervalProperty() {
 		return repeatInterval;
 	}
 
+	@JsonIgnore
 	@Override
 	public void setChecker(Checker checker) {
 		this.checkers.clear();
 		this.checkers.add(checker);
 	}
 
+	@JsonIgnore
 	@Override
 	public Checker getChecker() {
 		return this.checkers.get(0);
@@ -206,6 +212,7 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 		return offActions;
 	}
 
+	@Override
 	public void executeOnActions() {
 		for (Action a : onActions) {
 			if (!executeAction(a, true)) {
@@ -214,6 +221,7 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 		}
 	}
 
+	@Override
 	public void executeOffActions() {
 		for (Action a : offActions) {
 			if (!executeAction(a, false)) {
@@ -250,18 +258,22 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 		return true;
 	}
 
+	@Override
 	public boolean isDoOnRepeat() {
 		return doOnRepeat;
 	}
 
+	@Override
 	public boolean isDoOffRepeat() {
 		return doOffRepeat;
 	}
 
+	@Override
 	public void setDoOnRepeat(Boolean doOnRepeat) {
 		this.doOnRepeat = doOnRepeat;
 	}
 
+	@Override
 	public void setDoOffRepeat(Boolean doOffRepeat) {
 		this.doOffRepeat = doOffRepeat;
 	}

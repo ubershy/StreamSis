@@ -315,46 +315,4 @@ public final class GUIUtil {
 		};
 		validationSupport.validationResultProperty().addListener(listener);
 	}
-
-	/**
-	 * This method reports to chosen {@link ApplyAndOkButtonsStateManager} about existing errors and
-	 * changes of value in chosen {@link Control}. <br>
-	 * The information from this and other reports will be used to determine if Apply Button and OK
-	 * Button are enabled or not.
-	 * 
-	 * @param <T>
-	 *
-	 * @param originalValue
-	 *            the original value of {@link Control}
-	 * @param newValue
-	 *            the new value of {@link Control}
-	 * @param c
-	 *            the {@link Control}
-	 * @param finalValidationResult
-	 *            the {@link ValidationResult} (provides errors in validation)
-	 *            <br>
-	 *            If NULL there will be no error reporting to buttonStateManager
-	 * @param buttonStateManager
-	 *            the {@link ApplyAndOkButtonsStateManager} where to report
-	 */
-	public static <T> void reportToButtonStateManager(T originalValue, T newValue, Control c,
-			ValidationResult finalValidationResult,
-			ApplyAndOkButtonsStateManager buttonStateManager) {
-		// Lets tell buttonStateManager if changes on this Control are made or not
-		// Lets get information about change by comparing original value of control with new one
-		if (newValue.equals(originalValue)) {
-			buttonStateManager.setChangeStateForControl(c, false);
-		} else {
-			buttonStateManager.setChangeStateForControl(c, true);
-		}
-		// Lets tell buttonStateManager if errors in this Control exist or not
-		// Lets get information about existing errors from finalValidationResult
-		if (finalValidationResult != null) {
-			if (finalValidationResult.getErrors().isEmpty()) {
-				buttonStateManager.setErrorStateForControl(c, false);
-			} else {
-				buttonStateManager.setErrorStateForControl(c, true);
-			}
-		}
-	}
 }

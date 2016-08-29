@@ -28,15 +28,14 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.LowLevel;
 import com.ubershy.streamsis.LowLevel.OS;
 import com.ubershy.streamsis.project.AbstractCuteNode;
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyCombination.ModifierValue;
 
 /**
@@ -48,7 +47,6 @@ import javafx.scene.input.KeyCombination.ModifierValue;
  * @see {@link OBSHotkeyAction}
  */
 @SuppressWarnings("unchecked")
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "actnType")
 public class HotkeyAction extends AbstractCuteNode implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(HotkeyAction.class);
@@ -215,7 +213,7 @@ public class HotkeyAction extends AbstractCuteNode implements Action {
 			elementInfo.setAsBroken("Hotkey is not defined");
 			return;
 		}
-		keyCombination = (KeyCodeCombination) KeyCodeCombination.keyCombination(keysProperty.get());
+		keyCombination = (KeyCodeCombination) KeyCombination.keyCombination(keysProperty.get());
 		// If no modifiers are pressed, lets consider HotkeyAction as broken, because it's not a
 		// hotkey.
 		if (keyCombination == null) {
