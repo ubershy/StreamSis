@@ -23,7 +23,11 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.controlsfx.control.MasterDetailPane;
 
+import com.ubershy.streamsis.actions.Action;
+import com.ubershy.streamsis.checkers.Checker;
+import com.ubershy.streamsis.counters.Counter;
 import com.ubershy.streamsis.gui.StreamSisAppFactory;
 import com.ubershy.streamsis.gui.animations.HorizontalShadowAnimation;
 import com.ubershy.streamsis.gui.animations.ThreeDotsAnimation;
@@ -34,21 +38,33 @@ import com.ubershy.streamsis.project.ElementSerializator;
 import com.ubershy.streamsis.project.ProjectManager;
 import com.ubershy.streamsis.project.ElementInfo.ElementHealth;
 
+import javafx.animation.Animation.Status;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
+import javafx.concurrent.Worker;
+import javafx.concurrent.Worker.State;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
+import javafx.scene.effect.InnerShadow;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
 
 // Under construction. Not working. Please unsee.
 public class ElementEditorController implements Initializable {
@@ -58,12 +74,22 @@ public class ElementEditorController implements Initializable {
 
 	@FXML
 	private ScrollPane propertiesPane;
+	
+	@FXML
+    private GridPane buttonsGridPane;
 
 	@FXML
 	private Button applyButton;
 
-	@FXML
-	private Button performTestButton;
+	private Button performTestButton = new Button("Perform Test");
+	
+	private String testResultText = "Eww!";
+	
+	private Color testResultColor;
+	
+	private Button performTestStatusFakeButton = new Button(testResultText);
+	
+	private MasterDetailPane performTestPane = new MasterDetailPane(Side.RIGHT);
 
 	@FXML
 	private Button cancelButton;
@@ -107,6 +133,8 @@ public class ElementEditorController implements Initializable {
 	private HorizontalShadowAnimation typeShadowAnima;
 
 	private HorizontalShadowAnimation whyShadowAnima;
+	
+	private Timeline hideTestResultAnimation = new Timeline();
 
 	private ThreeDotsAnimation tPaneDotsAnima;
 	
@@ -131,6 +159,22 @@ public class ElementEditorController implements Initializable {
 		typeShadowAnima = new HorizontalShadowAnimation(typeLabel);
 		whyShadowAnima = new HorizontalShadowAnimation(whyUnhealthyLabel);
 		tPaneDotsAnima = new ThreeDotsAnimation("Editing", root, 1);
+		performTestButton.setOnAction(this::hitPerformTestButton);
+		performTestButton.wrapTextProperty().set(true);
+		performTestButton.setTextAlignment(TextAlignment.CENTER);
+//        performTestStatusFakeButton.setDisable(true);
+        performTestStatusFakeButton.wrapTextProperty().set(true);
+        performTestStatusFakeButton.setTextAlignment(TextAlignment.CENTER);
+        performTestPane.setShowDetailNode(true);
+        performTestPane.setMasterNode(performTestButton);
+        performTestPane.setDetailNode(performTestStatusFakeButton);
+		performTestPane.dividerPositionProperty().set(0.5);
+		performTestPane.showDetailNodeProperty().set(false);
+		KeyFrame hideTestResultFrame = new KeyFrame(Duration.seconds(2), event -> {
+			performTestPane.showDetailNodeProperty().set(false);
+		});
+		hideTestResultAnimation.getKeyFrames().add(hideTestResultFrame);
+        buttonsGridPane.add(performTestPane, 0, 3);
 		initializeAllListeners();
 		bindButtons();
 	}
@@ -138,9 +182,9 @@ public class ElementEditorController implements Initializable {
 	private void bindButtons() {
 		applyButton.disableProperty().bind((buttonStateManager.applyButtonOnProperty().not()));
 		OKButton.disableProperty()
-				.bind(buttonStateManager.okAndPerformTestButtonsOnProperty().not());
+				.bind(buttonStateManager.okButtonOnProperty().not());
 		performTestButton.disableProperty()
-				.bind(buttonStateManager.okAndPerformTestButtonsOnProperty().not());
+				.bind(buttonStateManager.performTestButtonOnProperty().not());
 	}
 
 	private void initializeAllListeners() {
@@ -221,6 +265,8 @@ public class ElementEditorController implements Initializable {
 		
 		// Let's reset state manager of buttons
 		buttonStateManager.reset();
+		
+		buttonStateManager.allowOrNotPerformTestButtonBasedOnElementClass(elementCopy);
 	}
 
 	protected void defineElementHealthStyle(ElementHealth elementHealth) {
@@ -284,5 +330,68 @@ public class ElementEditorController implements Initializable {
 		currentElement.init();
 		connectToNewElement(currentElement);
 	}
-
+	
+	@FXML
+	void hitPerformTestButton(ActionEvent event) {
+		buttonStateManager.reportStartOfTest();
+		if (hideTestResultAnimation.getStatus().equals(Status.STOPPED))
+			performTestPane.dividerPositionProperty().set(0.5);
+		hideTestResultAnimation.stop();
+		testResultText = "Testing...";
+		testResultColor = Color.RED;
+		performTestStatusFakeButton.setText(testResultText);
+		InnerShadow shadow = new InnerShadow(10, testResultColor);
+		shadow.setOffsetY(0f);
+		shadow.setOffsetX(0f);
+		performTestStatusFakeButton.setEffect(shadow);
+		performTestPane.showDetailNodeProperty().set(true);
+		Task<Void> task = new Task<Void>() {
+	        @Override
+	        protected Void call() throws Exception {
+	        	if (elementCopy instanceof Action) {
+	    		    Action action = (Action) elementCopy;
+	    		    action.execute();
+	    		    Platform.runLater(() -> {
+						testResultText = "Done";
+					    testResultColor = Color.PALEGREEN;
+					});
+	    		} else if (elementCopy instanceof Checker) {
+	    			Checker checker = (Checker) elementCopy;
+	    			boolean result = checker.check();
+	    			Platform.runLater(() -> {
+		    			if (result) {
+		    				testResultText = "True";
+		    				testResultColor = Color.DEEPSKYBLUE;
+		    			} else {
+		    				testResultText = "False";
+		    				testResultColor = Color.HOTPINK;
+		    			}
+	    			});
+	    		} else if (elementCopy instanceof Counter) {
+	    			Counter counter = (Counter) elementCopy;
+	    			int count = counter.count();
+	    			Platform.runLater(() -> {
+		    			testResultText = String.valueOf(count);
+		    			testResultColor = Color.VIOLET;
+	    			});
+	    		}
+	            return null;
+	        }
+	    };
+	    new Thread(task).start();
+	    task.stateProperty().addListener(new ChangeListener<Worker.State>() {
+			@Override
+			public void changed(ObservableValue<? extends State> observable, State oldValue,
+					State newValue) {
+				if(newValue==Worker.State.SUCCEEDED){
+					shadow.setColor(testResultColor);
+					performTestStatusFakeButton.setEffect(shadow);
+					performTestStatusFakeButton.setText("Test result: " + testResultText + ".");
+					hideTestResultAnimation.play();
+					buttonStateManager.reportEndOfTest();
+	            }
+			}
+	    });
+	}
+	
 }

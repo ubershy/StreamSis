@@ -24,6 +24,9 @@ import org.controlsfx.validation.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ubershy.streamsis.actions.Action;
+import com.ubershy.streamsis.checkers.Checker;
+import com.ubershy.streamsis.counters.Counter;
 import com.ubershy.streamsis.gui.controllers.ElementEditorController;
 import com.ubershy.streamsis.project.CuteElement;
 
@@ -102,18 +105,42 @@ public class CuteButtonsStatesManager {
 	private BooleanProperty applyButtonOn = new SimpleBooleanProperty(false);
 
 	/**
-	 * Tells if "Perform Test" and "OK" buttons should be enabled. <br>
-	 * They can be enabled only if {@link CuteElement} in {@link ElementEditorController} has passed
-	 * full validation. I.e. CuteElement was able to initialize without errors.
+	 * Tells if "OK" button should be enabled. <br>
+	 * It can be enabled only if {@link CuteElement} in {@link ElementEditorController} has passed
+	 * full validation. I.e. CuteElement was able to initialize without errors. <br>
+	 * Used also to calculate {@link #performTestButtonOn}.
 	 */
-	private BooleanProperty okAndPerformTestButtonsOn = new SimpleBooleanProperty(false);
+	private BooleanProperty okButtonOn = new SimpleBooleanProperty(false);
+	
+	/**
+	 * Tells if "Perform Test" button should be enabled. <br>
+	 * It can be enabled only if: <br>
+	 * 1. {@link CuteElement} in {@link ElementEditorController} has passed full validation. I.e.
+	 * CuteElement was able to initialize without errors. <br>
+	 * 2. CuteElement is not of type {@link Actor} or {@link SisScene}. <br>
+	 * 3. "Perform Test" button has finished it's work if it was recently pressed. <br>
+	 */
+	private BooleanProperty performTestButtonOn = new SimpleBooleanProperty(false);
+	
+	/**
+	 * Tells if "Perform Test" button is able to be enabled or not. <br>
+	 * Used to calculate {@link #performTestButtonOn}.
+	 */
+	private BooleanProperty performTestButtonAllowed = new SimpleBooleanProperty(false);
+	
+	/**
+	 * Tells if {@link CuteElement} is under testing invoked by "Perform Test" button. <br>
+	 * Used to calculate {@link #performTestButtonOn}.
+	 */
+	private BooleanProperty currentlyTesting = new SimpleBooleanProperty(false);
 			
 	// Constructor
-	
 	public CuteButtonsStatesManager(){
 		// Bind properties.
-		okAndPerformTestButtonsOn.bind(needToReinitCuteElement.not().and(errorsExist.not()));
+		okButtonOn.bind(needToReinitCuteElement.not().and(errorsExist.not()));
 		applyButtonOn.bind(needToReinitCuteElement.not().and(isInputDiffersAndValid));
+		performTestButtonOn
+				.bind(okButtonOn.and(performTestButtonAllowed).and(currentlyTesting.not()));
 	}
 	
 	// Private methods.
@@ -289,12 +316,21 @@ public class CuteButtonsStatesManager {
 	}
 
 	/**
-	 * Tells if "Perform Test" and "OK" buttons should be enabled.
+	 * Tells if "OK" button should be enabled.
 	 *
 	 * @return the boolean property
 	 */
-	public BooleanProperty okAndPerformTestButtonsOnProperty() {
-		return okAndPerformTestButtonsOn;
+	public BooleanProperty okButtonOnProperty() {
+		return okButtonOn;
+	}
+	
+	/**
+	 * Tells if "Perform Test" button should be enabled.
+	 *
+	 * @return the boolean property
+	 */
+	public BooleanProperty performTestButtonOnProperty() {
+		return performTestButtonOn;
 	}
 
 	/**
@@ -360,5 +396,39 @@ public class CuteButtonsStatesManager {
 	
 	public void setCuteElementAsInitialized(){
 		needToReinitCuteElement.set(false);
+	}
+
+	/**
+	 * This method lets {@link CuteButtonsStatesManager} to know if it should disable "Perform Test"
+	 * button completely or not based on the current {@link CuteElement} under editing.
+	 * <p>
+	 * Internally it checks {@link CuteElement}'s class. Testing is allowed for {@link Action},
+	 * {@link Checker}, {@link Counter} classes.
+	 * 
+	 * @param elementCopy
+	 */
+	public void allowOrNotPerformTestButtonBasedOnElementClass(CuteElement elementCopy) {
+		if (elementCopy instanceof Action || elementCopy instanceof Checker
+				|| elementCopy instanceof Counter) {
+			performTestButtonAllowed.set(true);
+		} else {
+			performTestButtonAllowed.set(false);
+		}
+	}
+
+	/**
+	 * Report to {@link CuteButtonsStatesManager} about start of a test invoked by "Perform Test"
+	 * button.
+	 */
+	public void reportStartOfTest() {
+		currentlyTesting.set(true);		
+	}
+	
+	/**
+	 * Report to {@link CuteButtonsStatesManager} about end of a test invoked by "Perform Test"
+	 * button.
+	 */
+	public void reportEndOfTest() {
+		currentlyTesting.set(false);		
 	}
 }
