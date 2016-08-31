@@ -75,7 +75,6 @@ public class UniversalActor extends AbstractActor implements Actor {
 		this.repeatInterval.set(repeatInterval);
 		this.setDoOnRepeat(doOnRepeat);
 		this.setDoOffRepeat(doOffRepeat);
-		addSafetyListeners();
 	}
 
 	/**
@@ -112,7 +111,6 @@ public class UniversalActor extends AbstractActor implements Actor {
 		this.checkers.setAll(checkers);
 		this.onActions.setAll(onActions);
 		this.offActions.setAll(offActions);
-		addSafetyListeners();
 	}
 
 	/**
@@ -202,6 +200,7 @@ public class UniversalActor extends AbstractActor implements Actor {
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
+		addSafetyListeners();
 		if (elementInfo.getName() != null) {
 			if (elementInfo.getName().isEmpty()) {
 				elementInfo.setAsBroken("Actor's name must not be empty");
