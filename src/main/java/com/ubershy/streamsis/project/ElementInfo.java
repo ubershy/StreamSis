@@ -398,11 +398,11 @@ public class ElementInfo {
 	}
 
 	/**
-	 * Sets the CuteElement's last result as {@link Result#UNKNOWN}.
+	 * Sets the CuteElement's current result as {@link Result#UNKNOWN}, because it's still not
+	 * calculated.
 	 */
 	public void setUnknownResult() {
 		lastResultProperty.set(Result.UNKNOWN);
-		setAsFinished();
 	}
 
 	/**
