@@ -106,10 +106,10 @@ public class MultiFileCopyAction extends FileCopyAction {
 			try {
 				Util.copyFileSynced(fileToCopy, new File(dstPath));
 			} catch (IOException e) {
-				elementInfo.setFailedResult();
+				elementInfo.setBooleanResult(false);
 				return;
 			}
-			elementInfo.setSuccessfulResult();
+			elementInfo.setBooleanResult(true);
 		}
 	}
 

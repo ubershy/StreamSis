@@ -165,13 +165,7 @@ public class HotkeyAction extends AbstractCuteNode implements Action {
 			boolean success = true;
 			success = success && keysDown(keyCombination);
 			success = success && keysUp(keyCombination);
-			if (success) {
-				elementInfo.setSuccessfulResult();
-				
-			} else {
-				elementInfo.setFailedResult();
-			}
-			
+			elementInfo.setBooleanResult(success);
 		}
 	}
 

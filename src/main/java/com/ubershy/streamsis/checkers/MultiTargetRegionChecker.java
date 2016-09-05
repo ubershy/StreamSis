@@ -127,10 +127,7 @@ public class MultiTargetRegionChecker extends AbstractCuteNode implements Checke
 				}
 			}
 			finder.destroy();
-			if (result)
-				elementInfo.setSuccessfulResult();
-			else
-				elementInfo.setFailedResult();
+			elementInfo.setBooleanResult(result);
 		}
 		return result;
 	}

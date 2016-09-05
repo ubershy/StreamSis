@@ -74,7 +74,7 @@ public class VariableSwitchAction extends AbstractCuteNode implements Action {
 			String aquiredValue = UserVars.get(this.key);
 			Action action = null;
 			if (aquiredValue == null) {
-				elementInfo.setFailedResult();
+				elementInfo.setBooleanResult(false);
 				logger.info(
 						"VariableSwitchAction: Doing nothing. No string Value is found for Key: "
 								+ this.key);
@@ -82,7 +82,7 @@ public class VariableSwitchAction extends AbstractCuteNode implements Action {
 			}
 			action = actionsMap.get(aquiredValue);
 			if (action == null) {
-				elementInfo.setFailedResult();
+				elementInfo.setBooleanResult(false);
 				logger.info("VariableSwitchAction: Doing nothing. No Action is found for Key: "
 						+ this.key + " Value: " + aquiredValue);
 				return;
@@ -91,7 +91,7 @@ public class VariableSwitchAction extends AbstractCuteNode implements Action {
 			logger.info("Executing '" + action.getElementInfo().getName() + "'("
 					+ action.getClass().getSimpleName() + ")");
 			action.execute();
-			elementInfo.setSuccessfulResult();
+			elementInfo.setBooleanResult(true);
 		}
 	}
 

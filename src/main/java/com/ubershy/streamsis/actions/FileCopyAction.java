@@ -91,10 +91,10 @@ public class FileCopyAction extends AbstractCuteNode implements Action {
 			try {
 				Util.copyFileSynced(new File(srcFilePath), new File(dstPath));
 			} catch (IOException e) {
-				elementInfo.setFailedResult();
+				elementInfo.setBooleanResult(false);
 				return;
 			}
-			elementInfo.setSuccessfulResult();
+			elementInfo.setBooleanResult(true);
 		}
 	}
 

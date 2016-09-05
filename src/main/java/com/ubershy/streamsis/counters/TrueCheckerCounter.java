@@ -83,10 +83,7 @@ public class TrueCheckerCounter extends AbstractCuteNode implements Counter {
 				if (checker.check())
 					result++;
 			}
-			if (result != 0)
-				elementInfo.setSuccessfulResult();
-			else
-				elementInfo.setFailedResult();
+			elementInfo.setNumericResult(result);
 		}
 		return result;
 	}

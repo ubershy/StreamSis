@@ -99,10 +99,7 @@ public class RegionTargetCounter extends AbstractCuteNode implements Counter {
 			if (matchResult != null)
 				for (; matchResult.hasNext(); ++result)
 					matchResult.next();
-			if (result != 0)
-				elementInfo.setSuccessfulResult();
-			else
-				elementInfo.setFailedResult();
+			elementInfo.setNumericResult(result);
 		}
 		return result;
 	}

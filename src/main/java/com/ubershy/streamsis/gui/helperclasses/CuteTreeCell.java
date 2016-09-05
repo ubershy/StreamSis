@@ -17,27 +17,39 @@
  */
 package com.ubershy.streamsis.gui.helperclasses;
 
+import com.ubershy.streamsis.actions.Action;
+import com.ubershy.streamsis.checkers.Checker;
+import com.ubershy.streamsis.counters.Counter;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.contextmenu.TreeContextMenuBuilder;
 import com.ubershy.streamsis.project.CuteNode;
-import com.ubershy.streamsis.project.ElementInfo.ElementState;
+import com.ubershy.streamsis.project.ElementInfo;
+import com.ubershy.streamsis.project.ElementInfo.ElementHealth;
 import com.ubershy.streamsis.project.ElementInfo.Result;
 
+import de.jensd.fx.glyphs.GlyphsDude;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import javafx.animation.FillTransition;
+import javafx.animation.Interpolator;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 /**
  * A Tree Cell that contains {@link CuteNode}. <br>
@@ -48,85 +60,88 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 	/** The text field for editing the {@link CuteNode}'s name. */
 	private TextField textField;
 
-	/** The property linked to the {@link CuteNode}'s elementState. */
-	private ObjectProperty<ElementState> elementStateProperty = new SimpleObjectProperty<>(
-			ElementState.NEEDINIT);
+	/** The property linked to the {@link CuteNode}'s health. */
+	private ObjectProperty<ElementHealth> elementHealthProperty = new SimpleObjectProperty<>(
+			ElementHealth.HEALTHY);
+	
+	/**
+	 * The variable with unknown (empty) {@link Result} value. Only exist to not instantiate Result
+	 * each time.
+	 */
+	private ElementInfo.Result<Void> unknownResult = new ElementInfo.Result<Void>(null);
+	
+	/** The Color of {@link #resultLabel}, when the {@link Result} is unknown. */
+	private Color unknownResultColor = Color.HOTPINK;
 
 	/** The property linked to the {@link CuteNode}'s last result of working. */
-	private ObjectProperty<Result> lastResultProperty = new SimpleObjectProperty<>(Result.UNKNOWN);
+	private ObjectProperty<ElementInfo.Result<?>> lastResultProperty = new SimpleObjectProperty<>(
+			unknownResult);
 
-	/** The FAIL text used in {@link #result}. */
-	private final static String resultFailText = "F";
+	/** The FAIL icon for {@link Checker} used in {@link #resultLabel}. */
+	private Text resultFailTextForChecker = GlyphsDude.createIcon(FontAwesomeIcon.MINUS_SQUARE);
 
-	/** The UNKNOWN text used in {@link #result}. */
-	private final static String resultUnknownText = "-";
+	/** The SUCCESS icon for {@link Checker} used in {@link #resultLabel}. */
+	private Text resultSuccessTextForChecker = GlyphsDude.createIcon(FontAwesomeIcon.CHECK_SQUARE);
 
-	/** The READY elementState text used in {@link #elementState}. */
-	private final static String stateReadyText = "R";
+	/** The FAIL icon for {@link Action} used in {@link #resultLabel}. */
+	private Text resultFailTextForAction = GlyphsDude.createIcon(FontAwesomeIcon.MINUS_CIRCLE);
 
-	/** The NEEDINIT elementState text used in {@link #elementState}. */
-	private final static String stateNeedInitText = "N";
+	/** The SUCCESS icon for {@link Action} used in {@link #resultLabel}. */
+	private Text resultSuccessTextForAction = GlyphsDude.createIcon(FontAwesomeIcon.CHECK_CIRCLE);
 
-	/** The SUCCESS text used in {@link #result}. */
-	private final static String resultSuccessText = "S";
+	/** The PROCESSING icon for {@link Action} used in {@link #resultLabel}. */
+	private Text resultUnknownTextForAction = GlyphsDude.createIcon(FontAwesomeIcon.CIRCLE);
 
-	/** The WORKING elementState text used in {@link #elementState}. */
-	private final static String stateWorkingText = "W";
+	/** The UNKNOWN icon for {@link Checker} used in {@link #resultLabel}. */
+	private Text resultUnknownTextForChecker = GlyphsDude.createIcon(FontAwesomeIcon.SQUARE);
 
-	/** The Text representing current {@link ElementState} of {@link CuteNode} inside this cell. */
-	private final Text elementState = new Text(stateNeedInitText);
+	/** The UNKNOWN icon for {@link Counter} used in {@link #resultLabel}. */
+	private Text resultUnknownTextForCounter = GlyphsDude.createIcon(FontAwesomeIcon.TH_LARGE);
 
-	/** The Text representing last {@link Result} of {@link CuteNode} inside this cell. */
-	private final Text result = new Text(resultUnknownText);
+	/** The text with number used in {@link #resultLabel} for {@link Counter}. */
+	private Text numberResultText = new Text("0");
 
-	/** The Hbox with indicators: {@link #elementState} and {@link #result} inside this cell. */
-	private final HBox graphicBox = new HBox(elementState, result);
+	/** Simple animation for Action result icon for changing color from pink to green on success. */
+	FillTransition actionSuccessAnimation = new FillTransition(Duration.millis(300),
+			resultSuccessTextForAction, unknownResultColor, Color.DEEPSKYBLUE);
+	
+	/** Simple animation for Action result icon for changing color from pink to red on fail. */
+	FillTransition actionFailAnimation = new FillTransition(Duration.millis(300),
+			resultFailTextForAction, unknownResultColor, Color.RED);
+
+	/**
+	 * The Label with icon representing current {@link Result} of {@link CuteNode} inside this cell.
+	 */
+	private final Label resultLabel = new Label("");
 
 	/**
 	 * Instantiates a new CuteTree Cell.
 	 */
 	public CuteTreeCell() {
-		ChangeListener<ElementState> elementStateListener = new ChangeListener<ElementState>() {
-			@Override
-			public void changed(ObservableValue<? extends ElementState> observableValue,
-					ElementState oldElementState, ElementState newElementState) {
-				switch (newElementState) {
-				case NEEDINIT:
-					elementState.setText(stateNeedInitText);
-					break;
-				case READY:
-					elementState.setText(stateReadyText);
-					break;
-				case WORKING:
-					elementState.setText(stateWorkingText);
-					break;
-				default:
-					break;
-				}
-			}
-		};
-
-		ChangeListener<Result> lastResultListener = new ChangeListener<Result>() {
-			@Override
-			public void changed(ObservableValue<? extends Result> observableValue, Result oldResult,
-					Result newResult) {
-				switch (newResult) {
-				case FAIL:
-					result.setText(resultFailText);
-					break;
-				case SUCCESS:
-					result.setText(resultSuccessText);
-					break;
-				case UNKNOWN:
-					result.setText(resultUnknownText);
-					break;
-				default:
-					break;
-				}
-			}
-		};
-
-		elementStateProperty.addListener(elementStateListener);
+		setGraphicTextGap(1);
+		resultLabel.setScaleX(1.25);
+		resultLabel.setScaleY(1.25);
+		resultFailTextForChecker.setFill(Color.HOTPINK);
+		resultSuccessTextForChecker.setFill(Color.DEEPSKYBLUE);
+		resultUnknownTextForChecker.setFill(Color.HOTPINK);
+		resultFailTextForAction.setFill(Color.RED);
+		resultSuccessTextForAction.setFill(Color.DEEPSKYBLUE);
+		resultUnknownTextForAction.setFill(Color.HOTPINK);
+		resultUnknownTextForCounter.setFill(Color.HOTPINK);
+		actionSuccessAnimation.setInterpolator(Interpolator.DISCRETE);
+		actionFailAnimation.setInterpolator(Interpolator.DISCRETE);
+		numberResultText.setFill(Color.DEEPPINK);
+		numberResultText.setFont(Font.font(null, FontWeight.BOLD, 10));
+		resultLabel.setMinWidth(14);
+		ChangeListener<ElementHealth> elementHealthListener = (observableValue, oldElementHealth,
+				newElementHealth) -> Platform.runLater(() -> {
+					refreshResultIconBasedOnHealth(newElementHealth);
+				});
+		ChangeListener<Result<?>> lastResultListener = (observableValue, oldResult,
+				newResult) -> Platform.runLater(() -> {
+					refreshResultIconBasedOnResult(newResult);
+				});
+		elementHealthProperty.addListener(elementHealthListener);
 		lastResultProperty.addListener(lastResultListener);
 	}
 
@@ -134,8 +149,8 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 	public void updateItem(CuteNode item, boolean empty) {
 		super.updateItem(item, empty);
 		if (empty) {
-			elementStateProperty.unbind();
 			lastResultProperty.unbind();
+			elementHealthProperty.unbind();
 			textProperty().unbind();
 			setText(null);
 			setGraphic(null);
@@ -143,8 +158,8 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 			setTooltip(null);
 		} else {
 			if (isEditing()) {
-				elementStateProperty.unbind();
 				lastResultProperty.unbind();
+				elementHealthProperty.unbind();
 				if (textField != null) {
 					textField.setText(getString());
 				}
@@ -152,9 +167,11 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 				setText(null);
 				setGraphic(textField);
 			} else {
-				elementStateProperty.bind(item.getElementInfo().elementStateProperty());
+				refreshResultIconBasedOnResult(item.getElementInfo().lastResultProperty().get());
+				refreshResultIconBasedOnHealth(item.getElementInfo().elementHealthProperty().get());
 				lastResultProperty.bind(item.getElementInfo().lastResultProperty());
-				setGraphic(graphicBox);
+				elementHealthProperty.bind(item.getElementInfo().elementHealthProperty());
+				setGraphic(resultLabel);
 				textProperty().bind(getNameBinding(item));
 				Tooltip tooltip = new Tooltip(item.getElementInfo().getUnhealthyMessage());
 				setTooltip(tooltip);
@@ -171,15 +188,138 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 		}
 	}
 
+	/**
+	 * Set coloring behavior for the result icon based on {@link CuteNode}'s Health.
+	 * 
+	 * @param color
+	 */
+	private void refreshResultIconBasedOnHealth(ElementHealth currentHealth) {
+		switch (currentHealth) {
+		case BROKEN:
+			setTextColorForUnknownResult(Color.INDIGO);
+			refreshResultIconBasedOnResult(unknownResult);
+			return;
+		case SICK:
+			setTextColorForUnknownResult(Color.GOLDENROD);
+			refreshResultIconBasedOnResult(unknownResult);
+			return;
+		case HEALTHY:
+			setTextColorForUnknownResult(Color.HOTPINK);
+			return;
+		default:
+			throw new RuntimeException("Unknown Health value");
+		}
+	}
+
+	/**
+	 * Set Color for the result icon when the result of {@link CuteNode} is unknown.
+	 * 
+	 * @param color
+	 */
+	private void setTextColorForUnknownResult(Color color) {
+		unknownResultColor = color;
+		actionSuccessAnimation.setFromValue(unknownResultColor);
+		actionFailAnimation.setFromValue(unknownResultColor);
+		if (!resultUnknownTextForCounter.getFill().equals(color))
+			resultUnknownTextForCounter.setFill(color);
+		if (!resultUnknownTextForChecker.getFill().equals(color))
+			resultUnknownTextForChecker.setFill(color);
+		if (!resultUnknownTextForAction.getFill().equals(color))
+			resultUnknownTextForAction.setFill(color);
+	}
+	
+	/**
+	 * Process result to change {@link #resultLabel} view.
+	 *
+	 * @param newResult the new result
+	 */
+	private void refreshResultIconBasedOnResult(Result<?> newResult) {
+		CuteNode currentElement = getItem();
+		if (currentElement instanceof Checker) {
+			processResultForChecker(newResult);
+		} else if (currentElement instanceof Counter) {
+			processResultForCounter(newResult);
+		} else if (currentElement instanceof Action) {
+			processResultForAction(newResult);
+		} else if (currentElement == null) {
+			return;
+		} else {
+			throw new RuntimeException("Unknown CuteNode type");
+		}
+	}
+
+	/**
+	 * Process result for Checker to change {@link #resultLabel} view.
+	 *
+	 * @param newResult the new result
+	 */
+	private void processResultForChecker(Result<?> newResult) {
+		Object object = newResult.get();
+		if (object == null) {
+			resultLabel.setGraphic(resultUnknownTextForChecker);
+			return;
+		}
+		if (object instanceof Boolean) {
+			Boolean bool = (Boolean) object;
+			if (bool) {
+				resultLabel.setGraphic(resultSuccessTextForChecker);
+			} else {
+				resultLabel.setGraphic(resultFailTextForChecker);
+			}
+		}
+	}
+
+	/**
+	 * Process result for Counter to change {@link #resultLabel} view.
+	 *
+	 * @param newResult the new result
+	 */
+	private void processResultForCounter(Result<?> newResult) {
+		Object object = newResult.get();
+		if (object == null) {
+			resultLabel.setGraphic(resultUnknownTextForCounter);
+			return;
+		}
+		if (object instanceof Integer) {
+			Integer number = (Integer) object;
+			numberResultText.setText(number.toString());
+			resultLabel.setGraphic(numberResultText);
+		}
+	}
+
+	/**
+	 * Process result for Action to change {@link #resultLabel} view.
+	 *
+	 * @param newResult the new result
+	 */
+	private void processResultForAction(Result<?> newResult) {
+		Object object = newResult.get();
+		if (object == null) {
+			resultLabel.setGraphic(resultUnknownTextForAction);
+			return;
+		}
+		if (object instanceof Boolean) {
+			Boolean bool = (Boolean) object;
+			// Actions are usually rarely and quickly executed, so let's play animation to make
+			// it easy for the user to notice the change in execution state.
+			if (bool) {
+				resultLabel.setGraphic(resultSuccessTextForAction);
+				actionSuccessAnimation.playFromStart();
+			} else {
+				resultLabel.setGraphic(resultFailTextForAction);
+				actionFailAnimation.playFromStart();
+			}
+		}
+	}
+
 	@Override
 	public void startEdit() {
 		super.startEdit();
-
 		if (textField == null) {
 			createTextField();
 		}
-		elementStateProperty.unbind();
 		lastResultProperty.unbind();
+		elementHealthProperty.unbind();
 		textProperty().unbind();
 		setText(null);
 		setGraphic(textField);
@@ -189,11 +329,11 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 	@Override
 	public void cancelEdit() {
 		super.cancelEdit();
-		elementStateProperty.bind(getItem().getElementInfo().elementStateProperty());
 		lastResultProperty.bind(getItem().getElementInfo().lastResultProperty());
+		elementHealthProperty.bind(getItem().getElementInfo().elementHealthProperty());
 		textProperty().bind(getNameBinding(getItem()));
 		// setGraphic(getTreeItem().getGraphic());
-		setGraphic(graphicBox);
+		setGraphic(resultLabel);
 	}
 
 	private void createTextField() {

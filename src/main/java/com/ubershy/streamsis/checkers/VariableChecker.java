@@ -85,10 +85,7 @@ public class VariableChecker extends AbstractCuteNode implements Checker {
 							+ expectedValue + "'. Current Value: '" + currentValue + "'");
 				}
 			}
-			if (result)
-				elementInfo.setSuccessfulResult();
-			else
-				elementInfo.setFailedResult();
+			elementInfo.setBooleanResult(result);
 		}
 		previousResult = result;
 		return result;

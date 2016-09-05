@@ -103,10 +103,7 @@ public class RelationToConstantNumberChecker extends AbstractRelationToNumberChe
 				result = (count >= compareNumber);
 				break;
 			}
-			if (result)
-				elementInfo.setSuccessfulResult();
-			else
-				elementInfo.setFailedResult();
+			elementInfo.setBooleanResult(result);
 		}
 		return result;
 	}

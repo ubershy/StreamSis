@@ -90,8 +90,7 @@ public class SoundAction extends AbstractCuteNode implements Action {
 	public void execute() {
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
-			play();
-			elementInfo.setSuccessfulResult();
+			elementInfo.setBooleanResult(play());
 		}
 	}
 
@@ -144,15 +143,17 @@ public class SoundAction extends AbstractCuteNode implements Action {
 	/**
 	 * Play sound.
 	 */
-	protected void play() {
+	protected boolean play() {
 		double globalVolume = CuteConfig.getDouble(CuteConfig.CUTE, "GlobalVolume");
 		if (soundToPlay != null) {
 			soundToPlay.setVolume(volume * globalVolume);
 			soundToPlay.play();
 			logger.info(String.format("Playing(%.2f): %s", soundToPlay.getVolume(),
 					Paths.get(URI.create(soundToPlay.getSource()))));
+			return true;
 		} else {
 			logger.error("Can't play the sound. AudioClip is not defined.");
+			return false;
 		}
 	}
 

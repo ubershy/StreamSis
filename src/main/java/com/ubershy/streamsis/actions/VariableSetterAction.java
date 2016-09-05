@@ -67,8 +67,13 @@ public class VariableSetterAction extends AbstractCuteNode implements Action {
 		if (elementInfo.canWork()) {
 			logger.info("Set Variable(key): '" + key + "' to Value: '" + value + "'");
 			elementInfo.setAsWorking();
-			UserVars.set(key, value);
-			elementInfo.setSuccessfulResult();
+			if (UserVars.get(key).equals(value)) {
+				// Such key already has this value, set false result
+				elementInfo.setBooleanResult(false);
+			} else {
+				UserVars.set(key, value);
+				elementInfo.setBooleanResult(true);
+			}
 		}
 	}
 

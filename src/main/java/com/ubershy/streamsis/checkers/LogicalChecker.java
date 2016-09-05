@@ -202,10 +202,7 @@ public class LogicalChecker extends AbstractCuteNode implements Checker {
 				result = getSUBResult();
 				break;
 			}
-			if (result)
-				elementInfo.setSuccessfulResult();
-			else
-				elementInfo.setFailedResult();
+			elementInfo.setBooleanResult(result);
 		}
 		return result;
 	}

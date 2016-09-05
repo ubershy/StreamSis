@@ -193,11 +193,7 @@ public class RunProgramAction extends AbstractCuteNode implements Action {
 				}
 			}
 			if (!skipSettingStatus) {
-				if (success) {
-					elementInfo.setSuccessfulResult();
-				} else {
-					elementInfo.setFailedResult();
-				}
+				elementInfo.setBooleanResult(success);
 			}
 		}
 	}

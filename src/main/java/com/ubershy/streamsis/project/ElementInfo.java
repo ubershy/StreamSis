@@ -108,12 +108,6 @@ public class ElementInfo {
 	public enum ElementState {
 
 		/**
-		 * Indicates that the {@link CuteElement} need to be initialized by
-		 * {@link CuteElement#init()} before it can work.
-		 */
-		NEEDINIT("Element needs initialization"),
-
-		/**
 		 * Indicates that the {@link CuteElement} is ready to work.
 		 */
 		READY("Element is ready"),
@@ -139,36 +133,18 @@ public class ElementInfo {
 		}
 	};
 
-	/**
-	 * The Enum with information about the {@link CuteElement}'s last result of working.
-	 */
-	public enum Result {
-		/**
-		 * Indicates that after the {@link CuteElement} has finished working, it got
-		 * unsatisfying/zero result. <br>
-		 */
-		FAIL("Last result: FAIL"),
+	/** The class for providing results of different types. */
+	public static class Result<T> {
+		private T value;
 
-		/**
-		 * Indicates that after the {@link CuteElement} has finished working, it got
-		 * satisfying/non-zero result.
-		 */
-		SUCCESS("Last result: SUCCESS"),
-		
-		/**
-		 * Indicates that {@link CuteElement} don't have the result yet or it's still unknown.
-		 */
-		UNKNOWN("Last result: UNKNOWN");
-		private String value;
-
-		private Result(String value) {
+		public Result(T value) {
 			this.value = value;
 		}
 
-		public String toString() {
+		public T get() {
 			return value;
 		}
-	};
+	}
 
 	static final Logger logger = LoggerFactory.getLogger(ElementInfo.class);
 
@@ -190,16 +166,20 @@ public class ElementInfo {
 	/** The property describing {@link CuteElement}'s state. */
 	@JsonIgnore
 	private ObjectProperty<ElementState> elementStateProperty = new SimpleObjectProperty<>(
-			ElementState.NEEDINIT);
+			ElementState.READY);
 
 	/** The property describing {@link CuteElement}'s health. */
 	@JsonIgnore
 	private ObjectProperty<ElementHealth> elementHealthProperty = new SimpleObjectProperty<>(
 			ElementHealth.HEALTHY);
 
+	/** The constant representing empty or unknown result. */
+	private final Result<Void> unknownResult = new Result<Void>(null);
+
 	/** The property describing {@link CuteElement}'s last result of working. */
 	@JsonIgnore
-	private ObjectProperty<Result> lastResultProperty = new SimpleObjectProperty<>(Result.UNKNOWN);
+	private ObjectProperty<Result<?>> lastResultProperty = new SimpleObjectProperty<>(
+			unknownResult);
 
 	/** The reason why the {@link CuteElement} is unhealthy and can't work properly. */
 	@JsonIgnore
@@ -239,7 +219,6 @@ public class ElementInfo {
 	 * It is not able to work if any of these expressions are true:
 	 * <ul>
 	 * <li>CuteElement's health is {@link ElementHealth#BROKEN}</li>
-	 * <li>CuteElement's state is {@link ElementState#NEEDINIT}</li>
 	 * <li>CuteElement's state is {@link ElementState#WORKING}</li>
 	 * <li>CuteElement is not enabled (disabled by user)</li>
 	 * </ul>
@@ -247,9 +226,6 @@ public class ElementInfo {
 	 * @return true, if the object can work
 	 */
 	public boolean canWork() {
-		if (elementStateProperty.get().equals(ElementState.NEEDINIT)) {
-			return false;
-		}
 		if (elementHealthProperty.get().equals(ElementHealth.BROKEN)) {
 			return false;
 		}
@@ -336,19 +312,10 @@ public class ElementInfo {
 	 */
 	public void setAsBroken(String whyUnhealthy) {
 		elementHealthProperty.set(ElementHealth.BROKEN);
-		elementStateProperty.set(ElementState.NEEDINIT);
 		whyUnhealthyProperty.set(whyUnhealthy);
 		String name = (nameProperty.get().isEmpty()) ? "NONAME" : nameProperty.get();
 		logger.info("Name: '" + name + "' of type: '" + objectSimpleName + "' is broken: "
 				+ whyUnhealthy);
-	}
-
-	/**
-	 * Sets the CuteElement's last result as {@link Result#FAIL}.
-	 */
-	public void setFailedResult() {
-		lastResultProperty.set(Result.FAIL);
-		setAsFinished();
 	}
 
 	/**
@@ -385,15 +352,23 @@ public class ElementInfo {
 		elementHealthProperty.set(ElementHealth.SICK);
 		whyUnhealthyProperty.set(whyUnhealthy);
 		String name = (nameProperty.get().isEmpty()) ? "NONAME" : nameProperty.get();
-		logger.info(
-				"Name: '" + name + "' of type: '" + objectSimpleName + "' is sick: " + whyUnhealthy);
+		logger.info("Name: '" + name + "' of type: '" + objectSimpleName + "' is sick: "
+				+ whyUnhealthy);
 	}
 
 	/**
-	 * Sets the CuteElement's last result as {@link Result#SUCCESS}.
+	 * Sets the numeric result for {@link CuteElement}, also sets {@link ElementState} as Finished.
 	 */
-	public void setSuccessfulResult() {
-		lastResultProperty.set(Result.SUCCESS);
+	public void setNumericResult(int count) {
+		lastResultProperty.set(new Result<Integer>(count));
+		setAsFinished();
+	}
+
+	/**
+	 * Sets the boolean result for {@link CuteElement}, also sets {@link ElementState} as Finished.
+	 */
+	public void setBooleanResult(boolean bool) {
+		lastResultProperty.set(new Result<Boolean>(bool));
 		setAsFinished();
 	}
 
@@ -402,7 +377,7 @@ public class ElementInfo {
 	 * calculated.
 	 */
 	public void setUnknownResult() {
-		lastResultProperty.set(Result.UNKNOWN);
+		lastResultProperty.set(unknownResult);
 	}
 
 	/**
@@ -456,7 +431,7 @@ public class ElementInfo {
 	 *
 	 * @return the object property
 	 */
-	public ObjectProperty<Result> lastResultProperty() {
+	public ObjectProperty<Result<?>> lastResultProperty() {
 		return lastResultProperty;
 	}
 

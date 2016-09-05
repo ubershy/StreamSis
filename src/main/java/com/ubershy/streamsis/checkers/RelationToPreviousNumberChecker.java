@@ -99,10 +99,7 @@ public class RelationToPreviousNumberChecker extends AbstractRelationToNumberChe
 				break;
 			}
 			compareNumber = count;
-			if (result)
-				elementInfo.setSuccessfulResult();
-			else
-				elementInfo.setFailedResult();
+			elementInfo.setBooleanResult(result);
 		}
 		return result;
 	}

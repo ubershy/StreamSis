@@ -97,10 +97,7 @@ public class RegionChecker extends AbstractCuteNode implements Checker {
 			// highlight();
 			// }
 			result = (region.exists(targetPattern, 0) != null);
-			if (result)
-				elementInfo.setSuccessfulResult();
-			else
-				elementInfo.setFailedResult();
+			elementInfo.setBooleanResult(result);
 		}
 		return result;
 	}

@@ -60,10 +60,10 @@ public class SwitchSisSceneAction extends AbstractCuteNode implements Action {
 			elementInfo.setAsWorking();
 			// Lets not change SisScene without need
 			if (ProjectManager.getProject().getCurrentSisSceneName().equals(sisSceneName)) {
-				elementInfo.setFailedResult();
+				elementInfo.setBooleanResult(false);;
 			} else {
 				ProjectManager.getProject().switchSisSceneTo(sisSceneName);
-				elementInfo.setSuccessfulResult();
+				elementInfo.setBooleanResult(true);
 			}
 		}
 	}

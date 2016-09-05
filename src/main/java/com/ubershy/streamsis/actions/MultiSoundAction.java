@@ -100,12 +100,12 @@ public class MultiSoundAction extends SoundAction {
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
 			logger.info("Playing Source directory file № " + fileChooser.currentFileIndex);
-			play();
+			boolean wasAbleToPlay = play();
 			fileChooser.computeNextFileIndex();
 			File nextFileToPlay = fileChooser.temporarySourceFileList[fileChooser.currentFileIndex];
 			String nextSoundToPlay = nextFileToPlay.getPath();
 			soundToPlay = initializeSound(nextSoundToPlay);
-			elementInfo.setSuccessfulResult();
+			elementInfo.setBooleanResult(wasAbleToPlay);
 		}
 	}
 

@@ -109,7 +109,7 @@ public class ActorCell extends ListCell<Actor> {
 
 	/** The property linked to the {@link CuteNode}'s state. */
 	private ObjectProperty<ElementState> elementElementStateProperty = new SimpleObjectProperty<>(
-			ElementState.NEEDINIT);
+			ElementState.READY);
 
 	/** The property linked to the {@link CuteNode}'s health. */
 	private ObjectProperty<ElementHealth> elementHealthProperty = new SimpleObjectProperty<>(

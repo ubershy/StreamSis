@@ -84,7 +84,7 @@ public class ActorCheckerService extends javafx.concurrent.Service<Void> {
 							e.printStackTrace();
 						}
 					}
-					actor.getElementInfo().setSuccessfulResult();
+					actor.getElementInfo().setBooleanResult(true);
 				}
 				actor.getElementInfo().setAsReady();
 			}

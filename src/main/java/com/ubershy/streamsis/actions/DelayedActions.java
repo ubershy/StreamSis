@@ -72,11 +72,11 @@ public class DelayedActions extends AbstractCuteNode implements Action {
 					try {
 						Thread.sleep(delay);
 					} catch (InterruptedException e) {
-						elementInfo.setFailedResult();
+						elementInfo.setBooleanResult(false);
 						return;
 					}
 					onDelayedExecute();
-					elementInfo.setSuccessfulResult();
+					elementInfo.setBooleanResult(true);
 				}
 			}).start();
 		}
