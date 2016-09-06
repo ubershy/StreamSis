@@ -32,8 +32,6 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringExpression;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -172,7 +170,7 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 				lastResultProperty.bind(item.getElementInfo().lastResultProperty());
 				elementHealthProperty.bind(item.getElementInfo().elementHealthProperty());
 				setGraphic(resultLabel);
-				textProperty().bind(getNameBinding(item));
+				textProperty().bind(item.getElementInfo().nameProperty());
 				Tooltip tooltip = new Tooltip(item.getElementInfo().getUnhealthyMessage());
 				setTooltip(tooltip);
 				// if (getTreeItem() != null)
@@ -331,7 +329,7 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 		super.cancelEdit();
 		lastResultProperty.bind(getItem().getElementInfo().lastResultProperty());
 		elementHealthProperty.bind(getItem().getElementInfo().elementHealthProperty());
-		textProperty().bind(getNameBinding(getItem()));
+		textProperty().bind(getItem().getElementInfo().nameProperty());
 		// setGraphic(getTreeItem().getGraphic());
 		setGraphic(resultLabel);
 	}
@@ -368,11 +366,5 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 					numOfChildren);
 		}
 		return result;
-	}
-
-	private StringExpression getNameBinding(CuteNode node) {
-		String className = node.getClass().getSimpleName();
-		return Bindings.concat(node.getElementInfo().nameProperty()).concat(" (").concat(className)
-				.concat(")");
 	}
 }
