@@ -116,7 +116,7 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 	 * Instantiates a new CuteTree Cell.
 	 */
 	public CuteTreeCell() {
-		setGraphicTextGap(1);
+		setGraphicTextGap(6.0);
 		resultLabel.setScaleX(1.25);
 		resultLabel.setScaleY(1.25);
 		resultFailTextForChecker.setFill(Color.HOTPINK);

@@ -140,7 +140,7 @@ public class ActorCell extends ListCell<Actor> {
 	 */
 	public ActorCell() {
 		setMaxHeight(getHeight());
-		setGraphicTextGap(7.0);
+		setGraphicTextGap(6.0);
 		heart.setSmooth(false);
 		heartBeatTransition = new ScaleTransition(Duration.millis(150), heart);
 		heartBeatTransition.setToX(heartDefaultSize);

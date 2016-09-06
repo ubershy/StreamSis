@@ -58,6 +58,7 @@ public class SisSceneCell extends ListCell<SisScene> {
 	private Label primaryLabel = new Label();
 
 	public SisSceneCell() {
+		setGraphicTextGap(6.0);
 		primaryLabelIcon.setScaleX(1.25);
 		primaryLabelIcon.setScaleY(1.25);
 		primaryLabel.setMinWidth(14);
