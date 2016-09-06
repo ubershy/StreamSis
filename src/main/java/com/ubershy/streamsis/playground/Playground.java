@@ -20,6 +20,7 @@ package com.ubershy.streamsis.playground;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.TreeMap;
 
 import org.slf4j.Logger;
@@ -36,6 +37,7 @@ import com.ubershy.streamsis.actions.RunProgramAction;
 import com.ubershy.streamsis.actions.SwitchSisSceneAction;
 import com.ubershy.streamsis.actions.VariableSetterAction;
 import com.ubershy.streamsis.actions.VariableSwitchAction;
+import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.actors.ActorBuilder;
 import com.ubershy.streamsis.actors.UniversalActor;
 import com.ubershy.streamsis.checkers.AbstractRelationToNumberChecker.BooleanNumberOperator;
@@ -45,10 +47,12 @@ import com.ubershy.streamsis.checkers.LogicalChecker;
 import com.ubershy.streamsis.checkers.RegionChecker;
 import com.ubershy.streamsis.checkers.RelationToPreviousNumberChecker;
 import com.ubershy.streamsis.counters.TrueCheckerCounter;
+import com.ubershy.streamsis.project.CuteNode;
 import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.ProjectSerializator;
 import com.ubershy.streamsis.project.SisScene;
 
+import javafx.collections.ObservableList;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -126,6 +130,8 @@ public final class Playground {
 		uniTestActor.setChecker(checker1);
 
 		project.addActorToGlobalActors(uniTestActor);
+		
+		setRandomNamesForCheckersActionsCountersInProject(project);
 
 		String[] testActors = new String[] { "UniTestActor" };
 		SisScene testSisScene = new SisScene("testSisScene", testActors);
@@ -380,6 +386,8 @@ public final class Playground {
 		project.addActorToGlobalActors(changeCTActor);
 		project.addActorToGlobalActors(poorActor);
 		project.addActorToGlobalActors(physicalActor);
+		
+		setRandomNamesForCheckersActionsCountersInProject(project);
 
 		// String[] testActors = new String[] { "UniTest"};
 		String[] menuActors = new String[] { "Lobby", "Menu", "ChangeMenu", "ChangeT", "Poor Actor",
@@ -423,5 +431,37 @@ public final class Playground {
 			e.printStackTrace();
 		}
 	}
+	
+	private static void setRandomNamesForCheckersActionsCountersInProject(CuteProject project) {
+		for (Actor actor : project.getGlobalActors()) {
+			setRandomNameForCuteNodeRecursively(actor.getChecker());
+			for (Action action : actor.getOnActions()) {
+				setRandomNameForCuteNodeRecursively(action);
+			}
+			for (Action action : actor.getOffActions()) {
+				setRandomNameForCuteNodeRecursively(action);
+			}
+		}
+	}
+	
+	private static void setRandomNameForCuteNodeRecursively(CuteNode node) {
+		if (node != null) {
+			setRandomNameForCuteNode(node);
+			ObservableList<CuteNode> children = node.getChildren();
+			if (children != null) {
+				for(CuteNode subNode : children) {
+					setRandomNameForCuteNode(subNode);
+				}
+			}
+		}
+	}
 
+	private static void setRandomNameForCuteNode(CuteNode node) {
+		if (node != null) {
+			String firstPart = node.getClass().getSimpleName();
+			String secondPart = String.valueOf((new Random().nextInt(10000)));
+			node.getElementInfo().setName(firstPart+secondPart);
+		}
+	}
+	
 }
