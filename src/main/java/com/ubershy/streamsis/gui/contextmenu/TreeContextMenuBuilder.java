@@ -59,14 +59,6 @@ public class TreeContextMenuBuilder {
 			"com.ubershy.streamsis.counters", Counter.class);
 
 	/**
-	 * The enumeration of possible options for builder for generating "Move up" and "Move down"
-	 * MenuItems.
-	 */
-	private enum MoveOption {
-		ONLYUP, ONLYDOWN, UPANDDOWN, NONE;
-	}
-
-	/**
 	 * Creates the {@link ContextMenu} for the chosen {@link CuteTreeCell}.
 	 *
 	 * @param treeCell
@@ -106,31 +98,31 @@ public class TreeContextMenuBuilder {
 
 		// Let's determine where the Item can move.
 		// By default let's have ability to move in both directions.
-		MoveOption canMove = MoveOption.UPANDDOWN;
+		PossibleMoves possibleMoves = PossibleMoves.UPORDOWN;
 		TreeItem<CuteNode> treeItem = treeCell.getTreeItem();
 		int treeItemIndex = treeItem.getParent().getChildren().indexOf(treeItem);
-		int siblingsNumber = treeItem.getParent().getChildren().size();
-		if (siblingsNumber != 1) {
+		int sizeOfList = treeItem.getParent().getChildren().size();
+		if (sizeOfList != 1) {
 			if (treeItemIndex == 0)
-				canMove = MoveOption.ONLYDOWN;
-			if (treeItemIndex == siblingsNumber - 1)
-				canMove = MoveOption.ONLYUP;
+				possibleMoves = PossibleMoves.ONLYDOWN;
+			if (treeItemIndex == sizeOfList - 1)
+				possibleMoves = PossibleMoves.ONLYUP;
 		} else {
-			canMove = MoveOption.NONE;
+			possibleMoves = PossibleMoves.NOWHERE;
 		}
 
-		// Lets add all MenuItems to Context Menu
+		// Let's add all MenuItems to Context Menu
 		if (canChildrenBeAdded(cuteNode)) {
 			cm.getItems().add(generateNewCuteNodeMenu(cuteNode));
 		}
-		if (!canMove.equals(MoveOption.NONE)) {
-			if (canMove.equals(MoveOption.UPANDDOWN)) {
+		if (!possibleMoves.equals(PossibleMoves.NOWHERE)) {
+			if (possibleMoves.equals(PossibleMoves.UPORDOWN)) {
 				cm.getItems().add(moveUpMenuItem);
 				cm.getItems().add(moveDownMenuItem);
 			} else {
-				if (canMove.equals(MoveOption.ONLYUP))
+				if (possibleMoves.equals(PossibleMoves.ONLYUP))
 					cm.getItems().add(moveUpMenuItem);
-				if (canMove.equals(MoveOption.ONLYDOWN))
+				if (possibleMoves.equals(PossibleMoves.ONLYDOWN))
 					cm.getItems().add(moveDownMenuItem);
 			}
 		}

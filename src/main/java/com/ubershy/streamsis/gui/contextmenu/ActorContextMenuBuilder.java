@@ -55,7 +55,7 @@ public final class ActorContextMenuBuilder {
 		return cm;
 	}
 
-	public static ContextMenu createActorItemContextMenu(int upDownOption) {
+	public static ContextMenu createActorItemContextMenu(PossibleMoves possibleMoves) {
 		CuteProject project = ProjectManager.getProject();
 		ListView<Actor> actorList = GUIManager.actorList;
 		ContextMenu cm = new ContextMenu();
@@ -63,9 +63,9 @@ public final class ActorContextMenuBuilder {
 				"Delete the Actor from the SisScene.\nActor will be still accessible for reuse in other SisScenes.");
 		CustomMenuItem deleteActorGloballyMenuItem = GUIUtil.createTooltipedMenuItem("Delete globally",
 				"Delete the Actor completely.\nActor will be deleted globally from all SisScenes and without recovery.");
-		CustomMenuItem moveUpActorMenuItem = GUIUtil.createTooltipedMenuItem("Move up",
+		CustomMenuItem moveUpActorMenuItem = GUIUtil.createTooltipedMenuItem("Move Up",
 				"The order of Actors doesn't matter.\nBut you can still move them around if you want. ;)");
-		CustomMenuItem moveDownActorMenuItem = GUIUtil.createTooltipedMenuItem("Move down",
+		CustomMenuItem moveDownActorMenuItem = GUIUtil.createTooltipedMenuItem("Move Down",
 				"The order of Actors doesn't matter.\nBut you can still move them around if you want. ;)");
 		deleteActorMenuItem.setOnAction((ActionEvent event) -> {
 			Actor actor = actorList.getSelectionModel().getSelectedItem();
@@ -83,11 +83,19 @@ public final class ActorContextMenuBuilder {
 			Actor actor = actorList.getSelectionModel().getSelectedItem();
 			project.moveDownActorInSisScene(actor);
 		});
-		if (upDownOption != 3) {
-			if (upDownOption != 1)
-				cm.getItems().add(moveUpActorMenuItem);
-			if (upDownOption != 2)
-				cm.getItems().add(moveDownActorMenuItem);
+		switch (possibleMoves) {
+		case NOWHERE:
+			break;
+		case ONLYDOWN:
+			cm.getItems().add(moveDownActorMenuItem);
+			break;
+		case ONLYUP:
+			cm.getItems().add(moveUpActorMenuItem);
+			break;
+		case UPORDOWN:
+			cm.getItems().add(moveUpActorMenuItem);
+			cm.getItems().add(moveDownActorMenuItem);
+			break;
 		}
 		cm.getItems().addAll(deleteActorGloballyMenuItem, deleteActorMenuItem);
 		cm.autoHideProperty().set(true);

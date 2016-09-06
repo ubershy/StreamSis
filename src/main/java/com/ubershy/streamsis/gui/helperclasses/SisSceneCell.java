@@ -18,8 +18,8 @@
 package com.ubershy.streamsis.gui.helperclasses;
 
 import com.ubershy.streamsis.gui.GUIManager;
+import com.ubershy.streamsis.gui.contextmenu.PossibleMoves;
 import com.ubershy.streamsis.gui.contextmenu.SisSceneContextMenuBuilder;
-import com.ubershy.streamsis.gui.contextmenu.SisSceneContextMenuBuilder.PossibleMoves;
 import com.ubershy.streamsis.project.SisScene;
 
 import de.jensd.fx.glyphs.GlyphsDude;
@@ -98,7 +98,6 @@ public class SisSceneCell extends ListCell<SisScene> {
 						possibleMoves = PossibleMoves.ONLYUP;
 				} else {
 					possibleMoves = PossibleMoves.NOWHERE;
-					;
 				}
 				setContextMenu(
 						SisSceneContextMenuBuilder.createSisSceneItemContextMenu(possibleMoves));

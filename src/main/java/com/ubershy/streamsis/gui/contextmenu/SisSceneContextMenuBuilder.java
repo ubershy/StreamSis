@@ -30,17 +30,6 @@ import javafx.scene.control.ListView;
 
 public class SisSceneContextMenuBuilder {
 
-	public enum PossibleMoves {
-		/** Tells that SisScene can move only up in list (for the last item in list). */
-		ONLYUP,
-		/** Tells that SisScene can move only down in list (for the first item in list). */
-		ONLYDOWN,
-		/** Tells that SisScene can move up/down in list (for the item in between other items). */
-		UPORDOWN,
-		/** Tells that SisScene can't move in list (for the single item in list). */
-		NOWHERE;
-	}
-
 	public static ContextMenu createSisSceneListContextMenu() {
 		ContextMenu cm = new ContextMenu();
 		CustomMenuItem addSisSceneMenuItem = GUIUtil.createTooltipedMenuItem("Add new",
@@ -64,9 +53,9 @@ public class SisSceneContextMenuBuilder {
 		CustomMenuItem deleteSisSceneWithActorsMenuItem = GUIUtil.createTooltipedMenuItem(
 				"Delete with Actors",
 				"Delete the SisScene and Actors.\nActors will be deleted globally from this and all others SisScenes without recovery.");
-		CustomMenuItem moveUpSisSceneMenuItem = GUIUtil.createTooltipedMenuItem("Move up",
+		CustomMenuItem moveUpSisSceneMenuItem = GUIUtil.createTooltipedMenuItem("Move Up",
 				"The order of SisScenes doesn't matter.\nBut you can still move them around if you want. ;)");
-		CustomMenuItem moveDownSisSceneMenuItem = GUIUtil.createTooltipedMenuItem("Move down",
+		CustomMenuItem moveDownSisSceneMenuItem = GUIUtil.createTooltipedMenuItem("Move Down",
 				"The order of SisScenes doesn't matter.\nBut you can still move them around if you want. ;)");
 		deleteSisSceneMenuItem.setOnAction((ActionEvent event) -> {
 			project.removeSisScene(sisSceneList.getSelectionModel().getSelectedItem());

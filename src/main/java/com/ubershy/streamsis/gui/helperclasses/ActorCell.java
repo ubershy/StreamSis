@@ -25,6 +25,7 @@ import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.contextmenu.ActorContextMenuBuilder;
+import com.ubershy.streamsis.gui.contextmenu.PossibleMoves;
 import com.ubershy.streamsis.project.CuteNode;
 import com.ubershy.streamsis.project.ElementInfo.ElementHealth;
 import com.ubershy.streamsis.project.ElementInfo.ElementState;
@@ -285,18 +286,18 @@ public class ActorCell extends ListCell<Actor> {
 				isSwitchOnProperty.bind(item.isSwitchOnProperty());
 				elementHealthProperty.bind(item.getElementInfo().elementHealthProperty());
 				// refreshHeartStyle();
-				int contextMenuOption = 0;
-				int siblingsNumber = getListView().getItems().size();
-				if (siblingsNumber != 1) {
+				PossibleMoves possibleMoves = PossibleMoves.UPORDOWN;
+				int sizeOfList = getListView().getItems().size();
+				if (sizeOfList != 1) {
 					if (getIndex() == 0)
-						contextMenuOption = 1;
-					if (getIndex() == siblingsNumber - 1)
-						contextMenuOption = 2;
+						possibleMoves = PossibleMoves.ONLYDOWN;
+					if (getIndex() == sizeOfList - 1)
+						possibleMoves = PossibleMoves.ONLYUP;
 				} else {
-					contextMenuOption = 3;
+					possibleMoves = PossibleMoves.NOWHERE;
 				}
 				setContextMenu(
-						ActorContextMenuBuilder.createActorItemContextMenu(contextMenuOption));
+						ActorContextMenuBuilder.createActorItemContextMenu(possibleMoves));
 				setOnMouseClicked(new EventHandler<MouseEvent>() {
 					@Override
 					public void handle(MouseEvent event) {
