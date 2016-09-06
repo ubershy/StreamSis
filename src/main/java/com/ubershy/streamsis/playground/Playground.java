@@ -130,7 +130,7 @@ public final class Playground {
 		String[] testActors = new String[] { "UniTestActor" };
 		SisScene testSisScene = new SisScene("testSisScene", testActors);
 		project.addSisScene(testSisScene);
-		project.setDefaultSisSceneName("testSisScene");
+		project.setPrimarySisSceneName("testSisScene");
 
 		String pathWhereToSave = LowLevel.getAppDataPath() + "generatedTestProjects"
 				+ File.separator + "testProjectSerialized.streamsis";
@@ -412,7 +412,7 @@ public final class Playground {
 		project.addSisScene(changeTeamSisScene);
 		project.addSisScene(testingStuffSisScene);
 
-		project.setDefaultSisSceneName("menuSisScene");
+		project.setPrimarySisSceneName("menuSisScene");
 
 		String pathWhereToSave = LowLevel.getAppDataPath() + "generatedTestProjects"
 				+ File.separator + "uniDefaultProjectSerialized.streamsis";

@@ -30,9 +30,21 @@ import javafx.scene.control.ListView;
 
 public class SisSceneContextMenuBuilder {
 
+	public enum PossibleMoves {
+		/** Tells that SisScene can move only up in list (for the last item in list). */
+		ONLYUP,
+		/** Tells that SisScene can move only down in list (for the first item in list). */
+		ONLYDOWN,
+		/** Tells that SisScene can move up/down in list (for the item in between other items). */
+		UPORDOWN,
+		/** Tells that SisScene can't move in list (for the single item in list). */
+		NOWHERE;
+	}
+
 	public static ContextMenu createSisSceneListContextMenu() {
 		ContextMenu cm = new ContextMenu();
-		CustomMenuItem addSisSceneMenuItem = GUIUtil.createTooltipedMenuItem("Add new", "Add new SisScene in which you can add Actors later.");
+		CustomMenuItem addSisSceneMenuItem = GUIUtil.createTooltipedMenuItem("Add new",
+				"Add new SisScene in which you can add Actors later.");
 		addSisSceneMenuItem.setOnAction((ActionEvent event) -> {
 			GUIUtil.addNewSisScene();
 		});
@@ -41,16 +53,17 @@ public class SisSceneContextMenuBuilder {
 		return cm;
 	}
 
-	public static ContextMenu createSisSceneItemContextMenu(int upDownOption) {
+	public static ContextMenu createSisSceneItemContextMenu(PossibleMoves possibleMoves) {
 		CuteProject project = ProjectManager.getProject();
 		ListView<SisScene> sisSceneList = GUIManager.sisSceneList;
 		ContextMenu cm = new ContextMenu();
-		CustomMenuItem setDefaultSisSceneMenuItem = GUIUtil.createTooltipedMenuItem("Set as Default SisScene",
-				"Default SisScene starts first when you start Project.");
+		CustomMenuItem setPrimarySisSceneMenuItem = GUIUtil.createTooltipedMenuItem(
+				"Set as Primary SisScene", "Primary SisScene starts first when you start Project.");
 		CustomMenuItem deleteSisSceneMenuItem = GUIUtil.createTooltipedMenuItem("Delete",
 				"Delete the SisScene. Actors that were inside of it will be still accessible for reuse.");
-		CustomMenuItem deleteSisSceneWithActorsMenuItem = GUIUtil.createTooltipedMenuItem("Delete with Actors",
-				"Delete the SisScene and Actors.\nActors will be deleted globally from all SisScenes and without recovery.");
+		CustomMenuItem deleteSisSceneWithActorsMenuItem = GUIUtil.createTooltipedMenuItem(
+				"Delete with Actors",
+				"Delete the SisScene and Actors.\nActors will be deleted globally from this and all others SisScenes without recovery.");
 		CustomMenuItem moveUpSisSceneMenuItem = GUIUtil.createTooltipedMenuItem("Move up",
 				"The order of SisScenes doesn't matter.\nBut you can still move them around if you want. ;)");
 		CustomMenuItem moveDownSisSceneMenuItem = GUIUtil.createTooltipedMenuItem("Move down",
@@ -61,8 +74,9 @@ public class SisSceneContextMenuBuilder {
 		deleteSisSceneWithActorsMenuItem.setOnAction((ActionEvent event) -> {
 			project.removeSisSceneWithActors(sisSceneList.getSelectionModel().getSelectedItem());
 		});
-		setDefaultSisSceneMenuItem.setOnAction((ActionEvent event) -> {
-			project.setDefaultSisSceneName(sisSceneList.getSelectionModel().getSelectedItem().getElementInfo().getName());
+		setPrimarySisSceneMenuItem.setOnAction((ActionEvent event) -> {
+			project.setPrimarySisSceneName(
+					sisSceneList.getSelectionModel().getSelectedItem().getElementInfo().getName());
 		});
 		moveUpSisSceneMenuItem.setOnAction((ActionEvent event) -> {
 			project.moveUpSisScene(sisSceneList.getSelectionModel().getSelectedItem());
@@ -70,13 +84,22 @@ public class SisSceneContextMenuBuilder {
 		moveDownSisSceneMenuItem.setOnAction((ActionEvent event) -> {
 			project.moveDownSisScene(sisSceneList.getSelectionModel().getSelectedItem());
 		});
-		if (upDownOption != 3) {
-			if (upDownOption != 1)
-				cm.getItems().add(moveUpSisSceneMenuItem);
-			if (upDownOption != 2)
-				cm.getItems().add(moveDownSisSceneMenuItem);
+		switch (possibleMoves) {
+		case NOWHERE:
+			break;
+		case ONLYDOWN:
+			cm.getItems().add(moveDownSisSceneMenuItem);
+			break;
+		case ONLYUP:
+			cm.getItems().add(moveUpSisSceneMenuItem);
+			break;
+		case UPORDOWN:
+			cm.getItems().add(moveUpSisSceneMenuItem);
+			cm.getItems().add(moveDownSisSceneMenuItem);
+			break;
 		}
-		cm.getItems().addAll(setDefaultSisSceneMenuItem, deleteSisSceneWithActorsMenuItem, deleteSisSceneMenuItem);
+		cm.getItems().addAll(setPrimarySisSceneMenuItem, deleteSisSceneWithActorsMenuItem,
+				deleteSisSceneMenuItem);
 		cm.autoHideProperty().set(true);
 		return cm;
 	}

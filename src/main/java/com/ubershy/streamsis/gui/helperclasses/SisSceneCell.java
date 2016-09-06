@@ -19,21 +19,26 @@ package com.ubershy.streamsis.gui.helperclasses;
 
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.contextmenu.SisSceneContextMenuBuilder;
+import com.ubershy.streamsis.gui.contextmenu.SisSceneContextMenuBuilder.PossibleMoves;
 import com.ubershy.streamsis.project.SisScene;
+
+import de.jensd.fx.glyphs.GlyphsDude;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+
 import com.ubershy.streamsis.project.ProjectManager;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.text.Text;
 
 /**
  * SisScene Cell. <br>
@@ -44,19 +49,24 @@ public class SisSceneCell extends ListCell<SisScene> {
 	/** The text field for editing the SisScene's name. */
 	private TextField textField;
 
-	private StringProperty defaultSisSceneName = new SimpleStringProperty();
+	private StringProperty primarySisSceneName = new SimpleStringProperty();
+
+	/** The icon for {@link SisScene} used in {@link #primaryLabel}. */
+	private Text primaryLabelIcon = GlyphsDude.createIcon(FontAwesomeIcon.FILM);
+
+	/** The Label that indicates if {@link SisScene} primary or not by the color of it's shadow. */
+	private Label primaryLabel = new Label();
 
 	public SisSceneCell() {
-		defaultSisSceneName.bind(ProjectManager.getProject().defaultSisSceneNameProperty());
-
-		ChangeListener<String> defaultSisSceneListener = new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue,
-					String newValue) {
-				checkIfDefaultAndApplyStyle(newValue);
-			}
-		};
-		defaultSisSceneName.addListener(defaultSisSceneListener);
+		primaryLabelIcon.setScaleX(1.25);
+		primaryLabelIcon.setScaleY(1.25);
+		primaryLabel.setMinWidth(14);
+		primaryLabel.setGraphic(primaryLabelIcon);
+		setGraphic(primaryLabel);
+		primarySisSceneName.bind(ProjectManager.getProject().primarySisSceneNameProperty());
+		ChangeListener<String> defaultSisSceneListener = (observable, oldValue,
+				newValue) -> checkIfDefaultAndApplyStyle(newValue);
+		primarySisSceneName.addListener(defaultSisSceneListener);
 	}
 
 	@Override
@@ -77,29 +87,25 @@ public class SisSceneCell extends ListCell<SisScene> {
 				setText(null);
 				setGraphic(textField);
 			} else {
-				textProperty().unbind();
+				setGraphic(primaryLabel);
 				textProperty().bind(item.getElementInfo().nameProperty());
-				checkIfDefaultAndApplyStyle(ProjectManager.getProject().getDefaultSisSceneName());
-				int contextMenuOption = 0;
+				checkIfDefaultAndApplyStyle(ProjectManager.getProject().getPrimarySisSceneName());
+				PossibleMoves possibleMoves = PossibleMoves.UPORDOWN;
 				if (getListView().getItems().size() != 1) {
 					if (getIndex() == 0)
-						contextMenuOption = 1;
+						possibleMoves = PossibleMoves.ONLYDOWN;
 					if (getIndex() == ProjectManager.getProject().getSisScenes().size() - 1)
-						contextMenuOption = 2;
+						possibleMoves = PossibleMoves.ONLYUP;
 				} else {
-					contextMenuOption = 3;
+					possibleMoves = PossibleMoves.NOWHERE;
+					;
 				}
-				setContextMenu(SisSceneContextMenuBuilder
-						.createSisSceneItemContextMenu(contextMenuOption));
+				setContextMenu(
+						SisSceneContextMenuBuilder.createSisSceneItemContextMenu(possibleMoves));
 				// if (getIndex() == GUIManager.getSisSceneToRenameIndex()) {
 				// startEdit();
 				// }
-				setOnMouseClicked(new EventHandler<MouseEvent>() {
-					@Override
-					public void handle(MouseEvent event) {
-						GUIManager.elementEditor.lastFocusedProperty.set(item);
-					}
-				});
+				setOnMouseClicked(event -> GUIManager.elementEditor.lastFocusedProperty.set(item));
 			}
 		}
 	}
@@ -132,7 +138,7 @@ public class SisSceneCell extends ListCell<SisScene> {
 	}
 
 	/**
-	 * Creates the text field for editing SisScene's name.
+	 * Creates the text field for editing SisScene's name. (Not working).
 	 */
 	private void createTextField() {
 		textField = new TextField(getName());
@@ -184,10 +190,20 @@ public class SisSceneCell extends ListCell<SisScene> {
 			if (getItem() != null) {
 				if (nameOfDefaultSisScene.equals(getItem().getElementInfo().getName())) {
 					setStyle("-fx-font-weight: bold;");
+					// Icon has blue shadow if primary.
+					setPrimaryLabelEffect(
+							"-fx-effect: dropshadow(gaussian, deepskyblue, 3,0,0,0);");
 				} else {
 					setStyle("-fx-font-weight: normal;");
+					// Icon has pink shadow if not primary.
+					setPrimaryLabelEffect("-fx-effect: dropshadow(gaussian, hotpink, 3,0,0,0);");
 				}
 			}
 		}
+	}
+
+	private void setPrimaryLabelEffect(String newEffect) {
+		if (!primaryLabel.getStyle().equals(newEffect))
+			primaryLabel.setStyle(newEffect);
 	}
 }

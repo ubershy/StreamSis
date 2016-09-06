@@ -46,7 +46,7 @@ import javafx.collections.ObservableList;
  * <p>
  * CuteProject can be started by {@link #startProject()} method. <br>
  * When CuteProject starts working, it sets it's {@link #currentSisSceneName Current SisScene} to
- * {@link #defaultSisSceneName Default SisScene}. <br>
+ * {@link #primarySisSceneName Primary SisScene}. <br>
  * Then it starts Current SisScene's Actors.
  * <p>
  * Only Actors from Current SisScene are showing in GUI main window and can be edited. <br>
@@ -83,9 +83,9 @@ public class CuteProject implements Serializable {
 	@JsonProperty
 	private ObservableList<SisScene> sisScenes = FXCollections.observableArrayList();;
 
-	/** The name of default SisScene. */
+	/** The name of primary SisScene. */
 	@JsonIgnore
-	private StringProperty defaultSisSceneName = new SimpleStringProperty();
+	private StringProperty primarySisSceneName = new SimpleStringProperty();
 
 	/**
 	 * All CuteProject's Actors.
@@ -122,8 +122,8 @@ public class CuteProject implements Serializable {
 	 *
 	 * @param name
 	 *            the name of CuteProject
-	 * @param defaultSisSceneName
-	 *            the default SisScene name
+	 * @param primarySisSceneName
+	 *            the primary SisScene name
 	 * @param sisScenes
 	 *            the list of SisScenes
 	 * @param globalActors
@@ -131,19 +131,19 @@ public class CuteProject implements Serializable {
 	 */
 	@JsonCreator
 	private CuteProject(@JsonProperty("name") String name,
-			@JsonProperty("defaultSisSceneName") String defaultSisSceneName,
+			@JsonProperty("primarySisSceneName") String primarySisSceneName,
 			@JsonProperty("sisScenes") ArrayList<SisScene> sisScenes,
 			@JsonProperty("globalActors") ArrayList<Actor> globalActors) {
 		this.name.set(name);
 		this.sisScenes.setAll(sisScenes);
 		this.globalActors.setAll(globalActors);
-		this.defaultSisSceneName.set(defaultSisSceneName);
+		this.primarySisSceneName.set(primarySisSceneName);
 
 		this.sisScenes.addListener((ListChangeListener.Change<? extends SisScene> c) -> {
 			// For safety lets stop project.
 			if (isStarted())
 				stopProject();
-			checkAndFixCurrentAndDefaultSisScenes();
+			checkAndFixCurrentAndPrimarySisScenes();
 		});
 		this.globalActors.addListener((ListChangeListener.Change<? extends Actor> c) -> {
 			// For safety lets stop project on each change
@@ -152,22 +152,22 @@ public class CuteProject implements Serializable {
 		});
 	}
 
-	private void checkAndFixCurrentAndDefaultSisScenes() {
+	private void checkAndFixCurrentAndPrimarySisScenes() {
 		// if some SisScenes still left in list
 		if (sisScenes.size() != 0) {
-			// If we can't find default SisScene, we will set as default the first SisScene in
+			// If we can't find primary SisScene, we will set as primary the first SisScene in
 			// list
-			if (getSisSceneByName(getDefaultSisSceneName()) == null) {
+			if (getSisSceneByName(getPrimarySisSceneName()) == null) {
 				if (sisScenes.get(0) != null)
-					setDefaultSisSceneName(sisScenes.get(0).getElementInfo().getName());
+					setPrimarySisSceneName(sisScenes.get(0).getElementInfo().getName());
 			}
-			// If there's no current SisScene we will switch to the default SisScene
+			// If there's no current SisScene we will switch to the primary SisScene
 			if (currentSisSceneName.get() != null) {
 				if (getSisSceneByName(currentSisSceneName.get()) == null) {
-					switchSisSceneTo(getDefaultSisSceneName());
+					switchSisSceneTo(getPrimarySisSceneName());
 				}
 			} else {
-				switchSisSceneTo(getDefaultSisSceneName());
+				switchSisSceneTo(getPrimarySisSceneName());
 			}
 		} else {
 			currentActors.clear();
@@ -231,13 +231,13 @@ public class CuteProject implements Serializable {
 	}
 
 	/**
-	 * Default SisScene name property. <br>
-	 * When CuteProject starts, it starts it's default SisScene after finding it by it's name.
+	 * Primary SisScene name property. <br>
+	 * When CuteProject starts, it starts it's primary SisScene after finding it by it's name.
 	 *
 	 * @return the string property
 	 */
-	public StringProperty defaultSisSceneNameProperty() {
-		return defaultSisSceneName;
+	public StringProperty primarySisSceneNameProperty() {
+		return primarySisSceneName;
 	}
 
 	/**
@@ -308,14 +308,14 @@ public class CuteProject implements Serializable {
 	}
 
 	/**
-	 * Gets the name of CuteProject's default SisScene. <br>
-	 * When CuteProject starts, it starts it's default SisScene after finding it by it's name.
+	 * Gets the name of CuteProject's primary SisScene. <br>
+	 * When CuteProject starts, it starts it's primary SisScene after finding it by it's name.
 	 *
 	 * @return the name of SisScene
 	 */
-	@JsonProperty("defaultSisSceneName")
-	public String getDefaultSisSceneName() {
-		return defaultSisSceneName.get();
+	@JsonProperty("primarySisSceneName")
+	public String getPrimarySisSceneName() {
+		return primarySisSceneName.get();
 	}
 
 	/**
@@ -346,7 +346,7 @@ public class CuteProject implements Serializable {
 		if (isStarted())
 			stopProject();
 
-		checkAndFixCurrentAndDefaultSisScenes();
+		checkAndFixCurrentAndPrimarySisScenes();
 
 		validateListOfActorsOrSisScenes(globalActors);
 		validateListOfActorsOrSisScenes(sisScenes);
@@ -364,9 +364,9 @@ public class CuteProject implements Serializable {
 		for (Actor actor : globalActors) {
 			actor.init();
 		}
-		if (getSisSceneByName(getDefaultSisSceneName()) == null) {
+		if (getSisSceneByName(getPrimarySisSceneName()) == null) {
 			String firstSisSceneName = this.sisScenes.get(0).getElementInfo().getName();
-			setDefaultSisSceneName(firstSisSceneName);
+			setPrimarySisSceneName(firstSisSceneName);
 		}
 		logger.info("Project Initialized");
 	}
@@ -567,19 +567,19 @@ public class CuteProject implements Serializable {
 			removeActorGlobally(getActorByName(actorName));
 		}
 		removeSisScene(sisScene);
-		switchSisSceneTo(getDefaultSisSceneName());
+		switchSisSceneTo(getPrimarySisSceneName());
 	}
 
 	/**
-	 * Sets the CuteProject default SisScene by it's name. <br>
-	 * When CuteProject starts, it starts it's default SisScene after finding it by it's name.
+	 * Sets the CuteProject primary SisScene by it's name. <br>
+	 * When CuteProject starts, it starts it's primary SisScene after finding it by it's name.
 	 *
 	 * @param name
-	 *            the name of SisScene you want to make default
+	 *            the name of SisScene you want to make primary
 	 */
-	public void setDefaultSisSceneName(String name) {
-		logger.info("Changing default SisScene to '" + name + "'");
-		defaultSisSceneName.set(name);
+	public void setPrimarySisSceneName(String name) {
+		logger.info("Changing primary SisScene to '" + name + "'");
+		primarySisSceneName.set(name);
 	}
 
 	/**
@@ -617,7 +617,7 @@ public class CuteProject implements Serializable {
 					init();
 					isStarted.set(true);
 					logger.info("Project '" + getName() + "' started");
-					switchSisSceneTo(getDefaultSisSceneName());
+					switchSisSceneTo(getPrimarySisSceneName());
 				} else {
 					logger.error("Can't start Project: the list of global Actors is empty");
 					throw new RuntimeException("globalActors are empty");
