@@ -17,13 +17,12 @@
  */
 package com.ubershy.streamsis.gui.controllers.editspecific;
 
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.concurrent.Callable;
-
+import java.util.ResourceBundle;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
-
 import com.ubershy.streamsis.actions.HotkeyAction;
 import com.ubershy.streamsis.project.CuteElement;
 
@@ -61,46 +60,14 @@ public class HotkeyActionController extends AbstractCuteController {
 
 	protected ValidationSupport validationSupport;
 
-	/*
-	 * @inheritDoc
-	 */
 	@Override
-	public void bindToCuteElement(CuteElement cuteElement) {
-		hkAction = (HotkeyAction) cuteElement;
-		origKeys = hkAction.keysProperty().get();
-		keyCombinationProperty.set(parseKeyCodeCombinationFromString(origKeys));
-		StringBinding readableKey = Bindings.createStringBinding(new Callable<String>() {
-			@Override
-			public String call() throws Exception {
-				return keyFromKeyCombination(keyCombinationProperty.get());
-			}
-		}, keyCombinationProperty);
-		StringBinding readableModifiers = Bindings.createStringBinding(new Callable<String>() {
-			@Override
-			public String call() throws Exception {
-				String newValue = modifiersFromKeyCombination(keyCombinationProperty.get());
-				KeyCodeCombination originalKB = parseKeyCodeCombinationFromString(origKeys);
-				buttonStateManager.reportNewValueOfControl(modifiersFromKeyCombination(originalKB),
-						newValue, modifiersTextField, null);
-				return newValue;
-			}
-		}, keyCombinationProperty);
-		StringBinding applyChangesToCuteElement = Bindings
-				.createStringBinding(new Callable<String>() {
-					@Override
-					public String call() throws Exception {
-						return keyCombinationProperty.get().getName();
-					}
-				}, keyCombinationProperty);
-		hkAction.keysProperty().bind(applyChangesToCuteElement);
-		keyTextField.textProperty().bind(readableKey);
-		modifiersTextField.textProperty().bind(readableModifiers);
+	public void initialize(URL location, ResourceBundle resources) {
 		keyTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent t) {
 				// if (keycode.isLetterKey() || keycode.isDigitKey() || keycode.isFunctionKey()) {
 				if (!t.getCode().isModifierKey()) {
-					setNewKeyCode(t.getCode());
+					setNewKeyCodeFromInput(t.getCode());
 				}
 				t.consume();
 			}
@@ -129,16 +96,35 @@ public class HotkeyActionController extends AbstractCuteController {
 						anyModifiersPressed = true;
 					}
 					if (anyModifiersPressed) {
-						setNewModifiers(modifiers);
+						setNewModifiersFromInput(modifiers);
 					}
 				} else {
 					if (t.getCode() == KeyCode.BACK_SPACE || t.getCode() == KeyCode.DELETE) {
-						setNewModifiers(HotkeyAction.generateDefaultModifiers());
+						setNewModifiersFromInput(HotkeyAction.generateDefaultModifiers());
 					}
 				}
 				t.consume();
 			}
 		});
+	}
+	
+	
+	/*
+	 * @inheritDoc
+	 */
+	@Override
+	public void bindToCuteElement(CuteElement cuteElement) {
+		hkAction = (HotkeyAction) cuteElement;
+		origKeys = hkAction.keysProperty().get();
+		keyCombinationProperty.set(parseKeyCodeCombinationFromString(origKeys));
+		StringBinding readableKey = Bindings.createStringBinding(
+				() -> keyFromKeyCombination(keyCombinationProperty.get()), keyCombinationProperty);
+		String newModifiers = modifiersFromKeyCombination(keyCombinationProperty.get());
+		modifiersTextField.setText(newModifiers);
+		StringBinding applyChangesToCuteElement = Bindings.createStringBinding(
+				() -> keyCombinationProperty.get().getName(), keyCombinationProperty);
+		hkAction.keysProperty().bind(applyChangesToCuteElement);
+		keyTextField.textProperty().bind(readableKey);
 	}
 
 	protected String extractFullHotkeyFromKeyCombination(KeyCodeCombination kb) {
@@ -193,15 +179,20 @@ public class HotkeyActionController extends AbstractCuteController {
 		return kb;
 	}
 
-	protected void setNewKeyCode(KeyCode keycode) {
+	protected void setNewKeyCodeFromInput(KeyCode keycode) {
 		ArrayList<ModifierValue> modifiers = getCurrentModifiers();
 		keyCombinationProperty.set(new KeyCodeCombination(keycode, modifiers.get(0),
 				modifiers.get(1), modifiers.get(2), modifiers.get(3), modifiers.get(4)));
 	}
 
-	protected void setNewModifiers(ArrayList<ModifierValue> modifiers) {
+	protected void setNewModifiersFromInput(ArrayList<ModifierValue> modifiers) {
 		keyCombinationProperty.set(new KeyCodeCombination(getCurrentKeyCode(), modifiers.get(0),
 				modifiers.get(1), modifiers.get(2), modifiers.get(3), modifiers.get(4)));
+		String newModifiers = modifiersFromKeyCombination(keyCombinationProperty.get());
+		KeyCodeCombination originalKB = parseKeyCodeCombinationFromString(origKeys);
+		buttonStateManager.reportNewValueOfControl(modifiersFromKeyCombination(originalKB),
+				newModifiers, modifiersTextField, null);
+		modifiersTextField.setText(newModifiers);
 	}
 
 	/*

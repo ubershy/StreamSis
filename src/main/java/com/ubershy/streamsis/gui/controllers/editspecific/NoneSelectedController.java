@@ -25,6 +25,7 @@ import org.controlsfx.validation.ValidationSupport;
 import com.ubershy.streamsis.gui.animations.ThreeDotsAnimation;
 import com.ubershy.streamsis.project.CuteElement;
 
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -55,9 +56,13 @@ public class NoneSelectedController extends AbstractCuteController implements In
 		return root;
 	}
 
+	/*
+	 * @inheritDoc
+	 */
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
-		ThreeDotsAnimation pPaneDotsAnimation = new ThreeDotsAnimation("", propertiesPaneDots, 1);
+		ThreeDotsAnimation pPaneDotsAnimation = new ThreeDotsAnimation("", '.',
+				propertiesPaneDots.textProperty(), 1, 1000, Timeline.INDEFINITE);
 		pPaneDotsAnimation.play();
 	}
 

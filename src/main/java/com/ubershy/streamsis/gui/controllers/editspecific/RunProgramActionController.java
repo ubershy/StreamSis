@@ -18,6 +18,8 @@
 package com.ubershy.streamsis.gui.controllers.editspecific;
 
 import java.io.File;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
@@ -73,6 +75,13 @@ public class RunProgramActionController extends AbstractCuteController {
 	
 	protected ValidationSupport validationSupport;
 
+	/*
+	 * @inheritDoc
+	 */
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		// Do nothing
+	}
 
 	/*
 	 * @inheritDoc

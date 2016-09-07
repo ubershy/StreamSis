@@ -17,6 +17,9 @@
  */
 package com.ubershy.streamsis.gui.controllers.editspecific;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import org.controlsfx.validation.ValidationSupport;
 
 import com.ubershy.streamsis.project.CuteElement;
@@ -52,6 +55,14 @@ public class NoSuchElementController extends AbstractCuteController {
 	@Override
 	public void setValidationSupport(ValidationSupport validationSupport) {
 		// Nothing to validate
+	}
+
+	/*
+	 * @inheritDoc
+	 */
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		// Do nothing
 	}
 	
 }

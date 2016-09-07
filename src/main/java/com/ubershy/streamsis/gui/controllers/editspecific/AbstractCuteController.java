@@ -20,8 +20,10 @@ package com.ubershy.streamsis.gui.controllers.editspecific;
 import com.ubershy.streamsis.gui.controllers.CuteController;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 
+import javafx.fxml.Initializable;
 
-public abstract class AbstractCuteController implements CuteController{
+
+public abstract class AbstractCuteController implements CuteController, Initializable{
 	
 	protected CuteButtonsStatesManager buttonStateManager;
 	
