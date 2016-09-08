@@ -201,12 +201,12 @@ public class CuteButtonsStatesManager {
 					affectedProperty);
 			if (needToRecalculateWholeInputStatus) {
 				isInputDiffersAndValid.set(calculateIfInputDiffersAndValid());
-				boolean isInputSameButChangedBackFromInvalidToValid = errorExistBeforeReporting
-						&& !errorsExist.get() && !changesMade.get();
-				if (isInputDiffersAndValid.get() || isInputSameButChangedBackFromInvalidToValid){
-					currentReportAsksForReinit = true;
-				}
 			}
+		}
+		boolean isInputSameButChangedBackFromInvalidToValid = errorExistBeforeReporting
+				&& !errorsExist.get() && !changesMade.get();
+		if (isInputDiffersAndValid.get() || isInputSameButChangedBackFromInvalidToValid){
+			currentReportAsksForReinit = true;
 		}
 	}
 
@@ -388,8 +388,15 @@ public class CuteButtonsStatesManager {
 		if (currentReportAsksForReinit) {
 			// Let's allow reinitialization (slow and hard validation) only if there are no errors
 			// in GUI validation (fast and easy).
-			if (!errorsExist.get())
+			if (!errorsExist.get()) {
+				if (needToReinitCuteElement.get()) {
+					// We need to invalidate property by setting it to false, so the
+					// InvalidationListener will be notified even when needToReinitCuteElement is
+					// true again.
+					needToReinitCuteElement.set(false);
+				}
 				needToReinitCuteElement.set(true);
+			}
 		}
 		currentReportAsksForReinit = false;
 	}

@@ -119,15 +119,6 @@ public class PropsWithNameController implements Initializable {
 
 	public void setCuteButtonsStatesManager(CuteButtonsStatesManager buttonStateManager) {
 		this.buttonStateManager = buttonStateManager;
-		this.buttonStateManager.needToReinitCuteElementProperty()
-				.addListener((InvalidationListener) o -> {
-					if (this.buttonStateManager.needToReinitCuteElementProperty().get()) {
-						if (currentCuteController != null) {
-							elementWorkingCopy.init();
-							this.buttonStateManager.setCuteElementAsInitialized();
-						}
-					}
-				});
 	}
 
 	public void setPropertiesViewByCuteElement(CuteElement newElementCopy) {

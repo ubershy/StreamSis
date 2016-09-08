@@ -42,6 +42,7 @@ import javafx.animation.Animation.Status;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -138,7 +139,11 @@ public class ElementEditorController implements Initializable {
 
 	private ThreeDotsAnimation tPaneDotsAnima;
 	
-	private CuteElement elementCopy = null;
+	private ThreeDotsAnimation buttonsBeforeInitDotsAnima;
+	
+	private StringProperty awaitingForInputTextProperty = new SimpleStringProperty();
+	
+	private CuteElement elementWorkingCopy = null;
 	
 	private CuteElement currentElement = null;
 
@@ -158,11 +163,13 @@ public class ElementEditorController implements Initializable {
 		nameShadowAnima = new HorizontalShadowAnimation(nameLabel);
 		typeShadowAnima = new HorizontalShadowAnimation(typeLabel);
 		whyShadowAnima = new HorizontalShadowAnimation(whyUnhealthyLabel);
-		tPaneDotsAnima = new ThreeDotsAnimation("Editing", root, 1);
+		tPaneDotsAnima = new ThreeDotsAnimation("Editing", '.', root.textProperty(), 1, 1000,
+				Timeline.INDEFINITE);
+		buttonsBeforeInitDotsAnima = new ThreeDotsAnimation("", '❤', awaitingForInputTextProperty,
+				1, 500, 1);
 		performTestButton.setOnAction(this::hitPerformTestButton);
 		performTestButton.wrapTextProperty().set(true);
 		performTestButton.setTextAlignment(TextAlignment.CENTER);
-//        performTestStatusFakeButton.setDisable(true);
         performTestStatusFakeButton.wrapTextProperty().set(true);
         performTestStatusFakeButton.setTextAlignment(TextAlignment.CENTER);
         performTestPane.setShowDetailNode(true);
@@ -223,6 +230,39 @@ public class ElementEditorController implements Initializable {
 					whyUnhealthyLabel.setText(newValue);
 					whyShadowAnima.play();
 				});
+		this.buttonStateManager.needToReinitCuteElementProperty()
+		.addListener((InvalidationListener) o -> {
+			if (this.buttonStateManager.needToReinitCuteElementProperty().get()) {
+			    // CuteElement initialization is a resource hungry operation. Let's not initialize
+			    // instantly, because the user might not finished typing into fields. Instead let's
+				// play a text animation and when the text animation will finish playing itself to
+				// the end, let's do initialization. The animation can be interrupted by new user
+				// input and started over.
+				OKButton.textProperty().bind(awaitingForInputTextProperty);
+				applyButton.textProperty().bind(awaitingForInputTextProperty);
+				performTestButton.textProperty().bind(awaitingForInputTextProperty);
+				// This animation will internally animate awaitingForInputTextProperty's text.
+				buttonsBeforeInitDotsAnima.play();
+			}
+		});
+		buttonsBeforeInitDotsAnima.setOnFinished(evt -> {
+			// After animation is done, let's unbind button text properties from the property which
+			// is animated - buttonsBeforeInitDotsAnima.
+			OKButton.textProperty().unbind();
+			applyButton.textProperty().unbind();
+			performTestButton.textProperty().unbind();
+			String initText = "Initializing...";
+			OKButton.setText(initText);
+			applyButton.setText(initText);
+			performTestButton.setText(initText);
+			// TODO: run init() in another thread, as JavaFX thread may hang.
+			elementWorkingCopy.init();
+			// Restore texts of buttons
+			OKButton.setText("OK");
+			applyButton.setText("Apply");
+			performTestButton.setText("Perform Test");
+			buttonStateManager.setCuteElementAsInitialized();
+		});
 	}
 
 	private void connectToNewElement(CuteElement currentElement) {
@@ -241,16 +281,16 @@ public class ElementEditorController implements Initializable {
 		String serializedCurrentElement = null;
 		try {
 			serializedCurrentElement = ElementSerializator.serializeToString(currentElement);
-			elementCopy = ElementSerializator.deserializeFromString(serializedCurrentElement);
+			elementWorkingCopy = ElementSerializator.deserializeFromString(serializedCurrentElement);
 		} catch (IOException e) {
 			throw new RuntimeException(e.getMessage());
 		}
 		
-		elementCopy.init();
+		elementWorkingCopy.init();
 		
 		// Let's set up initial values of visible textLabels describing the CuteElement
-		String simpleClassName = elementCopy.getClass().getSimpleName();
-		ElementInfo infoOfCopyElement = elementCopy.getElementInfo();
+		String simpleClassName = elementWorkingCopy.getClass().getSimpleName();
+		ElementInfo infoOfCopyElement = elementWorkingCopy.getElementInfo();
 		typeLabel.setText(simpleClassName);
 		defineElementHealthStyle(infoOfCopyElement.elementHealthProperty().get());
 		whyUnhealthyLabel.setText(infoOfCopyElement.getUnhealthyMessage());
@@ -261,12 +301,12 @@ public class ElementEditorController implements Initializable {
 		whyUnhealthyProperty.bind(infoOfCopyElement.whyUnhealthyProperty());
 
 		// Let's set up propertiesPane according to CuteElement
-		propsWithNameController.setPropertiesViewByCuteElement(elementCopy);
+		propsWithNameController.setPropertiesViewByCuteElement(elementWorkingCopy);
 		
 		// Let's reset state manager of buttons
 		buttonStateManager.reset();
 		
-		buttonStateManager.allowOrNotPerformTestButtonBasedOnElementClass(elementCopy);
+		buttonStateManager.allowOrNotPerformTestButtonBasedOnElementClass(elementWorkingCopy);
 	}
 
 	protected void defineElementHealthStyle(ElementHealth elementHealth) {
@@ -295,7 +335,7 @@ public class ElementEditorController implements Initializable {
 	private void applyChanges() {
 		// Current CuteElement's copy at this moment was modified by user, we need to transfer
 		// changes to the original CuteElement.
-		String NameOfCopyElement = elementCopy.getElementInfo().getName();
+		String NameOfCopyElement = elementWorkingCopy.getElementInfo().getName();
 		String NameOfCurrentElement = currentElement.getElementInfo().getName();
 		// setCuteElementNameSafely() will throw IllegalArgument exception if "name" field
 		// validation in propsWithNameController is not implemented correctly.
@@ -303,7 +343,7 @@ public class ElementEditorController implements Initializable {
 			ProjectManager.getProject().setCuteElementNameSafely(currentElement, NameOfCopyElement);
 		// Let's apply changes from the copy to original CuteElement by copying properties
 		try {
-			PropertyUtils.copyProperties(currentElement, elementCopy);
+			PropertyUtils.copyProperties(currentElement, elementWorkingCopy);
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			e.printStackTrace();
 			throw new RuntimeException("For some reason can't transfer changes from copy of the "
@@ -348,15 +388,15 @@ public class ElementEditorController implements Initializable {
 		Task<Void> task = new Task<Void>() {
 	        @Override
 	        protected Void call() throws Exception {
-	        	if (elementCopy instanceof Action) {
-	    		    Action action = (Action) elementCopy;
+	        	if (elementWorkingCopy instanceof Action) {
+	    		    Action action = (Action) elementWorkingCopy;
 	    		    action.execute();
 	    		    Platform.runLater(() -> {
 						testResultText = "Done";
 					    testResultColor = Color.PALEGREEN;
 					});
-	    		} else if (elementCopy instanceof Checker) {
-	    			Checker checker = (Checker) elementCopy;
+	    		} else if (elementWorkingCopy instanceof Checker) {
+	    			Checker checker = (Checker) elementWorkingCopy;
 	    			boolean result = checker.check();
 	    			Platform.runLater(() -> {
 		    			if (result) {
@@ -367,8 +407,8 @@ public class ElementEditorController implements Initializable {
 		    				testResultColor = Color.HOTPINK;
 		    			}
 	    			});
-	    		} else if (elementCopy instanceof Counter) {
-	    			Counter counter = (Counter) elementCopy;
+	    		} else if (elementWorkingCopy instanceof Counter) {
+	    			Counter counter = (Counter) elementWorkingCopy;
 	    			int count = counter.count();
 	    			Platform.runLater(() -> {
 		    			testResultText = String.valueOf(count);
