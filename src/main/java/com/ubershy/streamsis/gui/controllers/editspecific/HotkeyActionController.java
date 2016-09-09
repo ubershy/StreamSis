@@ -30,7 +30,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
@@ -62,52 +61,49 @@ public class HotkeyActionController extends AbstractCuteController {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		keyTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent t) {
-				// if (keycode.isLetterKey() || keycode.isDigitKey() || keycode.isFunctionKey()) {
-				if (!t.getCode().isModifierKey()) {
-					setNewKeyCodeFromInput(t.getCode());
-				}
-				t.consume();
+		keyTextField.setOnKeyPressed(e -> {
+			// if (keycode.isLetterKey() || keycode.isDigitKey() || keycode.isFunctionKey()) {
+			if (!e.getCode().isModifierKey()) {
+				setNewKeyCodeFromInput(e.getCode());
 			}
+			e.consume();
 		});
-		modifiersTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent t) {
-				if (t.getCode() == KeyCode.ESCAPE) {
-					// When root's parent is focused, second hit to Escape key will close panel
-					root.getParent().requestFocus();
-				}
-				if (t.getCode().isModifierKey()) {
-					ArrayList<ModifierValue> modifiers = HotkeyAction.generateDefaultModifiers();
-					boolean anyModifiersPressed = false;
-					if (t.isShiftDown()) {
-						modifiers.set(0, ModifierValue.DOWN);
-						anyModifiersPressed = true;
-					}
-					if (t.isAltDown()) {
-						modifiers.set(2, ModifierValue.DOWN);
-						anyModifiersPressed = true;
-					}
-					// control on Windows and meta (command key) on Mac
-					if (t.isShortcutDown()) {
-						modifiers.set(4, ModifierValue.DOWN);
-						anyModifiersPressed = true;
-					}
-					if (anyModifiersPressed) {
-						setNewModifiersFromInput(modifiers);
-					}
-				} else {
-					if (t.getCode() == KeyCode.BACK_SPACE || t.getCode() == KeyCode.DELETE) {
-						setNewModifiersFromInput(HotkeyAction.generateDefaultModifiers());
-					}
-				}
-				t.consume();
+		modifiersTextField.addEventFilter(KeyEvent.ANY, e -> {
+			if (e.getEventType() != KeyEvent.KEY_PRESSED) {
+				e.consume();
+				return;
 			}
+			if (e.getCode() == KeyCode.ESCAPE) {
+				// When root's parent is focused, second hit to Escape key will close panel
+				root.getParent().requestFocus();
+			}
+			if (e.getCode().isModifierKey()) {
+				ArrayList<ModifierValue> modifiers = HotkeyAction.generateDefaultModifiers();
+				boolean anyModifiersPressed = false;
+				if (e.isShiftDown()) {
+					modifiers.set(0, ModifierValue.DOWN);
+					anyModifiersPressed = true;
+				}
+				if (e.isAltDown()) {
+					modifiers.set(2, ModifierValue.DOWN);
+					anyModifiersPressed = true;
+				}
+				// control on Windows and meta (command key) on Mac
+				if (e.isShortcutDown()) {
+					modifiers.set(4, ModifierValue.DOWN);
+					anyModifiersPressed = true;
+				}
+				if (anyModifiersPressed) {
+					setNewModifiersFromInput(modifiers);
+				}
+			} else {
+				if (e.getCode() == KeyCode.BACK_SPACE || e.getCode() == KeyCode.DELETE) {
+					setNewModifiersFromInput(HotkeyAction.generateDefaultModifiers());
+				}
+			}
+			e.consume();
 		});
 	}
-	
 	
 	/*
 	 * @inheritDoc
