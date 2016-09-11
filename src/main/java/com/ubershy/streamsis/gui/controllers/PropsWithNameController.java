@@ -134,8 +134,8 @@ public class PropsWithNameController implements Initializable {
 		ElementInfo newInfo = newElementCopy.getElementInfo();
 		originalName = newInfo.getName();
 		// Let's get the new controller specific to CuteElement's type
-		currentCuteController = StreamSisAppFactory.buildSpecificControllerByCuteElementName(
-				newElementCopy.getClass().getSimpleName());
+		currentCuteController = StreamSisAppFactory
+				.buildCuteControllerBasedOnCuteElement(newElementCopy);
 		// Let's set the new controller and view for the cell
 		currentCuteController.setCuteButtonsStatesManager(buttonStateManager);
 		// Bind element to CuteController's View from which the user can edit subtype-specific

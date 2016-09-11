@@ -29,6 +29,7 @@ import com.ubershy.streamsis.actions.Action;
 import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.counters.Counter;
 import com.ubershy.streamsis.gui.StreamSisAppFactory;
+import com.ubershy.streamsis.gui.StreamSisAppFactory.SpecialCuteController;
 import com.ubershy.streamsis.gui.animations.HorizontalShadowAnimation;
 import com.ubershy.streamsis.gui.animations.ThreeDotsAnimation;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
@@ -154,7 +155,7 @@ public class ElementEditorController implements Initializable {
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
 		CuteController noneController = StreamSisAppFactory
-				.buildSpecificControllerByCuteElementName("NoneSelected");
+				.buildSpecialCuteController(SpecialCuteController.NONESELECTED);
 		propsWithNameController = (PropsWithNameController) StreamSisAppFactory
 				.buildControllerByRelativePath("PropsWithName.fxml");
 		propsWithNameController.setCuteButtonsStatesManager(buttonStateManager);

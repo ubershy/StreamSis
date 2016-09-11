@@ -15,32 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.ubershy.streamsis.gui.controllers.editspecific;
+package com.ubershy.streamsis.gui.controllers.edit;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.controlsfx.validation.ValidationSupport;
 
-import com.ubershy.streamsis.gui.animations.ThreeDotsAnimation;
 import com.ubershy.streamsis.project.CuteElement;
 
-import javafx.animation.Timeline;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
-public class NoneSelectedController extends AbstractCuteController implements Initializable {
+public class NoSuchElementController extends AbstractCuteController {
 
-	@FXML
-	private Label propertiesPaneDots;
+    @FXML
+    private VBox root;
 
-	@FXML
-	private VBox root;
-
-	/*
+    /*
 	 * @inheritDoc
 	 */
 	@Override
@@ -51,19 +44,9 @@ public class NoneSelectedController extends AbstractCuteController implements In
 	/*
 	 * @inheritDoc
 	 */
-	@Override
+    @Override
 	public Node getView() {
 		return root;
-	}
-
-	/*
-	 * @inheritDoc
-	 */
-	@Override
-	public void initialize(URL url, ResourceBundle resourceBundle) {
-		ThreeDotsAnimation pPaneDotsAnimation = new ThreeDotsAnimation("", '.',
-				propertiesPaneDots.textProperty(), 1, 1000, Timeline.INDEFINITE);
-		pPaneDotsAnimation.play();
 	}
 
 	/*
@@ -74,4 +57,12 @@ public class NoneSelectedController extends AbstractCuteController implements In
 		// Nothing to validate
 	}
 
+	/*
+	 * @inheritDoc
+	 */
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		// Do nothing
+	}
+	
 }

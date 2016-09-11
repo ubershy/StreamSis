@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.ubershy.streamsis.gui.controllers.editspecific;
+package com.ubershy.streamsis.gui.controllers.edit.actions;
 
 import java.io.File;
 import java.net.URL;
@@ -28,6 +28,7 @@ import org.controlsfx.validation.Validator;
 import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.actions.RunProgramAction;
+import com.ubershy.streamsis.gui.controllers.edit.AbstractCuteController;
 import com.ubershy.streamsis.project.CuteElement;
 
 import javafx.event.ActionEvent;

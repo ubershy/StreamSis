@@ -15,24 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.ubershy.streamsis.gui.controllers.editspecific;
+package com.ubershy.streamsis.gui.controllers.edit.actions;
 
-import com.ubershy.streamsis.gui.controllers.CuteController;
-import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
+public class OBSHotkeyActionController extends HotkeyActionController {
 
-import javafx.fxml.Initializable;
-
-
-public abstract class AbstractCuteController implements CuteController, Initializable{
-	
-	protected CuteButtonsStatesManager buttonStateManager;
-	
-	/*
-	 * @inheritDoc
-	 */
-	@Override
-	public void setCuteButtonsStatesManager(CuteButtonsStatesManager buttonStateManager) {
-		this.buttonStateManager = buttonStateManager;
-	}
-	
 }
