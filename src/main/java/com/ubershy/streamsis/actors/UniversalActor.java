@@ -37,18 +37,7 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.concurrent.Worker.State;
 
-/**
- * The main implementation of {@link Actor} that is used in {@link StreamSis}. <br>
- * <p>
- * Note: <br>
- * UniversalActor <b>is not</b> working in Universal Studios and never will be. <br>
- * Even if he has such a name. <br>
- * He just can do simultaneously all the things his predecessors were able to do. <br>
- * That's why he is Universal. <br>
- * <i>RIP: SwitchingActor, RepeatingActor, StoppingActor. I will never forget you. </i>
- * 
- * @see {@link Actor}
- */
+/** The main implementation of {@link Actor} that is used in {@link StreamSis}. */
 public class UniversalActor extends AbstractActor implements Actor {
 
 	static final Logger logger = LoggerFactory.getLogger(UniversalActor.class);
@@ -57,16 +46,15 @@ public class UniversalActor extends AbstractActor implements Actor {
 	 * Default way of instantiating a new UniversalActor.
 	 *
 	 * @param name
-	 *            Name
+	 *            The name of {@link Actor}, must be unique actor name in the {@link CuteProject}.
 	 * @param checkInterval
-	 *            the Check interval in milliseconds
+	 *            The {@link #checkInterval} in milliseconds.
 	 * @param repeatInterval
-	 *            the Repeat interval in milliseconds. if <i>"0"</i>, Actor will not repeat any
-	 *            Actions
+	 *            The {@link #repeatInterval} in milliseconds.
 	 * @param doOnRepeat
-	 *            true to repeat On Actions when Actor is switched On
+	 *            True to repeat On Actions when Actor is switched On.
 	 * @param doOffRepeat
-	 *            true to repeat Off Actions when Actor is switched Off
+	 *            True to repeat Off Actions when Actor is switched Off.
 	 */
 	public UniversalActor(String name, int checkInterval, int repeatInterval, boolean doOnRepeat,
 			boolean doOffRepeat) {
@@ -78,25 +66,25 @@ public class UniversalActor extends AbstractActor implements Actor {
 	}
 
 	/**
-	 * Instantiates a new UniversalActor. Mainly used in deserialization.
+	 * Instantiates a new UniversalActor with known arrays of elements. <br>
+	 * This constructor mainly used for deserialization.
 	 *
 	 * @param name
-	 *            Name
+	 *            The name of {@link Actor}, must be unique actor name in the {@link CuteProject}.
 	 * @param checkInterval
-	 *            the Check interval in milliseconds
+	 *            The {@link #checkInterval} in milliseconds.
 	 * @param repeatInterval
-	 *            the Repeat interval in milliseconds. if <i>"0"</i>, Actor will not repeat any
-	 *            Actions
+	 *            The {@link #repeatInterval} in milliseconds.
 	 * @param doOnRepeat
-	 *            true to repeat On Actions when Actor is switched On
+	 *            True to repeat On Actions when Actor is switched On.
 	 * @param doOffRepeat
-	 *            true to repeat Off Actions when Actor is switched Off
+	 *            True to repeat Off Actions when Actor is switched Off.
 	 * @param checker
-	 *            the Actor's Checker
+	 *            The Actor's {@link Checker}.
 	 * @param onActions
-	 *            the Actor's On Actions
+	 *            The Actor's On {@link Action}s, which run when Actor is switched On.
 	 * @param offActions
-	 *            the Actor's Off Actions
+	 *            The Actor's Off {@link Action}s, which run when Actor is switched Off.
 	 */
 	@JsonCreator
 	public UniversalActor(@JsonProperty("name") String name,
@@ -114,25 +102,25 @@ public class UniversalActor extends AbstractActor implements Actor {
 	}
 
 	/**
-	 * Instantiates a new UniversalActor using onActions and offAction Arrays instead of lists.
+	 * Instantiates a new UniversalActor with known arrays of elements. <br>
+	 * This constructor mainly used for deserialization.
 	 *
 	 * @param name
-	 *            Name
+	 *            The name of {@link Actor}, must be unique actor name in the {@link CuteProject}.
 	 * @param checkInterval
-	 *            the Check interval in milliseconds
+	 *            The {@link #checkInterval} in milliseconds.
 	 * @param repeatInterval
-	 *            the Repeat interval in milliseconds. if <i>"0"</i>, Actor will not repeat any
-	 *            Actions
+	 *            The {@link #repeatInterval} in milliseconds.
 	 * @param doOnRepeat
-	 *            true to repeat On Actions when Actor is switched On
+	 *            True to repeat On Actions when Actor is switched On.
 	 * @param doOffRepeat
-	 *            true to repeat Off Actions when Actor is switched Off
+	 *            True to repeat Off Actions when Actor is switched Off.
 	 * @param checker
-	 *            the Actor's Checker
+	 *            The Actor's {@link Checker}.
 	 * @param onActions
-	 *            the Actor's On Actions
+	 *            The Actor's On {@link Action}s, which run when Actor is switched On.
 	 * @param offActions
-	 *            the Actor's Off Actions
+	 *            The Actor's Off {@link Action}s, which run when Actor is switched Off.
 	 */
 	public UniversalActor(String name, int checkInterval, int repeatInterval, boolean doRepeat,
 			boolean doOffRepeat, Checker checker, Action[] onActions, Action[] offActions) {

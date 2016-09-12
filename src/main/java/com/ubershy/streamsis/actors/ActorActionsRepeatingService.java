@@ -69,14 +69,13 @@ public class ActorActionsRepeatingService extends javafx.concurrent.Service<Void
 					if(ConstsAndVars.performActing) {
 						actor.executeOnActions();
 					}
-					if (!actor.isDoOnRepeat() || actor.getRepeatInterval() == 0) {
+					if (!actor.isDoOnRepeat())
 						break;
-					}
 				} else {
 					if(ConstsAndVars.performActing) {
 						actor.executeOffActions();
 					}
-					if (!actor.isDoOffRepeat() || actor.getRepeatInterval() == 0)
+					if (!actor.isDoOffRepeat())
 						break;
 				}
 				try {

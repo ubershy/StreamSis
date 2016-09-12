@@ -19,6 +19,7 @@ package com.ubershy.streamsis.actors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ubershy.streamsis.ConstsAndVars;
 import com.ubershy.streamsis.actions.Action;
 import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.project.AbstractCuteNode;
@@ -65,26 +66,33 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 	@JsonProperty
 	protected final ObservableList<Action> offActions = FXCollections.observableArrayList();
 
-	/** Defines repeat or not On Actions when {@link #isSwitchOn} is true */
-	@JsonProperty
-	protected boolean doOnRepeat;
+	/** Defines repeat or not On Actions when {@link #isSwitchOn} is true. Defined by the user. */
+	@JsonIgnore
+	protected BooleanProperty doOnRepeat = new SimpleBooleanProperty();
 
-	/** Defines repeat or not Off Actions when {@link #isSwitchOn} is false */
-	@JsonProperty
-	protected boolean doOffRepeat;
+	/** Defines repeat or not Off Actions when {@link #isSwitchOn} is false. Defined by the user. */
+	@JsonIgnore
+	protected BooleanProperty doOffRepeat = new SimpleBooleanProperty();
 
 	/**
 	 * The Actor's Switch that is turning <b>On</b> when Actor's Checker returns true and <b>Off</b>
-	 * when Actor's Checker returns false
+	 * when Actor's Checker returns false.
 	 */
 	@JsonIgnore
 	protected BooleanProperty isSwitchOn = new SimpleBooleanProperty(false);;
 
-	/** It's the interval of time in milliseconds between Actor's checks. */
+	/** It's the interval of time in milliseconds between Actor's checks. <br>
+	 * Can't be set less than {@link ConstsAndVars#minimumCheckInterval}. <br>
+	 * Defined by the user.
+	 */
 	@JsonIgnore
 	protected IntegerProperty checkInterval = new SimpleIntegerProperty();
 
-	/** It's the interval of time in milliseconds between Actor's Actions executions. */
+	/** 
+	 * It's the interval of time in milliseconds between Actor's Actions executions. <br>
+	 * Can't be set less than {@link ConstsAndVars#minimumCheckInterval}. <br>
+	 * Defined by the user.
+	 */
 	@JsonIgnore
 	protected IntegerProperty repeatInterval = new SimpleIntegerProperty();
 
@@ -260,22 +268,22 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 
 	@Override
 	public boolean isDoOnRepeat() {
-		return doOnRepeat;
+		return doOnRepeat.get();
 	}
 
 	@Override
 	public boolean isDoOffRepeat() {
-		return doOffRepeat;
+		return doOffRepeat.get();
 	}
 
 	@Override
 	public void setDoOnRepeat(Boolean doOnRepeat) {
-		this.doOnRepeat = doOnRepeat;
+		this.doOnRepeat.set(doOnRepeat);
 	}
 
 	@Override
 	public void setDoOffRepeat(Boolean doOffRepeat) {
-		this.doOffRepeat = doOffRepeat;
+		this.doOffRepeat.set(doOffRepeat);
 	}
 
 	@Override
