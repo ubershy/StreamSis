@@ -160,6 +160,12 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 	public int getCheckInterval() {
 		return checkInterval.get();
 	}
+	
+	@Override
+	@JsonProperty("checkInterval")
+	public void setCheckInterval(int interval) {
+		checkInterval.set(interval);
+	}
 
 	@Override
 	public IntegerProperty checkIntervalProperty() {
@@ -170,6 +176,22 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 	@JsonProperty("repeatInterval")
 	public int getRepeatInterval() {
 		return repeatInterval.get();
+	}
+	
+	@Override
+	@JsonProperty("repeatInterval")
+	public void setRepeatInterval(int interval) {
+		repeatInterval.set(interval);
+	}
+	
+	@Override
+	public BooleanProperty doOnRepeatProperty() {
+		return doOnRepeat;
+	}
+	
+	@Override
+	public BooleanProperty doOffRepeatProperty() {
+		return doOffRepeat;
 	}
 
 	@Override
@@ -267,22 +289,26 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 	}
 
 	@Override
-	public boolean isDoOnRepeat() {
+	@JsonProperty("doOnRepeat")
+	public boolean getDoOnRepeat() {
 		return doOnRepeat.get();
 	}
 
 	@Override
-	public boolean isDoOffRepeat() {
+	@JsonProperty("doOffRepeat")
+	public boolean getDoOffRepeat() {
 		return doOffRepeat.get();
 	}
 
 	@Override
-	public void setDoOnRepeat(Boolean doOnRepeat) {
+	@JsonProperty("doOnRepeat")
+	public void setDoOnRepeat(boolean doOnRepeat) {
 		this.doOnRepeat.set(doOnRepeat);
 	}
 
 	@Override
-	public void setDoOffRepeat(Boolean doOffRepeat) {
+	@JsonProperty("doOffRepeat")
+	public void setDoOffRepeat(boolean doOffRepeat) {
 		this.doOffRepeat.set(doOffRepeat);
 	}
 

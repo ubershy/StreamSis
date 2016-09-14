@@ -168,6 +168,8 @@ public final class Playground {
 
 		CuteProject project = new CuteProject("Default");
 
+		int defaultRepeatInterval = 1000;
+
 		ActorBuilder actorBuilder = new ActorBuilder(resourcesLocation);
 		logger.info("Generating hardcoded project 'Default' based on resources located in:\n"
 				+ resourcesLocation
@@ -184,21 +186,28 @@ public final class Playground {
 		String hkSniper = new KeyCodeCombination(KeyCode.F3, altMod).getName();
 		String hkPhysical = new KeyCodeCombination(KeyCode.F7, altMod).getName();
 
-		UniversalActor mvpActor = actorBuilder.createUniversalActor("MVP", 2000, 0, false, false,
-				new Coordinates(563, 158, 80, 80), 0.7f, true, false, true);
-		UniversalActor deathActor = actorBuilder.createUniversalActor("Death", 1000, 0, false,
-				false, new Coordinates(1740, 72, 178, 176), 0.75f, false, false, true);
-		UniversalActor winTActor = actorBuilder.createUniversalActor("WinT", 2000, 0, false, false,
-				new Coordinates(1280, 165, 70, 70), 0.75f, true, false, true);
-		UniversalActor winCTActor = actorBuilder.createUniversalActor("WinCT", 2000, 0, false,
-				false, new Coordinates(1280, 165, 70, 70), 0.75f, true, false, true);
-		UniversalActor lostTActor = actorBuilder.createUniversalActor("LostT", 2000, 0, false,
-				false, new Coordinates(1280, 165, 70, 70), 0.75f, true, false, true);
-		UniversalActor lostCTActor = actorBuilder.createUniversalActor("LostCT", 2000, 0, false,
-				false, new Coordinates(1280, 165, 70, 70), 0.75f, true, false, true);
+		UniversalActor mvpActor = actorBuilder.createUniversalActor("MVP", 2000,
+				defaultRepeatInterval, false, false, new Coordinates(563, 158, 80, 80), 0.7f, true,
+				false, true);
+		UniversalActor deathActor = actorBuilder.createUniversalActor("Death", 1000,
+				defaultRepeatInterval, false, false, new Coordinates(1740, 72, 178, 176), 0.75f,
+				false, false, true);
+		UniversalActor winTActor = actorBuilder.createUniversalActor("WinT", 2000,
+				defaultRepeatInterval, false, false, new Coordinates(1280, 165, 70, 70), 0.75f,
+				true, false, true);
+		UniversalActor winCTActor = actorBuilder.createUniversalActor("WinCT", 2000,
+				defaultRepeatInterval, false, false, new Coordinates(1280, 165, 70, 70), 0.75f,
+				true, false, true);
+		UniversalActor lostTActor = actorBuilder.createUniversalActor("LostT", 2000,
+				defaultRepeatInterval, false, false, new Coordinates(1280, 165, 70, 70), 0.75f,
+				true, false, true);
+		UniversalActor lostCTActor = actorBuilder.createUniversalActor("LostCT", 2000,
+				defaultRepeatInterval, false, false, new Coordinates(1280, 165, 70, 70), 0.75f,
+				true, false, true);
 
-		UniversalActor smokeActor = actorBuilder.createUniversalActor("Smoke", 150, 0, false, false,
-				new Coordinates(1740, 72, 178, 176), 0.85f, false, false, true);
+		UniversalActor smokeActor = actorBuilder.createUniversalActor("Smoke", 150,
+				defaultRepeatInterval, false, false, new Coordinates(1740, 72, 178, 176), 0.85f,
+				false, false, true);
 		float smokePrecision = 0.970f;
 		Checker[] smokeCheckers = new Checker[] {
 				new RegionChecker(new Coordinates(53, 1026, 1, 1),
@@ -212,8 +221,9 @@ public final class Playground {
 		Checker smokeChecker = LogicalChecker.createAnd(smokeCheckers);
 		smokeActor.setChecker(smokeChecker);
 
-		UniversalActor sniperActor = actorBuilder.createUniversalActor("Sniper", 150, 0, false,
-				false, new Coordinates(5, 5, 1, 1), 0.9999f, false, false, true);
+		UniversalActor sniperActor = actorBuilder.createUniversalActor("Sniper", 150,
+				defaultRepeatInterval, false, false, new Coordinates(5, 5, 1, 1), 0.9999f, false,
+				false, true);
 		Checker[] sniperCheckers = new Checker[] {
 				new RegionChecker(new Coordinates(1919, 1079, 1, 1),
 						resourcesLocation + "Sniper\\Targets\\sniper.png", 1.0f),
@@ -234,8 +244,8 @@ public final class Playground {
 		sniperActor.clearOffActions();
 		sniperActor.addOffAction(new VariableSwitchAction("currentMode", sniperUndoHotkey));
 
-		UniversalActor physicalActor = new UniversalActor("Physical", 150, 0, false, false,
-				new RegionChecker(new Coordinates(2755, 1185, 80, 80, 0),
+		UniversalActor physicalActor = new UniversalActor("Physical", 150, defaultRepeatInterval,
+				false, false, new RegionChecker(new Coordinates(2755, 1185, 80, 80, 0),
 						resourcesLocation + "Physical\\Targets\\toFind.png", 0.8f),
 				null, null);
 		physicalActor.addOnAction(new OBSHotkeyAction(hkPhysical));
@@ -245,8 +255,9 @@ public final class Playground {
 		physicalUndoHotkey.put("CSGOMenu", new OBSHotkeyAction(hkMenu));
 		physicalActor.addOffAction(new VariableSwitchAction("currentMode", physicalUndoHotkey));
 
-		UniversalActor killActor = actorBuilder.createUniversalActor("Kill", 500, 0, false, false,
-				new Coordinates(1400, 72, 344, 176), 0.75f, false, false, true);
+		UniversalActor killActor = actorBuilder.createUniversalActor("Kill", 500,
+				defaultRepeatInterval, false, false, new Coordinates(1400, 72, 344, 176), 0.75f,
+				false, false, true);
 		ArrayList<Checker> killminiCheckers = new ArrayList<Checker>();
 		killminiCheckers.add(actorBuilder.createChecker("Kill", new Coordinates(1400, 64, 338, 33),
 				false, 0.65f));
@@ -264,7 +275,8 @@ public final class Playground {
 		// killActor.setChecker(killminiCheckers[0]);
 		killActor.setChecker(killChecker);
 
-		UniversalActor lobbyActor = new UniversalActor("Lobby", 150, 0, false, false,
+		UniversalActor lobbyActor = new UniversalActor("Lobby", 150, defaultRepeatInterval, false,
+				false,
 				new RegionChecker(new Coordinates(707, 160, 53, 23),
 						resourcesLocation + "Lobby\\Targets\\lobby.png", 0.7f),
 				new Action[] { new OBSHotkeyAction(hkLobby) }, null);
@@ -272,7 +284,8 @@ public final class Playground {
 				"/C \"" + resourcesLocation + "Scripts\\curl_lamp_set_hue.bat\" " + "307", "",
 				false));
 
-		UniversalActor menuActor = new UniversalActor("Menu", 1000, 0, false, false,
+		UniversalActor menuActor = new UniversalActor("Menu", 1000, defaultRepeatInterval, false,
+				false,
 				new RegionChecker(new Coordinates(704, 364, 63, 33),
 						resourcesLocation + "Menu\\Targets\\menu.png", 0.7f),
 				new Action[] { new OBSHotkeyAction(hkMenu) }, null);
@@ -281,22 +294,23 @@ public final class Playground {
 				"/C \"" + resourcesLocation + "Scripts\\curl_lamp_set_hue.bat\" " + "180", "",
 				false));
 
-		UniversalActor competitiveHotkeyActor = new UniversalActor("Competitive", 300, 0, false,
-				false,
+		UniversalActor competitiveHotkeyActor = new UniversalActor("Competitive", 300,
+				defaultRepeatInterval, false, false,
 				new RegionChecker(new Coordinates(1065, 327, 154, 19),
 						resourcesLocation + "Modes\\competitive.png", 0.4f),
 				new Action[] { new OBSHotkeyAction(hkMatch) }, null);
 
 		competitiveHotkeyActor.addOnAction(new VariableSetterAction("currentMode", "Match"));
 
-		UniversalActor deathmatchHotkeyActor = new UniversalActor("Deathmatch", 300, 0, false,
-				false,
+		UniversalActor deathmatchHotkeyActor = new UniversalActor("Deathmatch", 300,
+				defaultRepeatInterval, false, false,
 				new RegionChecker(new Coordinates(1065, 327, 154, 19),
 						resourcesLocation + "Modes\\deathmatch.png", 0.4f),
 				new Action[] { new OBSHotkeyAction(hkDeathMatch) }, null);
 		deathmatchHotkeyActor.addOnAction(new VariableSetterAction("currentMode", "Deathmatch"));
 
-		UniversalActor casualHotkeyActor = new UniversalActor("Casual", 300, 0, false, false,
+		UniversalActor casualHotkeyActor = new UniversalActor("Casual", 300, defaultRepeatInterval,
+				false, false,
 				new RegionChecker(new Coordinates(1065, 327, 154, 19),
 						resourcesLocation + "Modes\\casual.png", 0.4f),
 				new Action[] { new OBSHotkeyAction(hkMatch) }, null);
@@ -306,13 +320,13 @@ public final class Playground {
 		Checker[] musumeCheckers = new Checker[] {
 				new RegionChecker(new Coordinates(53, 1026, 1, 1),
 						resourcesLocation + "IkaMusume\\Targets\\musume.png", musumePrecision),
-//				new RegionChecker(new Coordinates(413, 453, 1, 1),
-//						resourcesLocation + "IkaMusume\\Targets\\musume.png", musumePrecision),
+				// new RegionChecker(new Coordinates(413, 453, 1, 1),
+				// resourcesLocation + "IkaMusume\\Targets\\musume.png", musumePrecision),
 				new RegionChecker(new Coordinates(1356, 1060, 1, 1),
 						resourcesLocation + "IkaMusume\\Targets\\musume.png", musumePrecision) };
 		Checker musumeChecker = LogicalChecker.createAnd(musumeCheckers);
-		UniversalActor IkaMusumeActor = new UniversalActor("IkaMusume", 100, 0, false, false,
-				musumeChecker, null, new Action[] { new OBSHotkeyAction(hkMatch) });
+		UniversalActor IkaMusumeActor = new UniversalActor("IkaMusume", 100, defaultRepeatInterval,
+				false, false, musumeChecker, null, new Action[] { new OBSHotkeyAction(hkMatch) });
 
 		// IkaMusumeActor.addOnAction(
 		// new MultiSoundAction(resourcesLocation + "IkaMusume\\Sounds", 0.3, true));
@@ -324,26 +338,32 @@ public final class Playground {
 										resourcesLocation + "IkaMusume\\current.png", true)),
 						2500));
 
-		UniversalActor changeMenuActor = new UniversalActor("ChangeMenu", 3000, 0, false, false,
+		UniversalActor changeMenuActor = new UniversalActor("ChangeMenu", 3000,
+				defaultRepeatInterval, false, false,
 				actorBuilder.createChecker("ChangeMenu", new Coordinates(319, 12, 32, 32), false,
 						0.7f),
 				new Action[] { new SwitchSisSceneAction("changeTeamSisScene") },
 				new Action[] { new SwitchSisSceneAction("changeTeamSisScene") });
 
 		UniversalActor changeLoadingActor = actorBuilder.createUniversalActor("ChangeLoading", 200,
-				0, false, false, new Coordinates(313, 136, 130, 130), 0.7f, false, false, true);
+				defaultRepeatInterval, false, false, new Coordinates(313, 136, 130, 130), 0.7f,
+				false, false, true);
 
-		UniversalActor changeTeamActor = actorBuilder.createUniversalActor("ChangeTeam", 1000, 0,
-				false, false, new Coordinates(483, 0, 82, 377), 0.95f, false, false, false);
+		UniversalActor changeTeamActor = actorBuilder.createUniversalActor("ChangeTeam", 1000,
+				defaultRepeatInterval, false, false, new Coordinates(483, 0, 82, 377), 0.95f, false,
+				false, false);
 
-		UniversalActor changeTActor = actorBuilder.createUniversalActor("ChangeT", 1000, 0, false,
-				false, new Coordinates(567, 571, 35, 394), 0.65f, false, false, false);
+		UniversalActor changeTActor = actorBuilder.createUniversalActor("ChangeT", 1000,
+				defaultRepeatInterval, false, false, new Coordinates(567, 571, 35, 394), 0.65f,
+				false, false, false);
 
-		UniversalActor changeCTActor = actorBuilder.createUniversalActor("ChangeCT", 1000, 0, false,
-				false, new Coordinates(567, 125, 35, 380), 0.65f, false, false, false);
+		UniversalActor changeCTActor = actorBuilder.createUniversalActor("ChangeCT", 1000,
+				defaultRepeatInterval, false, false, new Coordinates(567, 125, 35, 380), 0.65f,
+				false, false, false);
 
-		UniversalActor poorActor = actorBuilder.createUniversalActor("Poor Actor", 1000, 0, false,
-				false, new Coordinates(567, 125, 1, 1), 0.65f, false, false, false);
+		UniversalActor poorActor = actorBuilder.createUniversalActor("Poor Actor", 1000,
+				defaultRepeatInterval, false, false, new Coordinates(567, 125, 1, 1), 0.65f, false,
+				false, false);
 
 		// We don't need actions generated by actorBuilder. Let's wipe them.
 		changeMenuActor.clearOnActions();

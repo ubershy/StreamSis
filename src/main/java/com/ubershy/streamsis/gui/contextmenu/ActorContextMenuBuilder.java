@@ -111,7 +111,7 @@ public final class ActorContextMenuBuilder {
 			ElementInfo info = actor.getElementInfo();
 			String params = "Name: " + info.getName() + "\nCheck Interval: " + actor.getCheckInterval() +
 					" ms\nRepeat Interval: " + actor.getRepeatInterval() + " ms\nRepeat On Actions: " +
-					actor.isDoOnRepeat() + "\nRepeat Off Actions: " + actor.isDoOffRepeat() + "\nIs broken: "
+					actor.getDoOnRepeat() + "\nRepeat Off Actions: " + actor.getDoOffRepeat() + "\nIs broken: "
 					+ actor.getElementInfo().isBroken();
 			CustomMenuItem existingActorMenuItem = GUIUtil.createTooltipedMenuItem(actor.getElementInfo().getName(), params);
 			existingActorMenuItem.setOnAction((ActionEvent event) -> {

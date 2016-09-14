@@ -113,6 +113,15 @@ public interface Actor extends CuteNode {
 	 * @return the check interval in milliseconds
 	 */
 	public int getCheckInterval();
+	
+	/**
+	 * Sets the Actor's check interval. <br>
+	 * It's the interval of time in milliseconds between Actor's checks.
+	 * 
+	 * @param interval
+	 *            The interval in milliseconds to wait between checks.
+	 */
+	public void setCheckInterval(int interval);
 
 	/**
 	 * Gets the Actor's {@link ActorActionsRepeatingService} for switching Off.
@@ -149,20 +158,43 @@ public interface Actor extends CuteNode {
 	 * @return the repeat interval in milliseconds
 	 */
 	public int getRepeatInterval();
+	
+	/**
+	 * Sets the Actor's repeat interval. <br>
+	 * It's the interval of time in milliseconds that specify how often Actor should repeat executing his {@link Action Actions}.
+	 * 
+	 * @param interval
+	 *            The interval in milliseconds to use for repeating Actions.
+	 */
+	public void setRepeatInterval(int interval);
 
 	/**
-	 * Checks if Actor will repeat executing Off Actions when it's switched off.
+	 * Tells if Actor will repeat executing "Off" Actions when it's switched off.
 	 *
-	 * @return true, if Actor will repeat
+	 * @return true, if Actor will repeat "Off" Actions.
 	 */
-	public boolean isDoOffRepeat();
+	public boolean getDoOffRepeat();
 
 	/**
-	 * Checks if Actor will repeat executing On Actions when it's switched on.
+	 * Tells if Actor will repeat executing "On" Actions when it's switched on.
 	 *
-	 * @return true, if Actor will repeat
+	 * @return true, if Actor will repeat "On" Actions.
 	 */
-	public boolean isDoOnRepeat();
+	public boolean getDoOnRepeat();
+	
+	/**
+	 * Tells if Actor will repeat executing "On" Actions when it's switched on.
+	 *
+	 * @return BooleanProperty
+	 */
+	public BooleanProperty doOnRepeatProperty();
+	
+	/**
+	 * Tells if Actor will repeat executing "Off" Actions when it's switched off.
+	 *
+	 * @return BooleanProperty
+	 */
+	public BooleanProperty doOffRepeatProperty();
 
 	/**
 	 * Gets Actor's isSwitchOn property
@@ -188,20 +220,20 @@ public interface Actor extends CuteNode {
 	public void setChecker(Checker checker);
 
 	/**
-	 * Actor will repeat or not executing Off Actions when it's switched off.
+	 * Tells if Actor will repeat executing "Off" Actions when it's switched off.
 	 *
 	 * @param doOffRepeat
-	 *            set as true is you want Actor to repeat executing Off Actions
+	 *            set as true is you want Actor to repeat executing "Off" Actions.
 	 */
-	public void setDoOffRepeat(Boolean doOffRepeat);
+	public void setDoOffRepeat(boolean doOffRepeat);
 
 	/**
-	 * Actor will repeat or not executing On Actions when it's switched on.
+	 * Tells if Actor will repeat executing "On" Actions when it's switched on.
 	 *
 	 * @param doOnRepeat
-	 *            set as true is you want Actor to repeat executing On Actions
+	 *            set as true is you want Actor to repeat executing "On" Actions.
 	 */
-	public void setDoOnRepeat(Boolean doOnRepeat);
+	public void setDoOnRepeat(boolean doOnRepeat);
 
 	/**
 	 * Start the Actor. <br>

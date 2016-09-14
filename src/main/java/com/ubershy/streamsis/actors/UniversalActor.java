@@ -208,7 +208,7 @@ public class UniversalActor extends AbstractActor implements Actor {
 			return;
 		}
 		if (repeatInterval.get() < ConstsAndVars.minimumCheckInterval
-				&& (isDoOnRepeat() || isDoOffRepeat())) {
+				&& (getDoOnRepeat() || getDoOffRepeat())) {
 			elementInfo.setAsBroken("Actor repeat interval must not be less than "
 					+ ConstsAndVars.minimumCheckInterval + " ms");
 			return;

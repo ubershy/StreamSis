@@ -260,7 +260,7 @@ public final class GUIUtil {
 			counter++;
 			alteredName = String.format("%s(%d)", genericName, counter);
 		}
-		Actor newActor = new UniversalActor(alteredName, 1000, 0, false, false);
+		Actor newActor = new UniversalActor(alteredName, 1000, 1000, false, false);
 		ProjectManager.getProject().addActorToGlobalActors(newActor);
 		ProjectManager.getProject().addExistingActorToCurrentSisScene(newActor);
 	}

@@ -344,6 +344,8 @@ public class ElementEditorController implements Initializable {
 			ProjectManager.getProject().setCuteElementNameSafely(currentElement, NameOfCopyElement);
 		// Let's apply changes from the copy to original CuteElement by copying properties
 		try {
+			// Note: if you notice this method doesn't transfer changes, CuteElement's properties
+			// and getters and setters might not be set up properly.
 			PropertyUtils.copyProperties(currentElement, elementWorkingCopy);
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			e.printStackTrace();
