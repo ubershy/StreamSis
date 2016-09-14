@@ -370,8 +370,10 @@ public class ElementEditorController implements Initializable {
 	@FXML
 	void hitCancelButton(ActionEvent event) {
 		root.expandedProperty().set(false);
-		currentElement.init();
-		connectToNewElement(currentElement);
+		if (currentElement != null) {
+			currentElement.init();
+			connectToNewElement(currentElement);
+		}
 	}
 	
 	@FXML
