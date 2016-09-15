@@ -352,7 +352,11 @@ public class ElementEditorController implements Initializable {
 			throw new RuntimeException("For some reason can't transfer changes from copy of the "
 					+ "current CuteElement to the current CuteElement");
 		}
-		currentElement.init();
+		// Reinitialize whole project, because parents(CuteNodes) of currentElement might be broken
+		// and after fining currentElement, they might get healthy.
+		// TODO: run nice animation during reinitialization as it is CPU intense and may hang GUI.
+		// Or find a way to not reinit the whole project, but only parent CuteNodes.
+		ProjectManager.getProject().init();
 		connectToNewElement(currentElement);
 	}
 	
