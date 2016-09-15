@@ -266,15 +266,17 @@ public final class GUIUtil {
 	}
 
 	/**
-	 * Manage validation tooltips. <br>
-	 * This method creates listener for {@link ValidationSupport} object. <br>
+	 * This method creates listener for {@link ValidationSupport} object which shows tooltips when
+	 * field validation fails. <br>
 	 * When new message arrives to ValidationSupport object, the new tooltip will automatically
 	 * appear near {@link Control} that generated this message.
 	 *
 	 * @param validationSupport
-	 *            the {@link ValidationSupport} object
+	 *            The {@link ValidationSupport} object.
+	 * @return The validation result change listener.
 	 */
-	public static void manageValidationTooltips(ValidationSupport validationSupport) {
+	public static ChangeListener<? super ValidationResult> createValidationListener(
+			ValidationSupport validationSupport) {
 		// container with current tooltip
 		AtomicReference<Tooltip> TPContainer = new AtomicReference<>();
 		Consumer<? super ValidationMessage> tooltipAction = new Consumer<ValidationMessage>() {
@@ -313,6 +315,6 @@ public final class GUIUtil {
 				currentMessages.forEach(tooltipAction);
 			}
 		};
-		validationSupport.validationResultProperty().addListener(listener);
+		return listener;
 	}
 }

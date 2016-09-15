@@ -36,6 +36,7 @@ import com.ubershy.streamsis.project.ElementInfo;
 import com.ubershy.streamsis.project.ProjectManager;
 
 import javafx.beans.InvalidationListener;
+import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -64,8 +65,9 @@ public class PropsWithNameController implements Initializable {
 	@FXML
 	private GridPane root;
 
-	private ValidationSupport validationSupport = new ValidationSupport();
-
+	private ValidationSupport validationSupport;
+	
+	private ChangeListener<? super ValidationResult> validationListener;
 
 	public Node getView() {
 		return root;
@@ -73,22 +75,6 @@ public class PropsWithNameController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		validationSupport.setValidationDecorator(new StyleClassValidationDecoration());
-		GUIUtil.manageValidationTooltips(validationSupport);
-		
-		Validator<String> nameTextFieldValidator = (c, newValue) -> {
-			ValidationResult alreadyExistanceResult = ValidationResult.fromErrorIf(c,
-					"The name is already taken. Please choose another one",
-					validateNameAlreadyExistence(c, newValue));
-			ValidationResult emptyResult = ValidationResult.fromErrorIf(c,
-					"Please choose a name for the element", validateNameEmptiness(c, newValue));
-			ValidationResult finalResult = ValidationResult.fromResults(emptyResult,
-					alreadyExistanceResult);
-			buttonStateManager.reportNewValueOfControl(originalName, newValue, c, finalResult);
-			return finalResult;
-		};
-		validationSupport.registerValidator(nameTextField, nameTextFieldValidator);
-
 		root.sceneProperty().addListener((InvalidationListener) o -> {
 			if (root.getScene() != null) {
 				String url = PropsWithNameController.class.getResource("/css/validation.css")
@@ -142,11 +128,15 @@ public class PropsWithNameController implements Initializable {
 		// variables of the CuteElement's copy. Modified CuteElement's copy will be used to spread
 		// changes to original CuteElement.
 		currentCuteController.bindToCuteElement(newElementCopy);
-		currentCuteController.setValidationSupport(validationSupport);
-		root.add(currentCuteController.getView(), 0, 1);
 		// Let's bind nameTextField to CuteElement's name
 		nameTextField.setText(newInfo.getName());
 		nameTextField.textProperty().bindBidirectional(newInfo.nameProperty());
+		// This will update validationSupport and validationListener variables.
+		recreateValidationSupport();
+		// Give new validationSupport to currentCuteController, so it can validate input in fields.
+		currentCuteController.setValidationSupport(validationSupport);
+		root.add(currentCuteController.getView(), 0, 1);
+
 		if (buttonStateManager.needToReinitCuteElementProperty().get())
 			newElementCopy.init();
 			buttonStateManager.setCuteElementAsInitialized();
@@ -179,6 +169,37 @@ public class PropsWithNameController implements Initializable {
 		}
 		// Elements of other types can have same names, so no error
 		return false;
+	}
+	
+	/**
+	 * Recreates {@link #validationSupport} with it's listener {@link #validationListener} <br>
+	 * Also removes listener from old validationSupport.
+	 * <p>
+	 * Note: the listener it creates shows tooltips on controls when their values don't pass simple
+	 * validation.
+	 */
+	private void recreateValidationSupport() {
+		// Remove listener from old validationSupport.
+		if (validationSupport != null) {
+			validationSupport.validationResultProperty().removeListener(validationListener);
+		}
+		// Create new validationSupport.
+		validationSupport = new ValidationSupport();
+		validationSupport.setValidationDecorator(new StyleClassValidationDecoration());
+		validationListener = GUIUtil.createValidationListener(validationSupport);
+		validationSupport.validationResultProperty().addListener(validationListener);
+		Validator<String> nameTextFieldValidator = (c, newValue) -> {
+			ValidationResult alreadyExistanceResult = ValidationResult.fromErrorIf(c,
+					"The name is already taken. Please choose another one",
+					validateNameAlreadyExistence(c, newValue));
+			ValidationResult emptyResult = ValidationResult.fromErrorIf(c,
+					"Please choose a name for the element", validateNameEmptiness(c, newValue));
+			ValidationResult finalResult = ValidationResult.fromResults(emptyResult,
+					alreadyExistanceResult);
+			buttonStateManager.reportNewValueOfControl(originalName, newValue, c, finalResult);
+			return finalResult;
+		};
+		validationSupport.registerValidator(nameTextField, nameTextFieldValidator);
 	}
 
 }
