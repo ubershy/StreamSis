@@ -36,8 +36,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Effect;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 /**
@@ -53,6 +56,8 @@ public class SisSceneCell extends ListCell<SisScene> {
 
 	/** The icon for {@link SisScene} used in {@link #primaryLabel}. */
 	private Text primaryLabelIcon = GlyphsDude.createIcon(FontAwesomeIcon.FILM);
+	
+	private DropShadow selectedShadow = new DropShadow();
 
 	/** The Label that indicates if {@link SisScene} primary or not by the color of it's shadow. */
 	private Label primaryLabel = new Label();
@@ -63,11 +68,18 @@ public class SisSceneCell extends ListCell<SisScene> {
 		primaryLabelIcon.setScaleY(1.25);
 		primaryLabel.setMinWidth(14);
 		primaryLabel.setGraphic(primaryLabelIcon);
+        selectedShadow.setColor(Color.BLACK);
+        selectedShadow.setSpread(0.75);
+        selectedShadow.setRadius(2);
+       
 		setGraphic(primaryLabel);
 		primarySisSceneName.bind(ProjectManager.getProject().primarySisSceneNameProperty());
 		ChangeListener<String> defaultSisSceneListener = (observable, oldValue,
-				newValue) -> checkIfDefaultAndApplyStyle(newValue);
+				newValue) -> refreshSisSceneLook(newValue, this.selectedProperty().get());
 		primarySisSceneName.addListener(defaultSisSceneListener);
+		ChangeListener<? super Boolean> selectedListener = (observable, oldValue,
+				newValue) -> refreshSisSceneLook(primarySisSceneName.get(), newValue);
+		this.selectedProperty().addListener(selectedListener);
 	}
 
 	@Override
@@ -90,7 +102,8 @@ public class SisSceneCell extends ListCell<SisScene> {
 			} else {
 				setGraphic(primaryLabel);
 				textProperty().bind(item.getElementInfo().nameProperty());
-				checkIfDefaultAndApplyStyle(ProjectManager.getProject().getPrimarySisSceneName());
+				refreshSisSceneLook(ProjectManager.getProject().getPrimarySisSceneName(), 
+						selectedProperty().get());
 				PossibleMoves possibleMoves = PossibleMoves.UPORDOWN;
 				if (getListView().getItems().size() != 1) {
 					if (getIndex() == 0)
@@ -185,25 +198,45 @@ public class SisSceneCell extends ListCell<SisScene> {
 		return getItem() == null ? "" : getItem().getElementInfo().getName();
 	}
 
-	private void checkIfDefaultAndApplyStyle(String nameOfDefaultSisScene) {
-		if (nameOfDefaultSisScene != null) {
+	private void refreshSisSceneLook(String primarySisSceneName, boolean isSelected) {
+		if (primarySisSceneName != null) {
 			if (getItem() != null) {
-				if (nameOfDefaultSisScene.equals(getItem().getElementInfo().getName())) {
-					setStyle("-fx-font-weight: bold;");
-					// Icon has blue shadow if primary.
-					setPrimaryLabelEffect(
-							"-fx-effect: dropshadow(gaussian, deepskyblue, 3,0,0,0);");
+				Effect effect;
+				String style;
+				Color finalColor;
+				boolean isPrimary = primarySisSceneName
+						.equals(getItem().getElementInfo().getName());
+				if (isSelected) {
+					effect = selectedShadow;
 				} else {
-					setStyle("-fx-font-weight: normal;");
-					// Icon has pink shadow if not primary.
-					setPrimaryLabelEffect("-fx-effect: dropshadow(gaussian, hotpink, 3,0,0,0);");
+					effect = null;
 				}
+				if (isPrimary) {
+					style = "-fx-font-weight: bold;";
+					if (isSelected) {
+						finalColor = Color.LIGHTCYAN;
+					} else {
+						finalColor = Color.DEEPPINK;
+					}
+				} else {
+					style = "-fx-font-weight: normal;";
+					if (isSelected) {
+						finalColor = Color.LIGHTSKYBLUE;
+					} else {
+						finalColor = Color.HOTPINK;
+					}
+				}
+				applySisSceneLook(effect, style, finalColor);
 			}
 		}
 	}
 
-	private void setPrimaryLabelEffect(String newEffect) {
-		if (!primaryLabel.getStyle().equals(newEffect))
-			primaryLabel.setStyle(newEffect);
+	private void applySisSceneLook(Effect effect, String style, Color finalColor) {
+		if (!getStyle().equals(style))
+			setStyle(style);
+		primaryLabelIcon.setEffect(effect);
+		if (!finalColor.equals(primaryLabelIcon.getFill()))
+			primaryLabelIcon.setFill(finalColor);
 	}
+
 }
