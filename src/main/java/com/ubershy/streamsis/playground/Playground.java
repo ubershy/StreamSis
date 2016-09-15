@@ -118,10 +118,10 @@ public final class Playground {
 		uniTestActor.addOnAction(
 				new MultiSoundAction(resourcesLocation + "UniTest\\Sounds\\", 1.0, true));
 		// uniTestActor.addOnAction(new HotkeyAction(closeWindow));
-		uniTestActor.addOnAction(new RunProgramAction("cmd.exe",
+		uniTestActor.addOnAction(new RunProgramAction("C:\\Windows\\System32\\cmd.exe",
 				"/C \"" + resourcesLocation + "Scripts\\curl_lamp_set_hue.bat\" " + "307", "",
 				false));
-		uniTestActor.addOffAction(new RunProgramAction("cmd.exe",
+		uniTestActor.addOffAction(new RunProgramAction("C:\\Windows\\System32\\cmd.exe",
 				"/C \"" + resourcesLocation + "Scripts\\curl_lamp_set_hue.bat\" " + "180", "",
 				false));
 		Checker checker1 = new RegionChecker(new Coordinates(1320, 480, 600, 600),
