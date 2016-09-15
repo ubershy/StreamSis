@@ -26,6 +26,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.project.AbstractCuteNode;
+
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -42,9 +45,9 @@ public class DelayedActions extends AbstractCuteNode implements Action {
 	protected ObservableList<Action> actions = FXCollections.observableArrayList();
 
 	/** The execution delay. */
-	@JsonProperty("delay")
-	protected int delay = 0;
-
+	@JsonIgnore
+	protected IntegerProperty delay = new SimpleIntegerProperty(0);
+	
 	public DelayedActions() {
 	}
 
@@ -57,9 +60,11 @@ public class DelayedActions extends AbstractCuteNode implements Action {
 	 *            the execution delay
 	 */
 	@JsonCreator
-	public DelayedActions(@JsonProperty("actions") ArrayList<Action> actions, @JsonProperty("delay") int delay) {
+	public DelayedActions(@JsonProperty("actions") ArrayList<Action> actions,
+			@JsonProperty("delay") int delay) {
 		this.actions.setAll(actions);
-		this.delay = delay;
+		this.delay.set(delay);
+		;
 	}
 
 	@Override
@@ -70,7 +75,7 @@ public class DelayedActions extends AbstractCuteNode implements Action {
 				@Override
 				public void run() {
 					try {
-						Thread.sleep(delay);
+						Thread.sleep(delay.get());
 					} catch (InterruptedException e) {
 						elementInfo.setBooleanResult(false);
 						return;
@@ -100,7 +105,17 @@ public class DelayedActions extends AbstractCuteNode implements Action {
 		return MaxAddableChildrenCount.INFINITY;
 	}
 
+	@JsonProperty("delay")
 	public int getDelay() {
+		return this.delay.get();
+	}
+	
+	@JsonProperty("delay")
+	public void setDelay(int delay) {
+		this.delay.set(delay);
+	}
+	
+	public IntegerProperty delayProperty() {
 		return delay;
 	}
 
@@ -113,7 +128,8 @@ public class DelayedActions extends AbstractCuteNode implements Action {
 					if (action != null) {
 						action.init();
 						if (action.getElementInfo().isBroken()) {
-							elementInfo.setAsBroken("Contained Action " + action.getClass().getSimpleName() + " is broken");
+							elementInfo.setAsBroken("Contained Action "
+									+ action.getClass().getSimpleName() + " is broken");
 						}
 					} else {
 						elementInfo.setAsBroken("Contained Action is not defined");
@@ -137,8 +153,4 @@ public class DelayedActions extends AbstractCuteNode implements Action {
 		}
 	}
 	
-	public void setDelay(int delay) {
-		this.delay = delay;
-	}
-
 }
