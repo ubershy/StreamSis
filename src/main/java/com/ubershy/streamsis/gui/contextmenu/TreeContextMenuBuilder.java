@@ -220,7 +220,7 @@ public class TreeContextMenuBuilder {
 	private static Menu generateNewCuteNodeMenu(CuteNode whereToAdd) {
 		AddableChildrenTypeInfo typeInfo = whereToAdd.getAddableChildrenTypeInfo();
 		Class<? extends CuteNode> type = typeInfo.getType();
-		Menu addNewActionMenu = new Menu("Add new " + type.getSimpleName() + "...");
+		Menu addNewCuteNodeMenu = new Menu("Add new " + type.getSimpleName() + "...");
 		List<Class<? extends CuteNode>> listWithCuteNodes;
 		switch (typeInfo) {
 		case ACTION:
@@ -237,25 +237,62 @@ public class TreeContextMenuBuilder {
 					+ " is not implemented. You can fix it =)");
 		}
 
+		// This list will later help to generate name for the new CuteNode.
+		List<String> existingChildrenNames = new ArrayList<String>();
+		for (CuteNode node : whereToAdd.getChildren()) {
+			existingChildrenNames.add(node.getElementInfo().getName());
+		}
+
 		for (Class<? extends CuteNode> cuteNodeClass : listWithCuteNodes) {
-			CustomMenuItem newActionMenuItem = GUIUtil
+			// TODO: Set good description of CuteNodes instead of smile :3
+			CustomMenuItem newCuteNodeMenuItem = GUIUtil
 					.createTooltipedMenuItem(cuteNodeClass.getSimpleName(), ":3");
-			newActionMenuItem.setOnAction((ActionEvent event) -> {
-				CuteNode actionToAdd = null;
+			newCuteNodeMenuItem.setOnAction((ActionEvent event) -> {
+				CuteNode nodeToAdd = null;
 				try {
-					actionToAdd = cuteNodeClass.newInstance();
+					// Instantiate CuteNode
+					nodeToAdd = cuteNodeClass.newInstance();
+					// Set Appropriate name for CuteNode
+					nodeToAdd.getElementInfo().setName(
+							generateUniqueNameForCuteNode(cuteNodeClass, existingChildrenNames));
 				} catch (Exception e) {
 					System.out
 							.println("Can't instantiate object: " + cuteNodeClass.getSimpleName());
 					e.printStackTrace();
 				}
-				if (actionToAdd != null) {
-					whereToAdd.getChildren().add(actionToAdd);
+				if (nodeToAdd != null) {
+					whereToAdd.getChildren().add(nodeToAdd);
 				}
 			});
-			addNewActionMenu.getItems().add(newActionMenuItem);
+			addNewCuteNodeMenu.getItems().add(newCuteNodeMenuItem);
 		}
-		return addNewActionMenu;
+		return addNewCuteNodeMenu;
+	}
+
+	/**
+	 * Generates possible name for {@link CuteNode} which will be created inside parent CuteNode as
+	 * a child. <br>
+	 * The name will be unique only in parent CuteNode's scope, not project scope. <br>
+	 * The name will look like this: "New SomeCuteNodeClassName". <br>
+	 * An incrementing number in parentheses might be added to ensure this name is unique.
+	 * 
+	 * @param cuteNodeClass
+	 *            The class of CuteNode which name should be generated.
+	 * @param existingChildrenNames
+	 *            A list with the names of parent CuteNode's existing children.
+	 * 
+	 * @return A Name which unique in parent CuteNode's scope.
+	 */
+	private static String generateUniqueNameForCuteNode(Class<? extends CuteNode> cuteNodeClass,
+			List<String> existingChildrenNames) {
+		String genericName = "New " + cuteNodeClass.getSimpleName();
+		String alteredName = genericName;
+		int counter = 0;
+		while (existingChildrenNames.contains(alteredName)) {
+			counter++;
+			alteredName = String.format("%s(%d)", genericName, counter);
+		}
+		return alteredName;
 	}
 
 	/**
