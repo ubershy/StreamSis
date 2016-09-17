@@ -438,4 +438,8 @@ public class CuteButtonsStatesManager {
 	public void reportEndOfTest() {
 		currentlyTesting.set(false);		
 	}
+	
+	public boolean areChangesMade() {
+		return changesMade.get();
+	}
 }

@@ -23,15 +23,17 @@ import com.ubershy.streamsis.actors.AbstractActor;
 import javafx.collections.ObservableList;
 
 /**
- * This container is useful for GUI rendering when an CuteNode has more than one list of children. <br>
+ * This container is useful for GUI rendering when an {@link CuteNode} has more than one list of
+ * children.
  * 
  * @see {@link AbstractActor} as example. <br>
- *      It has 3 lists of children: checker, onActions, offActions inside corresponding CuteNodeContainers.
+ *      It has 3 lists of children: checker, onActions, offActions inside corresponding
+ *      CuteNodeContainers.
  */
 @SuppressWarnings("rawtypes")
 public class CuteNodeContainer extends AbstractCuteNode {
 
-	/** The children. */
+	/** The children with {@link CuteNode}s. */
 	protected ObservableList<CuteNode> children;
 
 	/** The allowed type for children. */
@@ -39,19 +41,33 @@ public class CuteNodeContainer extends AbstractCuteNode {
 	
 	/** The allowed quantity of children. */
 	protected MaxAddableChildrenCount maxMaxAddableChildrenCount;
+	
+	/**
+	 * Instantiates a new CuteNodeContainer. Just kidding, it doesn't. Instead it throws error which
+	 * serves as a reminder to someone who might remove few "unimportant" lines from GUI code or
+	 * decided to implement empty constructor.
+	 */
+	public CuteNodeContainer() {
+		throw new RuntimeException("Programmer. You should not try to serialize/deserialize this"
+				+ " thing. Also it's fields should never be edited in Element Editor panel.");
+	}
 
 	/**
 	 * Instantiates a new CuteNodeContainer.
 	 *
 	 * @param children
-	 *            the children to store inside CuteNodeContainer
+	 *            The children to store inside CuteNodeContainer.
 	 * @param name
-	 *            the name of this CuteNodeContainer
+	 *            The name of this CuteNodeContainer.
 	 * @param childrenType
-	 *            the allowed type of children
+	 *            The allowed type of children.
+	 * @param maxMaxAddableChildrenCount
+	 *            The allowed quantity of children.
 	 */
 	@SuppressWarnings("unchecked")
-	public CuteNodeContainer(ObservableList children, String name, AddableChildrenTypeInfo childrenType, MaxAddableChildrenCount maxMaxAddableChildrenCount) {
+	public CuteNodeContainer(ObservableList children, String name,
+			AddableChildrenTypeInfo childrenType,
+			MaxAddableChildrenCount maxMaxAddableChildrenCount) {
 		this.children = children;
 		this.elementInfo.setName(name);
 		this.childrenType = childrenType;
@@ -78,7 +94,8 @@ public class CuteNodeContainer extends AbstractCuteNode {
 
 	@Override
 	public void init() {
-		// Let init() happen in CuteNodes where CuteNodeContainers are stored.
+		// Let init() of contained children happen in CuteNodes where this CuteNodeContainer is
+		// stored.
 	}
 
 }

@@ -23,6 +23,7 @@ import com.ubershy.streamsis.counters.Counter;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.contextmenu.TreeContextMenuBuilder;
 import com.ubershy.streamsis.project.CuteNode;
+import com.ubershy.streamsis.project.CuteNodeContainer;
 import com.ubershy.streamsis.project.ElementInfo;
 import com.ubershy.streamsis.project.ElementInfo.ElementHealth;
 import com.ubershy.streamsis.project.ElementInfo.Result;
@@ -95,6 +96,9 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 
 	/** The UNKNOWN icon for {@link Counter} used in {@link #resultLabel}. */
 	private Text resultUnknownTextForCounter = GlyphsDude.createIcon(FontAwesomeIcon.TH_LARGE);
+	
+	/** The UNKNOWN icon for {@link CuteNodeContainer} used in {@link #resultLabel}. */
+	private Text resultUnknownTextForContainer = GlyphsDude.createIcon(FontAwesomeIcon.CUBES);
 
 	/** The text with number used in {@link #resultLabel} for {@link Counter}. */
 	private Text numberResultText = new Text("0");
@@ -126,6 +130,7 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 		resultSuccessTextForAction.setFill(Color.DEEPSKYBLUE);
 		resultUnknownTextForAction.setFill(Color.HOTPINK);
 		resultUnknownTextForCounter.setFill(Color.HOTPINK);
+		resultUnknownTextForContainer.setFill(Color.HOTPINK);
 		actionSuccessAnimation.setInterpolator(Interpolator.DISCRETE);
 		actionFailAnimation.setInterpolator(Interpolator.DISCRETE);
 		numberResultText.setFill(Color.DEEPPINK);
@@ -239,6 +244,8 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 			processResultForCounter(newResult);
 		} else if (currentElement instanceof Action) {
 			processResultForAction(newResult);
+		} else if (currentElement instanceof CuteNodeContainer) {
+			processResultForContainer(newResult);
 		} else if (currentElement == null) {
 			return;
 		} else {
@@ -307,6 +314,20 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 				resultLabel.setGraphic(resultFailTextForAction);
 				actionFailAnimation.playFromStart();
 			}
+		}
+	}
+	
+	/**
+	 * Process result for {@link CuteNodeContainer} to change {@link #resultLabel} view.
+	 *
+	 * @param newResult the new result
+	 */
+	private void processResultForContainer(Result<?> newResult) {
+		Object object = newResult.get();
+		if (object == null) {
+			resultLabel.setGraphic(resultUnknownTextForContainer);
+		} else {
+			throw new RuntimeException("CuteNodeContainer can only have null as result.");
 		}
 	}
 

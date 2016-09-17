@@ -31,6 +31,7 @@ import com.ubershy.streamsis.gui.StreamSisAppFactory;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteElement;
+import com.ubershy.streamsis.project.CuteNodeContainer;
 import com.ubershy.streamsis.project.SisScene;
 import com.ubershy.streamsis.project.ElementInfo;
 import com.ubershy.streamsis.project.ProjectManager;
@@ -109,7 +110,14 @@ public class PropsWithNameController implements Initializable {
 
 	public void setPropertiesViewByCuteElement(CuteElement newElementCopy) {
 		// Let's unbind name text field from previous CuteElement's name
-		nameTextField.textProperty().unbind();
+		if (elementWorkingCopy != null) {
+			nameTextField.textProperty()
+					.unbindBidirectional(elementWorkingCopy.getElementInfo().nameProperty());
+		}
+		// Let's unbind currentCuteController's fields from previous CuteElement's properties
+		if (currentCuteController != null) {
+			currentCuteController.unbindFromCuteElement();
+		}
 		// Let's clean the cell from the previous view, if it exists
 		if (currentCuteController != null) {
 			root.getChildren().remove(currentCuteController.getView());
@@ -136,7 +144,12 @@ public class PropsWithNameController implements Initializable {
 		// Give new validationSupport to currentCuteController, so it can validate input in fields.
 		currentCuteController.setValidationSupport(validationSupport);
 		root.add(currentCuteController.getView(), 0, 1);
-
+		// CuteNodeContainer should not be edited.
+		if (newElementCopy instanceof CuteNodeContainer) {
+			nameTextField.setDisable(true);
+		} else {
+			nameTextField.setDisable(false);
+		}
 		if (buttonStateManager.needToReinitCuteElementProperty().get())
 			newElementCopy.init();
 			buttonStateManager.setCuteElementAsInitialized();

@@ -108,11 +108,6 @@ public class ActorController extends AbstractCuteController {
 	 */
 	@Override
 	public void bindToCuteElement(CuteElement element) {
-		// Unbind from the previous Actor.
-		checkIntervalIntegerTextField.textProperty().unbind();
-		repeatIntervalIntegerTextField.textProperty().unbind();
-		repeatOnActionsCheckBox.selectedProperty().unbind();
-		repeatOffActionsCheckBox.selectedProperty().unbind();
 		actor = (Actor) element;
 		// Remember original values of the new Actor's properties.
 		origRepeatOnActions = actor.getDoOnRepeat();
@@ -120,14 +115,20 @@ public class ActorController extends AbstractCuteController {
 		origCheckInterval = actor.getCheckInterval();
 		origRepeatInterval = actor.getRepeatInterval();
 		// Bind to the new Actor.
-		checkIntervalIntegerTextField.numberProperty()
-				.bindBidirectional(actor.checkIntervalProperty());
-		repeatIntervalIntegerTextField.numberProperty()
-				.bindBidirectional(actor.repeatIntervalProperty());
-		repeatOnActionsCheckBox.selectedProperty().bindBidirectional(actor.doOnRepeatProperty());
-		repeatOffActionsCheckBox.selectedProperty().bindBidirectional(actor.doOffRepeatProperty());
+		bindBidirectionalAndRemember(checkIntervalIntegerTextField.numberProperty(), actor.checkIntervalProperty());
+		bindBidirectionalAndRemember(repeatIntervalIntegerTextField.numberProperty(), actor.repeatIntervalProperty());
+		bindBidirectionalAndRemember(repeatOnActionsCheckBox.selectedProperty(), actor.doOnRepeatProperty());
+		bindBidirectionalAndRemember(repeatOffActionsCheckBox.selectedProperty(), actor.doOffRepeatProperty());
 	}
 
+	/*
+	 * @inheritDoc
+	 */
+	@Override
+	public void unbindFromCuteElement() {
+		unbindAllRememberedBinds();
+	}
+	
 	/*
 	 * @inheritDoc
 	 */

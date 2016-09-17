@@ -94,11 +94,20 @@ public class RunProgramActionController extends AbstractCuteController {
 		origPath = action.getPath();
 		origWorkingDir = action.getWorkingDir();
 		origKillIfStillRunning = action.getkillIfStillRunning();
-		argumentsTextField.textProperty().bindBidirectional(action.argumentsProperty());
-		pathTextField.textProperty().bindBidirectional(action.pathProperty());
-		workingDirTextField.textProperty().bindBidirectional(action.workingDirProperty());
-		terminationCheckBox.selectedProperty()
-				.bindBidirectional(action.killIfStillRunningProperty());
+		bindBidirectionalAndRemember(argumentsTextField.textProperty(), action.argumentsProperty());
+		bindBidirectionalAndRemember(pathTextField.textProperty(), action.pathProperty());
+		bindBidirectionalAndRemember(workingDirTextField.textProperty(),
+				action.workingDirProperty());
+		bindBidirectionalAndRemember(terminationCheckBox.selectedProperty(),
+				action.killIfStillRunningProperty());
+	}
+	
+	/*
+	 * @inheritDoc
+	 */
+	@Override
+	public void unbindFromCuteElement() {
+		unbindAllRememberedBinds();
 	}
 
 	@FXML

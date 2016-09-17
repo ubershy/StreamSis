@@ -80,13 +80,20 @@ public class DelayedActionsController extends AbstractCuteController {
 	 */
 	@Override
 	public void bindToCuteElement(CuteElement element) {
-		// Unbind from the previous Actor.
-		delayIntegerTextField.numberProperty().unbind();
 		delayedActions = (DelayedActions) element;
 		// Remember original values of the new Actor's properties.
 		origDelay = delayedActions.getDelay();
 		// Bind to the new Actor.
-		delayIntegerTextField.numberProperty().bindBidirectional(delayedActions.delayProperty());
+		bindBidirectionalAndRemember(delayIntegerTextField.numberProperty(),
+				delayedActions.delayProperty());
+	}
+	
+	/*
+	 * @inheritDoc
+	 */
+	@Override
+	public void unbindFromCuteElement() {
+		unbindAllRememberedBinds();
 	}
 
 	/*

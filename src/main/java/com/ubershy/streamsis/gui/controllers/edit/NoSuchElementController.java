@@ -40,6 +40,14 @@ public class NoSuchElementController extends AbstractCuteController {
 	public void bindToCuteElement(CuteElement element) {
 		// Nothing to set
 	}
+	
+	/*
+	 * @inheritDoc
+	 */
+	@Override
+	public void unbindFromCuteElement() {
+		// Do nothing.
+	}
 
 	/*
 	 * @inheritDoc

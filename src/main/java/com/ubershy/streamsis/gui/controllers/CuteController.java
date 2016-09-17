@@ -38,6 +38,11 @@ public interface CuteController {
 	 *            the CuteElement
 	 */
 	public void bindToCuteElement(CuteElement cuteElement);
+	
+	/**
+	 * Unbinds view's controls from CuteElement's properties.
+	 */
+	public void unbindFromCuteElement();
 
 	/**
 	 * Gets the View's Root Node corresponding to this controller.

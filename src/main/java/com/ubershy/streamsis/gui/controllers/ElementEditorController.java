@@ -34,6 +34,7 @@ import com.ubershy.streamsis.gui.animations.HorizontalShadowAnimation;
 import com.ubershy.streamsis.gui.animations.ThreeDotsAnimation;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.project.CuteElement;
+import com.ubershy.streamsis.project.CuteNodeContainer;
 import com.ubershy.streamsis.project.ElementInfo;
 import com.ubershy.streamsis.project.ElementSerializator;
 import com.ubershy.streamsis.project.ProjectManager;
@@ -273,18 +274,25 @@ public class ElementEditorController implements Initializable {
 		whyUnhealthyProperty.unbind();
 		
 		this.currentElement = currentElement;
-
+		
 		// CuteElements of higher hierarchy levels are referring to current element, and it's hard
 		// to substitute this reference. It's easier to retain this reference.
 		// Let's create a copy of the current CuteElement and work on the copy. After the user will
 		// finish editing this copy and press "Ok" or "Apply" buttons, we can transfer changes back
 		// to the original CuteElement.
-		String serializedCurrentElement = null;
-		try {
-			serializedCurrentElement = ElementSerializator.serializeToString(currentElement);
-			elementWorkingCopy = ElementSerializator.deserializeFromString(serializedCurrentElement);
-		} catch (IOException e) {
-			throw new RuntimeException(e.getMessage());
+		if (currentElement instanceof CuteNodeContainer) {
+			// CuteNodeContained should be never edited or serialized. So we can just assign
+			// to reference elementWorkingCopy.
+			elementWorkingCopy = currentElement;
+		} else {
+			// Other CuteElements can be edited and serialized.
+			String serializedCurrentElement = null;
+			try {
+				serializedCurrentElement = ElementSerializator.serializeToString(currentElement);
+				elementWorkingCopy = ElementSerializator.deserializeFromString(serializedCurrentElement);
+			} catch (IOException e) {
+				throw new RuntimeException(e.getMessage());
+			}
 		}
 		
 		elementWorkingCopy.init();
@@ -368,7 +376,8 @@ public class ElementEditorController implements Initializable {
 	@FXML
 	void hitOKButton(ActionEvent event) {
 		root.expandedProperty().set(false);
-		applyChanges();
+		if (buttonStateManager.areChangesMade())
+			applyChanges();
 	}
 
 	@FXML

@@ -124,6 +124,15 @@ public class HotkeyActionController extends AbstractCuteController {
 		keyTextField.textProperty().bind(readableKey);
 	}
 
+	/*
+	 * @inheritDoc
+	 */
+	@Override
+	public void unbindFromCuteElement() {
+		hkAction.keysProperty().unbind();
+		keyTextField.textProperty().unbind();
+	}
+	
 	protected String extractFullHotkeyFromKeyCombination(KeyCodeCombination kb) {
 		return kb.getDisplayText();
 	}
