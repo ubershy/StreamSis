@@ -290,6 +290,8 @@ public final class GUIUtil {
 					tp.setAutoHide(true);
 					tp.show(control, p.getX(), p.getY());
 					TPContainer.set(tp);
+					// Request focus on the field, so the user don't have to click on it.
+					control.requestFocus();
 				}
 			}
 		};
