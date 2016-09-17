@@ -244,6 +244,8 @@ public final class GUIUtil {
 			alteredName = String.format("%s(%d)", genericName, counter);
 		}
 		SisScene newSisScene = new SisScene(alteredName, new String[] {});
+		// Initialize SisScene to highlight that it is still not configured
+		newSisScene.init();
 		ProjectManager.getProject().addSisScene(newSisScene);
 		// GUIManager.setSisSceneToRenameIndex(
 		// ProjectManager.getProject().getSisScenes().indexOf(newSisScene));
@@ -261,6 +263,8 @@ public final class GUIUtil {
 			alteredName = String.format("%s(%d)", genericName, counter);
 		}
 		Actor newActor = new UniversalActor(alteredName, 1000, 1000, false, false);
+		// Initialize Actor to highlight that it is still not configured
+		newActor.init();
 		ProjectManager.getProject().addActorToGlobalActors(newActor);
 		ProjectManager.getProject().addExistingActorToCurrentSisScene(newActor);
 	}

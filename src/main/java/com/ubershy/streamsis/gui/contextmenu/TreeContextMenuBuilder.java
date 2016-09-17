@@ -255,6 +255,8 @@ public class TreeContextMenuBuilder {
 					// Set Appropriate name for CuteNode
 					nodeToAdd.getElementInfo().setName(
 							generateUniqueNameForCuteNode(cuteNodeClass, existingChildrenNames));
+					// Initialize CuteNode to highlight that it is still not configured
+					nodeToAdd.init();
 				} catch (Exception e) {
 					System.out
 							.println("Can't instantiate object: " + cuteNodeClass.getSimpleName());
