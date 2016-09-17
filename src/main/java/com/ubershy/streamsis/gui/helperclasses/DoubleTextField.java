@@ -82,24 +82,7 @@ public class DoubleTextField extends TextField {
 	 */
 	public DoubleTextField(double maxAllowedValue, boolean allowNegativeValues) {
 		setDoubleFilter(maxAllowedValue, allowNegativeValues);
-		textProperty().addListener(textFieldListener);
-		numberProperty().addListener(numberPropertyListener);
-	}
-
-	/**
-	 * Instantiates a new DoubleTextField.
-	 *
-	 * @param text
-	 *            The text to set initially.
-	 * @param maxAllowedValue
-	 *            The maximum allowed value to input. If input value is more than that, the input
-	 *            will not occur.
-	 * @param allowNegativeValues
-	 *            Allow negative values or not.
-	 */
-	public DoubleTextField(String text, double maxAllowedValue, boolean allowNegativeValues) {
-		super(text);
-		setDoubleFilter(maxAllowedValue, allowNegativeValues);
+		textProperty().set(String.valueOf(numberProperty.get()));
 		textProperty().addListener(textFieldListener);
 		numberProperty().addListener(numberPropertyListener);
 	}
