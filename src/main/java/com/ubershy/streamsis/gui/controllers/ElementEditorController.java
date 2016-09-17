@@ -362,9 +362,14 @@ public class ElementEditorController implements Initializable {
 		}
 		// Reinitialize whole project, because parents(CuteNodes) of currentElement might be broken
 		// and after fining currentElement, they might get healthy.
-		// TODO: run nice animation during reinitialization as it is CPU intense and may hang GUI.
+		// FIXME: run nice animation during reinitialization as it is CPU intense and may hang GUI.
 		// Or find a way to not reinit the whole project, but only parent CuteNodes.
 		ProjectManager.getProject().init();
+		// Reinitialize currentElement particularly, because if other CuteNodes are broken,
+		// reinitialization of currentElement might not occur. For example, if Actor is broken
+		// because it doesn't have a Checker, the Actor will not check it's Actions on
+		// reinitialization - it knows it's already broken.
+		currentElement.init();
 		connectToNewElement(currentElement);
 	}
 	
