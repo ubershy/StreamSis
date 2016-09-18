@@ -108,20 +108,8 @@ public class PropsWithNameController implements Initializable {
 		this.buttonStateManager = buttonStateManager;
 	}
 
-	public void setPropertiesViewByCuteElement(CuteElement newElementCopy) {
-		// Let's unbind name text field from previous CuteElement's name
-		if (elementWorkingCopy != null) {
-			nameTextField.textProperty()
-					.unbindBidirectional(elementWorkingCopy.getElementInfo().nameProperty());
-		}
-		// Let's unbind currentCuteController's fields from previous CuteElement's properties
-		if (currentCuteController != null) {
-			currentCuteController.unbindFromCuteElement();
-		}
-		// Let's clean the cell from the previous view, if it exists
-		if (currentCuteController != null) {
-			root.getChildren().remove(currentCuteController.getView());
-		}
+	public void connectToCuteElement(CuteElement newElementCopy) {
+		disconnectFromConnectedCuteElement();
 		// Let's remember the reference to the CuteElement's copy
 		elementWorkingCopy = newElementCopy;
 		// Let's remember original name of the CuteElement
@@ -153,6 +141,22 @@ public class PropsWithNameController implements Initializable {
 		if (buttonStateManager.needToReinitCuteElementProperty().get())
 			newElementCopy.init();
 			buttonStateManager.setCuteElementAsInitialized();
+	}
+
+	private void disconnectFromConnectedCuteElement() {
+		// Let's unbind name text field from previous CuteElement's name
+		if (elementWorkingCopy != null) {
+			nameTextField.textProperty()
+					.unbindBidirectional(elementWorkingCopy.getElementInfo().nameProperty());
+		}
+		// Let's unbind currentCuteController's fields from previous CuteElement's properties
+		if (currentCuteController != null) {
+			currentCuteController.unbindFromCuteElement();
+		}
+		// Let's clean the cell from the previous view, if it exists
+		if (currentCuteController != null) {
+			root.getChildren().remove(currentCuteController.getView());
+		}
 	}
 
 	private boolean validateNameEmptiness(Control c, String name) {

@@ -119,11 +119,17 @@ public class ElementEditorController implements Initializable {
 	private Label propertiesPaneDots;
 
 	private PropsWithNameController propsWithNameController;
+	
+	private CuteController noneSelectedController = StreamSisAppFactory
+			.buildSpecialCuteController(SpecialCuteController.NONESELECTED);
 
 	private CuteButtonsStatesManager buttonStateManager = new CuteButtonsStatesManager();
 
 	/** The property of last selected CuteElement */
 	public ObjectProperty<CuteElement> lastFocusedProperty = new SimpleObjectProperty<>();
+	
+	/** The property with last deleted CuteElement */
+	private ObjectProperty<CuteElement> lastDeletedCuteElement = new SimpleObjectProperty<>();
 
 	private ObjectProperty<ElementHealth> elementHealthProperty = new SimpleObjectProperty<>();
 
@@ -155,12 +161,10 @@ public class ElementEditorController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
-		CuteController noneController = StreamSisAppFactory
-				.buildSpecialCuteController(SpecialCuteController.NONESELECTED);
 		propsWithNameController = (PropsWithNameController) StreamSisAppFactory
 				.buildControllerByRelativePath("PropsWithName.fxml");
 		propsWithNameController.setCuteButtonsStatesManager(buttonStateManager);
-		propertiesPane.setContent(noneController.getView());
+		propertiesPane.setContent(noneSelectedController.getView());
 		hsShadowAnima = new HorizontalShadowAnimation(statusLabel);
 		nameShadowAnima = new HorizontalShadowAnimation(nameLabel);
 		typeShadowAnima = new HorizontalShadowAnimation(typeLabel);
@@ -197,6 +201,20 @@ public class ElementEditorController implements Initializable {
 	}
 
 	private void initializeAllListeners() {
+		lastDeletedCuteElement.addListener((observableValue, oldElement, newElement) -> {
+			if (this.currentElement == newElement) {
+				propertiesPane.setContent(noneSelectedController.getView());
+				disconnectFromConnectedCuteElement();
+				nameLabel.setText("-");
+				typeLabel.setText("-");
+				statusLabel.setText("-");
+				statusLabel.setTextFill(Color.BLACK);
+				whyUnhealthyLabel.setText("-");
+				unhealthyPane.setVisible(false);
+				unhealthyPane.setManaged(false);
+				buttonStateManager.reset();
+			}
+		});
 		lastFocusedProperty
 				.addListener((ChangeListener<CuteElement>) (observable, oldValue, newValue) -> {
 					if (!propertiesPane.getContent().equals(propsWithNameController.getView())) {
@@ -268,10 +286,7 @@ public class ElementEditorController implements Initializable {
 	}
 
 	private void connectToNewElement(CuteElement currentElement) {
-		// Let's clean up after previous CuteElement
-		nameLabel.textProperty().unbind();
-		elementHealthProperty.unbind();
-		whyUnhealthyProperty.unbind();
+		disconnectFromConnectedCuteElement();
 		
 		this.currentElement = currentElement;
 		
@@ -310,12 +325,22 @@ public class ElementEditorController implements Initializable {
 		whyUnhealthyProperty.bind(infoOfCopyElement.whyUnhealthyProperty());
 
 		// Let's set up propertiesPane according to CuteElement
-		propsWithNameController.setPropertiesViewByCuteElement(elementWorkingCopy);
+		propsWithNameController.connectToCuteElement(elementWorkingCopy);
 		
 		// Let's reset state manager of buttons
 		buttonStateManager.reset();
 		
 		buttonStateManager.allowOrNotPerformTestButtonBasedOnElementClass(elementWorkingCopy);
+	}
+
+	private void disconnectFromConnectedCuteElement() {
+		// Let's clean up after previous CuteElement
+		nameLabel.textProperty().unbind();
+		elementHealthProperty.unbind();
+		whyUnhealthyProperty.unbind();
+		currentElement = null;
+		elementWorkingCopy = null;
+		buttonStateManager.allowOrNotPerformTestButtonBasedOnElementClass(null);
 	}
 
 	protected void defineElementHealthStyle(ElementHealth elementHealth) {
@@ -455,6 +480,10 @@ public class ElementEditorController implements Initializable {
 	            }
 			}
 	    });
+	}
+	
+	public void setLastDeletedCuteElement(CuteElement element) {
+		lastDeletedCuteElement.set(element);
 	}
 	
 }

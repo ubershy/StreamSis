@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.ubershy.streamsis.actions.Action;
 import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.counters.Counter;
+import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.helperclasses.CuteTreeCell;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteNode;
@@ -85,6 +86,7 @@ public class TreeContextMenuBuilder {
 				if (!list.isEmpty()) {
 					if (list.contains(cuteNode)) {
 						list.remove(cuteNode);
+						GUIManager.elementEditor.setLastDeletedCuteElement(cuteNode);
 					} else {
 						logger.error("Nothing to remove from list");
 					}

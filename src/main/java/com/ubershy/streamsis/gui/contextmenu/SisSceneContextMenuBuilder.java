@@ -61,7 +61,9 @@ public class SisSceneContextMenuBuilder {
 			project.removeSisScene(sisSceneList.getSelectionModel().getSelectedItem());
 		});
 		deleteSisSceneWithActorsMenuItem.setOnAction((ActionEvent event) -> {
-			project.removeSisSceneWithActors(sisSceneList.getSelectionModel().getSelectedItem());
+			SisScene scene = sisSceneList.getSelectionModel().getSelectedItem();
+			project.removeSisSceneWithActors(scene);
+			GUIManager.elementEditor.setLastDeletedCuteElement(scene);
 		});
 		setPrimarySisSceneMenuItem.setOnAction((ActionEvent event) -> {
 			project.setPrimarySisSceneName(

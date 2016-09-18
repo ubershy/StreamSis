@@ -70,10 +70,12 @@ public final class ActorContextMenuBuilder {
 		deleteActorMenuItem.setOnAction((ActionEvent event) -> {
 			Actor actor = actorList.getSelectionModel().getSelectedItem();
 			project.removeActorFromCurrentSisScene(actor);
+			GUIManager.elementEditor.setLastDeletedCuteElement(actor);
 		});
 		deleteActorGloballyMenuItem.setOnAction((ActionEvent event) -> {
 			Actor actor = actorList.getSelectionModel().getSelectedItem();
 			project.removeActorGlobally(actor);
+			GUIManager.elementEditor.setLastDeletedCuteElement(actor);
 		});
 		moveUpActorMenuItem.setOnAction((ActionEvent event) -> {
 			Actor actor = actorList.getSelectionModel().getSelectedItem();
