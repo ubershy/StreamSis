@@ -191,7 +191,7 @@ public class StreamSisAppFactory {
 					.addListener((ChangeListener<SisScene>) (observable, oldValue, newValue) -> {
 						if (newValue != null) {
 							if (sisSceneList.isFocused()) {
-								GUIManager.elementEditor.lastFocusedProperty.set(newValue);
+								GUIManager.elementEditor.setLastFocusedCuteElement(newValue);
 							}
 						}
 					});
@@ -255,7 +255,7 @@ public class StreamSisAppFactory {
 					.addListener((ChangeListener<Actor>) (observable, oldValue, newValue) -> {
 						if (newValue != null) {
 							if (actorList.isFocused()) {
-								GUIManager.elementEditor.lastFocusedProperty.set(newValue);
+								GUIManager.elementEditor.setLastFocusedCuteElement(newValue);
 							}
 						}
 					});
@@ -372,8 +372,8 @@ public class StreamSisAppFactory {
 							newValue) -> {
 						if (newValue != null) {
 							if (resultTreeView.isFocused()) {
-								GUIManager.elementEditor.lastFocusedProperty
-										.set(newValue.getValue());
+								GUIManager.elementEditor
+										.setLastFocusedCuteElement(newValue.getValue());
 							}
 						}
 					});

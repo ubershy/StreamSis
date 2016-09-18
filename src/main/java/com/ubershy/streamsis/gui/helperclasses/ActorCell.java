@@ -301,7 +301,7 @@ public class ActorCell extends ListCell<Actor> {
 				setOnMouseClicked(new EventHandler<MouseEvent>() {
 					@Override
 					public void handle(MouseEvent event) {
-						GUIManager.elementEditor.lastFocusedProperty.set(item);
+						GUIManager.elementEditor.setLastFocusedCuteElement(item);
 					}
 				});
 			}

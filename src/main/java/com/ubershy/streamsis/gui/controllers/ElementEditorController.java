@@ -126,7 +126,7 @@ public class ElementEditorController implements Initializable {
 	private CuteButtonsStatesManager buttonStateManager = new CuteButtonsStatesManager();
 
 	/** The property of last selected CuteElement */
-	public ObjectProperty<CuteElement> lastFocusedProperty = new SimpleObjectProperty<>();
+	private ObjectProperty<CuteElement> lastFocusedCuteElement = new SimpleObjectProperty<>();
 	
 	/** The property with last deleted CuteElement */
 	private ObjectProperty<CuteElement> lastDeletedCuteElement = new SimpleObjectProperty<>();
@@ -215,7 +215,7 @@ public class ElementEditorController implements Initializable {
 				buttonStateManager.reset();
 			}
 		});
-		lastFocusedProperty
+		lastFocusedCuteElement
 				.addListener((ChangeListener<CuteElement>) (observable, oldValue, newValue) -> {
 					if (!propertiesPane.getContent().equals(propsWithNameController.getView())) {
 						propertiesPane.setContent(propsWithNameController.getView());
@@ -484,6 +484,10 @@ public class ElementEditorController implements Initializable {
 	
 	public void setLastDeletedCuteElement(CuteElement element) {
 		lastDeletedCuteElement.set(element);
+	}
+	
+	public void setLastFocusedCuteElement(CuteElement element) {
+		lastFocusedCuteElement.set(element);
 	}
 	
 }

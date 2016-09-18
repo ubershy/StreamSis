@@ -118,7 +118,8 @@ public class SisSceneCell extends ListCell<SisScene> {
 				// if (getIndex() == GUIManager.getSisSceneToRenameIndex()) {
 				// startEdit();
 				// }
-				setOnMouseClicked(event -> GUIManager.elementEditor.lastFocusedProperty.set(item));
+				setOnMouseClicked(
+						event -> GUIManager.elementEditor.setLastFocusedCuteElement(item));
 			}
 		}
 	}

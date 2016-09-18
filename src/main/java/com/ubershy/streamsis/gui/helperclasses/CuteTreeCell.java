@@ -184,7 +184,7 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 				setOnMouseClicked(new EventHandler<MouseEvent>() {
 					@Override
 					public void handle(MouseEvent event) {
-						GUIManager.elementEditor.lastFocusedProperty.set(item);
+						GUIManager.elementEditor.setLastFocusedCuteElement(item);
 					}
 				});
 			}
