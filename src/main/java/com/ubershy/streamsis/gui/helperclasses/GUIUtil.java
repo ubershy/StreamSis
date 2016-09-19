@@ -28,6 +28,7 @@ import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 
 import com.ubershy.streamsis.CuteConfig;
+import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.actors.UniversalActor;
 import com.ubershy.streamsis.gui.GUIManager;
@@ -37,8 +38,13 @@ import com.ubershy.streamsis.project.ProjectManager;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
+import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -46,6 +52,10 @@ import javafx.scene.control.Control;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -323,4 +333,50 @@ public final class GUIUtil {
 		};
 		return listener;
 	}
+
+	/**
+	 * Replaces {@link Pane}'s child to another specified child. <br>
+	 * Tries to maintain layout constraints.
+	 *
+	 * @param fromNode
+	 *            The child to replace.
+	 * @param toNode
+	 *            The child which will replace the other one.
+	 * @throws IllegalArgumentException
+	 *             If fromNode's parent is not of type Pane.
+	 */
+	public static void replaceChildInPane(Node fromNode, Node toNode) {
+		Pane papa = (Pane) fromNode.getParent();
+		if (!(papa instanceof Pane)) {
+			throw new IllegalArgumentException("This parent won't give up on his child.");
+		}
+		if (papa instanceof GridPane) {
+			GridPane gridPapa = (GridPane) papa;
+			Integer columnIndex = Util.ifNullReturnOther(GridPane.getColumnIndex(fromNode), 0);
+			Integer rowIndex = Util.ifNullReturnOther(GridPane.getRowIndex(fromNode), 0);
+			Integer columnspan = Util.ifNullReturnOther(GridPane.getColumnSpan(fromNode), 1);
+			Integer rowspan = Util.ifNullReturnOther(GridPane.getRowSpan(fromNode), 1);
+			HPos halignment = GridPane.getHalignment(fromNode);
+			VPos valignment = GridPane.getValignment(fromNode);
+			Priority hgrow = GridPane.getHgrow(fromNode);
+			Priority vgrow = GridPane.getVgrow(fromNode);
+			Insets margin = GridPane.getMargin(fromNode);
+			gridPapa.getChildren().remove(fromNode);
+			gridPapa.add(toNode, columnIndex, rowIndex, columnspan, rowspan);
+			GridPane.setConstraints(toNode, columnIndex, rowIndex, columnspan, rowspan, halignment,
+					valignment, hgrow, vgrow, margin);
+		} else if (papa instanceof BorderPane) {
+			BorderPane borderPapa = (BorderPane) papa;
+			Pos pos = BorderPane.getAlignment(fromNode);
+			Insets margin = BorderPane.getMargin(fromNode);
+			borderPapa.getChildren().remove(fromNode);
+			borderPapa.getChildren().add(toNode);
+			BorderPane.setAlignment(toNode, pos);
+			BorderPane.setMargin(toNode, margin);
+		} else {
+			papa.getChildren().remove(fromNode);
+			papa.getChildren().add(toNode);
+		}
+	}
+	
 }

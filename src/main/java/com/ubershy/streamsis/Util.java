@@ -460,5 +460,30 @@ public final class Util {
 		}
 		return success;
 	}
+	
+	/**
+	 * Receives two objects. If the first object is null, returns the second object. If not, returns
+	 * the first object.
+	 *
+	 * @param <T>
+	 *            The generic type
+	 * @param normalValue
+	 *            The object to return if it's not null.
+	 * @param valueIfNull
+	 *            The object to return is another argument is null. Can't be null.
+	 * @return One of the arguments based on rules above.
+	 * 
+	 * @throws IllegalArgumentException
+	 * 			  If the second argument is null.
+	 */
+	public static <T> T ifNullReturnOther(T normalValue, T valueIfNull) {
+		if (valueIfNull == null) {
+			throw new IllegalArgumentException("There's no point in passing null second argument");
+		}
+		if (normalValue == null) {
+			return valueIfNull;
+		}
+		return normalValue;
+	}
 
 }

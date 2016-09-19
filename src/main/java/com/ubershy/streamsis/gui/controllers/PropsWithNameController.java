@@ -83,6 +83,61 @@ public class PropsWithNameController implements Initializable {
 				root.getScene().getStylesheets().add(url);
 			}
 		});
+		recreateNameTextField();
+	}
+
+	public void setCuteButtonsStatesManager(CuteButtonsStatesManager buttonStateManager) {
+		this.buttonStateManager = buttonStateManager;
+	}
+
+	public void connectToCuteElement(CuteElement newElementCopy) {
+		disconnectFromConnectedCuteElement();
+		// nameTextField should be recreated before invoking recreateValidationSupport() method.
+		recreateNameTextField();
+		// Let's remember the reference to the CuteElement's copy
+		elementWorkingCopy = newElementCopy;
+		// Let's remember original name of the CuteElement
+		ElementInfo newInfo = newElementCopy.getElementInfo();
+		originalName = newInfo.getName();
+		// Let's get the new controller specific to CuteElement's type
+		currentCuteController = StreamSisAppFactory
+				.buildCuteControllerBasedOnCuteElement(newElementCopy);
+		// Let's set the new controller and view for the cell
+		currentCuteController.setCuteButtonsStatesManager(buttonStateManager);
+		// Bind element to CuteController's View from which the user can edit subtype-specific
+		// variables of the CuteElement's copy. Modified CuteElement's copy will be used to spread
+		// changes to original CuteElement.
+		currentCuteController.bindToCuteElement(newElementCopy);
+		// Let's bind nameTextField to CuteElement's name before invoking
+		// recreateValidationSupport() method. 
+		nameTextField.setText(newInfo.getName());
+		nameTextField.textProperty().bindBidirectional(newInfo.nameProperty());
+		// This will update validationSupport and validationListener variables.
+		recreateValidationSupport();
+		// Give new validationSupport to currentCuteController, so it can validate input in fields.
+		currentCuteController.setValidationSupport(validationSupport);
+		root.add(currentCuteController.getView(), 0, 1);
+		// CuteNodeContainer should not be edited.
+		if (newElementCopy instanceof CuteNodeContainer) {
+			nameTextField.setDisable(true);
+		} else {
+			nameTextField.setDisable(false);
+		}
+		if (buttonStateManager.needToReinitCuteElementProperty().get())
+			newElementCopy.init();
+			buttonStateManager.setCuteElementAsInitialized();
+	}
+
+	/**
+	 * Replaces {@link #nameTextField} responsible for editing name with new one. <br>
+	 * It's needed because when we do {@link #recreateValidationSupport()}, the old
+	 * ValidationSupport object still have registered validator to nameTextField. So to garbage
+	 * collect old ValidationSupport object also we have to dump nameTextField with it.
+	 */
+	private void recreateNameTextField() {
+		TextField newTextField = new TextField();
+		GUIUtil.replaceChildInPane(nameTextField, newTextField);
+		nameTextField = newTextField;
 		// Let's not allow very long names
 		UnaryOperator<Change> filter = c -> {
 			if (c.getControlNewText().length() > 30) {
@@ -102,45 +157,6 @@ public class PropsWithNameController implements Initializable {
 				}
 			}
 		});
-	}
-
-	public void setCuteButtonsStatesManager(CuteButtonsStatesManager buttonStateManager) {
-		this.buttonStateManager = buttonStateManager;
-	}
-
-	public void connectToCuteElement(CuteElement newElementCopy) {
-		disconnectFromConnectedCuteElement();
-		// Let's remember the reference to the CuteElement's copy
-		elementWorkingCopy = newElementCopy;
-		// Let's remember original name of the CuteElement
-		ElementInfo newInfo = newElementCopy.getElementInfo();
-		originalName = newInfo.getName();
-		// Let's get the new controller specific to CuteElement's type
-		currentCuteController = StreamSisAppFactory
-				.buildCuteControllerBasedOnCuteElement(newElementCopy);
-		// Let's set the new controller and view for the cell
-		currentCuteController.setCuteButtonsStatesManager(buttonStateManager);
-		// Bind element to CuteController's View from which the user can edit subtype-specific
-		// variables of the CuteElement's copy. Modified CuteElement's copy will be used to spread
-		// changes to original CuteElement.
-		currentCuteController.bindToCuteElement(newElementCopy);
-		// Let's bind nameTextField to CuteElement's name
-		nameTextField.setText(newInfo.getName());
-		nameTextField.textProperty().bindBidirectional(newInfo.nameProperty());
-		// This will update validationSupport and validationListener variables.
-		recreateValidationSupport();
-		// Give new validationSupport to currentCuteController, so it can validate input in fields.
-		currentCuteController.setValidationSupport(validationSupport);
-		root.add(currentCuteController.getView(), 0, 1);
-		// CuteNodeContainer should not be edited.
-		if (newElementCopy instanceof CuteNodeContainer) {
-			nameTextField.setDisable(true);
-		} else {
-			nameTextField.setDisable(false);
-		}
-		if (buttonStateManager.needToReinitCuteElementProperty().get())
-			newElementCopy.init();
-			buttonStateManager.setCuteElementAsInitialized();
 	}
 
 	private void disconnectFromConnectedCuteElement() {
