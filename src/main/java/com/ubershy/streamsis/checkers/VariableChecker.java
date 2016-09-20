@@ -104,6 +104,8 @@ public class VariableChecker extends AbstractCuteNode implements Checker {
 		elementInfo.setAsReadyAndHealthy();
 		if (key.isEmpty())
 			elementInfo.setAsBroken("Variable name is empty");
+		if (expectedValue == null)
+			throw new RuntimeException("Expected value can't be set to null.");
 	}
 
 	public void setExpectedValue(String expectedValue) {
