@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import com.ubershy.streamsis.StreamSis;
 import com.ubershy.streamsis.actions.Action;
-import com.ubershy.streamsis.actors.AbstractActor;
 import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.counters.Counter;
@@ -99,6 +98,20 @@ public class StreamSisAppFactory {
 		public String toString() {
 			return fileName;
 		}
+	}
+	
+	/**
+	 * The Enum which specifies type of TreeView to create in StreamSis.
+	 */
+	public enum CuteTreeViewType {
+		/** TreeView with {@link Checker} as root node. */
+		CHECKER_TREE,
+		
+		/** TreeView with "On" {@link Actions}. */
+		ON_ACTIONS_TREE,
+
+		/** TreeView with "Off" {@link Actions}. */
+		OFF_ACTIONS_TREE;
 	}
 	
 	/**
@@ -195,7 +208,6 @@ public class StreamSisAppFactory {
 							}
 						}
 					});
-
 		}
 		return sisSceneList;
 	}
@@ -264,59 +276,17 @@ public class StreamSisAppFactory {
 	}
 
 	/**
-	 * Builds a {@link TreeViewWithItems TreeView} with single {@link Checker Checker} in top of
-	 * hierarchy based on {@link ListView} with {@link Actor Actors}.
-	 *
-	 * @param actorsView
-	 *            the {@link ListView} with {@link Actor Actors}
-	 * @return the {@link TreeViewWithItems TreeView} with single {@link Checker Checker} in top of
-	 *         hierarchy
-	 */
-	public static TreeView<CuteNode> buildCheckerTreeView(ListView<Actor> actorsView) {
-		return buildTreeView(actorsView, 0);
-	}
-
-	/**
-	 * Builds a {@link TreeViewWithItems TreeView} with {@link AbstractActor#onActions} elements in
-	 * top of hierarchy based on the {@link ListView} with {@link Actor Actors}.
-	 *
-	 * @param actorsView
-	 *            the {@link ListView} with {@link Actor Actors}
-	 * @return the {@link TreeViewWithItems TreeView} with {@link AbstractActor#onActions} elements
-	 *         in top of hierarchy
-	 */
-	public static TreeView<CuteNode> buildOnActionsTreeView(ListView<Actor> actorsView) {
-		return buildTreeView(actorsView, 1);
-	}
-
-	/**
-	 * Builds a {@link TreeViewWithItems TreeView} with {@link AbstractActor#offActions} elements in
-	 * top of hierarchy based on the {@link ListView} with {@link Actor Actors}.
-	 *
-	 * @param actorsView
-	 *            the {@link ListView} with {@link Actor Actors}
-	 * @return the {@link TreeViewWithItems TreeView} with {@link AbstractActor#offActions} elements
-	 *         in top of hierarchy
-	 */
-	public static TreeView<CuteNode> buildOffActionsTreeView(ListView<Actor> actorsView) {
-		return buildTreeView(actorsView, 2);
-	}
-
-	/**
-	 * Creates a new {@link TreeViewWithItems TreeView} with elements specified by passed index.
+	 * Creates a new {@link TreeView} of CuteTreeViewType.
 	 * <br>
-	 * Index 0: Create TreeView with Checker. <br>
-	 * Index 1: Create TreeView with "On Actions". <br>
-	 * Index 2: Create TreeView with "Off Actions" <br>
 	 *
 	 * @param actorsView
 	 *            the {@link ListView} with {@link Actor Actors}
-	 * @param actorTreeIndex
-	 *            the index from 0 to 2 that specifies the type of TreeView to create.
+	 * @param typeOfTree
+	 *            the type of TreeView to create
 	 * @return the tree view with CuteNode items
 	 */
-	private static TreeView<CuteNode> buildTreeView(ListView<Actor> actorsView,
-			int actorTreeIndex) {
+	static TreeView<CuteNode> buildTreeView(ListView<Actor> actorsView,
+			CuteTreeViewType typeOfTree) {
 		CuteProject project = ProjectManager.getProject();
 		TreeView<CuteNode> resultTreeView = new TreeView<CuteNode>();
 		AutoTreeItem<CuteNode> emptyRoot = new AutoTreeItem<CuteNode>();
@@ -341,7 +311,7 @@ public class StreamSisAppFactory {
 					// inside, one with OnActions inside, one with OffActions inside.
 					// And here we select the child we want by using index.
 					CuteNodeContainer childrenContainer = (CuteNodeContainer) firstActor
-							.getChildren().get(actorTreeIndex);
+							.getChildren().get(typeOfTree.ordinal());
 					AutoTreeItem<CuteNode> treeItemRoot = new AutoTreeItem<CuteNode>(
 							childrenContainer);
 					treeItemRoot.setExpanded(true);
@@ -357,7 +327,7 @@ public class StreamSisAppFactory {
 							// inside.
 							// And here we select the child we want by using index.
 							CuteNodeContainer childrenContainer = (CuteNodeContainer) newValue
-									.getChildren().get(actorTreeIndex);
+									.getChildren().get(typeOfTree.ordinal());
 							AutoTreeItem<CuteNode> treeItemRoot = new AutoTreeItem<CuteNode>(
 									childrenContainer);
 							treeItemRoot.setExpanded(true);

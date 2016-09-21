@@ -69,9 +69,12 @@ public final class GUIManager {
 
 		sisSceneList = StreamSisAppFactory.buildSisSceneListView(project);
 		actorList = StreamSisAppFactory.buildActorListView(project);
-		checkerTree = StreamSisAppFactory.buildCheckerTreeView(actorList);
-		onActionsTree = StreamSisAppFactory.buildOnActionsTreeView(actorList);
-		offActionsTree = StreamSisAppFactory.buildOffActionsTreeView(actorList);
+		checkerTree = StreamSisAppFactory.buildTreeView(actorList,
+				StreamSisAppFactory.CuteTreeViewType.CHECKER_TREE);
+		onActionsTree = StreamSisAppFactory.buildTreeView(actorList,
+				StreamSisAppFactory.CuteTreeViewType.ON_ACTIONS_TREE);
+		offActionsTree = StreamSisAppFactory.buildTreeView(actorList,
+				StreamSisAppFactory.CuteTreeViewType.OFF_ACTIONS_TREE);
 		elementEditor = StreamSisAppFactory.buildElementEditorController();
 
 		fullModeController.postInit(project);
