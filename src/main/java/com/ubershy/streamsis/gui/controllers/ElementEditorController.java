@@ -466,7 +466,6 @@ public class ElementEditorController implements Initializable {
 	            return null;
 	        }
 	    };
-	    new Thread(task).start();
 	    task.stateProperty().addListener(new ChangeListener<Worker.State>() {
 			@Override
 			public void changed(ObservableValue<? extends State> observable, State oldValue,
@@ -477,9 +476,17 @@ public class ElementEditorController implements Initializable {
 					performTestStatusFakeButton.setText("Test result: " + testResultText + ".");
 					hideTestResultAnimation.play();
 					buttonStateManager.reportEndOfTest();
+	            } else if (newValue==Worker.State.FAILED){
+					if (task.getException() == null) {
+						throw new RuntimeException("GUI Testing task failed for some reason for "
+								+ elementWorkingCopy.getClass().getSimpleName());
+					} else {
+						throw new RuntimeException(task.getException());
+					}
 	            }
 			}
 	    });
+	    new Thread(task).start();
 	}
 	
 	public void setLastDeletedCuteElement(CuteElement element) {

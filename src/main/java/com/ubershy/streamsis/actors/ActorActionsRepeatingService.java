@@ -19,10 +19,13 @@ package com.ubershy.streamsis.actors;
 
 import com.ubershy.streamsis.ConstsAndVars;
 
+import javafx.concurrent.WorkerStateEvent;
+
 /**
  * This service is used by {@link Actor} to execute Actions. <br>
  * The state of this service then can be observed. <br>
- * If {@link Actor} needs their Actions to repeat, this service repeats execution of Actions regularily with specified time interval. <br>
+ * If {@link Actor} needs their Actions to repeat, this service repeats execution of Actions
+ * regularly with specified time interval. <br>
  * Otherwise it executes Actions once and then stops.
  */
 public class ActorActionsRepeatingService extends javafx.concurrent.Service<Void> {
@@ -34,10 +37,10 @@ public class ActorActionsRepeatingService extends javafx.concurrent.Service<Void
 	private boolean doOnOrOffActions;
 
 	/**
-	 * Instantiates a new Action Repeating Service.
+	 * Instantiates a new Actor Actions Repeating Service.
 	 *
-	 * @param The
-	 *            Actor to work with.
+	 * @param actor
+	 *            The {@link Actor} to work with.
 	 * @param doOnOrOffActions
 	 *            Do On Actions or Off Actions. Select <i>True</i> to do On Actions.
 	 */
@@ -45,6 +48,13 @@ public class ActorActionsRepeatingService extends javafx.concurrent.Service<Void
 		super();
 		this.actor = actor;
 		this.doOnOrOffActions = doOnOrOffActions;
+		setOnFailed((WorkerStateEvent e) -> {
+			if (getException() != null) 
+				throw new RuntimeException(getException());
+			else
+				throw new RuntimeException(
+						"Some Action or other code caused ActorActionsRepeatingService to fail.");
+		});
 	}
 
 	@Override
@@ -54,13 +64,11 @@ public class ActorActionsRepeatingService extends javafx.concurrent.Service<Void
 	}
 
 	/**
-	 * Task to do inside ActorActionsRepeatingService.
+	 * Task to do inside Actor Actions Repeating Service.
 	 */
 	public class ActionsRepeatingProgressTask extends javafx.concurrent.Task<Void> {
-
 		@Override
 		public Void call() {
-
 			while (true) {
 				if (isCancelled()) {
 					break;

@@ -19,6 +19,8 @@ package com.ubershy.streamsis.actors;
 
 import com.ubershy.streamsis.ConstsAndVars;
 
+import javafx.concurrent.WorkerStateEvent;
+
 /**
  * This service is used by {@link Actor} to do regular {@link Actor#checkAndAct()} with specified
  * time interval. <br>
@@ -33,11 +35,18 @@ public class ActorCheckerService extends javafx.concurrent.Service<Void> {
 	 * Instantiates a new Actor Checker Service.
 	 *
 	 * @param actor
-	 *            the Actor to work with.
+	 *            The {@link Actor} to work with.
 	 */
 	public ActorCheckerService(Actor actor) {
 		super();
 		this.actor = actor;
+		setOnFailed((WorkerStateEvent e) -> {
+			if (getException() != null) 
+				throw new RuntimeException(getException());
+			else
+				throw new RuntimeException(
+						"Some Checker or other code caused ActorCheckerService to fail.");
+		});
 	}
 
 	@Override
@@ -47,7 +56,6 @@ public class ActorCheckerService extends javafx.concurrent.Service<Void> {
 	}
 
 	public class ProgressTask extends javafx.concurrent.Task<Void> {
-
 		@Override
 		public Void call() {
 			if (actor.getElementInfo().canWork()) {
