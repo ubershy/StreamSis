@@ -85,8 +85,8 @@ public class TreeContextMenuBuilder {
 			if (list != null) {
 				if (!list.isEmpty()) {
 					if (list.contains(cuteNode)) {
-						list.remove(cuteNode);
 						GUIManager.elementEditor.setLastDeletedCuteElement(cuteNode);
+						list.remove(cuteNode);
 					} else {
 						logger.error("Nothing to remove from list");
 					}

@@ -58,12 +58,14 @@ public class SisSceneContextMenuBuilder {
 		CustomMenuItem moveDownSisSceneMenuItem = GUIUtil.createTooltipedMenuItem("Move Down",
 				"The order of SisScenes doesn't matter.\nBut you can still move them around if you want. ;)");
 		deleteSisSceneMenuItem.setOnAction((ActionEvent event) -> {
-			project.removeSisScene(sisSceneList.getSelectionModel().getSelectedItem());
+			SisScene scene = sisSceneList.getSelectionModel().getSelectedItem();
+			GUIManager.elementEditor.setLastDeletedCuteElement(scene);
+			project.removeSisScene(scene);
 		});
 		deleteSisSceneWithActorsMenuItem.setOnAction((ActionEvent event) -> {
 			SisScene scene = sisSceneList.getSelectionModel().getSelectedItem();
-			project.removeSisSceneWithActors(scene);
 			GUIManager.elementEditor.setLastDeletedCuteElement(scene);
+			project.removeSisSceneWithActors(scene);
 		});
 		setPrimarySisSceneMenuItem.setOnAction((ActionEvent event) -> {
 			project.setPrimarySisSceneName(
