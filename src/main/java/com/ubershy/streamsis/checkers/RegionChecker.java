@@ -137,7 +137,7 @@ public class RegionChecker extends AbstractCuteNode implements Checker {
 			if (Util.checkSingleFileExistanceAndExtension(targetImagePath, Util.singleStringAsArrayOfStrings(".png"))) {
 				targetPattern = new Pattern(targetImagePath).similar(similarity);
 			} else {
-				elementInfo.setAsBroken("Can't find or read Target image file " + targetImagePath);
+				elementInfo.setAsBroken("Can't find or read Target image file: " + targetImagePath);
 			}
 		} else {
 			elementInfo.setAsBroken("Target image file is not defined");
