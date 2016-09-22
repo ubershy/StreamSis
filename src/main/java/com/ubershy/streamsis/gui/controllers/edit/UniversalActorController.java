@@ -36,9 +36,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
 /**
- * ActorController, the controller that allows to edit {@link Actor} in a panel.
+ * UniversalActorController, the controller that allows to edit {@link Actor} in a panel.
  */
-public class ActorController extends AbstractCuteController {
+public class UniversalActorController extends AbstractCuteController {
 
     /** The root node. */
     @FXML
