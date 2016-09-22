@@ -69,12 +69,10 @@ public final class ActorContextMenuBuilder {
 				"The order of Actors doesn't matter.\nBut you can still move them around if you want. ;)");
 		deleteActorMenuItem.setOnAction((ActionEvent event) -> {
 			Actor actor = actorList.getSelectionModel().getSelectedItem();
-			GUIManager.elementEditor.setLastDeletedCuteElement(actor);
 			project.removeActorFromCurrentSisScene(actor);
 		});
 		deleteActorGloballyMenuItem.setOnAction((ActionEvent event) -> {
 			Actor actor = actorList.getSelectionModel().getSelectedItem();
-			GUIManager.elementEditor.setLastDeletedCuteElement(actor);
 			project.removeActorGlobally(actor);
 		});
 		moveUpActorMenuItem.setOnAction((ActionEvent event) -> {

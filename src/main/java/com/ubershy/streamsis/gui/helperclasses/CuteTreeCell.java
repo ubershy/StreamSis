@@ -43,7 +43,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -146,12 +145,13 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 				});
 		elementHealthProperty.addListener(elementHealthListener);
 		lastResultProperty.addListener(lastResultListener);
+		setOnMouseClicked(event -> GUIManager.elementEditor.setCurrentElement(getItem()));
 	}
 
 	@Override
 	public void updateItem(CuteNode item, boolean empty) {
 		super.updateItem(item, empty);
-		if (empty) {
+		if (empty || item == null) {
 			lastResultProperty.unbind();
 			elementHealthProperty.unbind();
 			textProperty().unbind();
@@ -181,12 +181,6 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 				// if (getTreeItem() != null)
 				// setGraphic(getTreeItem().getGraphic());
 				setContextMenu(TreeContextMenuBuilder.createCuteTreeCellContextMenu(this));
-				setOnMouseClicked(new EventHandler<MouseEvent>() {
-					@Override
-					public void handle(MouseEvent event) {
-						GUIManager.elementEditor.setLastFocusedCuteElement(item);
-					}
-				});
 			}
 		}
 	}

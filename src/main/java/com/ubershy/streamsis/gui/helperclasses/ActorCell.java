@@ -42,14 +42,12 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -150,24 +148,16 @@ public class ActorCell extends ListCell<Actor> {
 		heartBeatTransition.setAutoReverse(false);
 		heartBeatTransition.interpolatorProperty().setValue(Interpolator.DISCRETE);
 		heartBeatTransition.setCycleCount(1);
-
 		// Lets make heart's animation a bit easier on CPU (not working -_-)
 		// heart.setCache(true);
 		// heart.setCacheHint(CacheHint.SCALE);
-
 		// Let's remember original size of heart
 		originalHeartBounds = heart.getBoundsInLocal();
-
 		// Let's set heart's initial view
 		refreshHeartStyle(isActorStarted, isSwitchOnProperty.get(), checkIntervalProperty.get(),
 				elementHealthProperty.get());
-
-		ChangeListener<ElementState> elementStateListener = new ChangeListener<ElementState>() {
-			@Override
-			public void changed(ObservableValue<? extends ElementState> observableValue,
-					ElementState oldElementState, ElementState newElementState) {
-				// This change will be caused not by JavaFX thread, so
-				Platform.runLater(() -> {
+		ChangeListener<ElementState> elementStateListener = (observableValue, oldElementState,
+				newElementState) -> Platform.runLater(() -> {
 					if (isActorStarted != findIfActorStarted(newElementState)) {
 						isActorStarted = findIfActorStarted(newElementState);
 						synchronized (heart) {
@@ -185,52 +175,32 @@ public class ActorCell extends ListCell<Actor> {
 						break;
 					}
 				});
-			}
-		};
-		ChangeListener<ElementHealth> elementHealthListener = new ChangeListener<ElementHealth>() {
-			@Override
-			public void changed(ObservableValue<? extends ElementHealth> observableValue,
-					ElementHealth oldElementHealth, ElementHealth newElementHealth) {
-				// This change will be caused not by JavaFX thread, so
-				Platform.runLater(() -> {
+		ChangeListener<ElementHealth> elementHealthListener = (observableValue, oldElementHealth,
+				newElementHealth) -> Platform.runLater(() -> {
 					synchronized (heart) {
 						refreshHeartStyle(isActorStarted, isSwitchOnProperty.get(),
 								checkIntervalProperty.get(), newElementHealth);
 					}
 				});
-			}
-		};
-		ChangeListener<? super Number> checkIntervalListener = new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue,
-					Number newValue) {
-				// This change can be caused not by JavaFX thread, so
-				Platform.runLater(() -> {
+		ChangeListener<? super Number> checkIntervalListener = (observable, oldValue,
+				newValue) -> Platform.runLater(() -> {
 					synchronized (heart) {
 						refreshHeartStyle(isActorStarted, isSwitchOnProperty.get(),
 								newValue.intValue(), elementHealthProperty.get());
 					}
 				});
-			}
-		};
-		ChangeListener<? super Boolean> isSwitchOnListener = new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
-					Boolean newValue) {
-				// This change will be caused not by JavaFX thread, so
-				Platform.runLater(() -> {
+		ChangeListener<? super Boolean> isSwitchOnListener = (observable, oldValue,
+				newValue) -> Platform.runLater(() -> {
 					synchronized (heart) {
 						refreshHeartStyle(isActorStarted, newValue, checkIntervalProperty.get(),
 								elementHealthProperty.get());
 					}
 				});
-			}
-		};
-
 		elementElementStateProperty.addListener(elementStateListener);
 		elementHealthProperty.addListener(elementHealthListener);
 		checkIntervalProperty.addListener(checkIntervalListener);
 		isSwitchOnProperty.addListener(isSwitchOnListener);
+		setOnMouseClicked(event -> GUIManager.elementEditor.setCurrentElement(getItem()));
 	}
 
 	protected boolean findIfActorStarted(ElementState newElementState) {
@@ -298,12 +268,6 @@ public class ActorCell extends ListCell<Actor> {
 				}
 				setContextMenu(
 						ActorContextMenuBuilder.createActorItemContextMenu(possibleMoves));
-				setOnMouseClicked(new EventHandler<MouseEvent>() {
-					@Override
-					public void handle(MouseEvent event) {
-						GUIManager.elementEditor.setLastFocusedCuteElement(item);
-					}
-				});
 			}
 		}
 	}

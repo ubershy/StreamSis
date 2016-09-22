@@ -71,7 +71,6 @@ public class SisSceneCell extends ListCell<SisScene> {
         selectedShadow.setColor(Color.BLACK);
         selectedShadow.setSpread(0.75);
         selectedShadow.setRadius(2);
-       
 		setGraphic(primaryLabel);
 		primarySisSceneName.bind(ProjectManager.getProject().primarySisSceneNameProperty());
 		ChangeListener<String> defaultSisSceneListener = (observable, oldValue,
@@ -80,6 +79,7 @@ public class SisSceneCell extends ListCell<SisScene> {
 		ChangeListener<? super Boolean> selectedListener = (observable, oldValue,
 				newValue) -> refreshSisSceneLook(primarySisSceneName.get(), newValue);
 		this.selectedProperty().addListener(selectedListener);
+		setOnMouseClicked(event -> GUIManager.elementEditor.setCurrentElement(getItem()));
 	}
 
 	@Override
@@ -118,8 +118,6 @@ public class SisSceneCell extends ListCell<SisScene> {
 				// if (getIndex() == GUIManager.getSisSceneToRenameIndex()) {
 				// startEdit();
 				// }
-				setOnMouseClicked(
-						event -> GUIManager.elementEditor.setLastFocusedCuteElement(item));
 			}
 		}
 	}

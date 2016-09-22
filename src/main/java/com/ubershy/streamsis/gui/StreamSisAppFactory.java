@@ -56,6 +56,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 /**
  * A factory for creating {@link StreamSis} GUI objects.
@@ -202,10 +204,8 @@ public class StreamSisAppFactory {
 					});
 			sisSceneList.getFocusModel().focusedItemProperty()
 					.addListener((ChangeListener<SisScene>) (observable, oldValue, newValue) -> {
-						if (newValue != null) {
-							if (sisSceneList.isFocused()) {
-								GUIManager.elementEditor.setLastFocusedCuteElement(newValue);
-							}
+						if (sisSceneList.isFocused()) {
+							GUIManager.elementEditor.setCurrentElement(newValue);
 						}
 					});
 		}
@@ -265,10 +265,8 @@ public class StreamSisAppFactory {
 					});
 			actorList.getFocusModel().focusedItemProperty()
 					.addListener((ChangeListener<Actor>) (observable, oldValue, newValue) -> {
-						if (newValue != null) {
-							if (actorList.isFocused()) {
-								GUIManager.elementEditor.setLastFocusedCuteElement(newValue);
-							}
+						if (actorList.isFocused()) {
+							GUIManager.elementEditor.setCurrentElement(newValue);
 						}
 					});
 		}
@@ -293,9 +291,30 @@ public class StreamSisAppFactory {
 		resultTreeView.setCellFactory(p -> new CuteTreeCell());
 		resultTreeView.setShowRoot(false);
 		resultTreeView.setRoot(emptyRoot);
-		// Something bad happens when we traverse focus on the tree by arrow keys on keyboard.
-		// So lets not allow it.
-		resultTreeView.setFocusTraversable(false);
+		// This EventFilter will prevent selecting the hidden root item. Still children will be able
+		// to get collapsed.
+		resultTreeView.addEventFilter(KeyEvent.ANY, e -> {
+			if (e.getCode() == KeyCode.LEFT) {
+				TreeItem<CuteNode> selectedItem = resultTreeView.getSelectionModel()
+						.getSelectedItem();
+				if (selectedItem.getParent() == resultTreeView.getRoot()) {
+					// The item is a child of root. A single wrong move will select root item!
+					if (selectedItem.getChildren().size() == 0) {
+						// The item don't have children, so it can't be expanded or collapsed.
+						// Hitting LEFT on keyboard will select root item, let's prevent it by
+						// consuming the event.
+						e.consume();
+					} else {
+						// The item has children, so it can be expanded or collapsed.
+						if (!selectedItem.isExpanded()) {
+							// The item is already collapsed. Hitting LEFT on keyboard will select
+							// root item, let's prevent it by consuming the event.
+							e.consume();
+						}
+					}
+				}
+			}
+		});
 		// This thingy will listen to TreeView's rootProperty and rootProperty's children.
 		// And apply ContextMenu accordingly
 		@SuppressWarnings("unused")
@@ -340,11 +359,12 @@ public class StreamSisAppFactory {
 			resultTreeView.getFocusModel().focusedItemProperty()
 					.addListener((ChangeListener<? super TreeItem<CuteNode>>) (observable, oldValue,
 							newValue) -> {
-						if (newValue != null) {
-							if (resultTreeView.isFocused()) {
-								GUIManager.elementEditor
-										.setLastFocusedCuteElement(newValue.getValue());
+						if (resultTreeView.isFocused()) {
+							CuteNode nodeToEdit = null;
+							if (newValue != null) {
+								nodeToEdit = newValue.getValue();
 							}
+							GUIManager.elementEditor.setCurrentElement(nodeToEdit);
 						}
 					});
 		}

@@ -126,11 +126,8 @@ public class ElementEditorController implements Initializable {
 	private CuteButtonsStatesManager buttonStateManager = new CuteButtonsStatesManager();
 
 	/** The property of last selected CuteElement */
-	private ObjectProperty<CuteElement> lastFocusedCuteElement = new SimpleObjectProperty<>();
+	private ObjectProperty<CuteElement> currentElement = new SimpleObjectProperty<>();
 	
-	/** The property with last deleted CuteElement */
-	private ObjectProperty<CuteElement> lastDeletedCuteElement = new SimpleObjectProperty<>();
-
 	private ObjectProperty<ElementHealth> elementHealthProperty = new SimpleObjectProperty<>();
 
 	private StringProperty whyUnhealthyProperty = new SimpleStringProperty();
@@ -152,8 +149,6 @@ public class ElementEditorController implements Initializable {
 	private StringProperty awaitingForInputTextProperty = new SimpleStringProperty();
 	
 	private CuteElement elementWorkingCopy = null;
-	
-	private CuteElement currentElement = null;
 
 	public Node getView() {
 		return root;
@@ -201,26 +196,12 @@ public class ElementEditorController implements Initializable {
 	}
 
 	private void initializeAllListeners() {
-		lastDeletedCuteElement.addListener((observableValue, oldElement, newElement) -> {
-			if (this.currentElement == newElement) {
-				propertiesPane.setContent(noneSelectedController.getView());
-				disconnectFromConnectedCuteElement();
-				nameLabel.setText("-");
-				typeLabel.setText("-");
-				statusLabel.setText("-");
-				statusLabel.setTextFill(Color.BLACK);
-				whyUnhealthyLabel.setText("-");
-				unhealthyPane.setVisible(false);
-				unhealthyPane.setManaged(false);
-				buttonStateManager.reset();
-			}
-		});
-		lastFocusedCuteElement
+		currentElement
 				.addListener((ChangeListener<CuteElement>) (observable, oldValue, newValue) -> {
 					if (!propertiesPane.getContent().equals(propsWithNameController.getView())) {
 						propertiesPane.setContent(propsWithNameController.getView());
 					}
-					connectToNewElement(newValue);
+					connectToCuteElement(newValue);
 				});
 		root.expandedProperty()
 				.addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
@@ -285,10 +266,25 @@ public class ElementEditorController implements Initializable {
 		});
 	}
 
-	private void connectToNewElement(CuteElement currentElement) {
+	private void setViewAsNoneSelected() {
+		propertiesPane.setContent(noneSelectedController.getView());
 		disconnectFromConnectedCuteElement();
-		
-		this.currentElement = currentElement;
+		nameLabel.setText("-");
+		typeLabel.setText("-");
+		statusLabel.setText("-");
+		statusLabel.setTextFill(Color.BLACK);
+		whyUnhealthyLabel.setText("-");
+		unhealthyPane.setVisible(false);
+		unhealthyPane.setManaged(false);
+		buttonStateManager.reset();
+	}
+
+	private void connectToCuteElement(CuteElement currentElement) {
+		if (currentElement == null) {
+			setViewAsNoneSelected();
+			return;
+		}
+		disconnectFromConnectedCuteElement();
 		
 		// CuteElements of higher hierarchy levels are referring to current element, and it's hard
 		// to substitute this reference. It's easier to retain this reference.
@@ -338,7 +334,6 @@ public class ElementEditorController implements Initializable {
 		nameLabel.textProperty().unbind();
 		elementHealthProperty.unbind();
 		whyUnhealthyProperty.unbind();
-		currentElement = null;
 		elementWorkingCopy = null;
 		buttonStateManager.allowOrNotPerformTestButtonBasedOnElementClass(null);
 	}
@@ -370,16 +365,17 @@ public class ElementEditorController implements Initializable {
 		// Current CuteElement's copy at this moment was modified by user, we need to transfer
 		// changes to the original CuteElement.
 		String NameOfCopyElement = elementWorkingCopy.getElementInfo().getName();
-		String NameOfCurrentElement = currentElement.getElementInfo().getName();
+		String NameOfCurrentElement = getCurrentElement().getElementInfo().getName();
 		// setCuteElementNameSafely() will throw IllegalArgument exception if "name" field
 		// validation in propsWithNameController is not implemented correctly.
 		if (!NameOfCopyElement.equals(NameOfCurrentElement))
-			ProjectManager.getProject().setCuteElementNameSafely(currentElement, NameOfCopyElement);
+			ProjectManager.getProject().setCuteElementNameSafely(getCurrentElement(),
+					NameOfCopyElement);
 		// Let's apply changes from the copy to original CuteElement by copying properties
 		try {
 			// Note: if you notice this method doesn't transfer changes, CuteElement's properties
 			// and getters and setters might not be set up properly.
-			PropertyUtils.copyProperties(currentElement, elementWorkingCopy);
+			PropertyUtils.copyProperties(getCurrentElement(), elementWorkingCopy);
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			e.printStackTrace();
 			throw new RuntimeException("For some reason can't transfer changes from copy of the "
@@ -394,8 +390,8 @@ public class ElementEditorController implements Initializable {
 		// reinitialization of currentElement might not occur. For example, if Actor is broken
 		// because it doesn't have a Checker, the Actor will not check it's Actions on
 		// reinitialization - it knows it's already broken.
-		currentElement.init();
-		connectToNewElement(currentElement);
+		getCurrentElement().init();
+		connectToCuteElement(getCurrentElement());
 	}
 	
 	@FXML
@@ -413,9 +409,9 @@ public class ElementEditorController implements Initializable {
 	@FXML
 	void hitCancelButton(ActionEvent event) {
 		root.expandedProperty().set(false);
-		if (currentElement != null) {
-			currentElement.init();
-			connectToNewElement(currentElement);
+		if (getCurrentElement() != null) {
+			getCurrentElement().init();
+			connectToCuteElement(getCurrentElement());
 		}
 	}
 	
@@ -489,12 +485,12 @@ public class ElementEditorController implements Initializable {
 	    new Thread(task).start();
 	}
 	
-	public void setLastDeletedCuteElement(CuteElement element) {
-		lastDeletedCuteElement.set(element);
+	public void setCurrentElement(CuteElement element) {
+		currentElement.set(element);
 	}
 	
-	public void setLastFocusedCuteElement(CuteElement element) {
-		lastFocusedCuteElement.set(element);
+	private CuteElement getCurrentElement() {
+		return currentElement.get();
 	}
 	
 }
