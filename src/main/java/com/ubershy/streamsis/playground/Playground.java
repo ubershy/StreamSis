@@ -470,7 +470,7 @@ public final class Playground {
 			ObservableList<CuteNode> children = node.getChildren();
 			if (children != null) {
 				for(CuteNode subNode : children) {
-					setRandomNameForCuteNode(subNode);
+					setRandomNameForCuteNodeRecursively(subNode);
 				}
 			}
 		}
