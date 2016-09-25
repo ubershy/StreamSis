@@ -30,6 +30,7 @@ import de.jensd.fx.glyphs.GlyphsBuilder;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import javafx.animation.ScaleTransition;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
@@ -43,12 +44,17 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 /**
  * The CuteGraphicValidationDecoration. It's like {@link GraphicValidationDecoration} but cute. <br>
  * The styles of validation tooltips and graphic indicators are changed here.
  */
 public class CuteGraphicValidationDecoration extends GraphicValidationDecoration {
+	
+	protected ValidationMessage lastMessage;
+	
+	protected ScaleTransition animation = new ScaleTransition(Duration.millis(200));
 
 	/** The common style elements shared between "error" and "warning" validation tooltips. */
 	private static final String TP_COMMON_STYLE = "-fx-border-color: white;"
@@ -67,6 +73,18 @@ public class CuteGraphicValidationDecoration extends GraphicValidationDecoration
 			.getResource("/impl/org/controlsfx/control/validation/required-indicator.png")
 			.toExternalForm());
 
+    /**
+     * Instantiates CuteGraphicValidationDecoration.
+     */
+    public CuteGraphicValidationDecoration() {
+    	animation.setCycleCount(1);
+    	animation.setAutoReverse(false);
+    	animation.setFromX(0.0);
+		animation.setFromY(0.0);
+		animation.setToX(1.0);
+		animation.setToY(1.0);
+    }
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -103,6 +121,12 @@ public class CuteGraphicValidationDecoration extends GraphicValidationDecoration
 		Tooltip tp = createTooltip(message);
 		label.setTooltip(tp);
 		label.setAlignment(Pos.CENTER);
+		// Play animation only when message text differs from previous message.
+		if (lastMessage == null || !lastMessage.getText().equals(message.getText())) {
+			animation.setNode(label);
+			animation.playFromStart();
+		}
+		lastMessage = message;
 		return label;
 	}
 
