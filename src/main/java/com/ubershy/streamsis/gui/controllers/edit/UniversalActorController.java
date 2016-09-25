@@ -40,49 +40,49 @@ import javafx.scene.layout.Pane;
  */
 public class UniversalActorController extends AbstractCuteController {
 
-    /** The root node. */
-    @FXML
-    private GridPane root;
+	/** The root node. */
+	@FXML
+	private GridPane root;
 
-    /** The container for {@link #checkIntervalIntegerTextField}. */
-    @FXML
-    private Pane checkIntervalFieldContainer;
+	/** The container for {@link #checkIntervalIntegerTextField}. */
+	@FXML
+	private Pane checkIntervalFieldContainer;
 
-    /** The container for {@link #repeatIntervalIntegerTextField}. */
-    @FXML
-    private Pane repeatIntervalFieldContainer;
+	/** The container for {@link #repeatIntervalIntegerTextField}. */
+	@FXML
+	private Pane repeatIntervalFieldContainer;
 
-    /** The CheckBox for {@link Actor#doOnRepeatProperty()}. */
-    @FXML
-    private CheckBox repeatOnActionsCheckBox;
+	/** The CheckBox for {@link Actor#doOnRepeatProperty()}. */
+	@FXML
+	private CheckBox repeatOnActionsCheckBox;
 
-    /** The CheckBox for {@link Actor#doOffRepeatProperty()}. */
-    @FXML
-    private CheckBox repeatOffActionsCheckBox;
+	/** The CheckBox for {@link Actor#doOffRepeatProperty()}. */
+	@FXML
+	private CheckBox repeatOffActionsCheckBox;
 
-    /** The IntegerTextField for editing {@link Actor#checkIntervalProperty()}. */
-    private IntegerTextField checkIntervalIntegerTextField = new IntegerTextField(10000000, false);
-    
-    /** The IntegerTextField for editing {@link Actor#repeatIntervalProperty()}. */
-    private IntegerTextField repeatIntervalIntegerTextField = new IntegerTextField(10000000, true);
-	
-    /** The {@link Actor} to edit. */
-    private Actor actor;
+	/** The IntegerTextField for editing {@link Actor#checkIntervalProperty()}. */
+	private IntegerTextField checkIntervalIntegerTextField = new IntegerTextField(10000000, false);
 
-    /** Saved original value of {@link Actor#doOnRepeatProperty()}. */
-    private boolean origRepeatOnActions;
-	
-    /** Saved original value of {@link Actor#doOffRepeatProperty()}. */
-    private boolean origRepeatOffActions;
-	
-    /** Saved original value of {@link Actor#checkIntervalProperty()}. */
-    private int origCheckInterval;
-	
-    /** Saved original value of {@link Actor#repeatIntervalProperty()}. */
-    private int origRepeatInterval;
-	
-    /** The Validation Support for this controller. */
-    private ValidationSupport validationSupport;
+	/** The IntegerTextField for editing {@link Actor#repeatIntervalProperty()}. */
+	private IntegerTextField repeatIntervalIntegerTextField = new IntegerTextField(10000000, true);
+
+	/** The {@link Actor} to edit. */
+	private Actor actor;
+
+	/** Saved original value of {@link Actor#doOnRepeatProperty()}. */
+	private boolean origRepeatOnActions;
+
+	/** Saved original value of {@link Actor#doOffRepeatProperty()}. */
+	private boolean origRepeatOffActions;
+
+	/** Saved original value of {@link Actor#checkIntervalProperty()}. */
+	private int origCheckInterval;
+
+	/** Saved original value of {@link Actor#repeatIntervalProperty()}. */
+	private int origRepeatInterval;
+
+	/** The Validation Support for this controller. */
+	private ValidationSupport validationSupport;
 
 	/*
 	 * @inheritDoc
@@ -94,7 +94,7 @@ public class UniversalActorController extends AbstractCuteController {
 		checkIntervalFieldContainer.getChildren().add(checkIntervalIntegerTextField);
 		repeatIntervalFieldContainer.getChildren().add(repeatIntervalIntegerTextField);
 	}
-	
+
 	/*
 	 * @inheritDoc
 	 */
@@ -115,10 +115,14 @@ public class UniversalActorController extends AbstractCuteController {
 		origCheckInterval = actor.getCheckInterval();
 		origRepeatInterval = actor.getRepeatInterval();
 		// Bind to the new Actor.
-		bindBidirectionalAndRemember(checkIntervalIntegerTextField.numberProperty(), actor.checkIntervalProperty());
-		bindBidirectionalAndRemember(repeatIntervalIntegerTextField.numberProperty(), actor.repeatIntervalProperty());
-		bindBidirectionalAndRemember(repeatOnActionsCheckBox.selectedProperty(), actor.doOnRepeatProperty());
-		bindBidirectionalAndRemember(repeatOffActionsCheckBox.selectedProperty(), actor.doOffRepeatProperty());
+		bindBidirectionalAndRemember(checkIntervalIntegerTextField.numberProperty(),
+				actor.checkIntervalProperty());
+		bindBidirectionalAndRemember(repeatIntervalIntegerTextField.numberProperty(),
+				actor.repeatIntervalProperty());
+		bindBidirectionalAndRemember(repeatOnActionsCheckBox.selectedProperty(),
+				actor.doOnRepeatProperty());
+		bindBidirectionalAndRemember(repeatOffActionsCheckBox.selectedProperty(),
+				actor.doOffRepeatProperty());
 	}
 
 	/*
@@ -128,7 +132,7 @@ public class UniversalActorController extends AbstractCuteController {
 	public void unbindFromCuteElement() {
 		unbindAllRememberedBinds();
 	}
-	
+
 	/*
 	 * @inheritDoc
 	 */
@@ -136,9 +140,9 @@ public class UniversalActorController extends AbstractCuteController {
 	public void setValidationSupport(ValidationSupport validationSupport) {
 		this.validationSupport = validationSupport;
 		this.validationSupport.registerValidator(checkIntervalIntegerTextField,
-				generateValidatorForIntervalTextField(origCheckInterval));
+				generateValidatorForIntervalTextField(origCheckInterval, true));
 		this.validationSupport.registerValidator(repeatIntervalIntegerTextField,
-				generateValidatorForIntervalTextField(origRepeatInterval));
+				generateValidatorForIntervalTextField(origRepeatInterval, false));
 		Validator<Boolean> RepeanOnActionsCheckBoxValidator = (c, newValue) -> {
 			ValidationResult finalResult = ValidationResult.fromErrorIf(c,
 					"Always successful result", false);
@@ -160,12 +164,12 @@ public class UniversalActorController extends AbstractCuteController {
 		ValidationSupport.setRequired(repeatOffActionsCheckBox, false);
 		ValidationSupport.setRequired(repeatOnActionsCheckBox, false);
 	}
-	
-	
+
 	/**
 	 * Checks if interval is less than {@link ConstsAndVars#minimumCheckInterval}, which is bad.
 	 *
-	 * @param interval The interval to check.
+	 * @param interval
+	 *            The interval to check.
 	 * @return True, if interval is less than {@link ConstsAndVars#minimumCheckInterval}.
 	 */
 	private boolean checkIfIntervalBigEnough(int interval) {
@@ -174,16 +178,26 @@ public class UniversalActorController extends AbstractCuteController {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Generate {@link Validator} for IntegerTextField containing time interval.
 	 *
 	 * @param originalInterval
 	 *            The original value of IntegerTextField.
+	 * @param checkOrRepeat
+	 *            Make validator for check interval or repeat interval. True for check interval.
 	 * @return the Validator.
 	 */
-	private Validator<String> generateValidatorForIntervalTextField(int originalInterval) {
+	private Validator<String> generateValidatorForIntervalTextField(int originalInterval,
+			boolean checkOrRepeat) {
 		Validator<String> intervalFieldValidator = (c, newValue) -> {
+			String tooSmallWarning = "Be careful when setting such small time interval, because it can"
+					+ " cause high CPU usage depending on Actor's ";
+			if (checkOrRepeat) {
+				tooSmallWarning += "Checker.";
+			} else {
+				tooSmallWarning += "On Actions and Off Actions.";
+			}
 			IntegerTextField tf = (IntegerTextField) c;
 			int number = tf.numberProperty().get();
 			ValidationResult emptyResult = ValidationResult.fromErrorIf(c,
@@ -193,10 +207,12 @@ public class UniversalActorController extends AbstractCuteController {
 			ValidationResult notBigEnoughResult = ValidationResult.fromErrorIf(c,
 					"The number can't be smaller than " + ConstsAndVars.minimumCheckInterval + ".",
 					checkIfIntervalBigEnough(number));
+			ValidationResult tooSmallResult = ValidationResult.fromWarningIf(c,
+					tooSmallWarning,
+					number < 1000);
 			ValidationResult finalResult = ValidationResult.fromResults(emptyResult,
-					notBigEnoughResult, justMinusResult);
-			buttonStateManager.reportNewValueOfControl(originalInterval, number, c,
-					finalResult);
+					notBigEnoughResult, justMinusResult, tooSmallResult);
+			buttonStateManager.reportNewValueOfControl(originalInterval, number, c, finalResult);
 			return finalResult;
 		};
 		return intervalFieldValidator;
