@@ -193,6 +193,9 @@ public class RunProgramActionController extends AbstractCuteController {
 		this.validationSupport.registerValidator(argumentsTextField, argumentsFieldValidator);
 		this.validationSupport.registerValidator(workingDirTextField, workingDirFieldValidator);
 		this.validationSupport.registerValidator(terminationCheckBox, terminationCheckBoxValidator);
+		ValidationSupport.setRequired(argumentsTextField, false);
+		ValidationSupport.setRequired(workingDirTextField, false);
+		ValidationSupport.setRequired(terminationCheckBox, false);
 	}
 
 }

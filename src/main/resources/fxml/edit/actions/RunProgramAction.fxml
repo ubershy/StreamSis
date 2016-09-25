@@ -51,8 +51,8 @@
    </rowConstraints>
    <children>
       <Label text="Please select the path to the program/script you want to run and specify the arguments if needed." wrapText="true" GridPane.columnSpan="2" GridPane.vgrow="ALWAYS" />
-      <Label maxHeight="1.7976931348623157E308" text="Program path (required)" GridPane.rowIndex="1" />
-      <Label layoutX="10.0" layoutY="14.0" maxHeight="1.7976931348623157E308" text="Command line arguments (optional)" GridPane.rowIndex="2" />
+      <Label maxHeight="1.7976931348623157E308" text="Program path" GridPane.rowIndex="1" />
+      <Label layoutX="10.0" layoutY="14.0" maxHeight="1.7976931348623157E308" text="Command line arguments" GridPane.rowIndex="2" />
       <TextField fx:id="argumentsTextField" layoutX="40.0" layoutY="10.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <HBox fillHeight="false" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <children>
@@ -61,7 +61,7 @@
          </children>
       </HBox>
       <Label maxHeight="1.7976931348623157E308" text="Please select &quot;working directory&quot;. If blank, the directory of the program will be used." wrapText="true" GridPane.columnSpan="2" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
-      <Label maxHeight="1.7976931348623157E308" text="&quot;Working directory&quot; (optional)" GridPane.rowIndex="4" />
+      <Label maxHeight="1.7976931348623157E308" text="&quot;Working directory&quot;" GridPane.rowIndex="4" />
       <HBox fillHeight="false" GridPane.columnIndex="1" GridPane.rowIndex="4">
          <children>
             <TextField fx:id="workingDirTextField" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />

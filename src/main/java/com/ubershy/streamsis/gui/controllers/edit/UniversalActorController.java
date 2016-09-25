@@ -157,6 +157,8 @@ public class UniversalActorController extends AbstractCuteController {
 				RepeanOnActionsCheckBoxValidator);
 		this.validationSupport.registerValidator(repeatOffActionsCheckBox,
 				RepeanOffActionsCheckBoxValidator);
+		ValidationSupport.setRequired(repeatOffActionsCheckBox, false);
+		ValidationSupport.setRequired(repeatOnActionsCheckBox, false);
 	}
 	
 	
