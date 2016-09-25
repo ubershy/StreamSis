@@ -24,11 +24,13 @@ import java.util.function.UnaryOperator;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
+import org.controlsfx.validation.decoration.CompoundValidationDecoration;
 import org.controlsfx.validation.decoration.StyleClassValidationDecoration;
 
 import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.gui.StreamSisAppFactory;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
+import com.ubershy.streamsis.gui.helperclasses.CuteGraphicValidationDecoration;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.CuteNodeContainer;
@@ -37,7 +39,6 @@ import com.ubershy.streamsis.project.ElementInfo;
 import com.ubershy.streamsis.project.ProjectManager;
 
 import javafx.beans.InvalidationListener;
-import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -68,8 +69,6 @@ public class PropsWithNameController implements Initializable {
 
 	private ValidationSupport validationSupport;
 	
-	private ChangeListener<? super ValidationResult> validationListener;
-
 	public Node getView() {
 		return root;
 	}
@@ -116,6 +115,7 @@ public class PropsWithNameController implements Initializable {
 		recreateValidationSupport();
 		// Give new validationSupport to currentCuteController, so it can validate input in fields.
 		currentCuteController.setValidationSupport(validationSupport);
+		validationSupport.initInitialDecoration();
 		root.add(currentCuteController.getView(), 0, 1);
 		// CuteNodeContainer should not be edited.
 		if (newElementCopy instanceof CuteNodeContainer) {
@@ -205,22 +205,15 @@ public class PropsWithNameController implements Initializable {
 	}
 	
 	/**
-	 * Recreates {@link #validationSupport} with it's listener {@link #validationListener} <br>
-	 * Also removes listener from old validationSupport.
-	 * <p>
-	 * Note: the listener it creates shows tooltips on controls when their values don't pass simple
-	 * validation.
+	 * Recreates {@link #validationSupport}, so the old validationSupport which is bound to unwanted
+	 * fields can be garbage collected.
 	 */
 	private void recreateValidationSupport() {
-		// Remove listener from old validationSupport.
-		if (validationSupport != null) {
-			validationSupport.validationResultProperty().removeListener(validationListener);
-		}
-		// Create new validationSupport.
 		validationSupport = new ValidationSupport();
-		validationSupport.setValidationDecorator(new StyleClassValidationDecoration());
-		validationListener = GUIUtil.createValidationListener(validationSupport);
-		validationSupport.validationResultProperty().addListener(validationListener);
+		CompoundValidationDecoration validationDecor = new CompoundValidationDecoration(
+				new StyleClassValidationDecoration("cuteerror", "warning"),
+				new CuteGraphicValidationDecoration());
+		validationSupport.setValidationDecorator(validationDecor);
 		Validator<String> nameTextFieldValidator = (c, newValue) -> {
 			ValidationResult alreadyExistanceResult = ValidationResult.fromErrorIf(c,
 					"The name is already taken. Please choose another one",

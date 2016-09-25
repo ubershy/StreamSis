@@ -201,11 +201,16 @@ public class ElementEditorController implements Initializable {
 					if (!propertiesPane.getContent().equals(propsWithNameController.getView())) {
 						propertiesPane.setContent(propsWithNameController.getView());
 					}
-					connectToCuteElement(newValue);
+					if (root.isExpanded()) {
+						connectToCuteElement(newValue);
+					}
 				});
 		root.expandedProperty()
 				.addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 					if (newValue) {
+						if (getCurrentElement() != null) {
+							connectToCuteElement(getCurrentElement());
+						}
 						tPaneDotsAnima.play();
 					} else {
 						tPaneDotsAnima.stop();

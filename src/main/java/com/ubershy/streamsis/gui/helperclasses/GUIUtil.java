@@ -17,16 +17,9 @@
  */
 package com.ubershy.streamsis.gui.helperclasses;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-
-import org.controlsfx.validation.ValidationMessage;
-import org.controlsfx.validation.ValidationResult;
-import org.controlsfx.validation.ValidationSupport;
-
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.actors.Actor;
@@ -35,12 +28,9 @@ import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.project.SisScene;
 import com.ubershy.streamsis.project.ProjectManager;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
@@ -48,7 +38,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Control;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -64,6 +53,9 @@ import javafx.stage.Stage;
  * Class with some useful methods related to GUI.
  */
 public final class GUIUtil {
+	
+	final static ScheduledExecutorService withDelayExecutor = Executors
+			.newSingleThreadScheduledExecutor();
 
 	/**
 	 * Gets a rectangle, which coordinates represent bounds of one or multiple user's displays.
@@ -277,61 +269,6 @@ public final class GUIUtil {
 		newActor.init();
 		ProjectManager.getProject().addActorToGlobalActors(newActor);
 		ProjectManager.getProject().addExistingActorToCurrentSisScene(newActor);
-	}
-
-	/**
-	 * This method creates listener for {@link ValidationSupport} object which shows tooltips when
-	 * field validation fails. <br>
-	 * When new message arrives to ValidationSupport object, the new tooltip will automatically
-	 * appear near {@link Control} that generated this message.
-	 *
-	 * @param validationSupport
-	 *            The {@link ValidationSupport} object.
-	 * @return The validation result change listener.
-	 */
-	public static ChangeListener<? super ValidationResult> createValidationListener(
-			ValidationSupport validationSupport) {
-		// container with current tooltip
-		AtomicReference<Tooltip> TPContainer = new AtomicReference<>();
-		Consumer<? super ValidationMessage> tooltipAction = new Consumer<ValidationMessage>() {
-			@Override
-			public void accept(ValidationMessage t) {
-				Control control = t.getTarget();
-				Point2D p = control.localToScreen(control.getLayoutBounds().getMaxX(),
-						control.getLayoutBounds().getMaxY());
-				if (p != null) {
-					Tooltip tp = new Tooltip(t.getText());
-					tp.setAutoHide(true);
-					tp.show(control, p.getX(), p.getY());
-					TPContainer.set(tp);
-					// Request focus on the field, so the user don't have to click on it.
-					control.requestFocus();
-				}
-			}
-		};
-		ChangeListener<? super ValidationResult> listener = new ChangeListener<ValidationResult>() {
-			@Override
-			public void changed(ObservableValue<? extends ValidationResult> observable,
-					ValidationResult oldValue, ValidationResult newValue) {
-				// Lets destroy current tooltip if exists
-				if (TPContainer.get() != null) {
-					TPContainer.get().hide();
-					TPContainer.set(null);
-				}
-				// Lets create a new List with with newValue's messages
-				Collection<ValidationMessage> currentMessages = new ArrayList<ValidationMessage>(
-						newValue.getMessages());
-				if (oldValue != null) {
-					Collection<ValidationMessage> oldMessages = oldValue.getMessages();
-					// Lets find substract OldMessages from currentMessages
-					// This will allow to show tooltips only for newest Messages later
-					currentMessages.removeAll(oldMessages);
-				}
-				// Lets show new tooltips near corresponding controls
-				currentMessages.forEach(tooltipAction);
-			}
-		};
-		return listener;
 	}
 
 	/**
