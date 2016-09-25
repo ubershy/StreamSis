@@ -211,7 +211,8 @@ public class PropsWithNameController implements Initializable {
 	private void recreateValidationSupport() {
 		validationSupport = new ValidationSupport();
 		CompoundValidationDecoration validationDecor = new CompoundValidationDecoration(
-				new StyleClassValidationDecoration("cuteerror", "warning"),
+				// These styles are located in /StreamSis/src/main/resources/css/validation.css
+				new StyleClassValidationDecoration("cuteerror", "cutewarning"),
 				new CuteGraphicValidationDecoration());
 		validationSupport.setValidationDecorator(validationDecor);
 		Validator<String> nameTextFieldValidator = (c, newValue) -> {

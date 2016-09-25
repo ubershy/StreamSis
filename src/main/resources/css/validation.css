@@ -1,9 +1,5 @@
-.error {
-    -fx-effect: dropshadow(three-pass-box, darkred, 7.0, 0.0, 0.0, 0.0);
-}
-
-.warning {
-    -fx-effect: dropshadow(three-pass-box, gold, 14.0, 0.0, 0.0, 0.0);
+.cutewarning {
+    -fx-effect: dropshadow(three-pass-box, gold, 2.0, 0.0, 0.0, 0.0);
 }
 
 .cuteerror {
