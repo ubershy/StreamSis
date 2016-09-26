@@ -194,7 +194,7 @@ public class CuteButtonsStatesManager {
 	 */
 	private void reportStateOfControl(Control control, boolean state,
 			Map<Control, Boolean> mapOfStates, BooleanProperty affectedProperty) {
-		boolean errorExistBeforeReporting = errorsExist.get();
+		boolean changesMadeBeforeRecalculation = changesMade.get();
 		boolean needToRecalculateProperty = putControlBooleanPairInMap(control, state, mapOfStates);
 		if (needToRecalculateProperty) {
 			boolean needToRecalculateWholeInputStatus = updatePropertyBasedOnMapValues(mapOfStates,
@@ -203,9 +203,10 @@ public class CuteButtonsStatesManager {
 				isInputDiffersAndValid.set(calculateIfInputDiffersAndValid());
 			}
 		}
-		boolean isInputSameButChangedBackFromInvalidToValid = errorExistBeforeReporting
-				&& !errorsExist.get() && !changesMade.get();
-		if (isInputDiffersAndValid.get() || isInputSameButChangedBackFromInvalidToValid){
+		// Some time ago there was a variable called isInputSameButChangedBackFromInvalidToValid
+		// that prevented reinitialization. If something like this is on your mind to write, forget
+		// about it. Using such variable will only lead to sadness and sorrow.
+		if (!errorsExist.get() && changesMadeBeforeRecalculation){
 			currentReportAsksForReinit = true;
 		}
 	}

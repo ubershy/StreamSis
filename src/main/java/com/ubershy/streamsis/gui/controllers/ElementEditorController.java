@@ -262,7 +262,8 @@ public class ElementEditorController implements Initializable {
 			applyButton.setText(initText);
 			performTestButton.setText(initText);
 			// TODO: run init() in another thread, as JavaFX thread may hang.
-			elementWorkingCopy.init();
+			if (elementWorkingCopy != null)
+				elementWorkingCopy.init();
 			// Restore texts of buttons
 			OKButton.setText("OK");
 			applyButton.setText("Apply");
