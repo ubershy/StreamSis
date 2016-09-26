@@ -227,7 +227,7 @@ public class ElementEditorController implements Initializable {
 		elementHealthProperty
 				.addListener((ChangeListener<ElementHealth>) (observable, oldValue, newValue) -> {
 					Platform.runLater(() -> {
-						defineElementHealthStyle(newValue);
+						defineStyleByElementHealth(newValue);
 						hsShadowAnima.play();
 					});
 				});
@@ -318,7 +318,7 @@ public class ElementEditorController implements Initializable {
 		String simpleClassName = elementWorkingCopy.getClass().getSimpleName();
 		ElementInfo infoOfCopyElement = elementWorkingCopy.getElementInfo();
 		typeLabel.setText(simpleClassName);
-		defineElementHealthStyle(infoOfCopyElement.elementHealthProperty().get());
+		defineStyleByElementHealth(infoOfCopyElement.elementHealthProperty().get());
 		whyUnhealthyLabel.setText(infoOfCopyElement.getUnhealthyMessage());
 
 		// Now let's bind all properties to visible textLabels describing the CuteElement
@@ -344,23 +344,31 @@ public class ElementEditorController implements Initializable {
 		buttonStateManager.allowOrNotPerformTestButtonBasedOnElementClass(null);
 	}
 
-	protected void defineElementHealthStyle(ElementHealth elementHealth) {
+	protected void defineStyleByElementHealth(ElementHealth elementHealth) {
 		statusLabel.setText(elementHealth.toString());
 		switch (elementHealth) {
 		case BROKEN:
 			unhealthyPane.setVisible(true);
 			unhealthyPane.setManaged(true);
 			statusLabel.setTextFill(Color.RED);
+			OKButton.setStyle("-fx-effect: dropshadow(three-pass-box, plum, 5, 0.35, 0, 0);");
+			applyButton.setStyle("-fx-effect: dropshadow(three-pass-box, plum, 5, 0.35, 0, 0);");
 			break;
 		case HEALTHY:
 			unhealthyPane.setVisible(false);
 			unhealthyPane.setManaged(false);
 			statusLabel.setTextFill(Color.GREEN);
+			OKButton.setStyle("");
+			applyButton.setStyle("");
 			break;
 		case SICK:
 			unhealthyPane.setVisible(true);
 			unhealthyPane.setManaged(true);
 			statusLabel.setTextFill(Color.GOLDENROD);
+			OKButton.setStyle(
+					"-fx-effect: dropshadow(three-pass-box, palegoldenrod, 5, 0.35, 0, 0);");
+			applyButton.setStyle(
+					"-fx-effect: dropshadow(three-pass-box, palegoldenrod, 5, 0.35, 0, 0);");
 			break;
 		default:
 			break;
