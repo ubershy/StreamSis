@@ -19,11 +19,14 @@ package com.ubershy.streamsis.gui.helperclasses;
 
 import java.util.Arrays;
 import java.util.Collection;
-
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import org.controlsfx.control.decoration.Decoration;
 import org.controlsfx.control.decoration.GraphicDecoration;
 import org.controlsfx.validation.Severity;
 import org.controlsfx.validation.ValidationMessage;
+import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
 
 import de.jensd.fx.glyphs.GlyphsBuilder;
@@ -48,12 +51,22 @@ import javafx.util.Duration;
 
 /**
  * The CuteGraphicValidationDecoration. It's like {@link GraphicValidationDecoration} but cute. <br>
- * The styles of validation tooltips and graphic indicators are changed here.
+ * The styles of validation tooltips and graphic indicators are changed here. <br>
+ * There is also fancy {@link #animation} that
+ * Requires ValidationSupport in constructor unlike GraphicValidationDecoration. This is probably a
+ * bad idea. The good idea is to make a contribution to ValidationSupport and rewrite it.
  */
 public class CuteGraphicValidationDecoration extends GraphicValidationDecoration {
 	
-	protected ValidationMessage lastMessage;
+	/** The map containing last remembered validation messages for controls. */
+	protected Map<Control, ValidationMessage> lastMessageMap =
+			new HashMap<Control, ValidationMessage>();
 	
+	/**
+	 * The growing animation for "error" or "warning" nodes. It plays only if validation message for
+	 * control changes or gets value after being null, so it can give a hint to the user that
+	 * new mistake was made.
+	 */
 	protected ScaleTransition animation = new ScaleTransition(Duration.millis(200));
 
 	/** The common style elements shared between "error" and "warning" validation tooltips. */
@@ -76,7 +89,8 @@ public class CuteGraphicValidationDecoration extends GraphicValidationDecoration
     /**
      * Instantiates CuteGraphicValidationDecoration.
      */
-    public CuteGraphicValidationDecoration() {
+    public CuteGraphicValidationDecoration(ValidationSupport validationSupport) {
+    	listenToValidationSupport(validationSupport);
     	animation.setCycleCount(1);
     	animation.setAutoReverse(false);
     	animation.setFromX(0.0);
@@ -121,12 +135,16 @@ public class CuteGraphicValidationDecoration extends GraphicValidationDecoration
 		Tooltip tp = createTooltip(message);
 		label.setTooltip(tp);
 		label.setAlignment(Pos.CENTER);
-		// Play animation only when message text differs from previous message.
-		if (lastMessage == null || !lastMessage.getText().equals(message.getText())) {
+		// Play animation only when validation message text differs from previous message text of
+		// this control.
+		ValidationMessage lastControlValidationMessage = lastMessageMap.get(message.getTarget());
+		if (lastControlValidationMessage == null
+				|| !lastControlValidationMessage.getText().equals(message.getText())) {
 			animation.setNode(label);
 			animation.playFromStart();
 		}
-		lastMessage = message;
+		// Remember the last validation message of control.
+		lastMessageMap.put(message.getTarget(), message);
 		return label;
 	}
 
@@ -166,6 +184,33 @@ public class CuteGraphicValidationDecoration extends GraphicValidationDecoration
 		imageView.setEffect(bluemaker);
 		return Arrays.asList(new GraphicDecoration(imageView, Pos.TOP_LEFT,
 				REQUIRED_IMAGE.getWidth() / 2, REQUIRED_IMAGE.getHeight() / 2));
+	}
+
+	/**
+	 * Adds listener to {@link ValidationSupport} to play animations more correctly.
+	 * 
+	 * Internally it nullifies {@link #lastMessageMap} value, if it notices that
+	 * the corresponding control doesn't have validation problems anymore.
+	 *
+	 * @param validationSupport the validation support
+	 */
+	private void listenToValidationSupport(ValidationSupport validationSupport) {
+		// This listener nullifies lastMessageMap value, if it notices that the corresponding
+		// control don't have validation error anymore.
+		validationSupport.validationResultProperty().addListener((o, oldValue, newValue) -> {
+			Collection<ValidationMessage> validationMessages = newValue.getMessages();
+			HashSet<Control> currentControlsWithValidationProblems = new HashSet<Control>();
+			for (ValidationMessage message : validationMessages) {
+				currentControlsWithValidationProblems.add(message.getTarget());
+			}
+			for (Control c : lastMessageMap.keySet()) {
+				// Let's check if control became valid.
+				if (!currentControlsWithValidationProblems.contains(c)) {
+					// Clean up messages for control, because it's now valid.
+					lastMessageMap.put(c, null);
+				}
+			}
+		});
 	}
 
 }
