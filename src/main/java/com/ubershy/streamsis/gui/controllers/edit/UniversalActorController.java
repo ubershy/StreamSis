@@ -191,8 +191,8 @@ public class UniversalActorController extends AbstractCuteController {
 	private Validator<String> generateValidatorForIntervalTextField(int originalInterval,
 			boolean checkOrRepeat) {
 		Validator<String> intervalFieldValidator = (c, newValue) -> {
-			String tooSmallWarning = "Be careful when setting such small time interval, because it can"
-					+ " cause high CPU usage depending on Actor's ";
+			String tooSmallWarning = "Be careful when setting such small time interval, because it"
+					+ " can cause high CPU usage depending on Actor's ";
 			if (checkOrRepeat) {
 				tooSmallWarning += "Checker.";
 			} else {
@@ -204,14 +204,13 @@ public class UniversalActorController extends AbstractCuteController {
 					"This field can't be empty.", newValue.isEmpty());
 			ValidationResult justMinusResult = ValidationResult.fromErrorIf(c,
 					"Oh, come on, you can't input just minus!", newValue.equals("-"));
-			ValidationResult notBigEnoughResult = ValidationResult.fromErrorIf(c,
+			ValidationResult tooSmallResult = ValidationResult.fromErrorIf(c,
 					"The number can't be smaller than " + ConstsAndVars.minimumCheckInterval + ".",
 					checkIfIntervalBigEnough(number));
-			ValidationResult tooSmallResult = ValidationResult.fromWarningIf(c,
-					tooSmallWarning,
-					number < 1000);
+			ValidationResult aBitSmallResult = ValidationResult.fromWarningIf(c, tooSmallWarning,
+					ConstsAndVars.minimumCheckInterval <= number && number < 1000);
 			ValidationResult finalResult = ValidationResult.fromResults(emptyResult,
-					notBigEnoughResult, justMinusResult, tooSmallResult);
+					tooSmallResult, justMinusResult, aBitSmallResult);
 			buttonStateManager.reportNewValueOfControl(originalInterval, number, c, finalResult);
 			return finalResult;
 		};
