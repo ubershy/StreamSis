@@ -24,13 +24,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.project.AbstractCuteNode;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 /**
  * File Copy Action. <br>
- * This {@link Action} can copy Destination file to Source file.
+ * This {@link Action} can copy Source file to Destination file.
  */
 @SuppressWarnings("unchecked")
 public class FileCopyAction extends AbstractCuteNode implements Action {
@@ -38,15 +42,15 @@ public class FileCopyAction extends AbstractCuteNode implements Action {
 	static final Logger logger = LoggerFactory.getLogger(FileCopyAction.class);
 
 	/** The Destination file's path. */
-	@JsonProperty
-	protected String dstPath = "";
+	@JsonIgnore
+	protected StringProperty dstFilePath = new SimpleStringProperty("");
 
 	/** The variable for storing Destination file's extension. */
-	protected String extension;
+	protected String dstExtension;
 
 	/** The Source file's path. */
-	@JsonProperty
-	protected String srcFilePath = "";
+	@JsonIgnore
+	protected StringProperty srcFilePath = new SimpleStringProperty("");
 
 	public FileCopyAction() {
 	}
@@ -61,9 +65,9 @@ public class FileCopyAction extends AbstractCuteNode implements Action {
 	 */
 	@JsonCreator
 	public FileCopyAction(@JsonProperty("srcFilePath") String srcFilePath,
-			@JsonProperty("dstPath") String dstFilePath) {
-		this.dstPath = dstFilePath;
-		this.srcFilePath = srcFilePath;
+			@JsonProperty("dstFilePath") String dstFilePath) {
+		this.dstFilePath.set(dstFilePath);
+		this.srcFilePath.set(srcFilePath);
 	}
 
 	/**
@@ -72,12 +76,12 @@ public class FileCopyAction extends AbstractCuteNode implements Action {
 	 * @return true, if successful
 	 */
 	protected boolean checkForEmptinessAndNothingness() {
-		if (dstPath.isEmpty()) {
-			elementInfo.setAsBroken("Destination path is not defined");
+		if (dstFilePath.get().isEmpty()) {
+			elementInfo.setAsBroken("Destination path is not defined.");
 			return false;
 		}
-		if (srcFilePath.isEmpty()) {
-			elementInfo.setAsBroken("Source path is not defined");
+		if (srcFilePath.get().isEmpty()) {
+			elementInfo.setAsBroken("Source path is not defined.");
 			return false;
 		}
 		return true;
@@ -87,9 +91,9 @@ public class FileCopyAction extends AbstractCuteNode implements Action {
 	public void execute() {
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
-			logger.info("Copying file with '" + extension + "' extension");
+			logger.info("Copying file with '" + dstExtension + "' extension");
 			try {
-				Util.copyFileSynced(new File(srcFilePath), new File(dstPath));
+				Util.copyFileSynced(new File(srcFilePath.get()), new File(dstFilePath.get()));
 			} catch (IOException e) {
 				elementInfo.setBooleanResult(false);
 				return;
@@ -98,49 +102,65 @@ public class FileCopyAction extends AbstractCuteNode implements Action {
 		}
 	}
 
-	public String getDstPath() {
-		return dstPath;
+	@JsonProperty("dstFilePath")
+	public String getDstFilePath() {
+		return dstFilePath.get();
 	}
 
-	public String getSrcPath() {
-		return srcFilePath;
+	@JsonProperty("srcFilePath")
+	public String getSrcFilePath() {
+		return srcFilePath.get();
 	}
 
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
+		// The method below while executing can set the element as broken.
 		if (!checkForEmptinessAndNothingness())
 			return;
-		extension = Util.extractFileExtensionFromPath(dstPath);
-		if (extension != null) {
-			if (Util.checkifSingleFileExists(srcFilePath)) {
-				if (!Util.checkFileExtension(srcFilePath,
-						Util.singleStringAsArrayOfStrings(extension))) {
-					elementInfo.setAsBroken(
-							"Source file and Destination file extensions don't match\nDestination file extension: '"
-									+ extension + "' Source file extension: '"
-									+ Util.extractFileExtensionFromPath(srcFilePath)
-									+ "'\nPlease, make sure you are using files exactly of the same type");
-					return;
-				}
-			} else {
-				elementInfo.setAsBroken("Can't find or read Source image file " + srcFilePath);
+		if (!Util.checkifSingleFileExists(srcFilePath.get())) {
+			elementInfo.setAsBroken("Can't find or read Source file " + srcFilePath.get());
+			return;
+		}
+		if (srcFilePath.get().equals(dstFilePath.get())) {
+			elementInfo.setAsBroken("Source and destination paths must be different.");
+			return;
+		}
+		if (!Util.checkIfPathSeemsValid(dstFilePath.get())) {
+			elementInfo.setAsBroken("The destination path seems slightly... invalid.");
+			return;
+		}
+		dstExtension = Util.extractFileExtensionFromPath(dstFilePath.get());
+		String srcExtension = Util.extractFileExtensionFromPath(srcFilePath.get());
+		if (dstExtension == null) {
+			if (srcExtension != null) {
+				elementInfo.setAsBroken("Source file and Destination file extensions don't match.");
 				return;
 			}
 		} else {
-			elementInfo.setAsBroken("Destination file has no extension: " + dstPath
-					+ "\nPlease choose another file");
-			return;
+			if (!dstExtension.equals(srcExtension)) {
+				elementInfo.setAsBroken("Source file and Destination file extensions don't match.");
+				return;
+			}
 		}
-
 	}
 
-	public void setDstPath(String dstPath) {
-		this.dstPath = dstPath;
+	@JsonProperty("dstFilePath")
+	public void setDstFilePath(String dstFilePath) {
+		this.dstFilePath.set(dstFilePath);
 	}
 
-	public void setSrcPath(String srcPath) {
-		this.srcFilePath = srcPath;
+	@JsonProperty("srcFilePath")
+	public void setSrcFilePath(String srcFilePath) {
+		this.srcFilePath.set(srcFilePath);
+	}
+
+	public StringProperty srcFilePathProperty() {
+		return srcFilePath;
+	}
+
+	public StringProperty dstFilePathProperty() {
+		return dstFilePath;
 	}
 
 }

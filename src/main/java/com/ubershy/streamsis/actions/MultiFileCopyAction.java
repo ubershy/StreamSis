@@ -57,7 +57,7 @@ public class MultiFileCopyAction extends FileCopyAction {
 	public MultiFileCopyAction(String srcDirectoryPath, String dstFilePath,
 			boolean chooseFileRandomly) {
 		fileChooser.srcPath = srcDirectoryPath;
-		this.dstPath = dstFilePath;
+		this.dstFilePath.set(dstFilePath);;
 		fileChooser.chooseFileRandomly = chooseFileRandomly;
 		fileChooser.findSourcesInSrcPath = true;
 	}
@@ -75,7 +75,7 @@ public class MultiFileCopyAction extends FileCopyAction {
 	public MultiFileCopyAction(ArrayList<File> persistentSourceFileList, String dstFilePath,
 			boolean chooseFileRandomly) {
 		fileChooser.persistentSourceFileList.setAll(persistentSourceFileList);
-		this.dstPath = dstFilePath;
+		this.dstFilePath.set(dstFilePath);;
 		fileChooser.chooseFileRandomly = chooseFileRandomly;
 		fileChooser.findSourcesInSrcPath = false;
 	}
@@ -89,9 +89,9 @@ public class MultiFileCopyAction extends FileCopyAction {
 	 *            the {@link MultiSourceFileChooser}
 	 */
 	@JsonCreator
-	public MultiFileCopyAction(@JsonProperty("dstPath") String dstFilePath,
+	public MultiFileCopyAction(@JsonProperty("dstFilePath") String dstFilePath,
 			@JsonProperty("fileChooser") MultiSourceFileChooser fileChooser) {
-		this.dstPath = dstFilePath;
+		this.dstFilePath.set(dstFilePath);
 		this.fileChooser = fileChooser;
 	}
 
@@ -100,11 +100,11 @@ public class MultiFileCopyAction extends FileCopyAction {
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
 			logger.info("Copying Source directory file № " + (fileChooser.currentFileIndex + 1)
-					+ " with '" + extension + "' extension");
+					+ " with '" + dstExtension + "' extension");
 			File fileToCopy = fileChooser.temporarySourceFileList[fileChooser.currentFileIndex];
 			fileChooser.computeNextFileIndex();
 			try {
-				Util.copyFileSynced(fileToCopy, new File(dstPath));
+				Util.copyFileSynced(fileToCopy, new File(dstFilePath.get()));
 			} catch (IOException e) {
 				elementInfo.setBooleanResult(false);
 				return;
@@ -116,16 +116,16 @@ public class MultiFileCopyAction extends FileCopyAction {
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
-		if (dstPath.isEmpty()) {
+		if (dstFilePath.get().isEmpty()) {
 			elementInfo.setAsBroken("Destination path is not defined");
 			return;
 		}
-		extension = Util.extractFileExtensionFromPath(dstPath);
-		if (extension != null) {
-			fileChooser.initTemporaryFileList(elementInfo, new String[] { extension },
+		dstExtension = Util.extractFileExtensionFromPath(dstFilePath.get());
+		if (dstExtension != null) {
+			fileChooser.initTemporaryFileList(elementInfo, new String[] { dstExtension },
 					"Source files");
 		} else {
-			elementInfo.setAsBroken("Destination file has no extension: " + dstPath
+			elementInfo.setAsBroken("Destination file has no extension: " + dstFilePath.get()
 					+ "\nPlease choose another file");
 		}
 		if (elementInfo.isBroken()) {

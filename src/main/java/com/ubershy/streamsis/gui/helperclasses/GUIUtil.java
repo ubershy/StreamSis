@@ -17,6 +17,7 @@
  */
 package com.ubershy.streamsis.gui.helperclasses;
 
+import java.io.File;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -40,14 +41,17 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 /**
  * Class with some useful methods related to GUI.
@@ -316,4 +320,36 @@ public final class GUIUtil {
 		}
 	}
 	
+	/**
+	 * Show cute file chooser window, which automatically opens last opened directory and remembers
+	 * newly chosen directory.
+	 *
+	 * @param title
+	 *            The title of window to show.
+	 * @param saveOrOpen
+	 *            True to save file, false to open file.
+	 * @param tfToSet
+	 *            The TextField to set after the user has chosen the file.
+	 */
+	public static void showCuteFileChooser(String title, boolean saveOrOpen, TextField tfToSet) {
+		Window wingow = tfToSet.getScene().getWindow();
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle(title);
+		String lastDir = CuteConfig.getString(CuteConfig.UTILGUI, "LastFileDirectory");
+		if (Util.checkDirectory(lastDir)) {
+			fileChooser.setInitialDirectory(new File(lastDir));
+		}
+		File file = null;
+		if (saveOrOpen) {
+			file = fileChooser.showSaveDialog(wingow);
+		} else {
+			file = fileChooser.showOpenDialog(wingow);
+		}
+		if (file != null) {
+			CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastFileDirectory",
+					file.getParentFile().getAbsolutePath());
+			tfToSet.setText(file.getAbsolutePath());
+		}
+	}
+
 }

@@ -485,5 +485,66 @@ public final class Util {
 		}
 		return normalValue;
 	}
+	
+	/**
+	 * Check if path is absolute and file exists.
+	 *
+	 * @param path
+	 *            The path of file.
+	 * @return True, if path is absolute and file exists.
+	 */
+	public static boolean checkIfPathIsAbsoluteAndFileExists(String path) {
+		if ((new File(path).isAbsolute())) {
+			if (Util.checkifSingleFileExists(path)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Check if extensions of files are same. If files have no extensions they are considered as
+	 * same.
+	 *
+	 * @param path1
+	 *            The path of first file.
+	 * @param path2
+	 *            The path of second file.
+	 * @return True, if files have same extensions or they both have no extensions. False otherwise.
+	 *
+	 * @throws IllegalArgumentException
+	 *             If at least one of file paths is empty.
+	 * @throws NullPointerException
+	 *             If at least one of file paths is null.
+	 */
+	public static boolean checkIfExtensionsOfFilesAreSame(String path1, String path2) {
+		// The code below can throw IllegalArgument exception and NullPointerException if paths are
+		// null or empty.
+		String ext1 = extractFileExtensionFromPath(path1);
+		String ext2 = extractFileExtensionFromPath(path2);
+		if (ext1 == null && ext2 == null) // Means there are not extensions on both files.
+			return true;
+		if (ext1 != null) {
+			if (ext1.equals(ext2)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Check if the path seems valid, i.e. look like a path. The object on this path might not
+	 * exist.
+	 *
+	 * @param path The path.
+	 * @return True, if the path seems valid.
+	 */
+	public static boolean checkIfPathSeemsValid(String path) {
+		File parentFile = new File(path).getParentFile();
+		if (parentFile != null) {
+			return true;
+		}
+		return false;
+	}
 
 }

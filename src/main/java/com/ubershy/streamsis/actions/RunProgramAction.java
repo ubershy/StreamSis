@@ -122,15 +122,6 @@ public class RunProgramAction extends AbstractCuteNode implements Action {
 		return argumentsProperty;
 	}
 
-	public boolean checkIfPathIsAbsoluteAndFileExists(String path) {
-		if ((new File(path).isAbsolute())) { // the path provided is absolute
-			if (Util.checkifSingleFileExists(path)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	/*
 	 * @inheritDoc
 	 */
@@ -246,7 +237,7 @@ public class RunProgramAction extends AbstractCuteNode implements Action {
 		}
 		// TODO: improve algorithms below. I was in hurry. =/
 		String absolutePath = null;
-		if (checkIfPathIsAbsoluteAndFileExists(getPath())) { // the path provided is absolute
+		if (Util.checkIfPathIsAbsoluteAndFileExists(getPath())) { // the path provided is absolute
 			absolutePath = getPath();
 		} 
 		// Too hard to implement ability to support non-absolute paths of executables.

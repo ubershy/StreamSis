@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+/** 
+ * StreamSis
+ * Copyright (C) 2016 Eva Balycheva
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+-->
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane fx:id="root" hgap="10.0" maxHeight="1.7976931348623157E308" vgap="10.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ubershy.streamsis.gui.controllers.edit.actions.FileCopyActionController">
+   <columnConstraints>
+      <ColumnConstraints minWidth="10.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" vgrow="ALWAYS" />
+      <RowConstraints fillHeight="false" vgrow="NEVER" />
+      <RowConstraints fillHeight="false" vgrow="NEVER" />
+      <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" vgrow="ALWAYS" />
+      <RowConstraints fillHeight="false" vgrow="NEVER" />
+      <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" vgrow="ALWAYS" />
+   </rowConstraints>
+   <children>
+      <Label text="Select the source file. This file will be copied to destination file path." wrapText="true" GridPane.columnSpan="2" GridPane.vgrow="ALWAYS" />
+      <Label maxHeight="1.7976931348623157E308" text="Source file" GridPane.rowIndex="1" />
+      <HBox fillHeight="false" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <children>
+            <TextField fx:id="sourceTextField" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+            <Button mnemonicParsing="false" onAction="#browseSourcePath" text="Browse" />
+         </children>
+      </HBox>
+      <Label maxHeight="1.7976931348623157E308" text="Select the destination file path, including the extension. The file on this path will be created or replaced." wrapText="true" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
+      <Label maxHeight="1.7976931348623157E308" text="Destination file" GridPane.rowIndex="3" />
+      <HBox fillHeight="false" GridPane.columnIndex="1" GridPane.rowIndex="3">
+         <children>
+            <TextField fx:id="destinationTextField" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+            <Button mnemonicParsing="false" onAction="#browseDestinationPath" text="Browse" />
+         </children>
+      </HBox>
+   </children>
+</GridPane>

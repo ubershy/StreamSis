@@ -161,7 +161,7 @@ public class RunProgramActionController extends AbstractCuteController {
 					"Please select a path to the program", newValue.isEmpty());
 			ValidationResult validPathResult = ValidationResult.fromErrorIf(c,
 					"Executable file is not found on this path",
-					!action.checkIfPathIsAbsoluteAndFileExists(newValue));
+					!Util.checkIfPathIsAbsoluteAndFileExists(newValue));
 			ValidationResult finalResult = ValidationResult.fromResults(emptyResult,
 					validPathResult);
 			buttonStateManager.reportNewValueOfControl(origPath, newValue, c, finalResult);
