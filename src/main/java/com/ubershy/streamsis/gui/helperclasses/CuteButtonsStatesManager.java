@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.controlsfx.validation.ValidationResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.ubershy.streamsis.actions.Action;
 import com.ubershy.streamsis.checkers.Checker;
@@ -31,6 +29,8 @@ import com.ubershy.streamsis.gui.controllers.ElementEditorController;
 import com.ubershy.streamsis.project.CuteElement;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Control;
 
@@ -43,29 +43,49 @@ import javafx.scene.control.Control;
  */
 public class CuteButtonsStatesManager {
 	
-	/** The Constant logger. */
-	static final Logger logger = LoggerFactory.getLogger(CuteButtonsStatesManager.class);
-
-	// Private variables.
+	// Very private variables and properties.
 	
 	/**
 	 * Holds information if particular {@link Control} has it's value changed from it's original
 	 * value.<br>
 	 * (The user has provided new value for {@link Control} different from the original value)
 	 */
-	private Map<Control, Boolean> changesMadeMap = new HashMap<Control, Boolean>();
+	private final Map<Control, Boolean> changesMadeMap = new HashMap<Control, Boolean>();
 
 	/** Holds information if particular {@link Control} has invalid value. */
-	private Map<Control, Boolean> errorExistMap = new HashMap<Control, Boolean>();
+	private final Map<Control, Boolean> errorExistMap = new HashMap<Control, Boolean>();
 
 	/**
-	 * Tells if the user has provided new parameter values for {@link CuteElement} different from
-	 * the original values.
+	 * Tells if the user has input some new parameter values in controls for editing
+	 * {@link CuteElement} that are different from the original values.
 	 */
-	private BooleanProperty changesMade = new SimpleBooleanProperty(false);
+	private final BooleanProperty changesMade = new SimpleBooleanProperty(false);
 
-	/** Tells if the user has provided wrong parameters for {@link CuteElement}. */
-	private BooleanProperty errorsExist = new SimpleBooleanProperty(false);
+	/** Tells if the user has provided wrong input in controls for editing {@link CuteElement}. */
+	private final BooleanProperty errorsExist = new SimpleBooleanProperty(false);
+	
+	/**
+	 * Tells if "Perform Test" button is able to be enabled or not. <br>
+	 * Used to calculate {@link #performTestButtonOn}.
+	 */
+	private final BooleanProperty performTestButtonAllowed = new SimpleBooleanProperty(false);
+	
+	/**
+	 * Tells if {@link CuteElement} is under testing invoked by "Perform Test" button. <br>
+	 * Used to calculate {@link #performTestButtonOn}.
+	 */
+	private final BooleanProperty currentlyTesting = new SimpleBooleanProperty(false);
+	
+	/**
+	 * Tells if fields ({@link Control}s) in {@link ElementEditorController} have different values
+	 * from original ones and have passed field validation. I.e. User input seems valid. If so, we
+	 * can try to initialize new {@link CuteElement} based on values of these fields for testing
+	 * purposes. <br>
+	 * Internally it depends on {@link #changesMade} and {@link #errorsExist} properties.
+	 */
+	private BooleanProperty isInputDiffersAndValid = new SimpleBooleanProperty(false);
+	
+	// Properties that are read-only outside the class.
 	
 	/**
 	 * Tells if the current {@link CuteElement} reinitialization needs to be scheduled.<br>
@@ -77,7 +97,8 @@ public class CuteButtonsStatesManager {
 	 * broken, the controller should call the method {@link #setCuteElementAsInitialized()} to reset
 	 * the variable to default value (false).
 	 */
-	private BooleanProperty needToScheduleCuteElementReinit = new SimpleBooleanProperty(false);
+	private final ReadOnlyBooleanWrapper needToScheduleCuteElementReinit = 
+			new ReadOnlyBooleanWrapper(this, "needToScheduleCuteElementReinit", false);
 	
 	/**
 	 * Tells if the current {@link CuteElement} scheduled reinitalization needs to be canceled
@@ -88,17 +109,8 @@ public class CuteButtonsStatesManager {
 	 * call the method {@link #setCuteElementReinitSuccessfullyCancelled()} to reset the variable to
 	 * default value (false).
 	 */
-	private BooleanProperty needToCancelScheduledCuteElementReinit = 
-			new SimpleBooleanProperty(false);
-	
-	/**
-	 * Tells if fields ({@link Control}s) in {@link ElementEditorController} have different values
-	 * from original ones and have passed field validation. I.e. User input seems valid. If so, we
-	 * can try to initialize new {@link CuteElement} based on values of these fields for testing
-	 * purposes. <br>
-	 * Internally it depends on {@link #changesMade} and {@link #errorsExist} properties.
-	 */
-	private BooleanProperty isInputDiffersAndValid = new SimpleBooleanProperty(false);
+	private final ReadOnlyBooleanWrapper needToCancelScheduledCuteElementReinit = 
+			new ReadOnlyBooleanWrapper(this, "needToCancelScheduledCuteElementReinit", false);
 	
 	/**
 	 * Tells if "Apply" button in {@link ElementEditorController} should be enabled. It can be
@@ -106,7 +118,8 @@ public class CuteButtonsStatesManager {
 	 * and has passed full validation. I.e. CuteElement was able to initialize without errors after
 	 * the user has input new parameters.
 	 */
-	private BooleanProperty applyButtonOn = new SimpleBooleanProperty(false);
+	private final ReadOnlyBooleanWrapper applyButtonOn = new ReadOnlyBooleanWrapper(this,
+			"applyButtonOn", false);
 
 	/**
 	 * Tells if "OK" button should be enabled. <br>
@@ -114,7 +127,8 @@ public class CuteButtonsStatesManager {
 	 * full validation. I.e. CuteElement was able to initialize without errors. <br>
 	 * Used also to calculate {@link #performTestButtonOn}.
 	 */
-	private BooleanProperty okButtonOn = new SimpleBooleanProperty(false);
+	private final ReadOnlyBooleanWrapper okButtonOn = new ReadOnlyBooleanWrapper(this, "okButtonOn",
+			false);
 	
 	/**
 	 * Tells if "Perform Test" button should be enabled. <br>
@@ -124,21 +138,12 @@ public class CuteButtonsStatesManager {
 	 * 2. CuteElement is not of type {@link Actor} or {@link SisScene}. <br>
 	 * 3. "Perform Test" button has finished it's work if it was recently pressed. <br>
 	 */
-	private BooleanProperty performTestButtonOn = new SimpleBooleanProperty(false);
+	private final ReadOnlyBooleanWrapper performTestButtonOn = new ReadOnlyBooleanWrapper(this,
+			"performTestButtonOn", false);
 	
-	/**
-	 * Tells if "Perform Test" button is able to be enabled or not. <br>
-	 * Used to calculate {@link #performTestButtonOn}.
-	 */
-	private BooleanProperty performTestButtonAllowed = new SimpleBooleanProperty(false);
 	
-	/**
-	 * Tells if {@link CuteElement} is under testing invoked by "Perform Test" button. <br>
-	 * Used to calculate {@link #performTestButtonOn}.
-	 */
-	private BooleanProperty currentlyTesting = new SimpleBooleanProperty(false);
-			
-	// Constructor
+	// Constructor.
+	
 	public CuteButtonsStatesManager(){
 		// Bind properties.
 		okButtonOn.bind(needToScheduleCuteElementReinit.not().and(errorsExist.not()));
@@ -146,6 +151,9 @@ public class CuteButtonsStatesManager {
 		performTestButtonOn
 				.bind(okButtonOn.and(performTestButtonAllowed).and(currentlyTesting.not()));
 	}
+	
+	
+	// Internal logic.
 	
 	/**
 	 * Accepts information about if one of controls in {@link ElementEditorController} has different
@@ -295,28 +303,75 @@ public class CuteButtonsStatesManager {
 		return changesMade.get() && !(errorsExist.get());
 	}
 
-	// Public properties.
+	
+	// ReadOnlyProperties made available outside.
 	
 	/**
-	 * See {@link #isInputDiffersAndValid}.
+	 * Tells if "OK" button should be enabled.
 	 *
-	 * @return the boolean property
+	 * @return ReadOnlyBooleanProperty
 	 */
-	public BooleanProperty isInputDiffersAndValidProperty() {
-		return isInputDiffersAndValid;
+	public ReadOnlyBooleanProperty okButtonOnProperty() {
+		return okButtonOn.getReadOnlyProperty();
+	}
+	
+	/**
+	 * Tells if "Perform Test" button should be enabled.
+	 *
+	 * @return ReadOnlyBooleanProperty
+	 */
+	public ReadOnlyBooleanProperty performTestButtonOnProperty() {
+		return performTestButtonOn.getReadOnlyProperty();
 	}
 
 	/**
-	 * The getter for {@link #errorsExist}.
+	 * Tells if "Apply" button should be enabled.
 	 *
-	 * @return the boolean property
+	 * @return ReadOnlyBooleanProperty
 	 */
-	public BooleanProperty errorsExistProperty() {
-		return errorsExist;
+	public ReadOnlyBooleanProperty applyButtonOnProperty() {
+		return applyButtonOn.getReadOnlyProperty();
 	}
 
 	/**
-	 * Clean up all Maps and Properties, so {@link #CuteButtonsStatesManager()} can be used on the
+	 * Tells if the current {@link CuteElement}'s reinitialization should be scheduled. After
+	 * initialization the method {@link #setCuteElementAsInitialized()} should be called.
+	 *
+	 * @return ReadOnlyBooleanProperty
+	 */
+	public ReadOnlyBooleanProperty needToScheduleCuteElementReinitProperty() {
+		return needToScheduleCuteElementReinit.getReadOnlyProperty();
+	}
+	
+	/**
+	 * Tells if the current {@link CuteElement}'s scheduled reinitialization should be cancelled if
+	 * it was scheduled.
+	 * After making sure the reinitialization isn't scheduled the method
+	 * {@link #setCuteElementReinitSuccessfullyCancelled()} should be called.
+	 *
+	 * @return ReadOnlyBooleanProperty
+	 */
+	public ReadOnlyBooleanProperty needToCancelScheduledCuteElementReinitProperty() {
+		return needToCancelScheduledCuteElementReinit.getReadOnlyProperty();
+	}
+	
+	
+	// Getters of values of private properties.
+	
+	/**
+	 * See the description of {@link #changesMade} property.
+	 *
+	 * @return true, if there are changes.
+	 */
+	public boolean areChangesMade() {
+		return changesMade.get();
+	}
+	
+	
+	// Public methods.
+	
+	/**
+	 * Clean up all Maps and Properties, so {@link #CuteButtonsStatesManager} can be used on the
 	 * new {@link CuteElement}.
 	 */
 	public void reset() {
@@ -327,55 +382,6 @@ public class CuteButtonsStatesManager {
 		needToCancelScheduledCuteElementReinit.set(false);
 		changesMadeMap.clear();
 		errorExistMap.clear();
-	}
-
-	/**
-	 * Tells if "OK" button should be enabled.
-	 *
-	 * @return the boolean property
-	 */
-	public BooleanProperty okButtonOnProperty() {
-		return okButtonOn;
-	}
-	
-	/**
-	 * Tells if "Perform Test" button should be enabled.
-	 *
-	 * @return the boolean property
-	 */
-	public BooleanProperty performTestButtonOnProperty() {
-		return performTestButtonOn;
-	}
-
-	/**
-	 * Tells if "Apply" button should be enabled.
-	 *
-	 * @return the boolean property
-	 */
-	public BooleanProperty applyButtonOnProperty() {
-		return applyButtonOn;
-	}
-
-	/**
-	 * Tells if the current {@link CuteElement}'s reinitialization should be scheduled. After
-	 * initialization the method {@link #setCuteElementAsInitialized()} should be called.
-	 *
-	 * @return the boolean property
-	 */
-	public BooleanProperty needToScheduleCuteElementReinitProperty() {
-		return needToScheduleCuteElementReinit;
-	}
-	
-	/**
-	 * Tells if the current {@link CuteElement}'s scheduled reinitialization should be cancelled if
-	 * it was scheduled.
-	 * After making sure the reinitialization isn't scheduled the method
-	 * {@link #setCuteElementReinitSuccessfullyCancelled()} should be called.
-	 *
-	 * @return the boolean property
-	 */
-	public BooleanProperty needToCancelScheduledCuteElementReinitProperty() {
-		return needToCancelScheduledCuteElementReinit;
 	}
 
 	/**
@@ -467,7 +473,6 @@ public class CuteButtonsStatesManager {
 		needToCancelScheduledCuteElementReinit.set(false);
 	}
 	
-
 	/**
 	 * This method lets {@link CuteButtonsStatesManager} to know if it should disable "Perform Test"
 	 * button completely or not based on the current {@link CuteElement} under editing.
@@ -501,13 +506,5 @@ public class CuteButtonsStatesManager {
 	public void reportEndOfTest() {
 		currentlyTesting.set(false);		
 	}
-	
-	/**
-	 * See the description of {@link #changesMade} property.
-	 *
-	 * @return true, if there are changes.
-	 */
-	public boolean areChangesMade() {
-		return changesMade.get();
-	}
+
 }
