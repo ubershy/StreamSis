@@ -43,6 +43,7 @@ import javafx.scene.control.Control;
  */
 public class CuteButtonsStatesManager {
 	
+	/** The Constant logger. */
 	static final Logger logger = LoggerFactory.getLogger(CuteButtonsStatesManager.class);
 
 	// Private variables.
@@ -145,8 +146,6 @@ public class CuteButtonsStatesManager {
 		performTestButtonOn
 				.bind(okButtonOn.and(performTestButtonAllowed).and(currentlyTesting.not()));
 	}
-	
-	// Private methods.
 	
 	/**
 	 * Accepts information about if one of controls in {@link ElementEditorController} has different
@@ -390,7 +389,7 @@ public class CuteButtonsStatesManager {
 	 * {@link CuteElement}'s initialization status.
 	 * 
 	 * @param <T>
-	 *
+	 *            the generic type
 	 * @param originalValue
 	 *            the original value of {@link Control}
 	 * @param newValue
@@ -444,10 +443,26 @@ public class CuteButtonsStatesManager {
 		}
 	}
 	
+	/**
+	 * Makes {@link CuteButtonsStatesManager} to know that CuteElement is initialized.<br>
+	 * The method should be called each time after
+	 * {@link #needToScheduleCuteElementReinitProperty()} is changed to true because if not, the
+	 * "OK", "Apply" and "Perform test" buttons will be disabled.
+	 * 
+	 * For more details see {@link #needToScheduleCuteElementReinit}.
+	 */
 	public void setCuteElementAsInitialized(){
 		needToScheduleCuteElementReinit.set(false);
 	}
 	
+	/**
+	 * Makes {@link CuteButtonsStatesManager} to know that CuteElement's scheduled initialization
+	 * was canceled. <br>
+	 * The method should be called each time after
+	 * {@link #needToCancelScheduledCuteElementReinitProperty()} is changed to true.
+	 * 
+	 * For more details see {@link #needToCancelScheduledCuteElementReinit}.
+	 */
 	public void setCuteElementReinitSuccessfullyCancelled(){
 		needToCancelScheduledCuteElementReinit.set(false);
 	}
@@ -487,6 +502,11 @@ public class CuteButtonsStatesManager {
 		currentlyTesting.set(false);		
 	}
 	
+	/**
+	 * See the description of {@link #changesMade} property.
+	 *
+	 * @return true, if there are changes.
+	 */
 	public boolean areChangesMade() {
 		return changesMade.get();
 	}
