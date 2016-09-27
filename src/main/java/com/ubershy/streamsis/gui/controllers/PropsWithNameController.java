@@ -123,7 +123,7 @@ public class PropsWithNameController implements Initializable {
 		} else {
 			nameTextField.setDisable(false);
 		}
-		if (buttonStateManager.needToReinitCuteElementProperty().get())
+		if (buttonStateManager.needToScheduleCuteElementReinitProperty().get())
 			newElementCopy.init();
 			buttonStateManager.setCuteElementAsInitialized();
 	}

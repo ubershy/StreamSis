@@ -67,26 +67,29 @@ public class CuteButtonsStatesManager {
 	private BooleanProperty errorsExist = new SimpleBooleanProperty(false);
 	
 	/**
-	 * Tells if the current {@link CuteElement} needs to be reinitialized.<br>
+	 * Tells if the current {@link CuteElement} reinitialization needs to be scheduled.<br>
 	 * It usually happens on user input after all fields were successfully validated.<br>
-	 * When CuteElement needs initialization, "Apply", "OK" and "Perform Test" buttons are turned
-	 * off.<br>
+	 * When CuteElement needs initialization, "Apply", "OK" and "Perform Test" buttons should be
+	 * turned off.<br>
 	 * View controller should listen to this property to initialize CuteElement when it's needed.
 	 * After initialization of the CuteElement is completed and even if the CuteElement seems
 	 * broken, the controller should call the method {@link #setCuteElementAsInitialized()} to reset
 	 * the variable to default value (false).
 	 */
-	private BooleanProperty needToReinitCuteElement = new SimpleBooleanProperty(false);
+	private BooleanProperty needToScheduleCuteElementReinit = new SimpleBooleanProperty(false);
 	
 	/**
-	 * Tells if {@link #needToReinitCuteElement} should be set to True after new report. After
-	 * processing the report it should be reset back to False.
-	 * <p>
-	 * Explanation: {@link #needToReinitCuteElement} is bound with the View controller. This local
-	 * variable helps to notify the View controller only once per report.
+	 * Tells if the current {@link CuteElement} scheduled reinitalization needs to be canceled
+	 * (if it was scheduled). <br>
+	 * View controller should listen to this property to cancel scheduled reinitialization when it's
+	 * needed.
+	 * After canceling (or doing nothing because it was not scheduled) the view controller should
+	 * call the method {@link #setCuteElementReinitSuccessfullyCancelled()} to reset the variable to
+	 * default value (false).
 	 */
-	private boolean currentReportAsksForReinit = false;
-
+	private BooleanProperty needToCancelScheduledCuteElementReinit = 
+			new SimpleBooleanProperty(false);
+	
 	/**
 	 * Tells if fields ({@link Control}s) in {@link ElementEditorController} have different values
 	 * from original ones and have passed field validation. I.e. User input seems valid. If so, we
@@ -137,8 +140,8 @@ public class CuteButtonsStatesManager {
 	// Constructor
 	public CuteButtonsStatesManager(){
 		// Bind properties.
-		okButtonOn.bind(needToReinitCuteElement.not().and(errorsExist.not()));
-		applyButtonOn.bind(needToReinitCuteElement.not().and(isInputDiffersAndValid));
+		okButtonOn.bind(needToScheduleCuteElementReinit.not().and(errorsExist.not()));
+		applyButtonOn.bind(needToScheduleCuteElementReinit.not().and(isInputDiffersAndValid));
 		performTestButtonOn
 				.bind(okButtonOn.and(performTestButtonAllowed).and(currentlyTesting.not()));
 	}
@@ -147,8 +150,9 @@ public class CuteButtonsStatesManager {
 	
 	/**
 	 * Accepts information about if one of controls in {@link ElementEditorController} has different
-	 * value from it's original value. Based on the input the {@link #isInputDiffersAndValid}
-	 * property will be set.
+	 * value from it's original value. Based on the input all related properties will be
+	 * recalculated. Based on recalculated values of some of the properties will tell if it thinks
+	 * that reinitialization of {@link CuteElement} is needed.
 	 *
 	 * @param c
 	 *            the {@link Control} (User editable field)
@@ -156,22 +160,38 @@ public class CuteButtonsStatesManager {
 	 *            tells if {@link Control}'s value different from it's original value<br>
 	 *            (The user has provided new value for the {@link Control} different from the
 	 *            original value)
+	 * 
+	 * @return True if reinitialization of CuteElement is requested by current report. False
+	 *         if reinitialization is not needed.
 	 */
-	private void setChangedStateForControl(Control c, boolean b) {
-		reportStateOfControl(c, b, changesMadeMap, changesMade);
+	private boolean reportChangeStatusOfControl(Control c, boolean b) {
+		boolean changesMadeBeforeRecalculation = changesMade.get();
+		recalculateStuffBasedOnStateOfControl(c, b, changesMadeMap, changesMade);
+		// Let's reinit when values changed back to original ones. The variable 
+		// changesMadeBeforeRecalculation indicates that. Of course there should be no errors.
+		if (changesMade.get() || changesMadeBeforeRecalculation){
+			return true;
+		}
+		return false;
 	}
 
 	/**
 	 * Accepts information about if one of controls in {@link ElementEditorController} has wrong
-	 * value or not. Based on the input the {@link #isInputDiffersAndValid} property will be set.
+	 * value or not. Based on the input all related properties will be recalculated. Based on
+	 * recalculated {@link #errorsExist} property will tell if it thinks that reinitialization of
+	 * {@link CuteElement} is allowed or denied.
 	 *
 	 * @param c
 	 *            the {@link Control} (User editable field)
 	 * @param b
 	 *            tells if {@link Control}'s value is wrong
+	 * 
+	 * @return True if reinitialization of CuteElement is allowed by this report. False if
+	 *         reinitialization is denied.
 	 */
-	private void setErrorStateForControl(Control c, boolean b) {
-		reportStateOfControl(c, b, errorExistMap, errorsExist);
+	private boolean reportErrorStatusOfControl(Control c, boolean b) {
+		recalculateStuffBasedOnStateOfControl(c, b, errorExistMap, errorsExist);
+		return !errorsExist.get();
 	}
 
 	/**
@@ -179,9 +199,9 @@ public class CuteButtonsStatesManager {
 	 * The state of the Control is a boolean variable and tells about something important, something
 	 * that affects the provided property. <br>
 	 * Keeps tracks of Controls and their states in the provided map. If the Control-State pair is
-	 * different from the pair stored in the map of states, recalculates
-	 * {@link #isInputDiffersAndValid} property based on all information that was acquired in the
-	 * map so far.
+	 * different from the pair stored in the map of states, recalculates {@link #changesMade}, 
+	 * {@link #errorsExist} and {@link #isInputDiffersAndValid} properties based on all information
+	 * that was acquired in the map so far.
 	 *
 	 * @param control
 	 *            the control
@@ -192,9 +212,8 @@ public class CuteButtonsStatesManager {
 	 * @param affectedProperty
 	 *            the affected property
 	 */
-	private void reportStateOfControl(Control control, boolean state,
+	private void recalculateStuffBasedOnStateOfControl(Control control, boolean state,
 			Map<Control, Boolean> mapOfStates, BooleanProperty affectedProperty) {
-		boolean changesMadeBeforeRecalculation = changesMade.get();
 		boolean needToRecalculateProperty = putControlBooleanPairInMap(control, state, mapOfStates);
 		if (needToRecalculateProperty) {
 			boolean needToRecalculateWholeInputStatus = updatePropertyBasedOnMapValues(mapOfStates,
@@ -202,12 +221,6 @@ public class CuteButtonsStatesManager {
 			if (needToRecalculateWholeInputStatus) {
 				isInputDiffersAndValid.set(calculateIfInputDiffersAndValid());
 			}
-		}
-		// Some time ago there was a variable called isInputSameButChangedBackFromInvalidToValid
-		// that prevented reinitialization. If something like this is on your mind to write, forget
-		// about it. Using such variable will only lead to sadness and sorrow.
-		if (!errorsExist.get() && changesMadeBeforeRecalculation){
-			currentReportAsksForReinit = true;
 		}
 	}
 
@@ -311,7 +324,8 @@ public class CuteButtonsStatesManager {
 		changesMade.set(false);
 		errorsExist.set(false);
 		isInputDiffersAndValid.set(false);
-		needToReinitCuteElement.set(false);
+		needToScheduleCuteElementReinit.set(false);
+		needToCancelScheduledCuteElementReinit.set(false);
 		changesMadeMap.clear();
 		errorExistMap.clear();
 	}
@@ -344,22 +358,33 @@ public class CuteButtonsStatesManager {
 	}
 
 	/**
-	 * Tells if the current {@link CuteElement} should be reinitialized.
+	 * Tells if the current {@link CuteElement}'s reinitialization should be scheduled. After
+	 * initialization the method {@link #setCuteElementAsInitialized()} should be called.
 	 *
 	 * @return the boolean property
 	 */
-	public BooleanProperty needToReinitCuteElementProperty() {
-		return needToReinitCuteElement;
+	public BooleanProperty needToScheduleCuteElementReinitProperty() {
+		return needToScheduleCuteElementReinit;
 	}
 	
-	// Public methods.
+	/**
+	 * Tells if the current {@link CuteElement}'s scheduled reinitialization should be cancelled if
+	 * it was scheduled.
+	 * After making sure the reinitialization isn't scheduled the method
+	 * {@link #setCuteElementReinitSuccessfullyCancelled()} should be called.
+	 *
+	 * @return the boolean property
+	 */
+	public BooleanProperty needToCancelScheduledCuteElementReinitProperty() {
+		return needToCancelScheduledCuteElementReinit;
+	}
 
 	/**
 	 * This method reports to {@link CuteButtonsStatesManager} about existing errors and changes of
 	 * value in chosen {@link Control} (user editable field). <br>
 	 * The information from this and other reports will be used to determine if "OK", "Apply",
 	 * "Cancel" and "Perform Test" buttons in {@link ElementEditorController} will be enabled or
-	 * not.
+	 * not. And much more - see public methods.
 	 * 
 	 * @Note "OK", "Apply", "Cancel" and "Perform Test" buttons also depend on current 
 	 * {@link CuteElement}'s initialization status.
@@ -379,32 +404,54 @@ public class CuteButtonsStatesManager {
 			ValidationResult finalValidationResult) {
 		// Let's tell CuteButtonStateManager if changes on this Control are made or not.
 		// Let's get information about change by comparing original value of control with new one.
-		setChangedStateForControl(c, !newValue.equals(originalValue));
-		// Let's tell CuteButtonStateManager if errors in this Control exist or not.
-		// Let's get information about existing errors from finalValidationResult.
+		boolean reinitializationRequestedByReport = 
+				reportChangeStatusOfControl(c, !newValue.equals(originalValue));
+		// Let's report if errors in this Control exist or not by getting information about existing
+		// errors from finalValidationResult.
+		boolean reinitializationAllowedByReport = true;
 		if (finalValidationResult != null) {
-			setErrorStateForControl(c, !finalValidationResult.getErrors().isEmpty());
+			reinitializationAllowedByReport = reportErrorStatusOfControl(c,
+					!finalValidationResult.getErrors().isEmpty());
 		}
-		// This flag can be set to True by setChangedStateForControl() or setErrorStateForControl()
-		if (currentReportAsksForReinit) {
-			// Let's allow reinitialization (slow and hard validation) only if there are no errors
-			// in GUI validation (fast and easy).
-			if (!errorsExist.get()) {
-				if (needToReinitCuteElement.get()) {
-					// We need to invalidate property by setting it to false, so the
-					// InvalidationListener will be notified even when needToReinitCuteElement is
-					// true again.
-					needToReinitCuteElement.set(false);
+		if (reinitializationAllowedByReport) {
+			// Initialization allowed. That means field validation has passed and we can proceed
+			// with slow validation (initialization of CuteElement) if we want. 
+			if (reinitializationRequestedByReport) {
+				// So we want to do reinitialization. To request it, we need to set
+				// needToScheduleCuteElementReinit to true.
+				if (needToScheduleCuteElementReinit.get()) {
+					// So it's already true. We need to invalidate property by setting it to false,
+					// so the InvalidationListener will be notified even when
+					// needToScheduleCuteElementReinit is true again.
+					// TODO: try to live with shame until finding a better solution.
+					needToScheduleCuteElementReinit.set(false);
 				}
-				needToReinitCuteElement.set(true);
+				needToScheduleCuteElementReinit.set(true);
+			} 
+		} else {
+			// Errors in field validation exist, so initialization is not allowed.
+			if (needToScheduleCuteElementReinit.get()) {
+				// Oh no! Seems like reinitialization was scheduled before! We need to cancel it.
+				if (needToCancelScheduledCuteElementReinit.get()) {
+					// So it's already true. We need to invalidate property by setting it to false,
+					// so the InvalidationListener will be notified even when
+					// needToCancelScheduledCuteElementReinit is true again.
+					// TODO: try to live with shame until finding a better solution.
+					needToCancelScheduledCuteElementReinit.set(false);
+				}
+				needToCancelScheduledCuteElementReinit.set(true);
 			}
 		}
-		currentReportAsksForReinit = false;
 	}
 	
 	public void setCuteElementAsInitialized(){
-		needToReinitCuteElement.set(false);
+		needToScheduleCuteElementReinit.set(false);
 	}
+	
+	public void setCuteElementReinitSuccessfullyCancelled(){
+		needToCancelScheduledCuteElementReinit.set(false);
+	}
+	
 
 	/**
 	 * This method lets {@link CuteButtonsStatesManager} to know if it should disable "Perform Test"

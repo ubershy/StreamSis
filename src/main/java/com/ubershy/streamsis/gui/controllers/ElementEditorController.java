@@ -24,6 +24,8 @@ import java.util.ResourceBundle;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.controlsfx.control.MasterDetailPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ubershy.streamsis.actions.Action;
 import com.ubershy.streamsis.checkers.Checker;
@@ -44,7 +46,6 @@ import javafx.animation.Animation.Status;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -71,6 +72,8 @@ import javafx.util.Duration;
 
 // Under construction. Not working. Please unsee.
 public class ElementEditorController implements Initializable {
+	
+	static final Logger logger = LoggerFactory.getLogger(ElementEditorController.class);
 
 	@FXML
 	private TitledPane root;
@@ -236,40 +239,78 @@ public class ElementEditorController implements Initializable {
 					whyUnhealthyLabel.setText(newValue);
 					whyShadowAnima.play();
 				});
-		this.buttonStateManager.needToReinitCuteElementProperty()
-		.addListener((InvalidationListener) o -> {
-			if (this.buttonStateManager.needToReinitCuteElementProperty().get()) {
-			    // CuteElement initialization is a resource hungry operation. Let's not initialize
-			    // instantly, because the user might not finished typing into fields. Instead let's
+		
+		// TODO: gain some wisdom and beautify the code below.
+		// <Start of a very ugly code that hardly tries to be thread safe>
+		this.buttonStateManager.needToScheduleCuteElementReinitProperty().addListener(o -> {
+			if (this.buttonStateManager.needToScheduleCuteElementReinitProperty().get()) {
+				logger.debug("Start of reinitialization animation is requested.");
+				// CuteElement initialization is a resource hungry operation. Let's not initialize
+				// instantly, because the user might not finished typing into fields. Instead let's
 				// play a text animation and when the text animation will finish playing itself to
 				// the end, let's do initialization. The animation can be interrupted by new user
 				// input and started over.
 				OKButton.textProperty().bind(awaitingForInputTextProperty);
 				applyButton.textProperty().bind(awaitingForInputTextProperty);
 				performTestButton.textProperty().bind(awaitingForInputTextProperty);
+				logger.debug("Text properties of buttons are bound to animation.");
 				// This animation will internally animate awaitingForInputTextProperty's text.
 				buttonsBeforeInitDotsAnima.play();
+				logger.debug("Animation started.");
+			}
+		});
+		this.buttonStateManager.needToCancelScheduledCuteElementReinitProperty().addListener(o -> {
+			if (this.buttonStateManager.needToCancelScheduledCuteElementReinitProperty().get()) {
+				logger.debug("Cancel of reinitialization animation is requested.");
+				buttonsBeforeInitDotsAnima.stop();
+				logger.debug("Animation stopped by cancel request.");
+				unbindTextsOfButtons();
+				restoreDefaultTextsOfButtons();
+
 			}
 		});
 		buttonsBeforeInitDotsAnima.setOnFinished(evt -> {
-			// After animation is done, let's unbind button text properties from the property which
-			// is animated - buttonsBeforeInitDotsAnima.
-			OKButton.textProperty().unbind();
-			applyButton.textProperty().unbind();
-			performTestButton.textProperty().unbind();
-			String initText = "Initializing...";
-			OKButton.setText(initText);
-			applyButton.setText(initText);
-			performTestButton.setText(initText);
-			// TODO: run init() in another thread, as JavaFX thread may hang.
-			if (elementWorkingCopy != null)
-				elementWorkingCopy.init();
-			// Restore texts of buttons
-			OKButton.setText("OK");
-			applyButton.setText("Apply");
-			performTestButton.setText("Perform Test");
+			logger.debug("Animation finished.");
+			boolean reinitWasCancelled = this.buttonStateManager
+					.needToCancelScheduledCuteElementReinitProperty().get();
+			// After animation is done or was interrupted, let's unbind button text properties from
+			// the property which is animated - buttonsBeforeInitDotsAnima.
+			unbindTextsOfButtons();
+			if (reinitWasCancelled) {
+				logger.debug("Reinitialization is cancelled. Doing nothing with the CuteElement.");
+				this.buttonStateManager.setCuteElementReinitSuccessfullyCancelled();
+			} else {
+				logger.debug("Reinitializing the CuteElement...");
+				String initText = "Initializing...";
+				OKButton.setText(initText);
+				applyButton.setText(initText);
+				performTestButton.setText(initText);
+				// TODO: run init() in another thread, as JavaFX thread may hang.
+				if (elementWorkingCopy != null)
+					elementWorkingCopy.init();
+				logger.debug("Reinitialization of the CuteElement finished.");
+			}
 			buttonStateManager.setCuteElementAsInitialized();
+			logger.debug("Element set as initialized.");
+			// Restore texts of buttons
+			restoreDefaultTextsOfButtons();
+			logger.debug("Texts are restored");
 		});
+		// </End of a very ugly code that hardly tries to be thread safe>
+	}
+	
+	private void unbindTextsOfButtons() {
+		OKButton.textProperty().unbind();
+		applyButton.textProperty().unbind();
+		performTestButton.textProperty().unbind();
+		logger.debug("Unbound text properties of buttons.");
+	}
+	
+	private void restoreDefaultTextsOfButtons() {
+		OKButton.setText("OK");
+		applyButton.setText("Apply");
+		performTestButton.setText("Perform Test");
+		logger.debug("Texts of buttons are restored.");
 	}
 
 	private void setViewAsNoneSelected() {
