@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ubershy.streamsis.MultiSourceFileChooser;
 import com.ubershy.streamsis.Util;
 
 /**
@@ -56,14 +57,14 @@ public class MultiFileCopyAction extends FileCopyAction {
 	 */
 	public MultiFileCopyAction(String srcDirectoryPath, String dstFilePath,
 			boolean chooseFileRandomly) {
-		fileChooser.srcPath = srcDirectoryPath;
-		this.dstFilePath.set(dstFilePath);;
-		fileChooser.chooseFileRandomly = chooseFileRandomly;
-		fileChooser.findSourcesInSrcPath = true;
+		this.dstFilePath.set(dstFilePath);
+		fileChooser.setFindingSourcesInSrcPath(true);
+		fileChooser.setSrcPath(srcDirectoryPath);
+		fileChooser.setChooseFilesRandomly(chooseFileRandomly);
 	}
 
 	/**
-	 * Instantiates a new Multi File Copy Action by path with files.
+	 * Instantiates a new Multi File Copy Action by list of files.
 	 *
 	 * @param srcDirectoryPath
 	 *            the Source <b>directory</b>'s path
@@ -74,10 +75,10 @@ public class MultiFileCopyAction extends FileCopyAction {
 	 */
 	public MultiFileCopyAction(ArrayList<File> persistentSourceFileList, String dstFilePath,
 			boolean chooseFileRandomly) {
-		fileChooser.persistentSourceFileList.setAll(persistentSourceFileList);
-		this.dstFilePath.set(dstFilePath);;
-		fileChooser.chooseFileRandomly = chooseFileRandomly;
-		fileChooser.findSourcesInSrcPath = false;
+		this.dstFilePath.set(dstFilePath);
+		fileChooser.setFindingSourcesInSrcPath(false);
+		fileChooser.getPersistentSourceFileList().setAll(persistentSourceFileList);
+		fileChooser.setChooseFilesRandomly(chooseFileRandomly);
 	}
 
 	/**
@@ -99,9 +100,10 @@ public class MultiFileCopyAction extends FileCopyAction {
 	public void execute() {
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
-			logger.info("Copying Source directory file № " + (fileChooser.currentFileIndex + 1)
+			logger.info("Copying Source directory file № " + (fileChooser.getCurrentFileIndex() + 1)
 					+ " with '" + dstExtension + "' extension");
-			File fileToCopy = fileChooser.temporarySourceFileList[fileChooser.currentFileIndex];
+			File fileToCopy = fileChooser.getTemporarySourceFileList()
+					.get(fileChooser.getCurrentFileIndex());
 			fileChooser.computeNextFileIndex();
 			try {
 				Util.copyFileSynced(fileToCopy, new File(dstFilePath.get()));
@@ -132,9 +134,13 @@ public class MultiFileCopyAction extends FileCopyAction {
 			// already broken by fileChooser.initTemporaryFileList() or null extension
 			return;
 		}
-		if (fileChooser.chooseFileRandomly) {
+		if (fileChooser.isChoosingFilesRandomly()) {
 			fileChooser.computeNextFileIndex();
 		}
+	}
+	
+	public MultiSourceFileChooser getFileChooser() {
+		return fileChooser;
 	}
 
 }

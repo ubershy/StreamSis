@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ubershy.streamsis.MultiSourceFileChooser;
 
 /**
  * Multi Sound Action. <br>
@@ -46,7 +47,7 @@ public class MultiSoundAction extends SoundAction {
 	}
 
 	/**
-	 * Instantiates a new Multi Sound Action.
+	 * Instantiates a new Multi Sound Action by path with sound files.
 	 *
 	 * @param soundDirectoryPath
 	 *            the directory where sounds are stored
@@ -57,13 +58,13 @@ public class MultiSoundAction extends SoundAction {
 	 */
 	public MultiSoundAction(String soundDirectoryPath, double volume, boolean chooseFileRandomly) {
 		this.volume = volume;
-		fileChooser.srcPath = soundDirectoryPath;
-		fileChooser.chooseFileRandomly = chooseFileRandomly;
-		fileChooser.findSourcesInSrcPath = true;
+		fileChooser.setSrcPath(soundDirectoryPath);
+		fileChooser.setChooseFilesRandomly(chooseFileRandomly);
+		fileChooser.setFindingSourcesInSrcPath(true);
 	}
 
 	/**
-	 * Instantiates a new Multi Sound Action.
+	 * Instantiates a new Multi Sound Action by list of sound files.
 	 *
 	 * @param persistentSourceFileList
 	 *            a list with files to use as source files
@@ -74,10 +75,10 @@ public class MultiSoundAction extends SoundAction {
 	 */
 	public MultiSoundAction(ArrayList<File> persistentSourceFileList, double volume,
 			boolean chooseFileRandomly) {
-		fileChooser.persistentSourceFileList.setAll(persistentSourceFileList);
 		this.volume = volume;
-		fileChooser.chooseFileRandomly = chooseFileRandomly;
-		fileChooser.findSourcesInSrcPath = false;
+		fileChooser.getPersistentSourceFileList().setAll(persistentSourceFileList);
+		fileChooser.setChooseFilesRandomly(chooseFileRandomly);
+		fileChooser.setFindingSourcesInSrcPath(false);
 	}
 
 	/**
@@ -99,10 +100,11 @@ public class MultiSoundAction extends SoundAction {
 	public void execute() {
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
-			logger.info("Playing Source directory file № " + fileChooser.currentFileIndex);
+			logger.info("Playing Source directory file № " + fileChooser.getCurrentFileIndex() + 1);
 			boolean wasAbleToPlay = play();
 			fileChooser.computeNextFileIndex();
-			File nextFileToPlay = fileChooser.temporarySourceFileList[fileChooser.currentFileIndex];
+			File nextFileToPlay = fileChooser.getTemporarySourceFileList()
+					.get(fileChooser.getCurrentFileIndex());
 			String nextSoundToPlay = nextFileToPlay.getPath();
 			soundToPlay = initializeSound(nextSoundToPlay);
 			elementInfo.setBooleanResult(wasAbleToPlay);
@@ -118,8 +120,9 @@ public class MultiSoundAction extends SoundAction {
 			return;
 		}
 		soundToPlay = initializeSound(
-				fileChooser.temporarySourceFileList[fileChooser.currentFileIndex].getPath());
-		if (fileChooser.chooseFileRandomly) {
+				fileChooser.getTemporarySourceFileList().get(fileChooser.getCurrentFileIndex())
+						.getPath());
+		if (fileChooser.isChoosingFilesRandomly()) {
 			fileChooser.computeNextFileIndex();
 		}
 	}
