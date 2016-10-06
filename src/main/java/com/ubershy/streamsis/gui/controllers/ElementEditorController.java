@@ -297,6 +297,18 @@ public class ElementEditorController implements Initializable {
 			logger.debug("Texts are restored");
 		});
 		// </End of a very ugly code that hardly tries to be thread safe>
+		
+		OKButton.disabledProperty().addListener((o, oldValue, newValue) -> {
+			// "OK" button is disabled only when field validation fails, see to which property it's
+			// bound in bindButtons() method. While field validation is failed let's set
+			// CuteElement's health as unknown. Once field validation will pass, CuteElement will be
+			// reinitialized and get new health.
+			if (newValue) {
+				if (elementWorkingCopy != null) {
+					elementWorkingCopy.getElementInfo().setInvalidInputHealth();
+				}
+			}
+		});
 	}
 	
 	private void unbindTextsOfButtons() {
@@ -409,6 +421,13 @@ public class ElementEditorController implements Initializable {
 					"-fx-effect: dropshadow(three-pass-box, palegoldenrod, 5, 0.35, 0, 0);");
 			applyButton.setStyle(
 					"-fx-effect: dropshadow(three-pass-box, palegoldenrod, 5, 0.35, 0, 0);");
+			break;
+		case INVALIDINPUT:
+			unhealthyPane.setVisible(true);
+			unhealthyPane.setManaged(true);
+			statusLabel.setTextFill(Color.DIMGRAY);
+			OKButton.setStyle("");
+			applyButton.setStyle("");
 			break;
 		default:
 			break;

@@ -81,7 +81,13 @@ public class ElementInfo {
 		 * For example, the CuteElement can have a parameter set to not very optimal value. <br>
 		 * Or something that is not good constantly affects the CuteElement while it's working.
 		 */
-		SICK("Element is not feeling well");
+		SICK("Element is not feeling well"),
+		
+		/**
+		 * Indicates that the {@link CuteElement}'s health status is unknown, because of invalid
+		 * input in GUI. Can be set only in GUI.
+		 */
+		INVALIDINPUT("Awaiting for valid input");
 
 		/** The message that describes encapsulating {@link CuteElement}'s health. */
 		private final String message;
@@ -378,6 +384,16 @@ public class ElementInfo {
 	 */
 	public void setUnknownResult() {
 		lastResultProperty.set(unknownResult);
+	}
+	
+	/**
+	 * Sets the CuteElement's current health as {@link Health#UNKNOWN}. Used only by GUI when some
+	 * of the controls (user editable fields for editing CuteElement) have not passed simple
+	 * validation.
+	 */
+	public void setInvalidInputHealth() {
+		elementHealthProperty.set(ElementHealth.INVALIDINPUT);
+		whyUnhealthyProperty.set("");
 	}
 
 	/**
