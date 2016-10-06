@@ -17,26 +17,33 @@
  */
 package com.ubershy.streamsis.gui.controllers.edit;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import com.ubershy.streamsis.gui.controllers.CuteController;
+import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 
 import javafx.beans.property.Property;
-import javafx.fxml.Initializable;
+import javafx.beans.value.ObservableValue;
 
 /**
- * The AbstractCuteController. Implements partially {@link CuteController}.
+ * The AbstractCuteController. Implements partially {@link CuteElementController}.
  */
-public abstract class AbstractCuteController implements CuteController, Initializable {
+public abstract class AbstractCuteController implements CuteController {
 
 	/** The button states manager. */
 	protected CuteButtonsStatesManager buttonStateManager;
 
-	/** The remembered binds. */
-	private Map<Property<?>, Property<?>> rememberedBinds = new HashMap<Property<?>, Property<?>>();
+	/** The remembered bidirectional binds. */
+	private Map<Property<?>, Property<?>> rememberedBidirectionalBinds = new HashMap<Property<?>, 
+			Property<?>>();
+	
+	/** The remembered normal binds. */
+	private List<Property<?>> rememberedNormalBinds = new ArrayList<Property<?>>();
 
 	/*
 	 * @inheritDoc
@@ -64,17 +71,46 @@ public abstract class AbstractCuteController implements CuteController, Initiali
 			throw new RuntimeException("Eww. Unsupported property type.");
 		}
 		a.bindBidirectional(b);
-		rememberedBinds.put(a, b);
+		rememberedBidirectionalBinds.put(a, b);
+	}
+	
+	/**
+	 * Binds properties normally and remembers these binds, so all of them can be simply
+	 * unbound lated by {@link #unbindAllRememberedBinds()} method.
+	 *
+	 * @param <T>
+	 *            The type of wrapped value of property.
+	 * @param a
+	 *            The property "A" to bind to "B".
+	 * @param b
+	 *            The ObservableValue "B".
+	 */
+	protected <T> void bindNormalAndRemember(Property<T> a, ObservableValue<T> b) {
+		T value = a.getValue();
+		if (!(value instanceof String || value instanceof Integer || value instanceof Double
+				|| value instanceof Boolean)) {
+			throw new RuntimeException("Eww. Unsupported property type.");
+		}
+		a.bind(b);
+		rememberedNormalBinds.add(a);
 	}
 
 	/**
 	 * Unbinds all remembered binds. <br>
+	 * Normal binds can be set and remembered by
+	 * {@link #bindNormalAndRemember(Property, Property)} method. <br>
 	 * Bidirectional binds can be set and remembered by
 	 * {@link #bindBidirectionalAndRemember(Property, Property)} method.
 	 */
 	@SuppressWarnings("unchecked")
 	protected void unbindAllRememberedBinds() {
-		for (Entry<Property<?>, Property<?>> entry : rememberedBinds.entrySet()) {
+		// Cleanup normal binds
+		for (Property<?> propa : rememberedNormalBinds) {
+			propa.unbind();
+		}
+		rememberedNormalBinds.clear();
+		// Cleanup bidirectional binds
+		for (Entry<Property<?>, Property<?>> entry : rememberedBidirectionalBinds.entrySet()) {
 			Property<?> a = entry.getKey();
 			Property<?> b = entry.getValue();
 			Class<? extends Object> type = a.getValue().getClass();
@@ -99,7 +135,7 @@ public abstract class AbstractCuteController implements CuteController, Initiali
 				throw new RuntimeException("Eww. Unsupported property type.");
 			}
 		}
-		rememberedBinds.clear();
+		rememberedBidirectionalBinds.clear();
 	}
 
 }

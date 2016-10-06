@@ -55,10 +55,10 @@ public class PropsWithNameController implements Initializable {
 
 	private CuteButtonsStatesManager buttonStateManager;
 
-	private CuteController currentCuteController;
+	private CuteElementController currentCuteElementController;
 
 	private CuteElement elementWorkingCopy;
-
+	
 	@FXML
 	private TextField nameTextField;
 
@@ -89,42 +89,44 @@ public class PropsWithNameController implements Initializable {
 		this.buttonStateManager = buttonStateManager;
 	}
 
-	public void connectToCuteElement(CuteElement newElementCopy) {
+	public void connectToCuteElement(CuteElement editableCopyOfCE, CuteElement origCE) {
 		disconnectFromConnectedCuteElement();
 		// nameTextField should be recreated before invoking recreateValidationSupport() method.
 		recreateNameTextField();
 		// Let's remember the reference to the CuteElement's copy
-		elementWorkingCopy = newElementCopy;
-		// Let's remember original name of the CuteElement
-		ElementInfo newInfo = newElementCopy.getElementInfo();
-		originalName = newInfo.getName();
+		elementWorkingCopy = editableCopyOfCE;
+		// Let's remember original name of the CuteElement. At this point editableCopyOfCE should
+		// be equal to origCE. So it doesn't matter from where to get the original value of name.
+		ElementInfo newInfoOfCopy = editableCopyOfCE.getElementInfo();
+		originalName = newInfoOfCopy.getName();
 		// Let's get the new controller specific to CuteElement's type
-		currentCuteController = StreamSisAppFactory
-				.buildCuteControllerBasedOnCuteElement(newElementCopy);
+		currentCuteElementController = StreamSisAppFactory
+				.buildCuteElementControllerBasedOnCuteElement(editableCopyOfCE);
 		// Let's set the new controller and view for the cell
-		currentCuteController.setCuteButtonsStatesManager(buttonStateManager);
-		// Bind element to CuteController's View from which the user can edit subtype-specific
-		// variables of the CuteElement's copy. Modified CuteElement's copy will be used to spread
-		// changes to original CuteElement.
-		currentCuteController.bindToCuteElement(newElementCopy);
+		currentCuteElementController.setCuteButtonsStatesManager(buttonStateManager);
+		// Bind element to CuteElementController's View from which the user can edit
+		// subtype-specific variables of the CuteElement's copy. Modified CuteElement's copy will be
+		// used to spread changes to original CuteElement.
+		currentCuteElementController.bindToCuteElement(editableCopyOfCE, origCE);
 		// Let's bind nameTextField to CuteElement's name before invoking
 		// recreateValidationSupport() method. 
-		nameTextField.setText(newInfo.getName());
-		nameTextField.textProperty().bindBidirectional(newInfo.nameProperty());
+		nameTextField.setText(newInfoOfCopy.getName());
+		nameTextField.textProperty().bindBidirectional(newInfoOfCopy.nameProperty());
 		// This will update validationSupport and validationListener variables.
 		recreateValidationSupport();
-		// Give new validationSupport to currentCuteController, so it can validate input in fields.
-		currentCuteController.setValidationSupport(validationSupport);
+		// Give new validationSupport to currentCuteElementController, so it can validate input in
+		// fields.
+		currentCuteElementController.setValidationSupport(validationSupport);
 		validationSupport.initInitialDecoration();
-		root.add(currentCuteController.getView(), 0, 1);
+		root.add(currentCuteElementController.getView(), 0, 1);
 		// CuteNodeContainer should not be edited.
-		if (newElementCopy instanceof CuteNodeContainer) {
+		if (editableCopyOfCE instanceof CuteNodeContainer) {
 			nameTextField.setDisable(true);
 		} else {
 			nameTextField.setDisable(false);
 		}
 		if (buttonStateManager.needToScheduleCuteElementReinitProperty().get())
-			newElementCopy.init();
+			editableCopyOfCE.init();
 			buttonStateManager.setCuteElementAsInitialized();
 	}
 
@@ -165,13 +167,13 @@ public class PropsWithNameController implements Initializable {
 			nameTextField.textProperty()
 					.unbindBidirectional(elementWorkingCopy.getElementInfo().nameProperty());
 		}
-		// Let's unbind currentCuteController's fields from previous CuteElement's properties
-		if (currentCuteController != null) {
-			currentCuteController.unbindFromCuteElement();
+		// Let's unbind currentCuteElementController's fields from previous CuteElement's properties
+		if (currentCuteElementController != null) {
+			currentCuteElementController.unbindFromCuteElement();
 		}
 		// Let's clean the cell from the previous view, if it exists
-		if (currentCuteController != null) {
-			root.getChildren().remove(currentCuteController.getView());
+		if (currentCuteElementController != null) {
+			root.getChildren().remove(currentCuteElementController.getView());
 		}
 	}
 

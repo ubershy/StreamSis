@@ -19,6 +19,7 @@ package com.ubershy.streamsis.gui.animations;
 
 import java.util.ArrayList;
 
+import javafx.animation.Animation.Status;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.StringProperty;
@@ -43,14 +44,16 @@ public class ThreeDotsAnimation {
 	
 	/** The text property to which the animation is applied. */
 	private StringProperty textProperty;
+	/** The text to be show near dots. */
 	private String addText;
+	/** The text to restore after animation is stopped. */
 	private String originalText;
 
 	/**
 	 * {@link ThreeDotsAnimation} constructor.
 	 *
 	 * @param additionalText
-	 *            The text to be shown near dots.
+	 *            The text to be show near dots.
 	 * @param dotChar
 	 *            The char to use as "dot".
 	 * @param textProperty
@@ -121,5 +124,26 @@ public class ThreeDotsAnimation {
 	
 	public void setOnFinished(EventHandler<ActionEvent> value) {
 		animation.setOnFinished(value);
+	}
+	
+	/**
+	 * Tells if this {@link ThreeDotsAnimation} is currently running.
+	 */
+	public boolean isRunning() {
+		return Status.RUNNING.equals(animation.getStatus());
+	}
+	
+	/**
+	 * Gets the {@link #addText}.
+	 */
+	public String getAdditionalText() {
+		return addText;
+	}
+	
+	/**
+	 * Sets the {@link #addText}.
+	 */
+	public void setAdditionalText(String text) {
+		addText = text;
 	}
 }

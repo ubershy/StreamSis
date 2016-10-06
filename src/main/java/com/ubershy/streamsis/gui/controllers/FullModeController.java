@@ -111,9 +111,9 @@ public class FullModeController implements Initializable {
 	public void initialize(URL url, ResourceBundle resourceBundle) {
 		// Putting editableContentBox into Notification Pane
 		notificationPane = new NotificationPane(editableContentBox);
-		// notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
-		notificationPane.setText("This is a very important text message.");
-		notificationPane.setShowFromTop(false);
+//		notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
+		GUIManager.setFullModeNotificationPane(notificationPane);
+		notificationPane.setShowFromTop(true);
 		notificationPane.setOnShowing(event -> {
 			Thread hideThread = new Thread() {
 				public void run() {
@@ -129,11 +129,6 @@ public class FullModeController implements Initializable {
 			};
 			hideThread.start();
 		});
-		// Label love = new Label("❤");
-		Label love = new Label("💘💓 ♥ 💔🐞");
-		love.setTextFill(Color.web("#ff75d0"));
-		love.setStyle(" -fx-font-size: 25");
-		notificationPane.setGraphic(love);
 		notificationPaneContainer.getChildren().clear();
 		notificationPaneContainer.getChildren().add(notificationPane);
 		VBox.setVgrow(notificationPane, Priority.ALWAYS);
@@ -497,9 +492,15 @@ public class FullModeController implements Initializable {
 
 	@FXML
 	private void testThing() {
+		String text = "This is a very important text message.";
+		// Label love = new Label("❤");
+		Label love = new Label("💘💓 ♥ 💔🐞");
+		love.setTextFill(Color.web("#ff75d0"));
+		love.setStyle(" -fx-font-size: 25");
+		GUIManager.showNotification(love, text);
 		// notificationPane.show();
 		// System.out.println(LowLevel.getApplicationName());
-		GUIManager.sisSceneList.getFocusModel().focus(3);
+//		GUIManager.sisSceneList.getFocusModel().focus(3);
 		// GUIManager.getPrimaryStage().hide();
 		// Playground.testNewMTRegionChecker(10000, 0, false);
 		// Playground.testOldMTRegionChecker(100, 0, false);

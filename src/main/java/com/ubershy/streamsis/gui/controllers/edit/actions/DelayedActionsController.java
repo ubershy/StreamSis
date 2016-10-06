@@ -24,6 +24,7 @@ import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 
 import com.ubershy.streamsis.actions.DelayedActions;
+import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.gui.controllers.edit.AbstractCuteController;
 import com.ubershy.streamsis.gui.helperclasses.IntegerTextField;
 import com.ubershy.streamsis.project.CuteElement;
@@ -37,7 +38,8 @@ import javafx.scene.layout.Pane;
  * DelayedActionsController, the controller that allows to edit {@link DelayedActions} actions in a
  * panel.
  */
-public class DelayedActionsController extends AbstractCuteController {
+public class DelayedActionsController extends AbstractCuteController
+		implements CuteElementController {
 
     /** The root node. */
     @FXML
@@ -52,10 +54,10 @@ public class DelayedActionsController extends AbstractCuteController {
 	
     /** The {@link DelayedActions} to edit. */
     private DelayedActions delayedActions;
+    
+	/** The original {@link DelayedActions} to compare values with {@link #delayedActions}. */
+	private DelayedActions origDelayedActions;
 
-    /** Saved original value of {@link DelayedActions#delayProperty()}. */
-    private int origDelay;
-	
     /** The Validation Support for this controller. */
     private ValidationSupport validationSupport;
 
@@ -79,10 +81,9 @@ public class DelayedActionsController extends AbstractCuteController {
 	 * @inheritDoc
 	 */
 	@Override
-	public void bindToCuteElement(CuteElement element) {
-		delayedActions = (DelayedActions) element;
-		// Remember original values of the new Actor's properties.
-		origDelay = delayedActions.getDelay();
+	public void bindToCuteElement(CuteElement editableCopyOfCE, CuteElement origCE) {
+		delayedActions = (DelayedActions) editableCopyOfCE;
+		origDelayedActions = (DelayedActions) origCE;
 		// Bind to the new Actor.
 		bindBidirectionalAndRemember(delayIntegerTextField.numberProperty(),
 				delayedActions.delayProperty());
@@ -107,7 +108,8 @@ public class DelayedActionsController extends AbstractCuteController {
 			int number = tf.numberProperty().get();
 			ValidationResult emptyResult = ValidationResult.fromErrorIf(c,
 					"This field can't be empty.", newValue.isEmpty());
-			buttonStateManager.reportNewValueOfControl(origDelay, number, c, emptyResult);
+			buttonStateManager.reportNewValueOfControl(origDelayedActions.getDelay(), number, c,
+					emptyResult);
 			return emptyResult;
 		};
 		this.validationSupport.registerValidator(delayIntegerTextField, delayValidator);

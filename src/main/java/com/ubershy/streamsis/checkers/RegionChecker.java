@@ -134,7 +134,8 @@ public class RegionChecker extends AbstractCuteNode implements Checker {
 			elementInfo.setAsBroken("Similarity parameter must be from 0 to 1.00");
 		}
 		if (!targetImagePath.isEmpty()) {
-			if (Util.checkSingleFileExistanceAndExtension(targetImagePath, Util.singleStringAsArrayOfStrings(".png"))) {
+			if (Util.checkSingleFileExistanceAndExtension(targetImagePath,
+					Util.singleStringAsArrayOfStrings("*.png"))) {
 				targetPattern = new Pattern(targetImagePath).similar(similarity);
 			} else {
 				elementInfo.setAsBroken("Can't find or read Target image file: " + targetImagePath);

@@ -42,12 +42,14 @@ public class MainController {
 	private final double defaultCompactModeWidth = 360;
 
 	/** Default Full Mode window height. */
-	private final double defaultFullModeHeight = 562;
+	private final double defaultFullModeHeight = 662;
 
 	/** Default Full Mode window width. */
 	private final double defaultFullModeWidth = 1000;
 
 	private Stage window;
+	
+	private boolean currentModeIsFull = false;
 
 	public Node getView() {
 		return root;
@@ -77,13 +79,14 @@ public class MainController {
 	}
 
 	public void showFullMode() {
+		currentModeIsFull = true;
 		// Firstly we will save the state of the window of the previous mode
 		GUIUtil.saveCurrentModeWindowStateAndEverything();
 		CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastMode", "Full");
 		window.setMaxWidth(1500);
 		window.setMaxHeight(1000);
 		window.setMinWidth(415);
-		window.setMinHeight(500);
+		window.setMinHeight(600);
 
 		GUIUtil.positionWindowBasedOnCurrentMode(defaultFullModeWidth, defaultFullModeHeight);
 
@@ -97,6 +100,7 @@ public class MainController {
 	}
 
 	public void showCompactMode() {
+		currentModeIsFull = false;
 		// Firstly we will save the state of the window of the previous mode
 		GUIUtil.saveCurrentModeWindowStateAndEverything();
 		CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastMode", "Compact");
@@ -115,5 +119,15 @@ public class MainController {
 		AnchorPane.setRightAnchor(view, 0.0);
 		AnchorPane.setLeftAnchor(view, 0.0);
 		AnchorPane.setBottomAnchor(view, 0.0);
+	}
+	
+	/**
+	 * Tells if application is running in Full Mode. If it's false, the application is probably
+	 * running in Compact Mode.
+	 *
+	 * @return true, if current mode if Full Mode.
+	 */
+	public boolean isCurrentModeFull() {
+		return currentModeIsFull;
 	}
 }

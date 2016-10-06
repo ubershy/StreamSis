@@ -22,13 +22,15 @@ import java.util.ResourceBundle;
 
 import org.controlsfx.validation.ValidationSupport;
 
+import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.project.CuteElement;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 
-public class NoSuchElementController extends AbstractCuteController {
+public class NoSuchElementController extends AbstractCuteController
+		implements CuteElementController {
 
     @FXML
     private VBox root;
@@ -37,7 +39,7 @@ public class NoSuchElementController extends AbstractCuteController {
 	 * @inheritDoc
 	 */
 	@Override
-	public void bindToCuteElement(CuteElement element) {
+	public void bindToCuteElement(CuteElement editableCopyOfCE, CuteElement origCE) {
 		// Nothing to set
 	}
 	

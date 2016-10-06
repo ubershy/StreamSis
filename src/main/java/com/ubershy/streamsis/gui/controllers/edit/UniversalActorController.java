@@ -25,6 +25,7 @@ import org.controlsfx.validation.Validator;
 
 import com.ubershy.streamsis.ConstsAndVars;
 import com.ubershy.streamsis.actors.Actor;
+import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.gui.controllers.edit.AbstractCuteController;
 import com.ubershy.streamsis.gui.helperclasses.IntegerTextField;
 import com.ubershy.streamsis.project.CuteElement;
@@ -36,9 +37,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
 /**
- * UniversalActorController, the controller that allows to edit {@link Actor} in a panel.
+ * UniversalActorController, the controller that allows to edit {@link Actor} in Element Editor
+ * panel.
  */
-public class UniversalActorController extends AbstractCuteController {
+public class UniversalActorController extends AbstractCuteController
+		implements CuteElementController {
 
 	/** The root node. */
 	@FXML
@@ -68,18 +71,9 @@ public class UniversalActorController extends AbstractCuteController {
 
 	/** The {@link Actor} to edit. */
 	private Actor actor;
-
-	/** Saved original value of {@link Actor#doOnRepeatProperty()}. */
-	private boolean origRepeatOnActions;
-
-	/** Saved original value of {@link Actor#doOffRepeatProperty()}. */
-	private boolean origRepeatOffActions;
-
-	/** Saved original value of {@link Actor#checkIntervalProperty()}. */
-	private int origCheckInterval;
-
-	/** Saved original value of {@link Actor#repeatIntervalProperty()}. */
-	private int origRepeatInterval;
+	
+	/** The original {@link Actor} to compare values with {@link #actor}. */
+	private Actor origActor;
 
 	/** The Validation Support for this controller. */
 	private ValidationSupport validationSupport;
@@ -107,13 +101,9 @@ public class UniversalActorController extends AbstractCuteController {
 	 * @inheritDoc
 	 */
 	@Override
-	public void bindToCuteElement(CuteElement element) {
-		actor = (Actor) element;
-		// Remember original values of the new Actor's properties.
-		origRepeatOnActions = actor.getDoOnRepeat();
-		origRepeatOffActions = actor.getDoOffRepeat();
-		origCheckInterval = actor.getCheckInterval();
-		origRepeatInterval = actor.getRepeatInterval();
+	public void bindToCuteElement(CuteElement editableCopyOfCE, CuteElement origCE) {
+		actor = (Actor) editableCopyOfCE;
+		origActor = (Actor) origCE;
 		// Bind to the new Actor.
 		bindBidirectionalAndRemember(checkIntervalIntegerTextField.numberProperty(),
 				actor.checkIntervalProperty());
@@ -140,20 +130,20 @@ public class UniversalActorController extends AbstractCuteController {
 	public void setValidationSupport(ValidationSupport validationSupport) {
 		this.validationSupport = validationSupport;
 		this.validationSupport.registerValidator(checkIntervalIntegerTextField,
-				generateValidatorForIntervalTextField(origCheckInterval, true));
+				generateValidatorForIntervalTextField(origActor.getCheckInterval(), true));
 		this.validationSupport.registerValidator(repeatIntervalIntegerTextField,
-				generateValidatorForIntervalTextField(origRepeatInterval, false));
+				generateValidatorForIntervalTextField(origActor.getRepeatInterval(), false));
 		Validator<Boolean> RepeanOnActionsCheckBoxValidator = (c, newValue) -> {
 			ValidationResult finalResult = ValidationResult.fromErrorIf(c,
 					"Always successful result", false);
-			buttonStateManager.reportNewValueOfControl(origRepeatOnActions, newValue, c,
+			buttonStateManager.reportNewValueOfControl(origActor.getDoOnRepeat(), newValue, c,
 					finalResult);
 			return finalResult;
 		};
 		Validator<Boolean> RepeanOffActionsCheckBoxValidator = (c, newValue) -> {
 			ValidationResult finalResult = ValidationResult.fromErrorIf(c,
 					"Always successful result", false);
-			buttonStateManager.reportNewValueOfControl(origRepeatOffActions, newValue, c,
+			buttonStateManager.reportNewValueOfControl(origActor.getDoOffRepeat(), newValue, c,
 					finalResult);
 			return finalResult;
 		};

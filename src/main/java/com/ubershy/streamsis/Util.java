@@ -49,15 +49,16 @@ public final class Util {
 	/**
 	 * Check if file's extension is valid. <br>
 	 * Ignores if extension is lowercase or uppercase. <br>
-	 * Only accepts extensions in ".extension" format.
+	 * Only accepts extensions in "*.extension" format.
 	 *
 	 * @param filePath
 	 *            the path of file (can be just a name of file, e.g. "image.jpg"
 	 * @param extensions
-	 *            the list of allowed extensions in ".extension" format
+	 *            the list of allowed extensions in "*.extension" format
 	 * @return true, if extension is valid
 	 * @throws IllegalArgumentException
-	 *             if file path or one of extensions is empty
+	 *             if file path or one of extensions is empty or one of the extensions is in bad 
+	 *             format.
 	 * @throws NullPointerException
 	 *             if arguments contain nulls
 	 */
@@ -75,6 +76,9 @@ public final class Util {
 				if (extension != null) {
 					if (extension.isEmpty()) {
 						throw new IllegalArgumentException("Extension can't be empty");
+					} else if (!extension.contains("*.")) {
+						throw new IllegalArgumentException("Extension should be in '*.extension' "
+								+ "format");
 					}
 				} else {
 					throw new NullPointerException("Extension can't be null");
@@ -88,17 +92,18 @@ public final class Util {
 		boolean result = false;
 		String lowercaseName = filePath.toLowerCase();
 		for (String ext : extensions) {
-			result = result || lowercaseName.endsWith(ext);
+			String extWithoutStar = ext.replace("*", "");
+			result = result || lowercaseName.endsWith(extWithoutStar);
 		}
 		return result;
 	}
 
 	/**
-	 * Extracts file's extension in ".extension" format. <br>
+	 * Extracts file's extension in "*.extension" format. <br>
 	 *
 	 * @param path
 	 *            the file path
-	 * @return the extension in lowercase,<br>
+	 * @return the extension in lowercase in "*.extension" format,<br>
 	 *         null if file has no extension
 	 * @throws IllegalArgumentException
 	 *             if file path is empty
@@ -115,10 +120,10 @@ public final class Util {
 		}
 		String lowercaseName = path.toLowerCase();
 		int lastIndexOfDot = lowercaseName.lastIndexOf(".");
-		if (lastIndexOfDot == -1) {
+		if (lastIndexOfDot == -1 || lastIndexOfDot == lowercaseName.length() - 1) {
 			return null;
 		}
-		return lowercaseName.substring(lastIndexOfDot);
+		return "*" + lowercaseName.substring(lastIndexOfDot);
 	}
 
 	/**
@@ -153,15 +158,17 @@ public final class Util {
 	}
 
 	/**
-	 * Checks if file exists and has proper extension. Only accepts extensions in ".extension" format.
+	 * Checks if file exists and has proper extension. Only accepts extensions in "*.extension" 
+	 * format.
 	 *
 	 * @param path
 	 *            the path of file
 	 * @param extensions
-	 *            allowed extensions in ".extension" format
+	 *            allowed extensions in "*.extension" format
 	 * @return true, if file exists and is not a directory and also has a valid extension
 	 * @throws IllegalArgumentException
-	 *             if file path or one of extensions is empty
+	 *             if file path or one of extensions is empty or one of the extensions is in bad 
+	 *             format.
 	 * @throws NullPointerException
 	 *             if arguments contain nulls
 	 */
@@ -192,7 +199,8 @@ public final class Util {
 
 		if (!checkFileExtension(path, extensions)) {
 			result = false;
-			logger.debug("This file has wrong extension (must be: " + Arrays.toString(extensions) + "): " + path);
+			logger.debug("This file has wrong extension (must be: " + Arrays.toString(extensions) +
+					"): " + path);
 		}
 		return result;
 	}
@@ -325,14 +333,16 @@ public final class Util {
 	 * @param path
 	 *            the path to directory where to find files
 	 * @param extensions
-	 *            the list of allowed extensions in ".extension" format
+	 *            an array of allowed extensions in "*.extension" format, null if files of any
+	 *            extensions are allowed
 	 * @return the array of found files <br>
 	 *         is empty if directory don't have files <br>
 	 *         null if directory is not valid
 	 * @throws IllegalArgumentException
-	 *             if file path or one of extensions is empty
+	 *             if file path is empty or one of extensions is empty or one of extensions has bad
+	 *             format
 	 * @throws NullPointerException
-	 *             if arguments contain nulls
+	 *             path is null
 	 */
 	public static File[] findFilesInDirectory(String path, String[] extensions) {
 		if (path != null) {
@@ -352,17 +362,19 @@ public final class Util {
 					throw new NullPointerException("Extension can't be null");
 				}
 			}
-		} else {
-			throw new NullPointerException("Array of extensions can't be null");
 		}
 		File[] fileList = null;
-		FilenameFilter imageFilter = new FilenameFilter() {
-			public boolean accept(File file, String fileName) {
-				return checkFileExtension(fileName, extensions);
-			}
-		};
 		File directoryFile = new File(path);
-		fileList = directoryFile.listFiles(imageFilter);
+		if (extensions != null) { // Means to list files only with specified extensions
+			FilenameFilter imageFilter = new FilenameFilter() {
+				public boolean accept(File file, String fileName) {
+					return checkFileExtension(fileName, extensions);
+				}
+			};
+			fileList = directoryFile.listFiles(imageFilter);
+		} else { // Means to list files with any extensions
+			fileList = directoryFile.listFiles();
+		}
 		if (fileList == null) {
 			logger.debug("This Directory is not valid: " + path);
 		} else if (fileList.length == 0) {
@@ -533,16 +545,20 @@ public final class Util {
 	}
 	
 	/**
-	 * Check if the path seems valid, i.e. look like a path. The object on this path might not
-	 * exist.
+	 * Check if the absolute path seems valid, i.e. look like a path. The object on this path might
+	 * not exist.
 	 *
-	 * @param path The path.
-	 * @return True, if the path seems valid.
+	 * @param path
+	 *            The absolute path.
+	 * @return True, if the path seems valid. False if it seems not absolute, invalid, empty or
+	 *         null.
 	 */
-	public static boolean checkIfPathSeemsValid(String path) {
-		File parentFile = new File(path).getParentFile();
-		if (parentFile != null) {
-			return true;
+	public static boolean checkIfAbsolutePathSeemsValid(String absolutePath) {
+		if (absolutePath != null) {
+			File parentFile = new File(absolutePath).getParentFile();
+			if (parentFile != null) {
+				return true;
+			}
 		}
 		return false;
 	}

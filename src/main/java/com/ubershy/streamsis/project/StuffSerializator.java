@@ -28,76 +28,85 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Element Serializator is a class for serializing/deserializing {@link CuteElement CuteElements}.
+ * Stuff Serializator is a class for serializing/deserializing stuff.
  * <br>
- * Can be useful for making full copies of CuteElements.
+ * Can be useful for making full copies of {@link CuteElement}s. And much more!
  */
-public final class ElementSerializator {
+public final class StuffSerializator {
 
 	/** The Constant logger. */
-	static final Logger logger = LoggerFactory.getLogger(ElementSerializator.class);
+	static final Logger logger = LoggerFactory.getLogger(StuffSerializator.class);
 
 	/**
-	 * Serialize {@link CuteElement} to a string with all it's children.
+	 * Serialize Object to a string.
 	 *
-	 * @param element
-	 *            the {@link CuteElement} to serialize
-	 * @return the string in JSON format
+	 * @param object
+	 *            The object to serialize.
+	 * @return The string in JSON format
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static String serializeToString(CuteElement element) throws IOException {
+	public static String serializeToString(Object object) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		String serialized = null;
 		try {
-			serialized = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(element);
+			serialized = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
 		} catch (JsonGenerationException e) {
-			logger.error("CuteElement serializing to string fail: JsonGeneration error");
+			logger.error(object + "object serializing to string fail: JsonGeneration error.");
 			e.printStackTrace();
 			throw e;
 		} catch (JsonMappingException e) {
-			logger.error("CuteElement serializing to string fail: Mapping error");
+			logger.error(object + "object serializing to string fail: Mapping error.");
 			e.printStackTrace();
 			throw e;
 		} catch (IOException e) {
-			logger.error("CuteElement serializing to string fail: IO error");
+			logger.error(object + "object serializing to string fail: IO error.");
 			throw e;
 		}
-		logger.debug("CuteElement serializing to string success");
+		logger.debug(object + "object serializing to string success.");
 		return serialized;
 	}
 
 	/**
-	 * Deserialize {@link CuteElement} from a string with all it's children.
+	 * Deserialize Object from a string with all it's children.
 	 *
 	 * @param serialized
 	 *            the string in JSON format
+	 * @param clazz
+	 *            the expected class of deserialized object
 	 * @return the CuteElement
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static CuteElement deserializeFromString(String serialized) throws IOException {
+	public static Object deserializeFromString(String serialized, Class<?> clazz)
+			throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
 		mapper.configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
-		CuteElement element = null;
+		Object object = null;
 		try {
-			element = mapper.readValue(serialized, CuteElement.class);
+			object = mapper.readValue(serialized, clazz);
 		} catch (JsonGenerationException e) {
-			logger.error("CuteElement deserialization fail: JsonGeneration error");
+			logger.error(clazz.getSimpleName() + " deserialization fail: JsonGeneration error");
 			e.printStackTrace();
 			throw e;
 		} catch (JsonMappingException e) {
-			logger.error("CuteElement deserialization fail: mapping error. Different or outdated"
-					+ "format");
+			logger.error(clazz.getSimpleName()
+					+ " deserialization fail: mapping error. Different or outdated format");
 			e.printStackTrace();
 			throw e;
 		} catch (IOException e) {
-			logger.error("CuteElement deserialization fail: IO error");
+			logger.error(clazz.getSimpleName() + " deserialization fail: IO error");
 			throw e;
 		}
-		logger.info("CuteElement deserialization success");
-		return element;
+		logger.info(clazz.getSimpleName() + " deserialization success");
+		return object;
+	}
+	
+	public static Object makeACopyOfObjectUsingSerialization(Object object) throws IOException {
+		String serialized = serializeToString(object);
+		Object copy = deserializeFromString(serialized, object.getClass());
+		return copy;
 	}
 
 	/**

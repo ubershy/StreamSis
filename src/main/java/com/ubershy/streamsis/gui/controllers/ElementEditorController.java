@@ -31,14 +31,14 @@ import com.ubershy.streamsis.actions.Action;
 import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.counters.Counter;
 import com.ubershy.streamsis.gui.StreamSisAppFactory;
-import com.ubershy.streamsis.gui.StreamSisAppFactory.SpecialCuteController;
+import com.ubershy.streamsis.gui.StreamSisAppFactory.SpecialCuteElementControllerType;
 import com.ubershy.streamsis.gui.animations.HorizontalShadowAnimation;
 import com.ubershy.streamsis.gui.animations.ThreeDotsAnimation;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.CuteNodeContainer;
 import com.ubershy.streamsis.project.ElementInfo;
-import com.ubershy.streamsis.project.ElementSerializator;
+import com.ubershy.streamsis.project.StuffSerializator;
 import com.ubershy.streamsis.project.ProjectManager;
 import com.ubershy.streamsis.project.ElementInfo.ElementHealth;
 
@@ -123,8 +123,8 @@ public class ElementEditorController implements Initializable {
 
 	private PropsWithNameController propsWithNameController;
 	
-	private CuteController noneSelectedController = StreamSisAppFactory
-			.buildSpecialCuteController(SpecialCuteController.NONESELECTED);
+	private CuteElementController noneSelectedController = StreamSisAppFactory
+			.buildSpecialCuteElementController(SpecialCuteElementControllerType.NONESELECTED);
 
 	private CuteButtonsStatesManager buttonStateManager = new CuteButtonsStatesManager();
 
@@ -263,10 +263,10 @@ public class ElementEditorController implements Initializable {
 			if (this.buttonStateManager.needToCancelScheduledCuteElementReinitProperty().get()) {
 				logger.debug("Cancel of reinitialization animation is requested.");
 				buttonsBeforeInitDotsAnima.stop();
+				this.buttonStateManager.setCuteElementReinitSuccessfullyCancelled();
 				logger.debug("Animation stopped by cancel request.");
 				unbindTextsOfButtons();
 				restoreDefaultTextsOfButtons();
-
 			}
 		});
 		buttonsBeforeInitDotsAnima.setOnFinished(evt -> {
@@ -344,10 +344,9 @@ public class ElementEditorController implements Initializable {
 			elementWorkingCopy = currentElement;
 		} else {
 			// Other CuteElements can be edited and serialized.
-			String serializedCurrentElement = null;
 			try {
-				serializedCurrentElement = ElementSerializator.serializeToString(currentElement);
-				elementWorkingCopy = ElementSerializator.deserializeFromString(serializedCurrentElement);
+				elementWorkingCopy = (CuteElement) StuffSerializator
+						.makeACopyOfObjectUsingSerialization(currentElement);
 			} catch (IOException e) {
 				throw new RuntimeException(e.getMessage());
 			}
@@ -368,7 +367,7 @@ public class ElementEditorController implements Initializable {
 		whyUnhealthyProperty.bind(infoOfCopyElement.whyUnhealthyProperty());
 
 		// Let's set up propertiesPane according to CuteElement
-		propsWithNameController.connectToCuteElement(elementWorkingCopy);
+		propsWithNameController.connectToCuteElement(elementWorkingCopy, currentElement);
 		
 		// Let's reset state manager of buttons
 		buttonStateManager.reset();

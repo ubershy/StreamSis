@@ -1,6 +1,6 @@
 /** 
  * StreamSis
- * Copyright (C) 2015 Eva Balycheva
+ * Copyright (C) 2016 Eva Balycheva
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,30 +20,16 @@ package com.ubershy.streamsis.gui.controllers;
 import org.controlsfx.validation.ValidationSupport;
 
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
-import com.ubershy.streamsis.project.CuteElement;
 
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 
 /**
- * The Interface CuteController represents the view with controls to edit specific
- * {@link CuteElement} in Element Editor panel.
+ * The Interface CuteController represents the view with controls to edit something in Element
+ * Editor panel.
  */
-public interface CuteController {
-
-	/**
-	 * Sets the {@link CuteElement} to work with and binds view's controls to CuteElement's
-	 * properties.
-	 *
-	 * @param cuteElement
-	 *            the CuteElement
-	 */
-	public void bindToCuteElement(CuteElement cuteElement);
+public interface CuteController extends Initializable {
 	
-	/**
-	 * Unbinds view's controls from CuteElement's properties.
-	 */
-	public void unbindFromCuteElement();
-
 	/**
 	 * Gets the View's Root Node corresponding to this controller.
 	 *

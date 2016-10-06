@@ -158,19 +158,20 @@ public class ActorBuilder {
 		File actorDir = new File(sharedDir, name);
 		File sourceImagesDir = new File(actorDir, "Images");
 
-		String extension = ".png"; // Default extension
+		String extensionWithoutStar = ".png"; // Default extension
 		// Based on extension of the first file in Images directory we'll choose extension to work with.
-		String[] possibleExtensions = new String[] { ".png", ".jpg", ".bmp", ".gif" };
+		String[] possibleExtensions = new String[] { "*.png", "*.jpg", "*.bmp", "*.gif" };
 		if (!sourceImagesDir.toString().isEmpty()) {
 			File[] files = Util.findFilesInDirectory(sourceImagesDir.toString(), possibleExtensions);
 			if (files != null) {
 				if (files.length != 0) {
-					extension = files[0].getName().substring(files[0].getName().lastIndexOf("."), files[0].getName().length());
+					extensionWithoutStar = files[0].getName().substring(
+							files[0].getName().lastIndexOf("."), files[0].getName().length());
 				}
 			}
 		}
 
-		File defaultImg = new File(actorDir, "default" + extension);
+		File defaultImg = new File(actorDir, "default" + extensionWithoutStar);
 		File destinationImg = null;
 
 		File sourceTextsDir = new File(actorDir, "Texts");
@@ -179,7 +180,8 @@ public class ActorBuilder {
 
 		File sourceSoundsDir = new File(actorDir, "Sounds");
 
-		destinationImg = new File(outToSharedFiles ? sharedDir : actorDir, "current" + extension);
+		destinationImg = new File(outToSharedFiles ? sharedDir : actorDir,
+				"current" + extensionWithoutStar);
 		destinationText = new File(outToSharedFiles ? sharedDir : actorDir, "current.txt");
 
 		if (sourceImagesDir.exists()) {

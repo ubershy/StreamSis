@@ -23,7 +23,9 @@ import java.util.ResourceBundle;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
+
 import com.ubershy.streamsis.actions.HotkeyAction;
+import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.gui.controllers.edit.AbstractCuteController;
 import com.ubershy.streamsis.project.CuteElement;
 
@@ -41,13 +43,17 @@ import javafx.scene.input.KeyCombination.ModifierValue;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 
-public class HotkeyActionController extends AbstractCuteController {
+public class HotkeyActionController extends AbstractCuteController
+		implements CuteElementController {
 
+	/** The {@link HotkeyAction} to edit. */
 	protected HotkeyAction hkAction;
+    
+	/** The original {@link HotkeyAction} to compare values with {@link #hkAction}. */
+	protected HotkeyAction origHkAction;
 
-	protected ObjectProperty<KeyCodeCombination> keyCombinationProperty = new SimpleObjectProperty<KeyCodeCombination>();
-
-	protected String origKeys = "";
+	protected ObjectProperty<KeyCodeCombination> keyCombinationProperty = 
+			new SimpleObjectProperty<KeyCodeCombination>();
 
 	@FXML
 	protected TextField keyTextField;
@@ -110,10 +116,11 @@ public class HotkeyActionController extends AbstractCuteController {
 	 * @inheritDoc
 	 */
 	@Override
-	public void bindToCuteElement(CuteElement cuteElement) {
-		hkAction = (HotkeyAction) cuteElement;
-		origKeys = hkAction.keysProperty().get();
-		keyCombinationProperty.set(parseKeyCodeCombinationFromString(origKeys));
+	public void bindToCuteElement(CuteElement editableCopyOfCE, CuteElement origCE) {
+		hkAction = (HotkeyAction) editableCopyOfCE;
+		origHkAction = (HotkeyAction) origCE;
+		String keys = hkAction.getHotkey();
+		keyCombinationProperty.set(parseKeyCodeCombinationFromString(keys));
 		StringBinding readableKey = Bindings.createStringBinding(
 				() -> keyFromKeyCombination(keyCombinationProperty.get()), keyCombinationProperty);
 		String newModifiers = modifiersFromKeyCombination(keyCombinationProperty.get());
@@ -195,7 +202,7 @@ public class HotkeyActionController extends AbstractCuteController {
 		keyCombinationProperty.set(new KeyCodeCombination(getCurrentKeyCode(), modifiers.get(0),
 				modifiers.get(1), modifiers.get(2), modifiers.get(3), modifiers.get(4)));
 		String newModifiers = modifiersFromKeyCombination(keyCombinationProperty.get());
-		KeyCodeCombination originalKB = parseKeyCodeCombinationFromString(origKeys);
+		KeyCodeCombination originalKB = parseKeyCodeCombinationFromString(origHkAction.getHotkey());
 		buttonStateManager.reportNewValueOfControl(modifiersFromKeyCombination(originalKB),
 				newModifiers, modifiersTextField, null);
 		modifiersTextField.setText(newModifiers);
@@ -211,7 +218,7 @@ public class HotkeyActionController extends AbstractCuteController {
 			ValidationResult emptyResult = ValidationResult.fromErrorIf(c,
 					"Please choose a keyboard key", newValue.isEmpty());
 			ValidationResult finalResult = ValidationResult.fromResults(emptyResult);
-			KeyCodeCombination OrigKK = parseKeyCodeCombinationFromString(origKeys);
+			KeyCodeCombination OrigKK = parseKeyCodeCombinationFromString(origHkAction.getHotkey());
 			buttonStateManager.reportNewValueOfControl(keyFromKeyCombination(OrigKK), newValue, c,
 					finalResult);
 			return finalResult;

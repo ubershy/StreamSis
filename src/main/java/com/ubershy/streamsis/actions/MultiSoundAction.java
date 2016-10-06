@@ -61,6 +61,7 @@ public class MultiSoundAction extends SoundAction {
 		fileChooser.setSrcPath(soundDirectoryPath);
 		fileChooser.setChooseFilesRandomly(chooseFileRandomly);
 		fileChooser.setFindingSourcesInSrcPath(true);
+		fileChooser.acceptableExtensionsProperty().set(allowedExtensions);
 	}
 
 	/**
@@ -79,6 +80,7 @@ public class MultiSoundAction extends SoundAction {
 		fileChooser.getPersistentSourceFileList().setAll(persistentSourceFileList);
 		fileChooser.setChooseFilesRandomly(chooseFileRandomly);
 		fileChooser.setFindingSourcesInSrcPath(false);
+		fileChooser.acceptableExtensionsProperty().set(allowedExtensions);
 	}
 
 	/**
@@ -94,13 +96,15 @@ public class MultiSoundAction extends SoundAction {
 			@JsonProperty("fileChooser") MultiSourceFileChooser fileChooser) {
 		this.volume = volume;
 		this.fileChooser = fileChooser;
+		this.fileChooser.acceptableExtensionsProperty().set(allowedExtensions);
 	}
 
 	@Override
 	public void execute() {
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
-			logger.info("Playing Source directory file № " + fileChooser.getCurrentFileIndex() + 1);
+			logger.info(
+					"Playing Source directory file # " + (fileChooser.getCurrentFileIndex() + 1));
 			boolean wasAbleToPlay = play();
 			fileChooser.computeNextFileIndex();
 			File nextFileToPlay = fileChooser.getTemporarySourceFileList()
@@ -114,7 +118,7 @@ public class MultiSoundAction extends SoundAction {
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
-		fileChooser.initTemporaryFileList(elementInfo, possibleExtensions, "sounds");
+		fileChooser.initTemporaryFileList(elementInfo, "sounds", null);
 		if (elementInfo.isBroken()) {
 			// already broken by fileChooser.initTemporaryFileList()
 			return;

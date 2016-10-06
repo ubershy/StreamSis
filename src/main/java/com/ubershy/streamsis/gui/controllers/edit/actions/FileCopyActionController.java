@@ -17,6 +17,7 @@
  */
 package com.ubershy.streamsis.gui.controllers.edit.actions;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -26,6 +27,7 @@ import org.controlsfx.validation.Validator;
 
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.actions.FileCopyAction;
+import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.gui.controllers.edit.AbstractCuteController;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteElement;
@@ -33,25 +35,36 @@ import com.ubershy.streamsis.project.CuteElement;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 
-public class FileCopyActionController extends AbstractCuteController {
+public class FileCopyActionController extends AbstractCuteController
+		implements CuteElementController {
 
 	@FXML
 	private GridPane root;
-	
+    
+	@FXML
+    private Label sourceFileLabel;
+    
     @FXML
     private TextField sourceTextField;
+    
+    @FXML
+    private HBox sourceHBox;
 
     @FXML
     private TextField destinationTextField;
 
-	protected FileCopyAction action;
-
-	protected String origSrcPath = "";
+    /** The {@link FileCopyAction} to edit. */
+	protected FileCopyAction fileCopyAction;
 	
-	protected String origDstPath = "";
+	/** The original {@link FileCopyAction} to compare values with {@link #fileCopyAction}. */
+	protected FileCopyAction origFileCopyAction;
+	
+	private String dstExtension = "";
 	
 	protected ValidationSupport validationSupport;
 
@@ -67,13 +80,14 @@ public class FileCopyActionController extends AbstractCuteController {
 	 * @inheritDoc
 	 */
 	@Override
-	public void bindToCuteElement(CuteElement element) {
-		action = (FileCopyAction) element;
-		origSrcPath = action.getSrcFilePath();
-		origDstPath = action.getDstFilePath();
-		bindBidirectionalAndRemember(sourceTextField.textProperty(), action.srcFilePathProperty());
+	public void bindToCuteElement(CuteElement editableCopyOfCE, CuteElement origCE) {
+		fileCopyAction = (FileCopyAction) editableCopyOfCE;
+		origFileCopyAction = (FileCopyAction) origCE;
+		bindBidirectionalAndRemember(sourceTextField.textProperty(),
+				fileCopyAction.srcFilePathProperty());
 		bindBidirectionalAndRemember(destinationTextField.textProperty(),
-				action.dstFilePathProperty());
+				fileCopyAction.dstFilePathProperty());
+//		modifyViewBasedOnDestinationPath(fileCopyAction.getDstFilePath());
 	}
 	
 	/*
@@ -116,14 +130,25 @@ public class FileCopyActionController extends AbstractCuteController {
 //					newValue.equals(destinationTextField.getText()));
 			ValidationResult finalResult = ValidationResult.fromResults(emptyResult,
 					existingPathResult);
-			buttonStateManager.reportNewValueOfControl(origSrcPath, newValue, c, finalResult);
+			buttonStateManager.reportNewValueOfControl(origFileCopyAction.getSrcFilePath(),
+					newValue, c, finalResult);
 			return finalResult;
 		};
 		Validator<String> destinationFieldValidator = (c, newValue) -> {
+			if (!newValue.isEmpty()) {
+				dstExtension = Util.extractFileExtensionFromPath(newValue);
+			}
 			ValidationResult emptyResult = ValidationResult.fromErrorIf(c,
 					"Please select a path to file", newValue.isEmpty());
-			ValidationResult validPathResult = ValidationResult.fromErrorIf(c,
-					"The path seems slightly... invalid.", !Util.checkIfPathSeemsValid(newValue));
+			ValidationResult noExtensionResult = ValidationResult.fromErrorIf(c,
+					"The file should have an extension",
+					!newValue.isEmpty() && dstExtension == null);
+			ValidationResult invalidPathResult = ValidationResult.fromErrorIf(c,
+					"The path seems slightly... invalid",
+					!Util.checkIfAbsolutePathSeemsValid(newValue));
+			ValidationResult notAbsolutePathResult = ValidationResult.fromErrorIf(c,
+					"The path should be absolute. No exceptions.",
+					!(new File(newValue).isAbsolute()));
 //			ValidationResult sameExtensionsResult = ValidationResult.fromErrorIf(c,
 //					"The extensions of source and destination files should be the same or none",
 //					pathsAreNotEmptyAndHaveDifferentExtensions(newValue,
@@ -132,8 +157,20 @@ public class FileCopyActionController extends AbstractCuteController {
 //					"Source and destination files can't be the same",
 //					newValue.equals(destinationTextField.getText()));
 			ValidationResult finalResult = ValidationResult.fromResults(emptyResult,
-					validPathResult);
-			buttonStateManager.reportNewValueOfControl(origDstPath, newValue, c, finalResult);
+					invalidPathResult, noExtensionResult, notAbsolutePathResult);
+			String sourceFileLabelExtension;
+			if (finalResult.getMessages().size() == 0) {
+				// No errors. sourceHBox can be enabled for editing.
+				sourceFileLabelExtension = dstExtension;
+				sourceHBox.setDisable(false);
+			} else {
+				// Errors. sourceHBox should be disabled from editing.
+				sourceFileLabelExtension = "?";
+				sourceHBox.setDisable(true);
+			}
+			sourceFileLabel.setText("Source file [" + sourceFileLabelExtension + "]");
+			buttonStateManager.reportNewValueOfControl(origFileCopyAction.getDstFilePath(),
+					newValue, c, finalResult);
 			return finalResult;
 		};
 //		// This listener is needed because the validation of one field depends of value of another
@@ -153,12 +190,15 @@ public class FileCopyActionController extends AbstractCuteController {
 	
     @FXML
     void browseDestinationPath(ActionEvent event) {
-    	GUIUtil.showCuteFileChooser("Select the destination file", true, destinationTextField);
+		GUIUtil.showJavaSingleFileChooser("Specify(or create) the destination file", "Any file",
+				true, destinationTextField, null);
     }
 
     @FXML
     void browseSourcePath(ActionEvent event) {
-    	GUIUtil.showCuteFileChooser("Select the source file", false, sourceTextField);
+    	// NOTE: The button of this action will be enabled only if dstExtension != null, so it's OK.
+		GUIUtil.showJavaSingleFileChooser("Specify the source file", "File to copy", false,
+				sourceTextField, new String[] { dstExtension });
     }
     
 //    private boolean pathsAreNotEmptyAndHaveDifferentExtensions(String path1, String path2) {

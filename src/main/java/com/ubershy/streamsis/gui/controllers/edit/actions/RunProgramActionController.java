@@ -28,6 +28,7 @@ import org.controlsfx.validation.Validator;
 import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.actions.RunProgramAction;
+import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.gui.controllers.edit.AbstractCuteController;
 import com.ubershy.streamsis.project.CuteElement;
 
@@ -41,7 +42,8 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
-public class RunProgramActionController extends AbstractCuteController {
+public class RunProgramActionController extends AbstractCuteController
+		implements CuteElementController {
 
 	@FXML
 	private TextField argumentsTextField;
@@ -64,16 +66,12 @@ public class RunProgramActionController extends AbstractCuteController {
 	@FXML
 	private TextField workingDirTextField;
 	
-	protected RunProgramAction action;
+	/** The {@link RunProgramAction} to edit. */
+	protected RunProgramAction runProgramAction;
+    
+	/** The original {@link RunProgramAction} to compare values with {@link #runProgramAction}. */
+	protected RunProgramAction origRunProgramAction;
 
-	protected String origArguments = "";
-	
-	protected String origPath = "";
-	
-	protected String origWorkingDir = "";
-	
-	protected boolean  origKillIfStillRunning = false;
-	
 	protected ValidationSupport validationSupport;
 
 	/*
@@ -88,18 +86,16 @@ public class RunProgramActionController extends AbstractCuteController {
 	 * @inheritDoc
 	 */
 	@Override
-	public void bindToCuteElement(CuteElement element) {
-		action = (RunProgramAction) element;
-		origArguments = action.getArguments();
-		origPath = action.getPath();
-		origWorkingDir = action.getWorkingDir();
-		origKillIfStillRunning = action.getkillIfStillRunning();
-		bindBidirectionalAndRemember(argumentsTextField.textProperty(), action.argumentsProperty());
-		bindBidirectionalAndRemember(pathTextField.textProperty(), action.pathProperty());
+	public void bindToCuteElement(CuteElement editableCopyOfCE, CuteElement origCE) {
+		runProgramAction = (RunProgramAction) editableCopyOfCE;
+		origRunProgramAction = (RunProgramAction) origCE;
+		bindBidirectionalAndRemember(argumentsTextField.textProperty(),
+				runProgramAction.argumentsProperty());
+		bindBidirectionalAndRemember(pathTextField.textProperty(), runProgramAction.pathProperty());
 		bindBidirectionalAndRemember(workingDirTextField.textProperty(),
-				action.workingDirProperty());
+				runProgramAction.workingDirProperty());
 		bindBidirectionalAndRemember(terminationCheckBox.selectedProperty(),
-				action.killIfStillRunningProperty());
+				runProgramAction.killIfStillRunningProperty());
 	}
 	
 	/*
@@ -164,13 +160,15 @@ public class RunProgramActionController extends AbstractCuteController {
 					!Util.checkIfPathIsAbsoluteAndFileExists(newValue));
 			ValidationResult finalResult = ValidationResult.fromResults(emptyResult,
 					validPathResult);
-			buttonStateManager.reportNewValueOfControl(origPath, newValue, c, finalResult);
+			buttonStateManager.reportNewValueOfControl(origRunProgramAction.getPath(), newValue, c,
+					finalResult);
 			return finalResult;
 		};
 		Validator<String> argumentsFieldValidator = (c, newValue) -> {
 			ValidationResult alwaysSuccessfulResult = ValidationResult.fromErrorIf(c,
 					"The user will not see this message", false);
-			buttonStateManager.reportNewValueOfControl(origArguments, newValue, c,
+			buttonStateManager.reportNewValueOfControl(origRunProgramAction.getArguments(),
+					newValue, c,
 					alwaysSuccessfulResult);
 			return alwaysSuccessfulResult;
 		};
@@ -179,14 +177,15 @@ public class RunProgramActionController extends AbstractCuteController {
 					"Please select an existing \"working directory\" or leave this field empty",
 					!(Util.checkDirectory(newValue) || newValue.isEmpty()));
 			ValidationResult finalResult = ValidationResult.fromResults(validWorkingDirResult);
-			buttonStateManager.reportNewValueOfControl(origWorkingDir, newValue, c, finalResult);
+			buttonStateManager.reportNewValueOfControl(origRunProgramAction.getWorkingDir(),
+					newValue, c, finalResult);
 			return finalResult;
 		};
 		Validator<Boolean> terminationCheckBoxValidator = (c, newValue) -> {
 			ValidationResult alwaysSuccessfulResult = ValidationResult.fromErrorIf(c,
 					"The user will not see this message", false);
-			buttonStateManager.reportNewValueOfControl(origKillIfStillRunning, newValue, c,
-					alwaysSuccessfulResult);
+			buttonStateManager.reportNewValueOfControl(origRunProgramAction.getkillIfStillRunning(),
+					newValue, c, alwaysSuccessfulResult);
 			return alwaysSuccessfulResult;
 		};
 		this.validationSupport.registerValidator(pathTextField, pathFieldValidator);

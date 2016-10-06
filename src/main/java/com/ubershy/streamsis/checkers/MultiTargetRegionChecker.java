@@ -170,14 +170,18 @@ public class MultiTargetRegionChecker extends AbstractCuteNode implements Checke
 			elementInfo.setAsBroken("Target images directory is not defined");
 			return;
 		}
-		File[] targetsList = Util.findFilesInDirectory(targetsPath, Util.singleStringAsArrayOfStrings(".png"));
+		File[] targetsList = Util.findFilesInDirectory(targetsPath,
+				Util.singleStringAsArrayOfStrings("*.png"));
 		if (targetsList != null) {
 			if (targetsList.length == 0) {
-				elementInfo.setAsBroken("No '.png' image files are found in the Target images directory: " + targetsPath);
+				elementInfo.setAsBroken(
+						"No '.png' image files are found in the Target images directory: "
+								+ targetsPath);
 				return;
 			}
 		} else {
-			elementInfo.setAsBroken("Something is wrong with the Target images directory: " + targetsPath);
+			elementInfo.setAsBroken(
+					"Something is wrong with the Target images directory: " + targetsPath);
 			return;
 		}
 		if (!elementInfo.isBroken()) {

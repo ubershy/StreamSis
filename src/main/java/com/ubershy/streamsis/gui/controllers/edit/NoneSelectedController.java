@@ -23,16 +23,17 @@ import java.util.ResourceBundle;
 import org.controlsfx.validation.ValidationSupport;
 
 import com.ubershy.streamsis.gui.animations.ThreeDotsAnimation;
+import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.project.CuteElement;
 
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
-public class NoneSelectedController extends AbstractCuteController implements Initializable {
+public class NoneSelectedController extends AbstractCuteController
+		implements CuteElementController {
 
 	@FXML
 	private Label propertiesPaneDots;
@@ -44,10 +45,10 @@ public class NoneSelectedController extends AbstractCuteController implements In
 	 * @inheritDoc
 	 */
 	@Override
-	public void bindToCuteElement(CuteElement element) {
+	public void bindToCuteElement(CuteElement editableCopyOfCE, CuteElement origCE) {
 		// Nothing to set
 	}
-	
+
 	/*
 	 * @inheritDoc
 	 */

@@ -20,6 +20,7 @@ package com.ubershy.streamsis.actions;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,11 +39,35 @@ import com.ubershy.streamsis.Util;
 public class MultiFileCopyAction extends FileCopyAction {
 
 	static final Logger logger = LoggerFactory.getLogger(MultiFileCopyAction.class);
-
+	
+	/** The file chooser that helps to choose each next source file. */
 	@JsonProperty
 	private MultiSourceFileChooser fileChooser = new MultiSourceFileChooser();
 
 	public MultiFileCopyAction() {
+		dstFilePath.addListener((o, oldVal, newVal) -> {
+			fileChooser.setAcceptableExtensions(generateExtensionsForChooser(newVal));
+		});
+	}
+
+	/**
+	 * Generates list with allowed extensions for chooser. The allowed extensions list will consist
+	 * only of one extension - destination file's extension.
+	 *
+	 * @param dstPath
+	 *            The destination file path.
+	 * @return The list with single allowed extension to pass to {@link #fileChooser}.
+	 */
+	private List<String> generateExtensionsForChooser(String dstPath) {
+		String singleExtension = null;
+		if (dstPath != null && !dstPath.isEmpty()) {
+			singleExtension = Util.extractFileExtensionFromPath(dstPath);
+		}
+		List<String> result = new ArrayList<String>();
+		if (singleExtension != null) {
+			result.add(singleExtension);
+		}
+		return result;
 	}
 
 	/**
@@ -57,6 +82,8 @@ public class MultiFileCopyAction extends FileCopyAction {
 	 */
 	public MultiFileCopyAction(String srcDirectoryPath, String dstFilePath,
 			boolean chooseFileRandomly) {
+		this();
+		fileChooser.setAcceptableExtensions(generateExtensionsForChooser(dstFilePath));
 		this.dstFilePath.set(dstFilePath);
 		fileChooser.setFindingSourcesInSrcPath(true);
 		fileChooser.setSrcPath(srcDirectoryPath);
@@ -66,15 +93,14 @@ public class MultiFileCopyAction extends FileCopyAction {
 	/**
 	 * Instantiates a new Multi File Copy Action by list of files.
 	 *
-	 * @param srcDirectoryPath
-	 *            the Source <b>directory</b>'s path
-	 * @param dstFilePath
-	 *            the Destination <b>file</b>'s path
-	 * @param chooseFileRandomly
-	 *            choose file randomly
+	 * @param persistentSourceFileList the persistent source file list
+	 * @param dstFilePath            the Destination <b>file</b>'s path
+	 * @param chooseFileRandomly            choose file randomly
 	 */
 	public MultiFileCopyAction(ArrayList<File> persistentSourceFileList, String dstFilePath,
 			boolean chooseFileRandomly) {
+		this();
+		fileChooser.setAcceptableExtensions(generateExtensionsForChooser(dstFilePath));
 		this.dstFilePath.set(dstFilePath);
 		fileChooser.setFindingSourcesInSrcPath(false);
 		fileChooser.getPersistentSourceFileList().setAll(persistentSourceFileList);
@@ -92,21 +118,24 @@ public class MultiFileCopyAction extends FileCopyAction {
 	@JsonCreator
 	public MultiFileCopyAction(@JsonProperty("dstFilePath") String dstFilePath,
 			@JsonProperty("fileChooser") MultiSourceFileChooser fileChooser) {
-		this.dstFilePath.set(dstFilePath);
+		this();
+		fileChooser.setAcceptableExtensions(generateExtensionsForChooser(dstFilePath));
 		this.fileChooser = fileChooser;
+		this.dstFilePath.set(dstFilePath);
 	}
 
 	@Override
 	public void execute() {
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
-			logger.info("Copying Source directory file № " + (fileChooser.getCurrentFileIndex() + 1)
-					+ " with '" + dstExtension + "' extension");
 			File fileToCopy = fileChooser.getTemporarySourceFileList()
 					.get(fileChooser.getCurrentFileIndex());
+			logger.info(
+					"Copying Source directory file # " + (fileChooser.getCurrentFileIndex() + 1));
+			File fileToReplace = new File(dstFilePath.get());
 			fileChooser.computeNextFileIndex();
 			try {
-				Util.copyFileSynced(fileToCopy, new File(dstFilePath.get()));
+				Util.copyFileSynced(fileToCopy, fileToReplace);
 			} catch (IOException e) {
 				elementInfo.setBooleanResult(false);
 				return;
@@ -122,13 +151,12 @@ public class MultiFileCopyAction extends FileCopyAction {
 			elementInfo.setAsBroken("Destination path is not defined");
 			return;
 		}
-		dstExtension = Util.extractFileExtensionFromPath(dstFilePath.get());
-		if (dstExtension != null) {
-			fileChooser.initTemporaryFileList(elementInfo, new String[] { dstExtension },
-					"Source files");
+		if (fileChooser.getAcceptableExtensions().size() != 0) {
+			fileChooser.initTemporaryFileList(elementInfo, "Source files", dstFilePath.get());
 		} else {
 			elementInfo.setAsBroken("Destination file has no extension: " + dstFilePath.get()
 					+ "\nPlease choose another file");
+			return;
 		}
 		if (elementInfo.isBroken()) {
 			// already broken by fileChooser.initTemporaryFileList() or null extension
@@ -139,8 +167,25 @@ public class MultiFileCopyAction extends FileCopyAction {
 		}
 	}
 	
+	/**
+	 * Gets the {@link #fileChooser}.
+	 *
+	 * @return The {@link #fileChooser}.
+	 */
 	public MultiSourceFileChooser getFileChooser() {
 		return fileChooser;
+	}
+	
+	/**
+	 * Sets the {@link #fileChooser}. In most cases it's not needed to set fileChooser. This setter
+	 * exists only for automatic copying of attributes.
+	 *
+	 * @param fileChooser
+	 *            The new {@link #fileChooser}.
+	 */
+	public void setFileChooser(MultiSourceFileChooser fileChooser) {
+		fileChooser.setAcceptableExtensions(generateExtensionsForChooser(dstFilePath.get()));
+		this.fileChooser = fileChooser;
 	}
 
 }

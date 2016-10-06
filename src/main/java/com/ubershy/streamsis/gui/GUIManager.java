@@ -19,6 +19,7 @@ package com.ubershy.streamsis.gui;
 
 import java.io.IOException;
 
+import org.controlsfx.control.NotificationPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,7 @@ import com.ubershy.streamsis.project.SisScene;
 import com.ubershy.streamsis.project.ProjectManager;
 
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -55,6 +57,8 @@ public final class GUIManager {
 	public static TreeView<CuteNode> onActionsTree;
 	public static ElementEditorController elementEditor;
 	private static Stage primaryStage;
+	private static NotificationPane fullModeNotificationPane;
+	private static NotificationPane compactModeNotificationPane;
 
 	// First method to call
 	public static void buildGui(CuteProject project) {
@@ -179,6 +183,32 @@ public final class GUIManager {
 					"Project file is corrupted or incompatible with this version of StreamSis.\nOr maybe the programmer needs to be spanked.");
 		}
 		GUIUtil.showAlertInStageCenter(alert);
+	}
+
+	public static void showNotification(Node graphic, String text) {
+		NotificationPane paneToUse;
+		if (mainController.isCurrentModeFull()) {
+			paneToUse = fullModeNotificationPane;
+		} else {
+			paneToUse = compactModeNotificationPane;
+		}
+		paneToUse.setText(text);
+		paneToUse.setGraphic(graphic);
+		paneToUse.show();
+	}
+	
+	/**
+	 * @param Sets the {@link NotificationPane} to use when StreamSis in Full Mode.
+	 */
+	public static void setFullModeNotificationPane(NotificationPane notificationPane) {
+		fullModeNotificationPane = notificationPane;
+	}
+	
+	/**
+	 * @param Sets the {@link NotificationPane} to use when StreamSis in Compact Mode.
+	 */
+	public static void setCompactModeNotificationPane(NotificationPane notificationPane) {
+		compactModeNotificationPane = notificationPane;
 	}
 
 }

@@ -105,7 +105,7 @@
                   </ScrollPane>
                </children>
             </VBox>
-            <ScrollPane fx:id="propertiesPane" fitToWidth="true" minHeight="200.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.vgrow="ALWAYS" />
+            <ScrollPane fx:id="propertiesPane" fitToWidth="true" maxHeight="250.0" minHeight="250.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.vgrow="ALWAYS" />
          </children>
       </GridPane>
    </content>

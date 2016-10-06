@@ -46,7 +46,7 @@ public class FileCopyAction extends AbstractCuteNode implements Action {
 	protected StringProperty dstFilePath = new SimpleStringProperty("");
 
 	/** The variable for storing Destination file's extension. */
-	protected String dstExtension;
+	private String dstExtension;
 
 	/** The Source file's path. */
 	@JsonIgnore
@@ -66,6 +66,7 @@ public class FileCopyAction extends AbstractCuteNode implements Action {
 	@JsonCreator
 	public FileCopyAction(@JsonProperty("srcFilePath") String srcFilePath,
 			@JsonProperty("dstFilePath") String dstFilePath) {
+		this();
 		this.dstFilePath.set(dstFilePath);
 		this.srcFilePath.set(srcFilePath);
 	}
@@ -118,6 +119,20 @@ public class FileCopyAction extends AbstractCuteNode implements Action {
 		// The method below while executing can set the element as broken.
 		if (!checkForEmptinessAndNothingness())
 			return;
+		String srcExtension = Util.extractFileExtensionFromPath(srcFilePath.get());
+		dstExtension = Util.extractFileExtensionFromPath(dstFilePath.get());
+		// Let's not allow files without extensions. Let's not allow copying to different file
+		// extension.
+		if (dstExtension == null) {
+			elementInfo.setAsBroken("The file on destination path should have an extension.");
+			return;
+		} else {
+			if (!dstExtension.equals(srcExtension)) {
+				elementInfo.setAsBroken("The source and destination files should have same "
+						+ "extension.");
+				return;
+			}
+		}
 		if (!Util.checkifSingleFileExists(srcFilePath.get())) {
 			elementInfo.setAsBroken("Can't find or read Source file " + srcFilePath.get());
 			return;
@@ -126,22 +141,9 @@ public class FileCopyAction extends AbstractCuteNode implements Action {
 			elementInfo.setAsBroken("Source and destination paths must be different.");
 			return;
 		}
-		if (!Util.checkIfPathSeemsValid(dstFilePath.get())) {
+		if (!Util.checkIfAbsolutePathSeemsValid(dstFilePath.get())) {
 			elementInfo.setAsBroken("The destination path seems slightly... invalid.");
 			return;
-		}
-		dstExtension = Util.extractFileExtensionFromPath(dstFilePath.get());
-		String srcExtension = Util.extractFileExtensionFromPath(srcFilePath.get());
-		if (dstExtension == null) {
-			if (srcExtension != null) {
-				elementInfo.setAsBroken("Source file and Destination file extensions don't match.");
-				return;
-			}
-		} else {
-			if (!dstExtension.equals(srcExtension)) {
-				elementInfo.setAsBroken("Source file and Destination file extensions don't match.");
-				return;
-			}
 		}
 	}
 

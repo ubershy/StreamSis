@@ -409,8 +409,9 @@ public class CuteButtonsStatesManager {
 			ValidationResult finalValidationResult) {
 		// Let's tell CuteButtonStateManager if changes on this Control are made or not.
 		// Let's get information about change by comparing original value of control with new one.
+		boolean valueDiffersFromOriginal = !newValue.equals(originalValue);
 		boolean reinitializationRequestedByReport = 
-				reportChangeStatusOfControl(c, !newValue.equals(originalValue));
+				reportChangeStatusOfControl(c, valueDiffersFromOriginal);
 		// Let's report if errors in this Control exist or not by getting information about existing
 		// errors from finalValidationResult.
 		boolean reinitializationAllowedByReport = true;

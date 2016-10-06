@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ubershy.streamsis.StreamSis;
+import com.ubershy.streamsis.MultiSourceFileChooser;
 import com.ubershy.streamsis.actions.Action;
 import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.checkers.Checker;
@@ -32,6 +33,7 @@ import com.ubershy.streamsis.gui.contextmenu.SisSceneContextMenuBuilder;
 import com.ubershy.streamsis.gui.contextmenu.TreeViewContextMenuManager;
 import com.ubershy.streamsis.gui.controllers.CompactModeController;
 import com.ubershy.streamsis.gui.controllers.CuteController;
+import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.gui.controllers.ElementEditorController;
 import com.ubershy.streamsis.gui.controllers.FullModeController;
 import com.ubershy.streamsis.gui.controllers.MainController;
@@ -67,19 +69,20 @@ public class StreamSisAppFactory {
 	static final Logger logger = LoggerFactory.getLogger(StreamSisAppFactory.class);
 
 	/**
-	 * The Enum with special {@link CuteController}s like "No Such Element" or "None Selected".
+	 * The Enum with special {@link CuteElementController}s like "No Such Element" or
+	 * "None Selected".
 	 */
-	public enum SpecialCuteController {
+	public enum SpecialCuteElementControllerType {
 
 		/**
-		 * The {@link CuteController} that tells the user/programmer that the editing of the
+		 * The {@link CuteElementController} that tells the user/programmer that the editing of the
 		 * selected {@link CuteElement} is not supported for the current moment.
 		 */
 		NOSUCHELEMENT("NoSuchElement.fxml"),
 
 		/**
-		 * The {@link CuteController} that tells the user that no {@link CuteElement} is selected at
-		 * the current moment so nothing to edit.
+		 * The {@link CuteElementController} that tells the user that no {@link CuteElement} is
+		 * selected at the current moment so nothing to edit.
 		 */
 		NONESELECTED("NoneSelected.fxml");
 
@@ -90,9 +93,40 @@ public class StreamSisAppFactory {
 		 * Instantiates a new SpecialCuteController.
 		 *
 		 * @param fileName
+		 *            The file name of CuteElementController {@link #fileName}.
+		 */
+		private SpecialCuteElementControllerType(String fileName) {
+			this.fileName = fileName;
+		}
+
+		@Override
+		public String toString() {
+			return fileName;
+		}
+	}
+	
+	/**
+	 * The Enum with little {@link CuteController}s that are parts of bigger CuteControllers like 
+	 * {@link CuteElementController}. They can't be on their own and require CuteController that
+	 * wraps them. Preferably gently.
+	 */
+	public enum LittleCuteControllerType {
+
+		/**
+		 * The {@link CuteController} for editing {@link MultiSourceFileChooser}.
+		 */
+		MULTISOURCEFILECHOOSER("MultiSourceFileChooser.fxml");
+
+		/** The file name of CuteController. */
+		private final String fileName;
+
+		/**
+		 * Instantiates a new LittleCuteController.
+		 *
+		 * @param fileName
 		 *            The file name of CuteController {@link #fileName}.
 		 */
-		private SpecialCuteController(String fileName) {
+		private LittleCuteControllerType(String fileName) {
 			this.fileName = fileName;
 		}
 
@@ -380,16 +414,16 @@ public class StreamSisAppFactory {
 	 * 1. in "/com/ubershy/streamsis/gui/editspecific" directory exists
 	 * "<b>SimpleClassName</b>.fxml" file <br>
 	 * 2. The controller for such FXML file exists at the right path <br>
-	 * 3. Such controller implements {@link CuteController} interface.
+	 * 3. Such controller implements {@link CuteElementController} interface.
 	 * <p>
 	 * <b>If something is wrong, the method returns {@link NoSuchElementController}</b>.
 	 *
 	 * @param simpleClassName
 	 *            the Simple Class Name of one of the {@link CuteElement CuteElements}
-	 * @return the {@link CuteController} specific to chosen simpleClassName <br>
+	 * @return the {@link CuteElementController} specific to chosen simpleClassName <br>
 	 *         In the case of <b>fail</b>, returns {@link NoSuchElementController}
 	 */
-	public static CuteController buildCuteControllerBasedOnCuteElement(CuteElement element) {
+	public static CuteElementController buildCuteElementControllerBasedOnCuteElement(CuteElement element) {
 		String editorControllersSubDir = "edit/";
 		String specificSubDirName = "";
 		if (element instanceof Checker) {
@@ -400,33 +434,51 @@ public class StreamSisAppFactory {
 			specificSubDirName = "counters/";
 		}
 		String elementSimpleClassName = element.getClass().getSimpleName();
-		CuteController controller = null;
+		CuteElementController controller = null;
 		try {
-			controller = (CuteController) buildControllerByRelativePath(editorControllersSubDir
-					+ specificSubDirName + elementSimpleClassName + ".fxml");
-			if (!(controller instanceof CuteController) || controller == null) {
-				logger.debug(elementSimpleClassName
-						+ "'s controller cannot be loaded.\n"
+			controller = (CuteElementController) buildControllerByRelativePath(
+					editorControllersSubDir + specificSubDirName + elementSimpleClassName
+							+ ".fxml");
+			if (!(controller instanceof CuteElementController) || controller == null) {
+				logger.debug(elementSimpleClassName + "'s controller cannot be loaded.\n"
 						+ "Loading controller for NoSuchElement.fxml");
-				controller = buildSpecialCuteController(SpecialCuteController.NOSUCHELEMENT);
+				controller = buildSpecialCuteElementController(
+						SpecialCuteElementControllerType.NOSUCHELEMENT);
 			}
 		} catch (IllegalStateException e) {
-			controller = buildSpecialCuteController(SpecialCuteController.NOSUCHELEMENT);
+			controller = buildSpecialCuteElementController(
+					SpecialCuteElementControllerType.NOSUCHELEMENT);
 		}
 		return controller;
 	}
 	
 	/**
-	 * Builds {@link SpecialCuteController} FXML controller for editor panel.
+	 * Builds {@link SpecialCuteElementControllerType} FXML controller for editor panel.
+	 * 
+	 * @return the {@link CuteElementController}.
+	 */
+	public static CuteElementController buildSpecialCuteElementController(
+			SpecialCuteElementControllerType scc) {
+		final String subDir = "edit/";
+		CuteElementController controller = (CuteElementController) buildControllerByRelativePath(
+				subDir + scc.toString());
+		if (!(controller instanceof CuteElementController) || controller == null) {
+			throw new RuntimeException(scc.toString() + " not found");
+		}
+		return controller;
+	}
+	
+	/**
+	 * Builds {@link LittleCuteControllerType} FXML controller for editor panel.
 	 * 
 	 * @return the {@link CuteController}.
 	 */
-	public static CuteController buildSpecialCuteController(SpecialCuteController scc) {
-		final String subDir = "edit/";
+	public static CuteController buildLittleCuteController(LittleCuteControllerType lil) {
+		final String subDir = "edit/littlethings/";
 		CuteController controller = (CuteController) buildControllerByRelativePath(
-				subDir + scc.toString());
+				subDir + lil.toString());
 		if (!(controller instanceof CuteController) || controller == null) {
-			throw new RuntimeException(scc.toString() + " not found");
+			throw new RuntimeException(lil.toString() + " not found");
 		}
 		return controller;
 	}

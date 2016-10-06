@@ -18,7 +18,9 @@
 package com.ubershy.streamsis;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -29,15 +31,23 @@ import com.ubershy.streamsis.project.ElementInfo;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyListWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+/**
+ * MultiSourceFileChooser can help to choose next time file for action either randomly or
+ * sequentially from a predefined list of files or from a directory containing files.
+ */
 public class MultiSourceFileChooser {
 
 	/** Defines if to choose each next file randomly or sequentially. */
@@ -65,12 +75,13 @@ public class MultiSourceFileChooser {
 	 * The persistent list of source files to use when {@link #findingSourcesInSrcPath} is false.
 	 */
 	@JsonProperty
-	protected ObservableList<File> persistentSourceFileList = FXCollections.observableArrayList();
+	protected ObjectProperty<ObservableList<File>> persistentSourceFileList = new SimpleObjectProperty<>(
+			FXCollections.observableArrayList());
 
-	/** The acceptable extensions of source files. */
+	/** The acceptable extensions of source files. Each in "*.extension" format. */
 	@JsonIgnore
-	protected ReadOnlyListWrapper<String> acceptableExtensionsList = new ReadOnlyListWrapper<String>(
-			this, "acceptableExtensions", FXCollections.observableArrayList());
+	protected ListProperty<String> acceptableExtensions = new SimpleListProperty<String>(
+			FXCollections.observableArrayList());
 
 	/** The random index generator. */
 	protected NonRepeatingRandom random = new NonRepeatingRandom();
@@ -113,7 +124,7 @@ public class MultiSourceFileChooser {
 			@JsonProperty("srcPath") String srcPath) {
 		this.chooseFilesRandomly.set(chooseFileRandomly);
 		this.findingSourcesInSrcPath.set(findSourcesInSrcPath);
-		this.persistentSourceFileList.setAll(persistentSourceFileList);
+		this.persistentSourceFileList.get().setAll(persistentSourceFileList);
 		this.srcPath.set(srcPath);
 	}
 
@@ -141,20 +152,43 @@ public class MultiSourceFileChooser {
 	 *            The instance of {@link ElementInfo} to make it broken in case something is wrong.
 	 * @param sourceDirectorySymbolicName
 	 *            How to call directory with source files when generating broken messages.
+	 * @param destinationPath
+	 *            This parameter might be empty. Specify it if you want to prevent choosing the same
+	 *            file as the file on this destination.
 	 * @return The Array with source files, <br>
 	 *         Null if something is wrong.
 	 */
 	protected File[] getTemporarySourceFileList(ElementInfo elementInfo,
-			String sourceDirectorySymbolicName) {
+			String sourceDirectorySymbolicName, String destinationPath) {
 		File[] result;
 		if (findingSourcesInSrcPath.get()) {
+			if (srcPath.get().isEmpty()) {
+				elementInfo.setAsBroken("The path with source files can't be an empty string unless"
+						+ " choosing files manually");
+				return null;
+			}
+			if (Util.checkIfAbsolutePathSeemsValid(destinationPath)) {
+				File dstDirFile = new File(destinationPath).getParentFile();
+				File srcDirFile = new File(srcPath.get());
+				try {
+					if (dstDirFile.getCanonicalPath().equals(srcDirFile.getCanonicalPath())) {
+						elementInfo.setAsBroken(
+								"You can't choose the same source path as destination file's path");
+						return null;
+					}
+				} catch (IOException e) {
+					elementInfo
+							.setAsBroken("Unable to read directories to check if they are valid.");
+					return null;
+				}
+			}
 			// Find source files in the directory.
 			result = Util.findFilesInDirectory(srcPath.get(),
-					acceptableExtensionsList.toArray(new String[0]));
+					acceptableExtensions.toArray(new String[0]));
 			if (result != null) {
 				if (result.length == 0) {
 					elementInfo.setAsBroken("Can't find files with extensions: '"
-							+ acceptableExtensionsList + "') in the " + sourceDirectorySymbolicName
+							+ acceptableExtensions + "') in the " + sourceDirectorySymbolicName
 							+ " directory " + srcPath.get());
 					return null;
 				}
@@ -165,7 +199,7 @@ public class MultiSourceFileChooser {
 			}
 		} else {
 			// Use source files from the list.
-			result = persistentSourceFileList.toArray(new File[0]);
+			result = persistentSourceFileList.get().toArray(new File[0]);
 			if (result != null) {
 				if (result.length == 0) {
 					elementInfo.setAsBroken("No files are chosen");
@@ -173,8 +207,12 @@ public class MultiSourceFileChooser {
 				}
 			}
 			for (File file : result) {
+				if (file.getAbsolutePath().equals(destinationPath)) {
+					elementInfo.setAsBroken("File: '" + file.getName() + "' is located on the same "
+							+ "path as destination file.");
+				}
 				if (!Util.checkFileExtension(file.getAbsolutePath(),
-						acceptableExtensionsList.toArray(new String[0]))) {
+						acceptableExtensions.toArray(new String[0]))) {
 					elementInfo.setAsBroken("File: '" + file.getName() + "' has wrong extension");
 					return null;
 				}
@@ -190,31 +228,38 @@ public class MultiSourceFileChooser {
 	/**
 	 * Initializes {@link MultiSourceFileChooser}, if something is wrong, sets the
 	 * {@link CuteElement} associated with {@link ElementInfo} as broken.
+	 * <p>
+	 * NOTE: Before running this method, you must set allowed extensions via
+	 * {@link #setAcceptableExtensions(List)}.
 	 *
 	 * @param elementInfo
 	 *            The instance of {@link ElementInfo} to make it broken in case something is wrong.
-	 * @param allowedExtensions
-	 *            The allowed extensions for files.
 	 * @param sourceDirectorySymbolicName
 	 *            How to call directory with source files when generating broken messages.
+	 * @param destinationPath
+	 *            This parameter might be empty. Specify it if you want to prevent choosing the same
+	 *            file as the file on this destination.
 	 * 
 	 * @throws IllegalArgumentException
-	 *             If possible extensions are undefined.
+	 *             If {@link #acceptableExtensions} contains no extensions. It should be set by
+	 *             {@link #setAcceptableExtensions(List)} method.
 	 */
-	public void initTemporaryFileList(ElementInfo elementInfo, String[] allowedExtensions,
-			String sourceDirectorySymbolicName) {
+	public void initTemporaryFileList(ElementInfo elementInfo, String sourceDirectorySymbolicName,
+			String destinationPath) {
 		if (elementInfo == null) {
 			throw new NullPointerException();
 		}
-		this.acceptableExtensionsList.setAll(allowedExtensions);
-		if (allowedExtensions.length != 0) {
+		if (acceptableExtensions.size() != 0) {
 			// getTemporarySourceFileList can set the ElementInfo as broken. 
-			File[] tempArray = getTemporarySourceFileList(elementInfo, sourceDirectorySymbolicName);
+			File[] tempArray = getTemporarySourceFileList(elementInfo, sourceDirectorySymbolicName,
+					destinationPath);
 			if (tempArray == null)
 				tempArray = new File[0];
 			temporarySourceFileList.setAll(tempArray);
 		} else {
-			throw new IllegalArgumentException("Allowed extensions are undefined");
+			throw new IllegalArgumentException(
+					"The list of allowed extensions should have at least one extension before"
+					+ " running this method. Use setAcceptableExtensions() method.");
 		}
 	}
 
@@ -291,17 +336,24 @@ public class MultiSourceFileChooser {
 	}
 
 	/**
-	 * @return The {@link #persistentSourceFileList} property.
+	 * @return The {@link #persistentSourceFileList} property..
+	 */
+	public ObjectProperty<ObservableList<File>> persistentSourceFileListProperty() {
+		return persistentSourceFileList;
+	}
+	
+	/**
+	 * @return The {@link #persistentSourceFileList}'s current list.
 	 */
 	public ObservableList<File> getPersistentSourceFileList() {
-		return persistentSourceFileList;
+		return persistentSourceFileList.get();
 	}
 
 	/**
-	 * @param persistentSourceFileList The {@link #persistentSourceFileList} to set.
+	 * @param persistentSourceFileList The {@link #persistentSourceFileList}'s value to set.
 	 */
 	public void setPersistentSourceFileList(ObservableList<File> persistentSourceFileList) {
-		this.persistentSourceFileList = persistentSourceFileList;
+		this.persistentSourceFileList.set(persistentSourceFileList);;
 	}
 	
 	/**
@@ -327,10 +379,28 @@ public class MultiSourceFileChooser {
 	}
 	
 	/**
-	 * @return The {@link #acceptableExtensionsList} read-only property.
+	 * @return The {@link #acceptableExtensions} property.
 	 */
-	public ReadOnlyListProperty<String> getAcceptableExtensionsList() {
-		return acceptableExtensionsList.getReadOnlyProperty();
+	@JsonIgnore
+	public ListProperty<String> acceptableExtensionsProperty() {
+		return acceptableExtensions;
+	}
+	
+	/**
+	 * @param acceptableExtensions
+	 *            The {@link #acceptableExtensions}'s value to set.
+	 */
+	@JsonIgnore
+	public void setAcceptableExtensions(List<String> acceptableExtensions) {
+		this.acceptableExtensions.get().setAll(acceptableExtensions);
+	}
+	
+	/**
+	 * @return The {@link #acceptableExtensions} value.
+	 */
+	@JsonIgnore
+	public ObservableList<String> getAcceptableExtensions() {
+		return this.acceptableExtensions.get();
 	}
 	
 	/**

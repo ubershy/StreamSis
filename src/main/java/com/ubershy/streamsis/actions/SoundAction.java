@@ -30,6 +30,8 @@ import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.project.AbstractCuteNode;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.MediaException;
 
@@ -44,8 +46,9 @@ public class SoundAction extends AbstractCuteNode implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(SoundAction.class);
 
-	/** The possible extensions. */
-	protected String[] possibleExtensions = new String[] { ".wav", ".mp3", ".ogg" };
+	/** The acceptable extensions of sound files. */
+	protected ObservableList<String> allowedExtensions = FXCollections
+			.observableArrayList("*.wav", "*.mp3", "*.ogg");
 
 	/** The path of sound. */
 	@JsonProperty
@@ -111,7 +114,8 @@ public class SoundAction extends AbstractCuteNode implements Action {
 			elementInfo.setAsBroken("Sound path is not defined");
 			return;
 		}
-		if (Util.checkSingleFileExistanceAndExtension(soundPath, possibleExtensions)) {
+		if (Util.checkSingleFileExistanceAndExtension(soundPath,
+				allowedExtensions.toArray(new String[0]))) {
 			elementInfo.setAsBroken("Can't find or read sound file " + soundPath);
 			return;
 		}

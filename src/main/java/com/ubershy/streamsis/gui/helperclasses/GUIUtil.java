@@ -18,9 +18,14 @@
 package com.ubershy.streamsis.gui.helperclasses;
 
 import java.io.File;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+
+import org.controlsfx.validation.ValidationResult;
+import org.controlsfx.validation.Validator;
+
 import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.actors.Actor;
@@ -39,6 +44,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Control;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -48,6 +54,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -321,29 +328,43 @@ public final class GUIUtil {
 	}
 	
 	/**
-	 * Show cute file chooser window, which automatically opens last opened directory and remembers
-	 * newly chosen directory.
-	 *
+	 * Show Java's {@link FileChooser} window that allows the user to choose a single file.
+	 * <p>
+	 * Internally it automatically opens last opened directory, lets the user to choose a file, sets
+	 * TextField (provided as argument in this method) to this file's path and remembers the
+	 * directory where the last file was chosen.
+	 * 
 	 * @param title
 	 *            The title of window to show.
+	 * @param extensionsDescription
+	 *            How to describe files that are allowed to be chosen. Can't be empty.
 	 * @param saveOrOpen
 	 *            True to save file, false to open file.
 	 * @param tfToSet
 	 *            The TextField to set after the user has chosen the file.
+	 * @param allowedExtensions
+	 *            Array with allowed extensions in "*.extension" format. If null or empty, the user
+	 *            would be able to choose a file with any extension.
 	 */
-	public static void showCuteFileChooser(String title, boolean saveOrOpen, TextField tfToSet) {
-		Window wingow = tfToSet.getScene().getWindow();
+	public static void showJavaSingleFileChooser(String title, String extensionsDescription,
+			boolean saveOrOpen, TextField tfToSet, String[] allowedExtensions) {
+		Window window = tfToSet.getScene().getWindow();
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(title);
+		if (allowedExtensions != null && allowedExtensions.length != 0) {
+			FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+					extensionsDescription, allowedExtensions);
+			fileChooser.getExtensionFilters().add(extFilter);
+		}
 		String lastDir = CuteConfig.getString(CuteConfig.UTILGUI, "LastFileDirectory");
 		if (Util.checkDirectory(lastDir)) {
 			fileChooser.setInitialDirectory(new File(lastDir));
 		}
 		File file = null;
 		if (saveOrOpen) {
-			file = fileChooser.showSaveDialog(wingow);
+			file = fileChooser.showSaveDialog(window);
 		} else {
-			file = fileChooser.showOpenDialog(wingow);
+			file = fileChooser.showOpenDialog(window);
 		}
 		if (file != null) {
 			CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastFileDirectory",
@@ -351,5 +372,98 @@ public final class GUIUtil {
 			tfToSet.setText(file.getAbsolutePath());
 		}
 	}
-
+	
+	/**
+	 * Show Java's {@link FileChooser} window that allows the user to choose many files. Returns a
+	 * a list of files.
+	 * <p>
+	 * Internally it automatically opens last opened directory, lets the user to choose files, sets
+	 * and remembers the directory where the last file was chosen.
+	 * 
+	 * @param title
+	 *            The title of window to show.
+	 * @param extensionsDescription
+	 *            How to describe files that are allowed to be chosen. Can't be empty.
+	 * @param window
+	 *            Window from where {@link FileChooser} will be shown.
+	 * @param allowedExtensions
+	 *            Array with allowed extensions in "*.extension" format. If null or empty, the user
+	 *            would be able to choose a file with any extension.
+	 * @return List of files if at least one was chosen, null if no files were chosen.
+	 */
+	public static List<File> showJavaMultiFileChooser(String title, String extensionsDescription,
+			Window window, String[] allowedExtensions) {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle(title);
+		if (allowedExtensions != null && allowedExtensions.length != 0) {
+			FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+					extensionsDescription, allowedExtensions);
+			fileChooser.getExtensionFilters().add(extFilter);
+		}
+		String lastDir = CuteConfig.getString(CuteConfig.UTILGUI, "LastFileDirectory");
+		if (Util.checkDirectory(lastDir)) {
+			fileChooser.setInitialDirectory(new File(lastDir));
+		}
+		List<File> files = fileChooser.showOpenMultipleDialog(window);
+		if (files != null) {
+			CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastFileDirectory",
+					files.get(0).getParentFile().getAbsolutePath());
+		}
+		return files;
+	}
+	
+	/**
+	 * Show Java's {@link DirectoryChooser} window that allows the user to choose a single
+	 * directory.
+	 * <p>
+	 * Internally it automatically opens last opened directory, lets the user to choose a new
+	 * directory, sets TextField (provided as argument in this method) to this directory's path and
+	 * remembers this directory.
+	 * 
+	 * @param title
+	 *            The title of window to show.
+	 * @param tfToSet
+	 *            The TextField to set after the user has chosen the directory.
+	 */
+	public static void showJavaSingleDirectoryChooser(String title, TextField tfToSet) {
+		Window window = tfToSet.getScene().getWindow();
+		DirectoryChooser dirChooser = new DirectoryChooser();
+		dirChooser.setTitle(title);
+		String lastDir = CuteConfig.getString(CuteConfig.UTILGUI, "LastFileDirectory");
+		if (Util.checkDirectory(lastDir)) {
+			dirChooser.setInitialDirectory(new File(lastDir));
+		}
+		File file = null;
+		file = dirChooser.showDialog(window);
+		if (file != null) {
+			CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastFileDirectory",
+					file.getAbsolutePath());
+			tfToSet.setText(file.getAbsolutePath());
+		}
+	}
+	
+	/**
+	 * Create fake {@link Validator} that returns always successful result. Such Validator can be
+	 * used to substitute some normal Validator to disable validation for {@link Control}, because
+	 * currently the validation library doesn't support unregistering Validators from Controls.
+	 */
+	public static Validator<?> createFakeAlwaysSuccessfulValidator() {
+		Validator<?> fakeValidator = (c, newValue) -> {
+			return fakeSuccessfulValidationResult(c);
+		};
+		return fakeValidator;
+	}
+	
+	/**
+	 * Create fake successful {@link ValidationResult}. Such validation result can be used to
+	 * manually set {@link Control} as successfully validated in cases when validation of this
+	 * {@link Control} don't matter (anymore).
+	 * 
+	 * @param c
+	 *            The Control used to create this fake ValidationResult.
+	 */
+	public static ValidationResult fakeSuccessfulValidationResult(Control c) {
+		return ValidationResult.fromErrorIf(c, "hehe", false);
+	}
+	
 }
