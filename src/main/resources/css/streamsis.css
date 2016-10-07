@@ -1,0 +1,7 @@
+.slider .axis .axis-tick-mark {
+    -fx-stroke: lightskyblue;
+}
+
+.slider .axis .axis-minor-tick-mark {
+    -fx-stroke: lightblue;
+}

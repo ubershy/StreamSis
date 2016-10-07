@@ -17,16 +17,21 @@
  */
 package com.ubershy.streamsis.gui.controllers;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 
+import javafx.beans.InvalidationListener;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class MainController {
+public class MainController implements Initializable {
 	@FXML
 	private VBox root;
 	@FXML
@@ -129,5 +134,16 @@ public class MainController {
 	 */
 	public boolean isCurrentModeFull() {
 		return currentModeIsFull;
+	}
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		root.sceneProperty().addListener((InvalidationListener) o -> {
+			if (root.getScene() != null) {
+				String url = MainController.class.getResource("/css/streamsis.css")
+						.toExternalForm();
+				root.getScene().getStylesheets().add(url);
+			}
+		});
 	}
 }
