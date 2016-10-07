@@ -57,7 +57,7 @@ public class MultiSoundAction extends SoundAction {
 	 *            choose file randomly or sequentially from the list of source files
 	 */
 	public MultiSoundAction(String soundDirectoryPath, double volume, boolean chooseFileRandomly) {
-		this.volume = volume;
+		this.volume.set(volume);;
 		fileChooser.setSrcPath(soundDirectoryPath);
 		fileChooser.setChooseFilesRandomly(chooseFileRandomly);
 		fileChooser.setFindingSourcesInSrcPath(true);
@@ -76,7 +76,7 @@ public class MultiSoundAction extends SoundAction {
 	 */
 	public MultiSoundAction(ArrayList<File> persistentSourceFileList, double volume,
 			boolean chooseFileRandomly) {
-		this.volume = volume;
+		this.volume.set(volume);
 		fileChooser.getPersistentSourceFileList().setAll(persistentSourceFileList);
 		fileChooser.setChooseFilesRandomly(chooseFileRandomly);
 		fileChooser.setFindingSourcesInSrcPath(false);
@@ -94,7 +94,7 @@ public class MultiSoundAction extends SoundAction {
 	@JsonCreator
 	public MultiSoundAction(@JsonProperty("volume") double volume,
 			@JsonProperty("fileChooser") MultiSourceFileChooser fileChooser) {
-		this.volume = volume;
+		this.volume.set(volume);
 		this.fileChooser = fileChooser;
 		this.fileChooser.acceptableExtensionsProperty().set(allowedExtensions);
 	}

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+/** 
+ * StreamSis
+ * Copyright (C) 2016 Eva Balycheva
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+-->
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane fx:id="root" hgap="10.0" vgap="10.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ubershy.streamsis.gui.controllers.edit.actions.SoundActionController">
+   <columnConstraints>
+      <ColumnConstraints minWidth="10.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints fillHeight="false" vgrow="NEVER" />
+      <RowConstraints fillHeight="false" maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="NEVER" />
+      <RowConstraints fillHeight="false" maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="NEVER" />
+   </rowConstraints>
+   <children>
+      <Label fx:id="labelToAddExtensions" text="Select the sound file to play. Acceptable extensions are: " wrapText="true" GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+      <Label maxHeight="1.7976931348623157E308" text="Sound file" GridPane.rowIndex="2" />
+      <HBox fillHeight="false" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
+         <children>
+            <TextField fx:id="soundFileTextField" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+            <Button mnemonicParsing="false" onAction="#browseSoundFilePath" text="Browse" />
+         </children>
+      </HBox>
+      <BorderPane prefHeight="50.0" prefWidth="120.0" GridPane.columnSpan="2">
+         <center>
+            <Slider fx:id="volumeSlider" blockIncrement="1.0" majorTickUnit="10.0" minorTickCount="10" prefHeight="30.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" BorderPane.alignment="CENTER" />
+         </center>
+         <top>
+            <Label fx:id="soundVolumeLabel" text="Sound Volume " BorderPane.alignment="CENTER" />
+         </top>
+      </BorderPane>
+   </children>
+</GridPane>

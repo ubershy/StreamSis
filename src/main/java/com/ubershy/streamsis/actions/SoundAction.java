@@ -25,11 +25,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.project.AbstractCuteNode;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.media.AudioClip;
@@ -47,19 +52,20 @@ public class SoundAction extends AbstractCuteNode implements Action {
 	static final Logger logger = LoggerFactory.getLogger(SoundAction.class);
 
 	/** The acceptable extensions of sound files. */
-	protected ObservableList<String> allowedExtensions = FXCollections
+	@JsonIgnore
+	public final static ObservableList<String> allowedExtensions = FXCollections
 			.observableArrayList("*.wav", "*.mp3", "*.ogg");
 
-	/** The path of sound. */
+	/** The path of sound file. */
 	@JsonProperty
-	protected String soundPath = "";
+	protected StringProperty soundPath = new SimpleStringProperty("");
 
 	/** The sound that will be played. */
 	protected AudioClip soundToPlay;
 
 	/** The volume of sound from 0 to 1. */
 	@JsonProperty
-	protected double volume = 1;
+	protected DoubleProperty volume = new SimpleDoubleProperty(1.0);
 
 	public SoundAction() {
 	}
@@ -85,8 +91,8 @@ public class SoundAction extends AbstractCuteNode implements Action {
 	@JsonCreator
 	public SoundAction(@JsonProperty("soundPath") String soundFilePath,
 			@JsonProperty("volume") double volume) {
-		this.volume = volume;
-		this.soundPath = soundFilePath;
+		this.volume.set(volume);
+		this.soundPath.set(soundFilePath);
 	}
 
 	@Override
@@ -98,28 +104,28 @@ public class SoundAction extends AbstractCuteNode implements Action {
 	}
 
 	public String getSoundPath() {
-		return soundPath;
+		return soundPath.get();
 	}
 
 	public double getVolume() {
-		return volume;
+		return volume.get();
 	}
 
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
-		if (volume < 0 || volume > 1)
+		if (volume.get() < 0 || volume.get() > 1)
 			elementInfo.setAsBroken("Volume must be in range from 0.0 to 1.0");
-		if (soundPath.isEmpty()) {
+		if (soundPath.get().isEmpty()) {
 			elementInfo.setAsBroken("Sound path is not defined");
 			return;
 		}
-		if (Util.checkSingleFileExistanceAndExtension(soundPath,
+		if (!Util.checkSingleFileExistanceAndExtension(soundPath.get(),
 				allowedExtensions.toArray(new String[0]))) {
-			elementInfo.setAsBroken("Can't find or read sound file " + soundPath);
+			elementInfo.setAsBroken("Can't find or read sound file " + soundPath.get());
 			return;
 		}
-		soundToPlay = initializeSound(this.soundPath);
+		soundToPlay = initializeSound(soundPath.get());
 	}
 
 	/**
@@ -150,7 +156,7 @@ public class SoundAction extends AbstractCuteNode implements Action {
 	protected boolean play() {
 		double globalVolume = CuteConfig.getDouble(CuteConfig.CUTE, "GlobalVolume");
 		if (soundToPlay != null) {
-			soundToPlay.setVolume(volume * globalVolume);
+			soundToPlay.setVolume(volume.get() * globalVolume);
 			soundToPlay.play();
 			logger.info(String.format("Playing(%.2f): %s", soundToPlay.getVolume(),
 					Paths.get(URI.create(soundToPlay.getSource()))));
@@ -162,11 +168,19 @@ public class SoundAction extends AbstractCuteNode implements Action {
 	}
 
 	public void setSoundPath(String soundPath) {
-		this.soundPath = soundPath;
+		this.soundPath.set(soundPath);
 	}
 
 	public void setVolume(double volume) {
-		this.volume = volume;
+		this.volume.set(volume);;
 	}
-
+	
+	public StringProperty soundPathProperty() {
+		return soundPath;
+	}
+	
+	public DoubleProperty volumeProperty() {
+		return volume;
+	}
+	
 }
