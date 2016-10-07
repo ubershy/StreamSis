@@ -413,12 +413,14 @@ public class CuteButtonsStatesManager {
 		boolean reinitializationRequestedByReport = 
 				reportChangeStatusOfControl(c, valueDiffersFromOriginal);
 		// Let's report if errors in this Control exist or not by getting information about existing
-		// errors from finalValidationResult.
+		// errors from finalValidationResult. If finalValidationResult is null, let's assume that
+		// the field is valid.
 		boolean reinitializationAllowedByReport = true;
+		boolean reportedFieldIsValid = true; 
 		if (finalValidationResult != null) {
-			reinitializationAllowedByReport = reportErrorStatusOfControl(c,
-					!finalValidationResult.getErrors().isEmpty());
+			reportedFieldIsValid = finalValidationResult.getErrors().isEmpty();
 		}
+		reinitializationAllowedByReport = reportErrorStatusOfControl(c, !reportedFieldIsValid);
 		if (reinitializationAllowedByReport) {
 			// Initialization allowed. That means field validation has passed and we can proceed
 			// with slow validation (initialization of CuteElement) if we want. 
