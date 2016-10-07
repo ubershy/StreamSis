@@ -20,21 +20,30 @@
  */
 -->
 
-<?import javafx.scene.input.*?>
-<?import de.jensd.fx.glyphs.fontawesome.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.effect.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.*?>
-<?import javafx.geometry.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<VBox fx:id="rootNode" maxWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ubershy.streamsis.gui.controllers.FullModeController">
+<VBox fx:id="rootNode" maxWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ubershy.streamsis.gui.controllers.FullModeController">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -107,7 +116,7 @@
                   <Slider fx:id="volumeSlider" blockIncrement="1.0" majorTickUnit="20.0" minorTickCount="19" onMouseReleased="#setVolume" prefHeight="30.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" BorderPane.alignment="CENTER" />
                </center>
                <top>
-                  <Label fx:id="volumeLabel" text="Global Sound Volume" BorderPane.alignment="CENTER" />
+                  <Label fx:id="volumeLabel" text="Global Volume" BorderPane.alignment="CENTER" />
                </top>
             </BorderPane>
             <Pane HBox.hgrow="ALWAYS" />

@@ -191,12 +191,12 @@ public class FullModeController implements Initializable {
 	private void initializeToolBar() {
 		// Volume slider and label
 		double initialVolume = CuteConfig.getDouble(CuteConfig.CUTE, "GlobalVolume") * 100;
-		volumeLabel.setText(String.format("Sound Volume: %.0f", initialVolume));
+		volumeLabel.setText(String.format("Global Volume: %.0f", initialVolume) + "%");
 		volumeSlider.setValue(initialVolume);
 		volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov, Number old_val,
 					Number new_val) {
-				volumeLabel.setText(String.format("Sound Volume: %.0f", new_val));
+				volumeLabel.setText(String.format("Global Volume: %.0f", new_val) + "%");
 			}
 		});
 
