@@ -36,11 +36,9 @@
    <rowConstraints>
       <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" />
       <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" />
-      <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" />
       <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="20.0" />
    </rowConstraints>
    <children>
-      <Label text="Select the source files to pick each next from. They should have the same extension as destination file." wrapText="true" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
       <Label maxHeight="1.7976931348623157E308" text="Select the destination file path, including the extension. The file on this path will be created or replaced." wrapText="true" GridPane.columnSpan="2" GridPane.vgrow="ALWAYS" />
       <Label maxHeight="1.7976931348623157E308" text="Destination file" GridPane.rowIndex="1" />
       <HBox fillHeight="false" GridPane.columnIndex="1" GridPane.rowIndex="1">
@@ -49,6 +47,6 @@
             <Button mnemonicParsing="false" onAction="#browseDestinationPath" text="Browse" />
          </children>
       </HBox>
-      <HBox fx:id="fileChooserHBox" fillHeight="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
+      <HBox fx:id="fileChooserHBox" fillHeight="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
    </children>
 </GridPane>

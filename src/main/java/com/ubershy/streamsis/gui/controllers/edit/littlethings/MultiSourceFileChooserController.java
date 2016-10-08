@@ -37,6 +37,7 @@ import com.ubershy.streamsis.gui.helperclasses.FileNameCell;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
@@ -120,6 +121,8 @@ public class MultiSourceFileChooserController extends AbstractCuteController {
 	protected ChangeListener<? super Boolean> paneExpansionListener;
 
 	private String fileTypeName;
+	
+	private final String addToExtensionsText = "Allowed extensions are: ";
 	
 	/**
 	 * The fake animation that just executes {@link #setValidationForFileTable()} with delay. Delay
@@ -285,9 +288,11 @@ public class MultiSourceFileChooserController extends AbstractCuteController {
 					newVal, chooseFilesRandomlyCheckBox, null);
 		});
 		// Set up bindings to read-only properties.
-		allowedExtensionsLabel.setText(editableCopyOfChooser.getAcceptableExtensions().toString());
+		allowedExtensionsLabel.setText(
+				addToExtensionsText + editableCopyOfChooser.getAcceptableExtensions().toString());
 		bindNormalAndRemember(allowedExtensionsLabel.textProperty(),
-				this.chooser.acceptableExtensionsProperty().asString());
+				Bindings.concat(addToExtensionsText)
+						.concat(this.chooser.acceptableExtensionsProperty().asString()));
 	}
 
 	public void unbindFromMultiSourceFileChooser() {

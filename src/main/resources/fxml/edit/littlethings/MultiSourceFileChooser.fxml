@@ -49,7 +49,7 @@
       <RowConstraints fillHeight="false" minHeight="10.0" />
    </rowConstraints>
    <children>
-      <Label text="Allowed extensions for &lt;filetype&gt; files:" wrapText="true" GridPane.vgrow="ALWAYS" />
+      <Label text="Select below &lt;filetype&gt; files to choose from." wrapText="true" GridPane.halignment="RIGHT" GridPane.vgrow="ALWAYS" />
       <Label maxHeight="1.7976931348623157E308" text="Or specify directory where to search for &lt;filetype&gt; files" GridPane.rowIndex="3" />
       <HBox fillHeight="false" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3">
          <children>
@@ -57,7 +57,7 @@
             <Button fx:id="browseSourceDirButton" mnemonicParsing="false" onAction="#browseSourceDir" text="Browse" />
          </children>
       </HBox>
-      <Label fx:id="allowedExtensionsLabel" text="Unknown" wrapText="true" GridPane.columnIndex="1" />
+      <Label fx:id="allowedExtensionsLabel" text="Allowed extensions are: Unknown" wrapText="true" GridPane.columnIndex="1" />
       <Label text="Choose each next &lt;filetype&gt; file randomly" wrapText="true" GridPane.rowIndex="1" />
       <CheckBox fx:id="chooseFilesRandomlyCheckBox" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <TitledPane fx:id="manualTitledPane" expanded="false" maxWidth="1.7976931348623157E308" text="Manually set list of &lt;filetype&gt; files" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
