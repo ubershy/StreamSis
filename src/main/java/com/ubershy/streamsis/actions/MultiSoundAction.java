@@ -38,12 +38,14 @@ import com.ubershy.streamsis.MultiSourceFileChooser;
  */
 public class MultiSoundAction extends SoundAction {
 
+	/** The file chooser that helps to choose each next sound file. */
 	@JsonProperty
 	private MultiSourceFileChooser fileChooser = new MultiSourceFileChooser();
 
 	static final Logger logger = LoggerFactory.getLogger(MultiSoundAction.class);
 
 	public MultiSoundAction() {
+		fileChooser.setAcceptableExtensions(allowedExtensions);
 	}
 
 	/**
@@ -57,11 +59,11 @@ public class MultiSoundAction extends SoundAction {
 	 *            choose file randomly or sequentially from the list of source files
 	 */
 	public MultiSoundAction(String soundDirectoryPath, double volume, boolean chooseFileRandomly) {
+		this();
 		this.volume.set(volume);;
 		fileChooser.setSrcPath(soundDirectoryPath);
 		fileChooser.setChooseFilesRandomly(chooseFileRandomly);
 		fileChooser.setFindingSourcesInSrcPath(true);
-		fileChooser.acceptableExtensionsProperty().set(allowedExtensions);
 	}
 
 	/**
@@ -76,11 +78,12 @@ public class MultiSoundAction extends SoundAction {
 	 */
 	public MultiSoundAction(ArrayList<File> persistentSourceFileList, double volume,
 			boolean chooseFileRandomly) {
+		this();
 		this.volume.set(volume);
 		fileChooser.getPersistentSourceFileList().setAll(persistentSourceFileList);
 		fileChooser.setChooseFilesRandomly(chooseFileRandomly);
 		fileChooser.setFindingSourcesInSrcPath(false);
-		fileChooser.acceptableExtensionsProperty().set(allowedExtensions);
+		fileChooser.setAcceptableExtensions(allowedExtensions);
 	}
 
 	/**
@@ -96,7 +99,7 @@ public class MultiSoundAction extends SoundAction {
 			@JsonProperty("fileChooser") MultiSourceFileChooser fileChooser) {
 		this.volume.set(volume);
 		this.fileChooser = fileChooser;
-		this.fileChooser.acceptableExtensionsProperty().set(allowedExtensions);
+		this.fileChooser.setAcceptableExtensions(allowedExtensions);
 	}
 
 	@Override
@@ -129,6 +132,27 @@ public class MultiSoundAction extends SoundAction {
 		if (fileChooser.isChoosingFilesRandomly()) {
 			fileChooser.computeNextFileIndex();
 		}
+	}
+
+	/**
+	 * Gets the {@link #fileChooser}.
+	 *
+	 * @return The {@link #fileChooser}.
+	 */
+	public MultiSourceFileChooser getFileChooser() {
+		return fileChooser;
+	}
+	
+	/**
+	 * Sets the {@link #fileChooser}. In most cases it's not needed to set fileChooser. This setter
+	 * exists only for automatic copying of attributes.
+	 *
+	 * @param fileChooser
+	 *            The new {@link #fileChooser}.
+	 */
+	public void setFileChooser(MultiSourceFileChooser fileChooser) {
+		fileChooser.setAcceptableExtensions(allowedExtensions);
+		this.fileChooser = fileChooser;
 	}
 
 }
