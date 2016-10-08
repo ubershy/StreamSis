@@ -135,7 +135,7 @@ public class MultiSourceFileChooser {
 		if (chooseFilesRandomly.get()) {
 			currentFileIndex.set(random.nextInt(temporarySourceFileList.getSize()));
 		} else {
-			if (currentFileIndex.get() < temporarySourceFileList.getSize()) {
+			if (currentFileIndex.get() < temporarySourceFileList.getSize() - 1) {
 				currentFileIndex.set(currentFileIndex.get() + 1);
 			} else {
 				currentFileIndex.set(0);
