@@ -25,6 +25,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.project.AbstractCuteNode;
 import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.SisScene;
+
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 import com.ubershy.streamsis.project.ProjectManager;
 
 /**
@@ -38,7 +42,7 @@ public class SwitchSisSceneAction extends AbstractCuteNode implements Action {
 
 	/** The name of SisScene to which to switch. */
 	@JsonProperty
-	protected String sisSceneName = "";
+	protected StringProperty sisSceneName = new SimpleStringProperty("");
 
 	public SwitchSisSceneAction() {
 	}
@@ -51,7 +55,7 @@ public class SwitchSisSceneAction extends AbstractCuteNode implements Action {
 	 */
 	@JsonCreator
 	public SwitchSisSceneAction(@JsonProperty("sisSceneName") String sisSceneName) {
-		this.sisSceneName = sisSceneName;
+		this.sisSceneName.set(sisSceneName);
 	}
 
 	@Override
@@ -62,31 +66,37 @@ public class SwitchSisSceneAction extends AbstractCuteNode implements Action {
 			if (ProjectManager.getProject().getCurrentSisSceneName().equals(sisSceneName)) {
 				elementInfo.setBooleanResult(false);;
 			} else {
-				ProjectManager.getProject().switchSisSceneTo(sisSceneName);
+				ProjectManager.getProject().switchSisSceneTo(sisSceneName.get());
 				elementInfo.setBooleanResult(true);
 			}
 		}
 	}
 
 	public String getSisSceneName() {
-		return sisSceneName;
+		return sisSceneName.get();
 	}
 
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
-		if (sisSceneName.isEmpty()) {
+		if (sisSceneName.get().isEmpty()) {
 			elementInfo.setAsBroken("SisScene name is empty");
 		} else {
-			SisScene sisScene = ProjectManager.getProject().getSisSceneByName(sisSceneName);
+			SisScene sisScene = ProjectManager.getProject().getSisSceneByName(sisSceneName.get());
 			if (sisScene == null) {
-				elementInfo.setAsBroken("SisScene with name '" + sisSceneName + "' not found");
+				elementInfo
+						.setAsBroken("SisScene with name '" + sisSceneName.get() + "' not found");
 			}
 		}
 	}
 
 	public void setSisSceneName(String sisSceneName) {
-		this.sisSceneName = sisSceneName;
+		this.sisSceneName.set(sisSceneName);;
+	}
+	
+	/** See {@link #sisSceneName}. */
+	public StringProperty sisSceneNameProperty() {
+		return sisSceneName;
 	}
 
 }
