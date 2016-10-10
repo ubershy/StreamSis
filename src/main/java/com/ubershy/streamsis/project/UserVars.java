@@ -17,6 +17,7 @@
  */
 package com.ubershy.streamsis.project;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -86,4 +87,18 @@ public final class UserVars {
 	public static void clear() {
 		variables.clear();
 	}
+	
+	/**
+	 * Gets a deep copy of current map with variables and values.
+	 */
+	@SuppressWarnings("unchecked")
+	public static Map<String, String> getCopyOfCurrentVariables() {
+		try {
+			return (Map<String, String>) StuffSerializator
+					.makeACopyOfObjectUsingSerialization(variables);
+		} catch (IOException e) {
+			throw new RuntimeException("Can't make a copy of current variables.");
+		}
+	}
+	
 }

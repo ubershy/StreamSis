@@ -25,6 +25,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.project.AbstractCuteNode;
 import com.ubershy.streamsis.project.UserVars;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 /**
  * Variable Setter Action. <br>
  * This {@link Action} can create a new user variable(key):value pair in {@link UserVars} <br>
@@ -35,13 +38,13 @@ public class VariableSetterAction extends AbstractCuteNode implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(VariableSetterAction.class);
 
-	/** The name of user variable(key). */
+	/** The name of user variable(key) to set value to. */
 	@JsonProperty
-	protected String key = "";
+	protected StringProperty key = new SimpleStringProperty("");
 
-	/** The value of user variable. */
+	/** The value to set to user variable. */
 	@JsonProperty
-	protected String value = "";
+	protected StringProperty value = new SimpleStringProperty("");
 
 	public VariableSetterAction() {
 	}
@@ -49,7 +52,7 @@ public class VariableSetterAction extends AbstractCuteNode implements Action {
 	/**
 	 * Instantiates a new VariableSetterAction. <br>
 	 * On execution it will create a new user variable(key):value pair in {@link UserVars}. <br>
-	 * If user variable(key) already exists in {@link UserVars}, it's value will be overwritten. <br>
+	 * If user variable(key) already exists in {@link UserVars}, it's value will be overwritten.
 	 *
 	 * @param key
 	 *            the name of the user variable(key) to set in {@link UserVars}
@@ -57,38 +60,39 @@ public class VariableSetterAction extends AbstractCuteNode implements Action {
 	 *            the value to set to the user variable(key) in {@link UserVars}
 	 */
 	@JsonCreator
-	public VariableSetterAction(@JsonProperty("key") String key, @JsonProperty("value") String value) {
-		this.key = key;
-		this.value = value;
+	public VariableSetterAction(@JsonProperty("key") String key,
+			@JsonProperty("value") String value) {
+		this.key.set(key);
+		this.value.set(value);
 	}
 
 	@Override
 	public void execute() {
 		if (elementInfo.canWork()) {
-			logger.info("Set Variable(key): '" + key + "' to Value: '" + value + "'");
+			logger.info("Set Variable(key): '" + key.get() + "' to Value: '" + value.get() + "'");
 			elementInfo.setAsWorking();
-			if (value.equals(UserVars.get(key))) {
+			if (value.equals(UserVars.get(key.get()))) {
 				// Such key already has this value, set false result
 				elementInfo.setBooleanResult(false);
 			} else {
-				UserVars.set(key, value);
+				UserVars.set(key.get(), value.get());
 				elementInfo.setBooleanResult(true);
 			}
 		}
 	}
 
 	public String getKey() {
-		return key;
+		return key.get();
 	}
 
 	public String getValue() {
-		return value;
+		return value.get();
 	}
 
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
-		if (key.isEmpty()) {
+		if (key.get().isEmpty()) {
 			elementInfo.setAsBroken("Variable name is empty");
 			return;
 		}
@@ -97,11 +101,21 @@ public class VariableSetterAction extends AbstractCuteNode implements Action {
 	}
 
 	public void setKey(String key) {
-		this.key = key;
+		this.key.set(key);
 	}
 
 	public void setValue(String value) {
-		this.value = value;
+		this.value.set(value);
+	}
+	
+	/** See {@link #key}. */
+	public StringProperty keyProperty() {
+		return key;
+	}
+	
+	/** See {@link #value}. */
+	public StringProperty valueProperty() {
+		return value;
 	}
 
 }
