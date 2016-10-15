@@ -32,6 +32,7 @@ import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.actors.UniversalActor;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.project.SisScene;
+import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.ProjectManager;
 
 import javafx.collections.ObservableList;
@@ -464,6 +465,27 @@ public final class GUIUtil {
 	 */
 	public static ValidationResult fakeSuccessfulValidationResult(Control c) {
 		return ValidationResult.fromErrorIf(c, "hehe", false);
+	}
+
+	/**
+	 * Reinitializes whole project and particular {@link CuteElement}.
+	 * 
+	 * @param element
+	 *            The {@link CuteElement} to reinitialize also as reinitializing whole project does
+	 *            not guarantee that this CuteElement will be reinitialized too. It should be fixed
+	 *            in the future.
+	 */
+	public static void reinitElementAndWholeProject(CuteElement element) {
+		// Reinitialize whole project, because the element can have parents(CuteNodes) that might be
+		// broken and after fixing this element, they might get healthy.
+		// FIXME: run nice animation during reinitialization as it is CPU intense and may hang GUI.
+		// Or find a way to not reinit the whole project, but only parent CuteNodes.
+		ProjectManager.getProject().init();
+		// Reinitialize element particularly, because if it has parent CuteNodes that are broken,
+		// reinitialization of element and parent might not occur. For example, if Actor is broken
+		// because it doesn't have a Checker, the Actor will not check it's Actions on
+		// reinitialization - it knows it's already broken.
+		element.init();
 	}
 	
 }

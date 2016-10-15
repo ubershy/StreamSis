@@ -60,8 +60,10 @@ public class ConfirmedDelayedActions extends DelayedActions {
 	 * @return
 	 */
 	private ObservableList<CuteNode> generateExternalChildrenList() {
-		CuteNodeContainer actionsContainer = new CuteNodeContainer(actions, "Actions", AddableChildrenTypeInfo.ACTION, MaxAddableChildrenCount.INFINITY);
-		CuteNodeContainer checkersContainer = new CuteNodeContainer(checker, "Checker", AddableChildrenTypeInfo.CHECKER, MaxAddableChildrenCount.ONE);
+		CuteNodeContainer<Action> actionsContainer = new CuteNodeContainer<Action>(actions,
+				"Actions", AddableChildrenTypeInfo.ACTION, MaxAddableChildrenCount.INFINITY);
+		CuteNodeContainer<Checker> checkersContainer = new CuteNodeContainer<Checker>(checker,
+				"Checker", AddableChildrenTypeInfo.CHECKER, MaxAddableChildrenCount.ONE);
 		return FXCollections.observableArrayList(checkersContainer, actionsContainer);
 	}
 

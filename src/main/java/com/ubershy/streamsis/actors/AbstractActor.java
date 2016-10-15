@@ -324,12 +324,12 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 	}
 
 	private ObservableList<CuteNode> generateExternalChildrenList() {
-		CuteNodeContainer checkersContainer = new CuteNodeContainer(checkers, "Checker",
-				AddableChildrenTypeInfo.CHECKER, MaxAddableChildrenCount.ONE);
-		CuteNodeContainer onActionsContainer = new CuteNodeContainer(onActions, "On Actions",
-				AddableChildrenTypeInfo.ACTION, MaxAddableChildrenCount.INFINITY);
-		CuteNodeContainer offActionsContainer = new CuteNodeContainer(offActions, "Off Actions",
-				AddableChildrenTypeInfo.ACTION, MaxAddableChildrenCount.INFINITY);
+		CuteNodeContainer<Checker> checkersContainer = new CuteNodeContainer<Checker>(checkers,
+				"Checker", AddableChildrenTypeInfo.CHECKER, MaxAddableChildrenCount.ONE);
+		CuteNodeContainer<Action> onActionsContainer = new CuteNodeContainer<Action>(onActions,
+				"On Actions", AddableChildrenTypeInfo.ACTION, MaxAddableChildrenCount.INFINITY);
+		CuteNodeContainer<Action> offActionsContainer = new CuteNodeContainer<Action>(offActions,
+				"Off Actions", AddableChildrenTypeInfo.ACTION, MaxAddableChildrenCount.INFINITY);
 		ObservableList<CuteNode> result = FXCollections.observableArrayList(checkersContainer,
 				onActionsContainer, offActionsContainer);
 		return result;

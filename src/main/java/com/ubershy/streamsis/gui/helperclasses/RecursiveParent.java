@@ -42,5 +42,5 @@ public interface RecursiveParent<T extends RecursiveParent<?>> {
 	 *         <b>empty list</b> if it don't have children currently. <br>
 	 *         <b>null</b> if it can't have children.
 	 */
-	ObservableList<T> getChildren();
+	ObservableList<? extends T> getChildren();
 }

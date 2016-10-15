@@ -26,6 +26,8 @@ import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.controlsfx.validation.decoration.CompoundValidationDecoration;
 import org.controlsfx.validation.decoration.StyleClassValidationDecoration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.gui.StreamSisAppFactory;
@@ -33,7 +35,6 @@ import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.gui.helperclasses.CuteGraphicValidationDecoration;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteElement;
-import com.ubershy.streamsis.project.CuteNodeContainer;
 import com.ubershy.streamsis.project.SisScene;
 import com.ubershy.streamsis.project.ElementInfo;
 import com.ubershy.streamsis.project.ProjectManager;
@@ -52,6 +53,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 
 public class PropsWithNameController implements Initializable {
+	
+	static final Logger logger = LoggerFactory.getLogger(PropsWithNameController.class);
 
 	private CuteButtonsStatesManager buttonStateManager;
 
@@ -119,12 +122,6 @@ public class PropsWithNameController implements Initializable {
 		currentCuteElementController.setValidationSupport(validationSupport);
 		validationSupport.initInitialDecoration();
 		root.add(currentCuteElementController.getView(), 0, 1);
-		// CuteNodeContainer should not be edited.
-		if (editableCopyOfCE instanceof CuteNodeContainer) {
-			nameTextField.setDisable(true);
-		} else {
-			nameTextField.setDisable(false);
-		}
 		if (buttonStateManager.needToScheduleCuteElementReinitProperty().get())
 			editableCopyOfCE.init();
 			buttonStateManager.setCuteElementAsInitialized();
@@ -142,7 +139,8 @@ public class PropsWithNameController implements Initializable {
 		nameTextField = newTextField;
 		// Let's not allow very long names
 		UnaryOperator<Change> filter = c -> {
-			if (c.getControlNewText().length() > 30) {
+			if (c.getControlNewText().length() > 35) {
+				logger.debug("The CuteElement's name is too long to pass the input filter.");
 				return null;
 			}
 			return c;

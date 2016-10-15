@@ -47,6 +47,40 @@ public interface CuteNode extends RecursiveParent<CuteNode>, CuteElement {
 	 *         children to this CuteNode
 	 */
 	public MaxAddableChildrenCount getMaxAddableChildrenCount();
+	
+	/**
+	 * Gets {@link ContainerCreationParams} of this {@link CuteNode} if it can have
+	 * CuteNodeContainers as children.
+	 *
+	 * @return {@link ContainerCreationParams} of this {@link CuteNode},<br>
+	 *         null if this CuteNode can't have CuteNodeContainers as children.
+	 */
+	public ContainerCreationParams getChildContainerCreationParams();
+	
+	/**
+	 * ContainerParams has all information required for creating {@link CuteNodeContainer} as
+	 * CuteNode's child by request of the user. This class is only useful when CuteNode can have
+	 * CuteNodeContainers created by the user - see {@link CuteNode#getAddableChildrenTypeInfo()}.
+	 */
+	public class ContainerCreationParams {
+		public final AddableChildrenTypeInfo childrenType;
+		public final MaxAddableChildrenCount childrenMaxCount;
+		public final String GUIItemMenuName;
+		public final String creationBaseName;
+		public final String GUIDescription;
+		public final boolean editable;
+		
+		public ContainerCreationParams(AddableChildrenTypeInfo childrenType,
+				MaxAddableChildrenCount childrenMaxCount, boolean editable, String GUIItemMenuName,
+				String creationBaseName, String GUIDescription) {
+			this.childrenType = childrenType;
+			this.childrenMaxCount = childrenMaxCount;
+			this.editable = editable;
+			this.GUIItemMenuName = GUIItemMenuName;
+			this.creationBaseName = creationBaseName;
+			this.GUIDescription = GUIDescription;
+		}
+	}
 
 	/**
 	 * MaxAddableChildrenCount contains information describing how many children can be added to
@@ -54,30 +88,61 @@ public interface CuteNode extends RecursiveParent<CuteNode>, CuteElement {
 	 * So the GUI(if it currently exists) will know how to manage this CuteNode. <br>
 	 */
 	public enum MaxAddableChildrenCount {
-		UNDEFINEDORZERO, ONE, INFINITY
+
+		/** The undefinedorzero. */
+		UNDEFINEDORZERO,
+		/** The one. */
+		ONE,
+		/** The infinity. */
+		INFINITY
 	}
 
 	/**
 	 * AddableChildrenTypeInfo contains information describing type of the {@link CuteNode} that can
-	 * be added to this CuteNode's list of children. <br>
+	 * be added by user to this CuteNode's list of children. <br>
 	 * So the GUI(if it currently exists) will know how to manage this CuteNode.
 	 */
 	public enum AddableChildrenTypeInfo {
-		/** Indicates that a {@link Action} can be added to this {@link CuteNode}'s children */
+		/**
+		 * Indicates that a {@link Action} can be added by user to this {@link CuteNode}'s children.
+		 */
 		ACTION(Action.class),
 
-		/** Indicates that a {@link Checker} can be added to this {@link CuteNode}'s children */
+		/**
+		 * Indicates that a {@link Checker} can be added by user to this {@link CuteNode}'s
+		 * children.
+		 */
 		CHECKER(Checker.class),
 
-		/** Indicates that a {@link Counter} can be added to this {@link CuteNode}'s children */
-		COUNTER(Counter.class);
+		/**
+		 * Indicates that a {@link Counter} can be added by user to this {@link CuteNode}'s
+		 * children.
+		 */
+		COUNTER(Counter.class),
 
+		/**
+		 * Indicates that a {@link CuteNodeContainer} can be added by user to this {@link CuteNode}
+		 * 's children.
+		 */
+		CONTAINER(CuteNodeContainer.class);
+
+		/** The type. */
 		private final Class<? extends CuteNode> type;
-
+		
+		/**
+		 * Instantiates a new addable children type info.
+		 *
+		 * @param type the type
+		 */
 		private AddableChildrenTypeInfo(final Class<? extends CuteNode> type) {
 			this.type = type;
 		}
 
+		/**
+		 * Gets the type.
+		 *
+		 * @return the type
+		 */
 		public Class<? extends CuteNode> getType() {
 			return type;
 		}

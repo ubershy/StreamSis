@@ -190,6 +190,10 @@ public class ElementInfo {
 	/** The reason why the {@link CuteElement} is unhealthy and can't work properly. */
 	@JsonIgnore
 	private StringProperty whyUnhealthyProperty = new SimpleStringProperty("");
+	
+	/** Tells if the {@link CuteElement} can be edited by the user. */
+	@JsonIgnore
+	private BooleanProperty editable = new SimpleBooleanProperty(true);
 
 	/**
 	 * Instantiates a new ElementInfo normally.
@@ -280,6 +284,15 @@ public class ElementInfo {
 	@JsonProperty("isEnabled")
 	public boolean isEnabled() {
 		return isEnabledProperty.get();
+	}
+	
+	/**
+	 * Tells if this {@link CuteElement} can be edited by the user.
+	 * 
+	 * @return true, if it can be edited by the user.
+	 */
+	public boolean isEditable() {
+		return editable.get();
 	}
 
 	/**
@@ -434,6 +447,16 @@ public class ElementInfo {
 	}
 
 	/**
+	 * Set this {@link CuteElement} as not editable by the user.
+	 * 
+	 * @param editable
+	 *            true, if it can be edited by the user. False - if not.
+	 */
+	public void setEditable(boolean editable) {
+		this.editable.set(editable);;
+	}
+
+	/**
 	 * The current {@link ElementState} of the {@link CuteElement}.
 	 *
 	 * @return the object property
@@ -472,4 +495,14 @@ public class ElementInfo {
 	public ObjectProperty<ElementHealth> elementHealthProperty() {
 		return elementHealthProperty;
 	}
+	
+	/**
+	 * Tells if {@link CuteElement} can be edited by the user.
+	 *
+	 * @return the boolean property
+	 */
+	public BooleanProperty editableProperty() {
+		return editable;
+	}
+	
 }

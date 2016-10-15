@@ -48,6 +48,7 @@ import com.ubershy.streamsis.checkers.RegionChecker;
 import com.ubershy.streamsis.checkers.RelationToPreviousNumberChecker;
 import com.ubershy.streamsis.counters.TrueCheckerCounter;
 import com.ubershy.streamsis.project.CuteNode;
+import com.ubershy.streamsis.project.CuteNodeContainer;
 import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.ProjectSerializator;
 import com.ubershy.streamsis.project.SisScene;
@@ -238,9 +239,10 @@ public final class Playground {
 		// Util.singleItemAsList(new OBSHotkeyAction(hkSniper)), 750, sniperChecker));
 		// decided not to use delayed action since hotkeys are working good now =)
 		sniperActor.addOnAction(new OBSHotkeyAction(hkSniper));
-		TreeMap<String, Action> sniperUndoHotkey = new TreeMap<String, Action>();
-		sniperUndoHotkey.put("Match", new OBSHotkeyAction(hkMatch));
-		sniperUndoHotkey.put("Deathmatch", new OBSHotkeyAction(hkDeathMatch));
+		TreeMap<String, ArrayList<Action>> sniperUndoHotkey = new TreeMap<String, ArrayList<Action>>();
+		sniperUndoHotkey.put("Match", Util.singleItemAsList(new OBSHotkeyAction(hkMatch)));
+		sniperUndoHotkey.put("Deathmatch",
+				Util.singleItemAsList(new OBSHotkeyAction(hkDeathMatch)));
 		sniperActor.clearOffActions();
 		sniperActor.addOffAction(new VariableSwitchAction("currentMode", sniperUndoHotkey));
 
@@ -249,10 +251,11 @@ public final class Playground {
 						resourcesLocation + "Physical\\Targets\\toFind.png", 0.8f),
 				null, null);
 		physicalActor.addOnAction(new OBSHotkeyAction(hkPhysical));
-		TreeMap<String, Action> physicalUndoHotkey = new TreeMap<String, Action>();
-		physicalUndoHotkey.put("Match", new OBSHotkeyAction(hkMatch));
-		physicalUndoHotkey.put("Deathmatch", new OBSHotkeyAction(hkDeathMatch));
-		physicalUndoHotkey.put("CSGOMenu", new OBSHotkeyAction(hkMenu));
+		TreeMap<String, ArrayList<Action>> physicalUndoHotkey = new TreeMap<String, ArrayList<Action>>();
+		physicalUndoHotkey.put("Match", Util.singleItemAsList(new OBSHotkeyAction(hkMatch)));
+		physicalUndoHotkey.put("Deathmatch",
+				Util.singleItemAsList(new OBSHotkeyAction(hkDeathMatch)));
+		physicalUndoHotkey.put("CSGOMenu", Util.singleItemAsList(new OBSHotkeyAction(hkMenu)));
 		physicalActor.addOffAction(new VariableSwitchAction("currentMode", physicalUndoHotkey));
 
 		UniversalActor killActor = actorBuilder.createUniversalActor("Kill", 500,
@@ -467,7 +470,7 @@ public final class Playground {
 	private static void setRandomNameForCuteNodeRecursively(CuteNode node) {
 		if (node != null) {
 			setRandomNameForCuteNode(node);
-			ObservableList<CuteNode> children = node.getChildren();
+			ObservableList<? extends CuteNode> children = node.getChildren();
 			if (children != null) {
 				for(CuteNode subNode : children) {
 					setRandomNameForCuteNodeRecursively(subNode);
@@ -478,9 +481,13 @@ public final class Playground {
 
 	private static void setRandomNameForCuteNode(CuteNode node) {
 		if (node != null) {
-			String firstPart = node.getClass().getSimpleName();
-			String secondPart = String.valueOf((new Random().nextInt(10000)));
-			node.getElementInfo().setName(firstPart+secondPart);
+			// Some CuteNodeContainers have names that are important in context. Let's not modify
+			// their names.
+			if (node.getClass() != CuteNodeContainer.class) { 
+				String firstPart = node.getClass().getSimpleName();
+				String secondPart = String.valueOf((new Random().nextInt(10000)));
+				node.getElementInfo().setName(firstPart+secondPart);
+			}
 		}
 	}
 	

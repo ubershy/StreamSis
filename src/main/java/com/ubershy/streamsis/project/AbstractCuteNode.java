@@ -69,4 +69,14 @@ public abstract class AbstractCuteNode implements CuteNode {
 		return MaxAddableChildrenCount.UNDEFINEDORZERO; // No information how many children can be
 														// added inside by default.
 	}
+	
+	/*
+	 * @inheritDoc
+	 */
+	@JsonIgnore
+	@Override
+	public ContainerCreationParams getChildContainerCreationParams(){
+		return null; // No container parameters, because it can't have containers as children by
+		             // by default.
+	}
 }

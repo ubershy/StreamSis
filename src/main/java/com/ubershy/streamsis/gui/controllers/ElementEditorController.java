@@ -35,8 +35,8 @@ import com.ubershy.streamsis.gui.StreamSisAppFactory.SpecialCuteElementControlle
 import com.ubershy.streamsis.gui.animations.HorizontalShadowAnimation;
 import com.ubershy.streamsis.gui.animations.ThreeDotsAnimation;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
+import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteElement;
-import com.ubershy.streamsis.project.CuteNodeContainer;
 import com.ubershy.streamsis.project.ElementInfo;
 import com.ubershy.streamsis.project.StuffSerializator;
 import com.ubershy.streamsis.project.ProjectManager;
@@ -350,10 +350,12 @@ public class ElementEditorController implements Initializable {
 		// Let's create a copy of the current CuteElement and work on the copy. After the user will
 		// finish editing this copy and press "Ok" or "Apply" buttons, we can transfer changes back
 		// to the original CuteElement.
-		if (currentElement instanceof CuteNodeContainer) {
-			// CuteNodeContained should be never edited or serialized. So we can just assign
-			// to reference elementWorkingCopy.
+		if (!currentElement.getElementInfo().isEditable()) {
+			// The element is not editable.
+			// No need to make copy. So let's make elementWorkingCopy have same reference.
 			elementWorkingCopy = currentElement;
+			// Disable view to restrict user input.
+			propsWithNameController.getView().setDisable(true);
 		} else {
 			// Other CuteElements can be edited and serialized.
 			try {
@@ -362,6 +364,8 @@ public class ElementEditorController implements Initializable {
 			} catch (IOException e) {
 				throw new RuntimeException(e.getMessage());
 			}
+			// Enable view to allow user input.
+			propsWithNameController.getView().setDisable(false);
 		}
 		
 		elementWorkingCopy.init();
@@ -454,16 +458,7 @@ public class ElementEditorController implements Initializable {
 			throw new RuntimeException("For some reason can't transfer changes from copy of the "
 					+ "current CuteElement to the current CuteElement");
 		}
-		// Reinitialize whole project, because parents(CuteNodes) of currentElement might be broken
-		// and after fining currentElement, they might get healthy.
-		// FIXME: run nice animation during reinitialization as it is CPU intense and may hang GUI.
-		// Or find a way to not reinit the whole project, but only parent CuteNodes.
-		ProjectManager.getProject().init();
-		// Reinitialize currentElement particularly, because if other CuteNodes are broken,
-		// reinitialization of currentElement might not occur. For example, if Actor is broken
-		// because it doesn't have a Checker, the Actor will not check it's Actions on
-		// reinitialization - it knows it's already broken.
-		getCurrentElement().init();
+		GUIUtil.reinitElementAndWholeProject(getCurrentElement());
 		connectToCuteElement(getCurrentElement());
 	}
 	

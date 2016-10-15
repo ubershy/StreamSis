@@ -363,7 +363,7 @@ public class StreamSisAppFactory {
 					// Actor(CuteNode) returns 3 CuteNodeContainer children. One with Checker
 					// inside, one with OnActions inside, one with OffActions inside.
 					// And here we select the child we want by using index.
-					CuteNodeContainer childrenContainer = (CuteNodeContainer) firstActor
+					CuteNodeContainer<?> childrenContainer = (CuteNodeContainer<?>) firstActor
 							.getChildren().get(typeOfTree.ordinal());
 					AutoTreeItem<CuteNode> treeItemRoot = new AutoTreeItem<CuteNode>(
 							childrenContainer);
@@ -379,7 +379,7 @@ public class StreamSisAppFactory {
 							// Checker inside, one with OnActions inside, one with OffActions
 							// inside.
 							// And here we select the child we want by using index.
-							CuteNodeContainer childrenContainer = (CuteNodeContainer) newValue
+							CuteNodeContainer<?> childrenContainer = (CuteNodeContainer<?>) newValue
 									.getChildren().get(typeOfTree.ordinal());
 							AutoTreeItem<CuteNode> treeItemRoot = new AutoTreeItem<CuteNode>(
 									childrenContainer);
