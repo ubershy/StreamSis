@@ -76,6 +76,10 @@ public class VariableSetterActionController extends AbstractCuteController
 		TextFields.bindAutoCompletion(variableNameTextField,
 				UserVars.getCopyOfCurrentVariables().keySet());
 		bindBidirectionalAndRemember(valueTextField.textProperty(), vsAction.valueProperty());
+		valueTextField.textProperty().addListener((o, oldVal, newVal) -> {
+			buttonStateManager.reportNewValueOfControl(origVsAction.getValue(), newVal,
+					valueTextField, null);
+		});
 	}
 
 	/*
