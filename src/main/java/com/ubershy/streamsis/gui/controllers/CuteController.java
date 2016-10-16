@@ -55,5 +55,16 @@ public interface CuteController extends Initializable {
 	 *            the ValidationSupport to use.
 	 */
 	public void setValidationSupport(ValidationSupport validationSupport);
+	
+	/**
+	 * Allows or restricts input in this controller's view. By default just disables or enables
+	 * view. <br>
+	 * This behavior can be overridden. But input should still be restricted or allowed depending
+	 * on passed argument.
+	 * 
+	 * @param allowInput
+	 *            True to allow input, False to restrict input.
+	 */
+	public void setInputAllowed(boolean allowInput);
 
 }

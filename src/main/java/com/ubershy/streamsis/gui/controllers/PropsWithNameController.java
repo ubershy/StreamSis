@@ -72,6 +72,8 @@ public class PropsWithNameController implements Initializable {
 
 	private ValidationSupport validationSupport;
 	
+	private boolean inputAllowed = true;
+	
 	public Node getView() {
 		return root;
 	}
@@ -137,6 +139,7 @@ public class PropsWithNameController implements Initializable {
 		TextField newTextField = new TextField();
 		GUIUtil.replaceChildInPane(nameTextField, newTextField);
 		nameTextField = newTextField;
+		nameTextField.setDisable(!inputAllowed);
 		// Let's not allow very long names
 		UnaryOperator<Change> filter = c -> {
 			if (c.getControlNewText().length() > 35) {
@@ -228,6 +231,19 @@ public class PropsWithNameController implements Initializable {
 			return finalResult;
 		};
 		validationSupport.registerValidator(nameTextField, nameTextFieldValidator);
+	}
+
+	/**
+	 * Allows or restricts input in this view and children views.
+	 * 
+	 * @param allowInput True to allow input, False to restrict input.
+	 */
+	public void setInputAllowed(boolean allowInput) {
+		inputAllowed = allowInput;
+		nameTextField.setDisable(!allowInput);
+		if (currentCuteElementController != null) {
+			currentCuteElementController.setInputAllowed(allowInput);
+		}
 	}
 
 }

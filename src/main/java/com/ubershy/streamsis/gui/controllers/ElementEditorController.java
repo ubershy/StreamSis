@@ -354,8 +354,8 @@ public class ElementEditorController implements Initializable {
 			// The element is not editable.
 			// No need to make copy. So let's make elementWorkingCopy have same reference.
 			elementWorkingCopy = currentElement;
-			// Disable view to restrict user input.
-			propsWithNameController.getView().setDisable(true);
+			// Restrict user input.
+			propsWithNameController.setInputAllowed(false);
 		} else {
 			// Other CuteElements can be edited and serialized.
 			try {
@@ -364,8 +364,8 @@ public class ElementEditorController implements Initializable {
 			} catch (IOException e) {
 				throw new RuntimeException(e.getMessage());
 			}
-			// Enable view to allow user input.
-			propsWithNameController.getView().setDisable(false);
+			// Allow user input.
+			propsWithNameController.setInputAllowed(true);
 		}
 		
 		elementWorkingCopy.init();

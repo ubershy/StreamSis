@@ -108,5 +108,16 @@ public class CuteNodeContainerController extends AbstractCuteController
 	public void setValidationSupport(ValidationSupport validationSupport) {
 		// Do nothing since no input.
 	}
+	
+	/*
+	 * @inheritDoc
+	 */
+	@Override
+	public void setInputAllowed(boolean allowInput) {
+		// Let's not disable components in this view like in the default behavior as there's no
+		// input fields, but only the viewable important information. Let's not allow this
+		// information to be grayed out.
+		// That basically means... do nothing. =)
+	}
 
 }

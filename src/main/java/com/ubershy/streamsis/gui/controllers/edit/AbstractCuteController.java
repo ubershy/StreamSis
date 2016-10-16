@@ -137,5 +137,13 @@ public abstract class AbstractCuteController implements CuteController {
 		}
 		rememberedBidirectionalBinds.clear();
 	}
+	
+	/*
+	 * @inheritDoc
+	 */
+	@Override
+	public void setInputAllowed(boolean allowInput) {
+		this.getView().setDisable(!allowInput); // default behavior
+	}
 
 }
