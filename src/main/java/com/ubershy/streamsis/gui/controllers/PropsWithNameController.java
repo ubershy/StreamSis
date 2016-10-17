@@ -21,6 +21,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
+import org.controlsfx.control.SegmentedButton;
+import org.controlsfx.tools.ValueExtractor;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
@@ -80,6 +82,10 @@ public class PropsWithNameController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		// Set custom value extractors for validations of specific Controls.
+		ValueExtractor.addObservableValueExtractor(c -> c instanceof SegmentedButton,
+				c -> ((SegmentedButton) c).getToggleGroup().selectedToggleProperty());
+
 		root.sceneProperty().addListener((InvalidationListener) o -> {
 			if (root.getScene() != null) {
 				String url = PropsWithNameController.class.getResource("/css/validation.css")
