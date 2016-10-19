@@ -37,6 +37,7 @@ import com.ubershy.streamsis.gui.animations.ThreeDotsAnimation;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteElement;
+import com.ubershy.streamsis.project.CuteNode;
 import com.ubershy.streamsis.project.ElementInfo;
 import com.ubershy.streamsis.project.StuffSerializator;
 import com.ubershy.streamsis.project.ProjectManager;
@@ -381,7 +382,7 @@ public class ElementEditorController implements Initializable {
 		nameLabel.textProperty().bind(infoOfCopyElement.nameProperty());
 		elementHealthProperty.bind(infoOfCopyElement.elementHealthProperty());
 		whyUnhealthyProperty.bind(infoOfCopyElement.whyUnhealthyProperty());
-
+		
 		// Let's set up propertiesPane according to CuteElement
 		propsWithNameController.connectToCuteElement(elementWorkingCopy, currentElement);
 		
@@ -450,13 +451,24 @@ public class ElementEditorController implements Initializable {
 					NameOfCopyElement);
 		// Let's apply changes from the copy to original CuteElement by copying properties
 		try {
-			// Note: if you notice this method doesn't transfer changes, CuteElement's properties
-			// and getters and setters might not be set up properly.
-			PropertyUtils.copyProperties(getCurrentElement(), elementWorkingCopy);
+			// Note: if you notice copyProperties() works without throwing an exception, but doesn't
+			// transfer all needed changes, CuteElement's properties and getters and setters might
+			// not be set up properly.
+			if (getCurrentElement() instanceof CuteNode) {
+				CuteNode node = (CuteNode) getCurrentElement();
+				int childrenListIdentifierBefore = System.identityHashCode(node.getChildren());
+				PropertyUtils.copyProperties(getCurrentElement(), elementWorkingCopy);
+				if (System.identityHashCode(node.getChildren()) != childrenListIdentifierBefore) {
+					throw new RuntimeException("Programmer. You are not allowed to substitute list "
+							+ "of children of original CuteNode.");
+				}
+			} else {
+				PropertyUtils.copyProperties(getCurrentElement(), elementWorkingCopy);
+			}
+			
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-			e.printStackTrace();
 			throw new RuntimeException("For some reason can't transfer changes from copy of the "
-					+ "current CuteElement to the current CuteElement");
+					+ "current CuteElement to the current CuteElement", e);
 		}
 		GUIUtil.reinitElementAndWholeProject(getCurrentElement());
 		connectToCuteElement(getCurrentElement());
