@@ -83,15 +83,12 @@ public class LogicalCheckerController extends AbstractCuteController
 		}
 	};
 	
-	ListChangeListener<Checker> childrenListener = new ListChangeListener<Checker>() {
-		@Override
-		public void onChanged(ListChangeListener.Change<? extends Checker> c) {
-			// Need to do revalidation. It can be done by reselecting toggle...
-			Toggle currentTogle = segmentedButton.getToggleGroup().getSelectedToggle();
-			if (currentTogle != null) {
-				currentTogle.setSelected(false);
-				currentTogle.setSelected(true);
-			}
+	protected ListChangeListener<Checker> childrenListener = c -> {
+		// Need to do revalidation. It can be done by reselecting toggle...
+		Toggle currentTogle = segmentedButton.getToggleGroup().getSelectedToggle();
+		if (currentTogle != null) {
+			currentTogle.setSelected(false);
+			currentTogle.setSelected(true);
 		}
 	};
 
@@ -186,6 +183,7 @@ public class LogicalCheckerController extends AbstractCuteController
 				String nameOfOperator = ((ToggleButton) newValue).getText();
 				BooleanOperator operator = BooleanOperator.valueOf(nameOfOperator);
 				if (logicalChecker != null) {
+					// Internally the result will depend on amount of children.
 					whyBad = logicalChecker
 							.whyOperatorCantBeAppliedToCurrentAmountOfCheckers(operator);
 				}

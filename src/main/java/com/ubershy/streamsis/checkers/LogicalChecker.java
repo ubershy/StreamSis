@@ -332,16 +332,20 @@ public class LogicalChecker extends AbstractCuteNode implements Checker {
 		if (checkers.size() != 0) {
 			if (checkers.size() != 2 && (booleanOperator == BooleanOperator.XOR)) {
 				brokenMessage = "XOR operator can work only with TWO Checkers."
-						+ " You have " + checkers.size() + " Checker(s)";
+						+ " There are " + checkers.size() + " Checker(s) inside";
 			}
 			if (checkers.size() < 2 && booleanOperator != BooleanOperator.NOT) {
-				brokenMessage = "Only NOT operator can work with one Checker. You have "
-						+ checkers.size() + " Checker(s)";
+				brokenMessage = "Only NOT operator can work with one Checker. There are "
+						+ checkers.size() + " Checker(s) inside";
 			}
 			if (checkers.size() != 1 && booleanOperator == BooleanOperator.NOT) {
-				brokenMessage = "NOT operator can work only with one checkers. You have "
-						+ checkers.size() + " Checker(s)";
+				brokenMessage = "NOT operator can work only with one checkers. There are "
+						+ checkers.size() + " Checker(s) inside";
 			}
+		}
+		if (brokenMessage != null) {
+			brokenMessage = "You have chosen " + booleanOperator.name() + " operation. "
+					+ brokenMessage;
 		}
 		return brokenMessage;
 	}
