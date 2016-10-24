@@ -119,7 +119,11 @@ public class RegionTargetCounter extends AbstractCuteNode implements Counter {
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
-		region = coords.generateRegion();
+		coords.initRegion(elementInfo);
+		if (elementInfo.isBroken()) {
+			// already broken by coords.initRegion();
+			return;
+		}
 		if (!region.isValid()) {
 			elementInfo.setAsBroken("Something wrong with Region. Please enter valid Coordinates");
 		}

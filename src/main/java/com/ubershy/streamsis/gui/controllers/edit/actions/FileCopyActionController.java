@@ -188,18 +188,24 @@ public class FileCopyActionController extends AbstractCuteController
 		this.validationSupport.registerValidator(destinationTextField, destinationFieldValidator);
 	}
 	
-    @FXML
-    void browseDestinationPath(ActionEvent event) {
-		GUIUtil.showJavaSingleFileChooser("Specify(or create) the destination file", "Any file",
-				true, destinationTextField, null);
-    }
+	@FXML
+	void browseDestinationPath(ActionEvent event) {
+		File file = GUIUtil.showJavaSingleFileChooser("Specify(or create) the destination file",
+				"Any file", true, root.getScene().getWindow(), null);
+		if (file != null) {
+			destinationTextField.setText(file.getAbsolutePath());
+		}
+	}
 
-    @FXML
-    void browseSourcePath(ActionEvent event) {
-    	// NOTE: The button of this action will be enabled only if dstExtension != null, so it's OK.
-		GUIUtil.showJavaSingleFileChooser("Specify the source file", "File to copy", false,
-				sourceTextField, new String[] { dstExtension });
-    }
+	@FXML
+	void browseSourcePath(ActionEvent event) {
+		// NOTE: The button of this action will be enabled only if dstExtension != null, so it's OK.
+		File file = GUIUtil.showJavaSingleFileChooser("Specify the source file", "File to copy",
+				false, root.getScene().getWindow(), new String[] { dstExtension });
+		if (file != null) {
+			sourceTextField.setText(file.getAbsolutePath());
+		}
+	}
     
 //    private boolean pathsAreNotEmptyAndHaveDifferentExtensions(String path1, String path2) {
 //    	if (path1.isEmpty() || path2.isEmpty())

@@ -21,9 +21,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
-import org.controlsfx.control.PopOver;
 import org.controlsfx.control.SegmentedButton;
-import org.controlsfx.control.PopOver.ArrowLocation;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
@@ -33,6 +31,7 @@ import com.ubershy.streamsis.checkers.LogicalChecker;
 import com.ubershy.streamsis.checkers.LogicalChecker.BooleanOperator;
 import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.gui.controllers.edit.AbstractCuteController;
+import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteElement;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
@@ -43,7 +42,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
@@ -104,26 +102,9 @@ public class LogicalCheckerController extends AbstractCuteController
 			BooleanOperator operator = BooleanOperator.valueOf(button.getText());
 			String description = operator.toString();
 			// Create popover (kind of tooltip) with description for each button.
-			PopOver over = new PopOver();
-			over.setConsumeAutoHidingEvents(false);
-			over.setAutoHide(false);
-			over.setDetachable(true);
-			over.setArrowLocation(ArrowLocation.BOTTOM_CENTER);
 			Label popOverLabel = new Label(description);
 			popOverLabel.setPadding(new Insets(5,5,5,5));
-			over.setContentNode(popOverLabel);
-			// This tooltip's behavior of showing will be used to show popover at right time.
-			Tooltip invisibleTooltip = new Tooltip();
-			invisibleTooltip.setAutoHide(false);
-			invisibleTooltip.setConsumeAutoHidingEvents(false);
-			invisibleTooltip.setOpacity(0.0);
-			invisibleTooltip.setOnShown((e) -> {
-				over.show(button, -7);
-			});
-			invisibleTooltip.setOnHidden((e) -> {
-				over.hide();
-			});
-			button.setTooltip(invisibleTooltip);
+			GUIUtil.setPopOverTooltipToNode(button, popOverLabel, -7);
 		}
 		if (LogicalChecker.BooleanOperator.values().length != segmentedButton.getButtons().size()) {
 			throw new RuntimeException(

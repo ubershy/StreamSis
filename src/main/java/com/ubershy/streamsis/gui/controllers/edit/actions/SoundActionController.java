@@ -17,6 +17,7 @@
  */
 package com.ubershy.streamsis.gui.controllers.edit.actions;
 
+import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
@@ -147,12 +148,14 @@ public class SoundActionController extends AbstractCuteController
 		};
 		this.validationSupport.registerValidator(soundFileTextField, soundFileTextFieldValidator);
 	}
-	
 
-    @FXML
-    void browseSoundFilePath(ActionEvent event) {
-		GUIUtil.showJavaSingleFileChooser("Specify the sound file", "Sound file", false,
-				soundFileTextField, allowedExtensions);
-    }
+	@FXML
+	void browseSoundFilePath(ActionEvent event) {
+		File file = GUIUtil.showJavaSingleFileChooser("Specify the sound file", "Sound file", false,
+				root.getScene().getWindow(), allowedExtensions);
+		if (file != null) {
+			soundFileTextField.setText(file.getAbsolutePath());
+		}
+	}
 
 }

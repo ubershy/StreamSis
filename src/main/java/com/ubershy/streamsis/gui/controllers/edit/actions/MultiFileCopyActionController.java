@@ -150,9 +150,12 @@ public class MultiFileCopyActionController extends AbstractCuteController
 	}
 	
     @FXML
-    void browseDestinationPath(ActionEvent event) {
-		GUIUtil.showJavaSingleFileChooser("Specify(or create) the destination file", "Any file",
-				true, destinationTextField, null);
-    }
+	void browseDestinationPath(ActionEvent event) {
+		File file = GUIUtil.showJavaSingleFileChooser("Specify(or create) the destination file",
+				"Any file", true, root.getScene().getWindow(), null);
+		if (file != null) {
+			destinationTextField.setText(file.getAbsolutePath());
+		}
+	}
 
 }

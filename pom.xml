@@ -156,7 +156,7 @@
 		<dependency>
 			<groupId>com.sikulix</groupId>
 			<artifactId>sikulixapi</artifactId>
-			<version>1.1.0</version>
+			<version>1.1.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 		    <groupId>commons-beanutils</groupId>
@@ -164,4 +164,11 @@
 		    <version>1.8.3</version>
 		</dependency>
 	</dependencies>
+	<repositories>
+		<repository>
+			<id>sonatype-ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</repository>
+	</repositories>
+	
 </project>

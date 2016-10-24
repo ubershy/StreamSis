@@ -22,7 +22,6 @@ import java.util.ArrayList;
 
 import org.sikuli.script.Finder;
 import org.sikuli.script.Pattern;
-import org.sikuli.script.Region;
 import org.sikuli.script.Screen;
 import org.sikuli.script.ScreenImage;
 import org.slf4j.Logger;
@@ -49,9 +48,6 @@ public class MultiTargetRegionChecker extends AbstractCuteNode implements Checke
 	/** The {@link Coordinates} of region where to search the image. */
 	@JsonProperty
 	protected Coordinates coords = new Coordinates(0, 0, 100, 100);
-
-	/** The {@link org.sikuli.script.Region Region} to internally work with. */
-	protected Region region;
 
 	/** The {@link org.sikuli.script.Screen} to work with. */
 	protected Screen screen;
@@ -106,9 +102,9 @@ public class MultiTargetRegionChecker extends AbstractCuteNode implements Checke
 			elementInfo.setAsWorking();
 			// TODO: debug mode variable in config
 			// if (Util.debugMode) {
-			// highlight();
+			// coords.highlightRegion();
 			// }
-			ScreenImage screenImage = screen.capture(region);
+			ScreenImage screenImage = screen.capture(coords.getRegion());
 			Finder finder = new Finder(screenImage);
 			if (useANDOperator == true) { // AND operator
 				result = true;
@@ -144,24 +140,15 @@ public class MultiTargetRegionChecker extends AbstractCuteNode implements Checke
 		return targetsPath;
 	}
 
-	/**
-	 * Highlights the region. <br>
-	 * Very useful for debugging.
-	 */
-	public void highlight() {
-		region.highlight(1);
-		region.wait(1.0);
-	}
-
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
-		this.region = coords.generateRegion();
-		this.screen = (Screen) region.getScreen();
-		if (!this.region.isValid()) {
-			elementInfo.setAsBroken("Something wrong with Region. Please enter valid Coordinates");
+		coords.initRegion(elementInfo);
+		if (elementInfo.isBroken()) {
+			// already broken by coords.initRegion();
 			return;
 		}
+		this.screen = (Screen) coords.getRegion().getScreen();
 		if (similarity > 1 || similarity <= 0) {
 			elementInfo.setAsBroken("Similarity parameter must be from 0 to 1.00");
 			return;

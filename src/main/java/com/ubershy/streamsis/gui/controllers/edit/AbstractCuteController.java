@@ -67,7 +67,7 @@ public abstract class AbstractCuteController implements CuteController {
 	protected <T> void bindBidirectionalAndRemember(Property<T> a, Property<T> b) {
 		T value = a.getValue();
 		if (!(value instanceof String || value instanceof Integer || value instanceof Double
-				|| value instanceof Boolean)) {
+				|| value instanceof Boolean || value instanceof Float)) {
 			throw new RuntimeException("Eww. Unsupported property type.");
 		}
 		a.bindBidirectional(b);
@@ -88,7 +88,7 @@ public abstract class AbstractCuteController implements CuteController {
 	protected <T> void bindNormalAndRemember(Property<T> a, ObservableValue<T> b) {
 		T value = a.getValue();
 		if (!(value instanceof String || value instanceof Integer || value instanceof Double
-				|| value instanceof Boolean)) {
+				|| value instanceof Boolean || value instanceof Float)) {
 			throw new RuntimeException("Eww. Unsupported property type.");
 		}
 		a.bind(b);
@@ -131,6 +131,10 @@ public abstract class AbstractCuteController implements CuteController {
 				Property<Boolean> aBoolean = (Property<Boolean>) a;
 				Property<Boolean> bBoolean = (Property<Boolean>) b;
 				aBoolean.unbindBidirectional(bBoolean);
+			} else if (type.equals(Float.class)) {
+				Property<Float> aFloat = (Property<Float>) a;
+				Property<Float> bFloat = (Property<Float>) b;
+				aFloat.unbindBidirectional(bFloat);
 			} else {
 				throw new RuntimeException("Eww. Unsupported property type.");
 			}

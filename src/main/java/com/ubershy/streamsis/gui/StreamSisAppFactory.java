@@ -115,7 +115,12 @@ public class StreamSisAppFactory {
 		/**
 		 * The {@link CuteController} for editing {@link MultiSourceFileChooser}.
 		 */
-		MULTISOURCEFILECHOOSER("MultiSourceFileChooser.fxml");
+		MULTISOURCEFILECHOOSER("MultiSourceFileChooser.fxml"),
+		
+		/**
+		 * The {@link CuteController} for editing {@link MultiSourceFileChooser}.
+		 */
+		COORDINATES("Coordinates.fxml");
 
 		/** The file name of CuteController. */
 		private final String fileName;

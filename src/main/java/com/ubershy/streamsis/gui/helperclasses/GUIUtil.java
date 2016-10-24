@@ -23,6 +23,8 @@ import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.controlsfx.control.PopOver;
+import org.controlsfx.control.PopOver.ArrowLocation;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.Validator;
 
@@ -44,12 +46,14 @@ import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Control;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -60,6 +64,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.stage.PopupWindow.AnchorLocation;
 
 /**
  * Class with some useful methods related to GUI.
@@ -331,9 +336,8 @@ public final class GUIUtil {
 	/**
 	 * Show Java's {@link FileChooser} window that allows the user to choose a single file.
 	 * <p>
-	 * Internally it automatically opens last opened directory, lets the user to choose a file, sets
-	 * TextField (provided as argument in this method) to this file's path and remembers the
-	 * directory where the last file was chosen.
+	 * Internally it automatically opens last opened directory, lets the user to choose a file and
+	 * remembers the directory where the last file was chosen.
 	 * 
 	 * @param title
 	 *            The title of window to show.
@@ -341,15 +345,12 @@ public final class GUIUtil {
 	 *            How to describe files that are allowed to be chosen. Can't be empty.
 	 * @param saveOrOpen
 	 *            True to save file, false to open file.
-	 * @param tfToSet
-	 *            The TextField to set after the user has chosen the file.
 	 * @param allowedExtensions
 	 *            Array with allowed extensions in "*.extension" format. If null or empty, the user
 	 *            would be able to choose a file with any extension.
 	 */
-	public static void showJavaSingleFileChooser(String title, String extensionsDescription,
-			boolean saveOrOpen, TextField tfToSet, String[] allowedExtensions) {
-		Window window = tfToSet.getScene().getWindow();
+	public static File showJavaSingleFileChooser(String title, String extensionsDescription,
+			boolean saveOrOpen, Window window, String[] allowedExtensions) {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(title);
 		if (allowedExtensions != null && allowedExtensions.length != 0) {
@@ -370,8 +371,8 @@ public final class GUIUtil {
 		if (file != null) {
 			CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastFileDirectory",
 					file.getParentFile().getAbsolutePath());
-			tfToSet.setText(file.getAbsolutePath());
 		}
+		return file;
 	}
 	
 	/**
@@ -486,6 +487,62 @@ public final class GUIUtil {
 		// because it doesn't have a Checker, the Actor will not check it's Actions on
 		// reinitialization - it knows it's already broken.
 		element.init();
+	}
+
+	/**
+	 * Sets {@link PopOver} as tooltip to a specified node to show specified content.
+	 * 
+	 * @param nodeToTooltip
+	 *            The node over which to show the PopOver.
+	 * @param popoverContent
+	 *            The node to show inside PopOver.
+	 * @param offset
+	 *            The offset of PopOver relative to nodeToTooltip.
+	 */
+	public static void setPopOverTooltipToNode(Node nodeToTooltip, Node popoverContent,
+			double offset) {
+		PopOver over = new PopOver();
+		over.setConsumeAutoHidingEvents(false);
+		over.setAutoHide(false);
+		over.setDetachable(true);
+		over.setArrowLocation(ArrowLocation.BOTTOM_CENTER);
+		over.setContentNode(popoverContent);
+		// This tooltip's behavior of showing will be used to show popover at right time.
+		Tooltip invisibleTooltip = new Tooltip();
+		invisibleTooltip.setAutoHide(false);
+		invisibleTooltip.setConsumeAutoHidingEvents(false);
+		invisibleTooltip.setOpacity(0.0);
+		invisibleTooltip.setOnShown((e) -> {
+			over.show(nodeToTooltip, offset);
+		});
+		invisibleTooltip.setOnHidden((e) -> {
+			over.hide();
+		});
+		Tooltip.install(nodeToTooltip, invisibleTooltip);
+	}
+
+	/**
+	 * Sets {@link Tooltip} for a {@link Node} which nicely shows {@link ImageView} inside.
+	 * 
+	 * @param nodeToHaveTooltip
+	 *            The Node for installing Tooltip.
+	 * 
+	 * @param imageView
+	 *            The ImageView to show inside Tooltip.
+	 */
+	public static void setImageViewTooltip(Node nodeToHaveTooltip,
+			ImageView imageView) {
+		// Add blue shadow to ImageView so the actual image will be clearly distinguishable from
+		// tooltip's background.
+		DropShadow shadow = new DropShadow(25, Color.LIGHTGREY);
+		imageView.setEffect(shadow);
+		// TODO: If image is big and StreamSis window is close to the edge, Tooltip is hiding right
+		// after it is shown. Need to find workaround.
+		Tooltip fullPreviewTP = new Tooltip();
+		fullPreviewTP.setGraphic(imageView);
+		fullPreviewTP.setAnchorLocation(AnchorLocation.WINDOW_BOTTOM_LEFT);
+		fullPreviewTP.setStyle("-fx-effect: dropshadow(three-pass-box, black, 10,0.5,0,0);");
+		Tooltip.install(nodeToHaveTooltip, fullPreviewTP);
 	}
 	
 }
