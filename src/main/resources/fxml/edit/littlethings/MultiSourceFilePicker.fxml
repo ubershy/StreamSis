@@ -37,7 +37,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane fx:id="root" hgap="10.0" maxWidth="1.7976931348623157E308" prefWidth="1200.0" vgap="10.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ubershy.streamsis.gui.controllers.edit.littlethings.MultiSourceFileChooserController">
+<GridPane fx:id="root" hgap="10.0" maxWidth="1.7976931348623157E308" prefWidth="1200.0" vgap="10.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ubershy.streamsis.gui.controllers.edit.littlethings.MultiSourceFilePickerController">
    <columnConstraints>
       <ColumnConstraints maxWidth="1.7976931348623157E308" minWidth="10.0" />
       <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" />
@@ -58,7 +58,7 @@
          </children>
       </HBox>
       <Label fx:id="allowedExtensionsLabel" text="Allowed extensions are: Unknown" wrapText="true" GridPane.columnIndex="1" />
-      <Label text="Choose each next &lt;filetype&gt; file randomly" wrapText="true" GridPane.rowIndex="1" />
+      <Label text="Pick each next &lt;filetype&gt; file randomly" wrapText="true" GridPane.rowIndex="1" />
       <CheckBox fx:id="chooseFilesRandomlyCheckBox" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <TitledPane fx:id="manualTitledPane" expanded="false" maxWidth="1.7976931348623157E308" text="Manually set list of &lt;filetype&gt; files" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
          <content>

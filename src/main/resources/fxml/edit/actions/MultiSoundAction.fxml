@@ -46,6 +46,6 @@
             <Label fx:id="soundVolumeLabel" text="Sound Volume " BorderPane.alignment="CENTER" />
          </top>
       </BorderPane>
-      <HBox fx:id="fileChooserHBox" fillHeight="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.rowIndex="1" />
+      <HBox fx:id="filePickerHBox" fillHeight="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.rowIndex="1" />
    </children>
 </GridPane>

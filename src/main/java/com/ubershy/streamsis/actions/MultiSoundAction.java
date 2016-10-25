@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ubershy.streamsis.MultiSourceFileChooser;
+import com.ubershy.streamsis.MultiSourceFilePicker;
 
 /**
  * Multi Sound Action. <br>
@@ -38,14 +38,14 @@ import com.ubershy.streamsis.MultiSourceFileChooser;
  */
 public class MultiSoundAction extends SoundAction {
 
-	/** The file chooser that helps to choose each next sound file. */
+	/** The file picker that helps to choose each next sound file. */
 	@JsonProperty
-	private MultiSourceFileChooser fileChooser = new MultiSourceFileChooser();
+	private MultiSourceFilePicker filePicker = new MultiSourceFilePicker();
 
 	static final Logger logger = LoggerFactory.getLogger(MultiSoundAction.class);
 
 	public MultiSoundAction() {
-		fileChooser.setAcceptableExtensions(allowedExtensions);
+		filePicker.setAcceptableExtensions(allowedExtensions);
 	}
 
 	/**
@@ -61,9 +61,9 @@ public class MultiSoundAction extends SoundAction {
 	public MultiSoundAction(String soundDirectoryPath, double volume, boolean chooseFileRandomly) {
 		this();
 		this.volume.set(volume);;
-		fileChooser.setSrcPath(soundDirectoryPath);
-		fileChooser.setChooseFilesRandomly(chooseFileRandomly);
-		fileChooser.setFindingSourcesInSrcPath(true);
+		filePicker.setSrcPath(soundDirectoryPath);
+		filePicker.setPickingFilesRandomly(chooseFileRandomly);
+		filePicker.setFindingSourcesInSrcPath(true);
 	}
 
 	/**
@@ -80,10 +80,10 @@ public class MultiSoundAction extends SoundAction {
 			boolean chooseFileRandomly) {
 		this();
 		this.volume.set(volume);
-		fileChooser.getPersistentSourceFileList().setAll(persistentSourceFileList);
-		fileChooser.setChooseFilesRandomly(chooseFileRandomly);
-		fileChooser.setFindingSourcesInSrcPath(false);
-		fileChooser.setAcceptableExtensions(allowedExtensions);
+		filePicker.getPersistentSourceFileList().setAll(persistentSourceFileList);
+		filePicker.setPickingFilesRandomly(chooseFileRandomly);
+		filePicker.setFindingSourcesInSrcPath(false);
+		filePicker.setAcceptableExtensions(allowedExtensions);
 	}
 
 	/**
@@ -91,15 +91,15 @@ public class MultiSoundAction extends SoundAction {
 	 *
 	 * @param volume
 	 *            the volume playback from 0 to 1
-	 * @param fileChooser
-	 *            the {@link MultiSourceFileChooser}
+	 * @param filePicker
+	 *            the {@link MultiSourceFilePicker}
 	 */
 	@JsonCreator
 	public MultiSoundAction(@JsonProperty("volume") double volume,
-			@JsonProperty("fileChooser") MultiSourceFileChooser fileChooser) {
+			@JsonProperty("filePicker") MultiSourceFilePicker filePicker) {
 		this.volume.set(volume);
-		this.fileChooser = fileChooser;
-		this.fileChooser.setAcceptableExtensions(allowedExtensions);
+		this.filePicker = filePicker;
+		this.filePicker.setAcceptableExtensions(allowedExtensions);
 	}
 
 	@Override
@@ -107,11 +107,11 @@ public class MultiSoundAction extends SoundAction {
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
 			logger.info(
-					"Playing Source directory file # " + (fileChooser.getCurrentFileIndex() + 1));
+					"Playing Source directory file # " + (filePicker.getCurrentFileIndex() + 1));
 			boolean wasAbleToPlay = play();
-			fileChooser.computeNextFileIndex();
-			File nextFileToPlay = fileChooser.getTemporarySourceFileList()
-					.get(fileChooser.getCurrentFileIndex());
+			filePicker.computeNextFileIndex();
+			File nextFileToPlay = filePicker.getTemporarySourceFileList()
+					.get(filePicker.getCurrentFileIndex());
 			String nextSoundToPlay = nextFileToPlay.getPath();
 			soundToPlay = initializeSound(nextSoundToPlay);
 			elementInfo.setBooleanResult(wasAbleToPlay);
@@ -121,38 +121,38 @@ public class MultiSoundAction extends SoundAction {
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
-		fileChooser.initTemporaryFileList(elementInfo, "sounds", null);
+		filePicker.initTemporaryFileList(elementInfo, "sounds", null);
 		if (elementInfo.isBroken()) {
-			// already broken by fileChooser.initTemporaryFileList()
+			// already broken by filePicker.initTemporaryFileList()
 			return;
 		}
 		soundToPlay = initializeSound(
-				fileChooser.getTemporarySourceFileList().get(fileChooser.getCurrentFileIndex())
+				filePicker.getTemporarySourceFileList().get(filePicker.getCurrentFileIndex())
 						.getPath());
-		if (fileChooser.isChoosingFilesRandomly()) {
-			fileChooser.computeNextFileIndex();
+		if (filePicker.isPickingFilesRandomly()) {
+			filePicker.computeNextFileIndex();
 		}
 	}
 
 	/**
-	 * Gets the {@link #fileChooser}.
+	 * Gets the {@link #filePicker}.
 	 *
-	 * @return The {@link #fileChooser}.
+	 * @return The {@link #filePicker}.
 	 */
-	public MultiSourceFileChooser getFileChooser() {
-		return fileChooser;
+	public MultiSourceFilePicker getFilePicker() {
+		return filePicker;
 	}
 	
 	/**
-	 * Sets the {@link #fileChooser}. In most cases it's not needed to set fileChooser. This setter
+	 * Sets the {@link #filePicker}. In most cases it's not needed to set filePicker. This setter
 	 * exists only for automatic copying of attributes.
 	 *
-	 * @param fileChooser
-	 *            The new {@link #fileChooser}.
+	 * @param filePicker
+	 *            The new {@link #filePicker}.
 	 */
-	public void setFileChooser(MultiSourceFileChooser fileChooser) {
-		fileChooser.setAcceptableExtensions(allowedExtensions);
-		this.fileChooser = fileChooser;
+	public void setFilePicker(MultiSourceFilePicker filePicker) {
+		filePicker.setAcceptableExtensions(allowedExtensions);
+		this.filePicker = filePicker;
 	}
 
 }

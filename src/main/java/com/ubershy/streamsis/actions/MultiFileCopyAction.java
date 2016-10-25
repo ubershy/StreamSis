@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ubershy.streamsis.MultiSourceFileChooser;
+import com.ubershy.streamsis.MultiSourceFilePicker;
 import com.ubershy.streamsis.Util;
 
 /**
@@ -40,25 +40,25 @@ public class MultiFileCopyAction extends FileCopyAction {
 
 	static final Logger logger = LoggerFactory.getLogger(MultiFileCopyAction.class);
 	
-	/** The file chooser that helps to choose each next source file. */
+	/** The file picker that helps to choose each next source file. */
 	@JsonProperty
-	private MultiSourceFileChooser fileChooser = new MultiSourceFileChooser();
+	private MultiSourceFilePicker filePicker = new MultiSourceFilePicker();
 
 	public MultiFileCopyAction() {
 		dstFilePath.addListener((o, oldVal, newVal) -> {
-			fileChooser.setAcceptableExtensions(generateExtensionsForChooser(newVal));
+			filePicker.setAcceptableExtensions(generateExtensionsForPicker(newVal));
 		});
 	}
 
 	/**
-	 * Generates list with allowed extensions for chooser. The allowed extensions list will consist
+	 * Generates list with allowed extensions for picker. The allowed extensions list will consist
 	 * only of one extension - destination file's extension.
 	 *
 	 * @param dstPath
 	 *            The destination file path.
-	 * @return The list with single allowed extension to pass to {@link #fileChooser}.
+	 * @return The list with single allowed extension to pass to {@link #filePicker}.
 	 */
-	private List<String> generateExtensionsForChooser(String dstPath) {
+	private List<String> generateExtensionsForPicker(String dstPath) {
 		String singleExtension = null;
 		if (dstPath != null && !dstPath.isEmpty()) {
 			singleExtension = Util.extractFileExtensionFromPath(dstPath);
@@ -83,11 +83,11 @@ public class MultiFileCopyAction extends FileCopyAction {
 	public MultiFileCopyAction(String srcDirectoryPath, String dstFilePath,
 			boolean chooseFileRandomly) {
 		this();
-		fileChooser.setAcceptableExtensions(generateExtensionsForChooser(dstFilePath));
+		filePicker.setAcceptableExtensions(generateExtensionsForPicker(dstFilePath));
 		this.dstFilePath.set(dstFilePath);
-		fileChooser.setFindingSourcesInSrcPath(true);
-		fileChooser.setSrcPath(srcDirectoryPath);
-		fileChooser.setChooseFilesRandomly(chooseFileRandomly);
+		filePicker.setFindingSourcesInSrcPath(true);
+		filePicker.setSrcPath(srcDirectoryPath);
+		filePicker.setPickingFilesRandomly(chooseFileRandomly);
 	}
 
 	/**
@@ -100,11 +100,11 @@ public class MultiFileCopyAction extends FileCopyAction {
 	public MultiFileCopyAction(ArrayList<File> persistentSourceFileList, String dstFilePath,
 			boolean chooseFileRandomly) {
 		this();
-		fileChooser.setAcceptableExtensions(generateExtensionsForChooser(dstFilePath));
+		filePicker.setAcceptableExtensions(generateExtensionsForPicker(dstFilePath));
 		this.dstFilePath.set(dstFilePath);
-		fileChooser.setFindingSourcesInSrcPath(false);
-		fileChooser.getPersistentSourceFileList().setAll(persistentSourceFileList);
-		fileChooser.setChooseFilesRandomly(chooseFileRandomly);
+		filePicker.setFindingSourcesInSrcPath(false);
+		filePicker.getPersistentSourceFileList().setAll(persistentSourceFileList);
+		filePicker.setPickingFilesRandomly(chooseFileRandomly);
 	}
 
 	/**
@@ -112,15 +112,15 @@ public class MultiFileCopyAction extends FileCopyAction {
 	 *
 	 * @param dstFilePath
 	 *            the Destination <b>file</b>'s path
-	 * @param fileChooser
-	 *            the {@link MultiSourceFileChooser}
+	 * @param filePicker
+	 *            the {@link MultiSourceFilePicker}
 	 */
 	@JsonCreator
 	public MultiFileCopyAction(@JsonProperty("dstFilePath") String dstFilePath,
-			@JsonProperty("fileChooser") MultiSourceFileChooser fileChooser) {
+			@JsonProperty("filePicker") MultiSourceFilePicker filePicker) {
 		this();
-		fileChooser.setAcceptableExtensions(generateExtensionsForChooser(dstFilePath));
-		this.fileChooser = fileChooser;
+		filePicker.setAcceptableExtensions(generateExtensionsForPicker(dstFilePath));
+		this.filePicker = filePicker;
 		this.dstFilePath.set(dstFilePath);
 	}
 
@@ -128,12 +128,12 @@ public class MultiFileCopyAction extends FileCopyAction {
 	public void execute() {
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
-			File fileToCopy = fileChooser.getTemporarySourceFileList()
-					.get(fileChooser.getCurrentFileIndex());
+			File fileToCopy = filePicker.getTemporarySourceFileList()
+					.get(filePicker.getCurrentFileIndex());
 			logger.info(
-					"Copying Source directory file # " + (fileChooser.getCurrentFileIndex() + 1));
+					"Copying Source directory file # " + (filePicker.getCurrentFileIndex() + 1));
 			File fileToReplace = new File(dstFilePath.get());
-			fileChooser.computeNextFileIndex();
+			filePicker.computeNextFileIndex();
 			try {
 				Util.copyFileSynced(fileToCopy, fileToReplace);
 			} catch (IOException e) {
@@ -151,41 +151,41 @@ public class MultiFileCopyAction extends FileCopyAction {
 			elementInfo.setAsBroken("Destination path is not defined");
 			return;
 		}
-		if (fileChooser.getAcceptableExtensions().size() != 0) {
-			fileChooser.initTemporaryFileList(elementInfo, "Source files", dstFilePath.get());
+		if (filePicker.getAcceptableExtensions().size() != 0) {
+			filePicker.initTemporaryFileList(elementInfo, "Source files", dstFilePath.get());
 		} else {
 			elementInfo.setAsBroken("Destination file has no extension: " + dstFilePath.get()
 					+ "\nPlease choose another file");
 			return;
 		}
 		if (elementInfo.isBroken()) {
-			// already broken by fileChooser.initTemporaryFileList() or null extension
+			// already broken by filePicker.initTemporaryFileList() or null extension
 			return;
 		}
-		if (fileChooser.isChoosingFilesRandomly()) {
-			fileChooser.computeNextFileIndex();
+		if (filePicker.isPickingFilesRandomly()) {
+			filePicker.computeNextFileIndex();
 		}
 	}
 	
 	/**
-	 * Gets the {@link #fileChooser}.
+	 * Gets the {@link #filePicker}.
 	 *
-	 * @return The {@link #fileChooser}.
+	 * @return The {@link #filePicker}.
 	 */
-	public MultiSourceFileChooser getFileChooser() {
-		return fileChooser;
+	public MultiSourceFilePicker getFilePicker() {
+		return filePicker;
 	}
 	
 	/**
-	 * Sets the {@link #fileChooser}. In most cases it's not needed to set fileChooser. This setter
+	 * Sets the {@link #filePicker}. In most cases it's not needed to set filePicker. This setter
 	 * exists only for automatic copying of attributes.
 	 *
-	 * @param fileChooser
-	 *            The new {@link #fileChooser}.
+	 * @param filePicker
+	 *            The new {@link #filePicker}.
 	 */
-	public void setFileChooser(MultiSourceFileChooser fileChooser) {
-		fileChooser.setAcceptableExtensions(generateExtensionsForChooser(dstFilePath.get()));
-		this.fileChooser = fileChooser;
+	public void setFilePicker(MultiSourceFilePicker filePicker) {
+		filePicker.setAcceptableExtensions(generateExtensionsForPicker(dstFilePath.get()));
+		this.filePicker = filePicker;
 	}
 
 }

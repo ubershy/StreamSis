@@ -23,10 +23,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ubershy.streamsis.StreamSis;
-import com.ubershy.streamsis.MultiSourceFileChooser;
+import com.ubershy.streamsis.MultiSourceFilePicker;
 import com.ubershy.streamsis.actions.Action;
 import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.checkers.Checker;
+import com.ubershy.streamsis.checkers.Coordinates;
 import com.ubershy.streamsis.counters.Counter;
 import com.ubershy.streamsis.gui.contextmenu.ActorListContextMenuManager;
 import com.ubershy.streamsis.gui.contextmenu.SisSceneContextMenuBuilder;
@@ -113,12 +114,12 @@ public class StreamSisAppFactory {
 	public enum LittleCuteControllerType {
 
 		/**
-		 * The {@link CuteController} for editing {@link MultiSourceFileChooser}.
+		 * The {@link CuteController} for editing {@link MultiSourceFilePicker}.
 		 */
-		MULTISOURCEFILECHOOSER("MultiSourceFileChooser.fxml"),
+		MULTISOURCEFILEPICKER("MultiSourceFilePicker.fxml"),
 		
 		/**
-		 * The {@link CuteController} for editing {@link MultiSourceFileChooser}.
+		 * The {@link CuteController} for editing {@link Coordinates}.
 		 */
 		COORDINATES("Coordinates.fxml");
 

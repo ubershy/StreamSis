@@ -47,6 +47,6 @@
             <Button mnemonicParsing="false" onAction="#browseDestinationPath" text="Browse" />
          </children>
       </HBox>
-      <HBox fx:id="fileChooserHBox" fillHeight="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
+      <HBox fx:id="filePickerHBox" fillHeight="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
    </children>
 </GridPane>

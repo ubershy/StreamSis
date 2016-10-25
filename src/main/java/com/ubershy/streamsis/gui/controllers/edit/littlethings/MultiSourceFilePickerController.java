@@ -27,7 +27,7 @@ import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 
-import com.ubershy.streamsis.MultiSourceFileChooser;
+import com.ubershy.streamsis.MultiSourceFilePicker;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.animations.ThreeDotsAnimation;
@@ -61,10 +61,10 @@ import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
 
 /**
- * MultiSourceFileChooserController, the controller that allows to edit
- * {@link MultiSourceFileChooser} in Element Editor panel.
+ * MultiSourceFilePickerController, the controller that allows to edit
+ * {@link MultiSourceFilePicker} in Element Editor panel.
  */
-public class MultiSourceFileChooserController extends AbstractCuteController {
+public class MultiSourceFilePickerController extends AbstractCuteController {
 
 	@FXML
 	private GridPane root;
@@ -108,11 +108,11 @@ public class MultiSourceFileChooserController extends AbstractCuteController {
 	@FXML
 	private Button clearAllButton;
 
-	/** The {@link MultiSourceFileChooser} to edit. */
-	protected MultiSourceFileChooser chooser;
+	/** The {@link MultiSourceFilePicker} to edit. */
+	protected MultiSourceFilePicker picker;
 
-	/** The original {@link MultiSourceFileChooser} to compare values with {@link #chooser}. */
-	protected MultiSourceFileChooser origChooser;
+	/** The original {@link MultiSourceFilePicker} to compare values with {@link #picker}. */
+	protected MultiSourceFilePicker origPicker;
 
 	protected ValidationSupport validationSupport;
 	
@@ -165,17 +165,17 @@ public class MultiSourceFileChooserController extends AbstractCuteController {
 	private void initializeListeners() {
 		// This listener starts and stops three dots animation on manualTitledPane based if it's
 		// open or not. Meant to be added later to manualTitledPane.expandedProperty() when
-		// connecting to MultiSourceFileChooser.
+		// connecting to MultiSourceFilePicker.
 		paneExpansionListener = (o, oldValue, newValue) -> {
-			if (newValue) { // Expanded. Chooser will not find sources in source path directory.
-				chooser.setFindingSourcesInSrcPath(false);
-				buttonStateManager.reportNewValueOfControl(origChooser.isFindingSourcesInSrcPath(),
+			if (newValue) { // Expanded. Picker will not find sources in source path directory.
+				picker.setFindingSourcesInSrcPath(false);
+				buttonStateManager.reportNewValueOfControl(origPicker.isFindingSourcesInSrcPath(),
 						!newValue, manualTitledPane, null);
 				setAnimationAndValidationAccordingToManualTitledPaneExpansion(newValue);
 			}
-			else { // Collapsed. Chooser will find sources in source path directory.
-				chooser.setFindingSourcesInSrcPath(true);
-				buttonStateManager.reportNewValueOfControl(origChooser.isFindingSourcesInSrcPath(),
+			else { // Collapsed. Picker will find sources in source path directory.
+				picker.setFindingSourcesInSrcPath(true);
+				buttonStateManager.reportNewValueOfControl(origPicker.isFindingSourcesInSrcPath(),
 						!newValue, manualTitledPane, null);
 				setAnimationAndValidationAccordingToManualTitledPaneExpansion(newValue);
 			}
@@ -246,56 +246,56 @@ public class MultiSourceFileChooserController extends AbstractCuteController {
 	}
 
 	/**
-	 * Sets the {@link MultiSourceFileChooser} to work with and binds view's controls to
-	 * MultiSourceFileChooser's properties. Before using this method you should first invoke
+	 * Sets the {@link MultiSourceFilePicker} to work with and binds view's controls to
+	 * MultiSourceFilePicker's properties. Before using this method you should first invoke
 	 * {@link #replaceFileTypeNameTagInLabeledControls(String)} method.
 	 *
-	 * @param editableCopyOfChooser
-	 *            The MultiSourceFileChooser to edit. (Actually a copy of the MultiSourceFileChooser
+	 * @param editableCopyOfPicker
+	 *            The MultiSourceFilePicker to edit. (Actually a copy of the MultiSourceFilePicker
 	 *            the user wishes to edit. The changes made in the copy will be transferred to
-	 *            original MultiSourceFileChooser once the user hit "Apply" or "OK" button).
-	 * @param origChooser
-	 *            The Original MultiSourceFileChooser to use as storage of original values of
+	 *            original MultiSourceFilePicker once the user hit "Apply" or "OK" button).
+	 * @param origPicker
+	 *            The Original MultiSourceFilePicker to use as storage of original values of
 	 *            CuteElement's attributes. Should not be edited in controllers.
 	 * @throws RuntimeException
 	 *             In case {@link #replaceFileTypeNameTagInLabeledControls(String)} wasn't used
 	 *             before this method.
 	 */
-	public void bindToMultiSourceFileChooser(MultiSourceFileChooser editableCopyOfChooser,
-			MultiSourceFileChooser origChooser) {
+	public void bindToMultiSourceFilePicker(MultiSourceFilePicker editableCopyOfPicker,
+			MultiSourceFilePicker origPicker) {
 		if (fileTypeName == null) {
 			// refer to replaceFileTypeNameTagInLabeledControls() method.
 			throw new RuntimeException("File type name tag needs to be replaced before"
 					+ " using this view.");
 		}
-		this.chooser = editableCopyOfChooser;
-		this.origChooser = origChooser;
+		this.picker = editableCopyOfPicker;
+		this.origPicker = origPicker;
 		// Set up bidirectional bindings.
 		bindBidirectionalAndRemember(chooseFilesRandomlyCheckBox.selectedProperty(),
-				editableCopyOfChooser.chooseFilesRandomlyProperty());
+				editableCopyOfPicker.pickFilesRandomlyProperty());
 		bindBidirectionalAndRemember(srcPathTextField.textProperty(),
-				editableCopyOfChooser.srcPathProperty());
+				editableCopyOfPicker.srcPathProperty());
 		fileTable.itemsProperty()
-		.bindBidirectional(editableCopyOfChooser.persistentSourceFileListProperty());
+		.bindBidirectional(editableCopyOfPicker.persistentSourceFileListProperty());
 		// Set up listeners
-		// Let the manualTitledPane expanded status control if file chooser should search for
+		// Let the manualTitledPane expanded status control if file picker should search for
 		// files in manually set list or in "source" directory. So there's no need for additional
 		// CheckBox. Instead of bindings use listener because... reasons.
-		manualTitledPane.setExpanded(!editableCopyOfChooser.isFindingSourcesInSrcPath());
+		manualTitledPane.setExpanded(!editableCopyOfPicker.isFindingSourcesInSrcPath());
 		manualTitledPane.expandedProperty().addListener(paneExpansionListener);
 		chooseFilesRandomlyCheckBox.selectedProperty().addListener((o, oldVal, newVal) -> {
-			buttonStateManager.reportNewValueOfControl(origChooser.isChoosingFilesRandomly(),
+			buttonStateManager.reportNewValueOfControl(origPicker.isPickingFilesRandomly(),
 					newVal, chooseFilesRandomlyCheckBox, null);
 		});
 		// Set up bindings to read-only properties.
 		allowedExtensionsLabel.setText(
-				addToExtensionsText + editableCopyOfChooser.getAcceptableExtensions().toString());
+				addToExtensionsText + editableCopyOfPicker.getAcceptableExtensions().toString());
 		bindNormalAndRemember(allowedExtensionsLabel.textProperty(),
 				Bindings.concat(addToExtensionsText)
-						.concat(this.chooser.acceptableExtensionsProperty().asString()));
+						.concat(this.picker.acceptableExtensionsProperty().asString()));
 	}
 
-	public void unbindFromMultiSourceFileChooser() {
+	public void unbindFromMultiSourceFilePicker() {
 		unbindAllRememberedBinds();
 		manualTitledPane.expandedProperty().removeListener(paneExpansionListener);
 	}
@@ -314,7 +314,7 @@ public class MultiSourceFileChooserController extends AbstractCuteController {
 	@Override
 	public void setValidationSupport(ValidationSupport validationSupport) {
 		this.validationSupport = validationSupport;
-		if (chooser.isFindingSourcesInSrcPath()) {
+		if (picker.isFindingSourcesInSrcPath()) {
 			setAnimationAndValidationAccordingToManualTitledPaneExpansion(false);
 		} else {
 			setAnimationAndValidationAccordingToManualTitledPaneExpansion(true);
@@ -336,7 +336,7 @@ public class MultiSourceFileChooserController extends AbstractCuteController {
 					ValidationResult emptyResult = ValidationResult.fromErrorIf(c,
 							"No files selected", newValue.size() == 0);
 					buttonStateManager.reportNewValueOfControl(
-							origChooser.getPersistentSourceFileList(), newValue, c, emptyResult);
+							origPicker.getPersistentSourceFileList(), newValue, c, emptyResult);
 					return emptyResult;
 				};
 				validationSupport.registerValidator(fileTable, true, fileTableValidator);
@@ -368,7 +368,7 @@ public class MultiSourceFileChooserController extends AbstractCuteController {
 							!(new File(newValue).isDirectory()));
 					ValidationResult finalResult = ValidationResult.fromResults(emptyResult,
 							notDirectoryResult, invalidPathResult, notAbsolutePathResult);
-					buttonStateManager.reportNewValueOfControl(origChooser.getSrcPath(), newValue,
+					buttonStateManager.reportNewValueOfControl(origPicker.getSrcPath(), newValue,
 							c, finalResult);
 					return finalResult;
 				};
@@ -385,8 +385,8 @@ public class MultiSourceFileChooserController extends AbstractCuteController {
 		// Register fileTable to fake validator, so it will not affect validation anymore.
 		this.validationSupport.registerValidator(fileTable, false, GUIUtil.createFakeAlwaysSuccessfulValidator());
 		// Tell buttonStateManager that no errors exist now in fileTable.
-		buttonStateManager.reportNewValueOfControl(origChooser.getPersistentSourceFileList(),
-				chooser.getPersistentSourceFileList(), fileTable,
+		buttonStateManager.reportNewValueOfControl(origPicker.getPersistentSourceFileList(),
+				picker.getPersistentSourceFileList(), fileTable,
 				GUIUtil.fakeSuccessfulValidationResult(fileTable));
 	}
 	
@@ -394,19 +394,19 @@ public class MultiSourceFileChooserController extends AbstractCuteController {
 		// Register srcPathTextField to fake validator, so it will not affect validation anymore.
 		this.validationSupport.registerValidator(srcPathTextField, false, GUIUtil.createFakeAlwaysSuccessfulValidator());
 		// Tell buttonStateManager that no errors exist now in srcPathTextField.
-		buttonStateManager.reportNewValueOfControl(origChooser.getSrcPath(), chooser.getSrcPath(),
+		buttonStateManager.reportNewValueOfControl(origPicker.getSrcPath(), picker.getSrcPath(),
 				srcPathTextField, GUIUtil.fakeSuccessfulValidationResult(srcPathTextField));
 	}
 
 	/**
-	 * Replaces &lt;filetype&gt tags in this {@link MultiSourceFileChooserController}'s view to a
+	 * Replaces &lt;filetype&gt tags in this {@link MultiSourceFilePickerController}'s view to a
 	 * specified text. Should be invoked before
-	 * {@link #bindToMultiSourceFileChooser(MultiSourceFileChooser, MultiSourceFileChooser)} method.
+	 * {@link #bindToMultiSourceFilePicker(MultiSourceFilePicker, MultiSourceFilePicker)} method.
 	 *
 	 * @param fileTypeName
 	 *            The text to use instead of &lt;filetype&gt tags in texts of {@link Label}s. Should
 	 *            describe in one or two words the type of files this
-	 *            MultiSourceFileChooserController accepts (not extension).
+	 *            MultiSourceFilePickerController accepts (not extension).
 	 * @throws RuntimeException
 	 *             if it was already invoked and replaced the text in Labels.
 	 */
@@ -437,7 +437,7 @@ public class MultiSourceFileChooserController extends AbstractCuteController {
 		List<File> unmodifiableListOfChosenFiles = GUIUtil.showJavaMultiFileChooser(
 				"Add " + fileTypeName + " files from which to choose", "Files to choose from",
 				getView().getScene().getWindow(),
-				chooser.getAcceptableExtensions().toArray(new String[0]));
+				picker.getAcceptableExtensions().toArray(new String[0]));
 		// If null, the operation was cancelled by the user.
 		if (unmodifiableListOfChosenFiles != null) {
 			ArrayList<File> chosenFiles = new ArrayList<File>(unmodifiableListOfChosenFiles);

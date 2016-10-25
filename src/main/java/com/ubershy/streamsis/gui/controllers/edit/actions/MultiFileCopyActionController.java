@@ -31,7 +31,7 @@ import com.ubershy.streamsis.gui.StreamSisAppFactory;
 import com.ubershy.streamsis.gui.StreamSisAppFactory.LittleCuteControllerType;
 import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.gui.controllers.edit.AbstractCuteController;
-import com.ubershy.streamsis.gui.controllers.edit.littlethings.MultiSourceFileChooserController;
+import com.ubershy.streamsis.gui.controllers.edit.littlethings.MultiSourceFilePickerController;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteElement;
@@ -53,7 +53,7 @@ public class MultiFileCopyActionController extends AbstractCuteController
     private TextField destinationTextField;
     
     @FXML
-    private HBox fileChooserHBox;
+    private HBox filePickerHBox;
     
     /** The {@link MultiFileCopyAction} to edit. */
 	protected MultiFileCopyAction mFCAction;
@@ -64,17 +64,17 @@ public class MultiFileCopyActionController extends AbstractCuteController
 	protected ValidationSupport validationSupport;
 	
 	
-	protected MultiSourceFileChooserController MSFCController = (MultiSourceFileChooserController)
+	protected MultiSourceFilePickerController MSFCPontroller = (MultiSourceFilePickerController)
 			StreamSisAppFactory.buildLittleCuteController(
-					LittleCuteControllerType.MULTISOURCEFILECHOOSER);
+					LittleCuteControllerType.MULTISOURCEFILEPICKER);
 
 	/*
 	 * @inheritDoc
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		MSFCController.replaceFileTypeNameTagInLabeledControls("source");
-		fileChooserHBox.getChildren().add(MSFCController.getView());
+		MSFCPontroller.replaceFileTypeNameTagInLabeledControls("source");
+		filePickerHBox.getChildren().add(MSFCPontroller.getView());
 	}
 	
 	/*
@@ -83,7 +83,7 @@ public class MultiFileCopyActionController extends AbstractCuteController
 	@Override
 	public void setCuteButtonsStatesManager(CuteButtonsStatesManager buttonStateManager) {
 		super.setCuteButtonsStatesManager(buttonStateManager);
-		MSFCController.setCuteButtonsStatesManager(buttonStateManager);
+		MSFCPontroller.setCuteButtonsStatesManager(buttonStateManager);
 	}
 
 	/*
@@ -95,8 +95,8 @@ public class MultiFileCopyActionController extends AbstractCuteController
 		origMFCAction = (MultiFileCopyAction) origCE;
 		bindBidirectionalAndRemember(destinationTextField.textProperty(),
 				mFCAction.dstFilePathProperty());
-		MSFCController.bindToMultiSourceFileChooser(mFCAction.getFileChooser(),
-				origMFCAction.getFileChooser());
+		MSFCPontroller.bindToMultiSourceFilePicker(mFCAction.getFilePicker(),
+				origMFCAction.getFilePicker());
 	}
 	
 	/*
@@ -105,7 +105,7 @@ public class MultiFileCopyActionController extends AbstractCuteController
 	@Override
 	public void unbindFromCuteElement() {
 		unbindAllRememberedBinds();
-		MSFCController.unbindFromMultiSourceFileChooser();
+		MSFCPontroller.unbindFromMultiSourceFilePicker();
 	}
 
 	/*
@@ -137,16 +137,16 @@ public class MultiFileCopyActionController extends AbstractCuteController
 			ValidationResult finalResult = ValidationResult.fromResults(emptyResult,
 					noExtensionResult, invalidPathResult, notAbsolutePathResult);
 			if (finalResult.getMessages().size() == 0) {
-				fileChooserHBox.setDisable(false);
+				filePickerHBox.setDisable(false);
 			} else {
-				fileChooserHBox.setDisable(true);
+				filePickerHBox.setDisable(true);
 			}
 			buttonStateManager.reportNewValueOfControl(origMFCAction.getDstFilePath(), newValue, c,
 					finalResult);
 			return finalResult;
 		};
 		this.validationSupport.registerValidator(destinationTextField, destinationFieldValidator);
-		MSFCController.setValidationSupport(validationSupport);
+		MSFCPontroller.setValidationSupport(validationSupport);
 	}
 	
     @FXML

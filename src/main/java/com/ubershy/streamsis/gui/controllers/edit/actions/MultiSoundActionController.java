@@ -26,7 +26,7 @@ import com.ubershy.streamsis.gui.StreamSisAppFactory;
 import com.ubershy.streamsis.gui.StreamSisAppFactory.LittleCuteControllerType;
 import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.gui.controllers.edit.AbstractCuteController;
-import com.ubershy.streamsis.gui.controllers.edit.littlethings.MultiSourceFileChooserController;
+import com.ubershy.streamsis.gui.controllers.edit.littlethings.MultiSourceFilePickerController;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.project.CuteElement;
 
@@ -51,7 +51,7 @@ public class MultiSoundActionController extends AbstractCuteController
     private Label soundVolumeLabel;
     
     @FXML
-    private HBox fileChooserHBox;
+    private HBox filePickerHBox;
 
     /** The {@link MultiSoundAction} to edit. */
 	protected MultiSoundAction msoundAction;
@@ -64,9 +64,9 @@ public class MultiSoundActionController extends AbstractCuteController
 				newVal, volumeSlider, null);
 	};
 	
-	protected MultiSourceFileChooserController MSFCController = 
-			(MultiSourceFileChooserController) StreamSisAppFactory
-			.buildLittleCuteController(LittleCuteControllerType.MULTISOURCEFILECHOOSER);
+	protected MultiSourceFilePickerController MSFPController = 
+			(MultiSourceFilePickerController) StreamSisAppFactory
+			.buildLittleCuteController(LittleCuteControllerType.MULTISOURCEFILEPICKER);
 	
 	protected ValidationSupport validationSupport;
 
@@ -75,8 +75,8 @@ public class MultiSoundActionController extends AbstractCuteController
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		MSFCController.replaceFileTypeNameTagInLabeledControls("sound");
-		fileChooserHBox.getChildren().add(MSFCController.getView());
+		MSFPController.replaceFileTypeNameTagInLabeledControls("sound");
+		filePickerHBox.getChildren().add(MSFPController.getView());
 		String soundVolumeLabelOrigText = soundVolumeLabel.getText();
 		soundVolumeLabel.setText(soundVolumeLabelOrigText + 100 + "%");
 		volumeSlider.valueProperty().addListener((o, oldVal, newVal) -> {
@@ -95,8 +95,8 @@ public class MultiSoundActionController extends AbstractCuteController
 		bindNormalAndRemember(msoundAction.volumeProperty(),
 				volumeSlider.valueProperty().divide(100.0));
 		volumeSlider.valueProperty().addListener(volumeListener);
-		MSFCController.bindToMultiSourceFileChooser(msoundAction.getFileChooser(),
-				origmSoundAction.getFileChooser());
+		MSFPController.bindToMultiSourceFilePicker(msoundAction.getFilePicker(),
+				origmSoundAction.getFilePicker());
 	}
 	
 	/*
@@ -106,7 +106,7 @@ public class MultiSoundActionController extends AbstractCuteController
 	public void unbindFromCuteElement() {
 		unbindAllRememberedBinds();
 		volumeSlider.valueProperty().removeListener(volumeListener);
-		MSFCController.unbindFromMultiSourceFileChooser();
+		MSFPController.unbindFromMultiSourceFilePicker();
 	}
 
 	/*
@@ -123,7 +123,7 @@ public class MultiSoundActionController extends AbstractCuteController
 	@Override
 	public void setValidationSupport(ValidationSupport validationSupport) {
 		this.validationSupport = validationSupport;
-		MSFCController.setValidationSupport(validationSupport);
+		MSFPController.setValidationSupport(validationSupport);
 	}
 	
 	/*
@@ -132,7 +132,7 @@ public class MultiSoundActionController extends AbstractCuteController
 	@Override
 	public void setCuteButtonsStatesManager(CuteButtonsStatesManager buttonStateManager) {
 		super.setCuteButtonsStatesManager(buttonStateManager);
-		MSFCController.setCuteButtonsStatesManager(buttonStateManager);
+		MSFPController.setCuteButtonsStatesManager(buttonStateManager);
 	}
 
 }

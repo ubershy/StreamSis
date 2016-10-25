@@ -45,14 +45,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
- * MultiSourceFileChooser can help to choose next time file for action either randomly or
- * sequentially from a predefined list of files or from a directory containing files.
+ * MultiSourceFilePicker can help to pick next time file either randomly or sequentially from a
+ * predefined list of files or from a directory containing files.
  */
-public class MultiSourceFileChooser {
+public class MultiSourceFilePicker {
 
-	/** Defines if to choose each next file randomly or sequentially. */
+	/** Defines if to pick each next file randomly or sequentially. */
 	@JsonIgnore
-	protected BooleanProperty chooseFilesRandomly = new SimpleBooleanProperty(true);
+	protected BooleanProperty pickFilesRandomly = new SimpleBooleanProperty(true);
 
 	/**
 	 * The index of current file in {@link #temporarySourceFileList}.
@@ -101,15 +101,15 @@ public class MultiSourceFileChooser {
 	protected ReadOnlyListWrapper<File> temporarySourceFileList = new ReadOnlyListWrapper<File>(
 			this, "temporarySourceFileList", FXCollections.observableArrayList());
 
-	public MultiSourceFileChooser() {
+	public MultiSourceFilePicker() {
 
 	}
 
 	/**
-	 * Instantiates a new MultiSourceFileChooser. Used by deserializator.
+	 * Instantiates a new MultiSourceFilePicker. Used by deserializator.
 	 *
-	 * @param chooseFileRandomly
-	 *            {@link #choseFilesRandomly}
+	 * @param pickFileRandomly
+	 *            {@link #pickFilesRandomly}
 	 * @param findSourcesInSrcPath
 	 *            {@link #findingSourcesInSrcPath}
 	 * @param persistentSourceFileList
@@ -118,11 +118,11 @@ public class MultiSourceFileChooser {
 	 *            the {@link #srcPath}
 	 */
 	@JsonCreator
-	public MultiSourceFileChooser(@JsonProperty("chooseFileRandomly") boolean chooseFileRandomly,
+	public MultiSourceFilePicker(@JsonProperty("pickFilesRandomly") boolean pickFileRandomly,
 			@JsonProperty("findSourcesInSrcPath") boolean findSourcesInSrcPath,
 			@JsonProperty("persistentSourceFileList") ArrayList<File> persistentSourceFileList,
 			@JsonProperty("srcPath") String srcPath) {
-		this.chooseFilesRandomly.set(chooseFileRandomly);
+		this.pickFilesRandomly.set(pickFileRandomly);
 		this.findingSourcesInSrcPath.set(findSourcesInSrcPath);
 		this.persistentSourceFileList.get().setAll(persistentSourceFileList);
 		this.srcPath.set(srcPath);
@@ -132,7 +132,7 @@ public class MultiSourceFileChooser {
 	 * Compute the index of next file in Source directory.
 	 */
 	public void computeNextFileIndex() {
-		if (chooseFilesRandomly.get()) {
+		if (pickFilesRandomly.get()) {
 			currentFileIndex.set(random.nextInt(temporarySourceFileList.getSize()));
 		} else {
 			if (currentFileIndex.get() < temporarySourceFileList.getSize() - 1) {
@@ -153,7 +153,7 @@ public class MultiSourceFileChooser {
 	 * @param sourceDirectorySymbolicName
 	 *            How to call directory with source files when generating broken messages.
 	 * @param destinationPath
-	 *            This parameter might be empty. Specify it if you want to prevent choosing the same
+	 *            This parameter might be empty. Specify it if you want to prevent picking the same
 	 *            file as the file on this destination.
 	 * @return The Array with source files, <br>
 	 *         Null if something is wrong.
@@ -226,7 +226,7 @@ public class MultiSourceFileChooser {
 	}
 
 	/**
-	 * Initializes {@link MultiSourceFileChooser}, if something is wrong, sets the
+	 * Initializes {@link MultiSourceFilePicker}, if something is wrong, sets the
 	 * {@link CuteElement} associated with {@link ElementInfo} as broken.
 	 * <p>
 	 * NOTE: Before running this method, you must set allowed extensions via
@@ -237,7 +237,7 @@ public class MultiSourceFileChooser {
 	 * @param sourceDirectorySymbolicName
 	 *            How to call directory with source files when generating broken messages.
 	 * @param destinationPath
-	 *            This parameter might be empty. Specify it if you want to prevent choosing the same
+	 *            This parameter might be empty. Specify it if you want to prevent picking the same
 	 *            file as the file on this destination.
 	 * 
 	 * @throws IllegalArgumentException
@@ -288,27 +288,27 @@ public class MultiSourceFileChooser {
 	}
 	
 	/**
-	 * @return The value of {@link #chooseFilesRandomly}.
+	 * @return The value of {@link #pickFilesRandomly}.
 	 */
-	@JsonProperty("chooseFilesRandomly")
-	public boolean isChoosingFilesRandomly() {
-		return chooseFilesRandomly.get();
+	@JsonProperty("pickFilesRandomly")
+	public boolean isPickingFilesRandomly() {
+		return pickFilesRandomly.get();
 	}
 
 	/**
-	 * @param chooseRandomly
-	 *            The {@link #chooseFilesRandomly}'s value to set.
+	 * @param pickRandomly
+	 *            The {@link #pickFilesRandomly}'s value to set.
 	 */
-	@JsonProperty("chooseFilesRandomly")
-	public void setChooseFilesRandomly(boolean chooseRandomly) {
-		this.chooseFilesRandomly.set(chooseRandomly);
+	@JsonProperty("pickFilesRandomly")
+	public void setPickingFilesRandomly(boolean pickRandomly) {
+		this.pickFilesRandomly.set(pickRandomly);
 	}
 	
 	/**
-	 * @return The {@link #chooseFilesRandomly} property.
+	 * @return The {@link #pickFilesRandomly} property.
 	 */
-	public BooleanProperty chooseFilesRandomlyProperty() {
-		return chooseFilesRandomly;
+	public BooleanProperty pickFilesRandomlyProperty() {
+		return pickFilesRandomly;
 	}
 	
 	/**
