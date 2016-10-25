@@ -119,6 +119,11 @@ public class StreamSisAppFactory {
 		MULTISOURCEFILEPICKER("MultiSourceFilePicker.fxml"),
 		
 		/**
+		 * The {@link CuteController} for editing {@link MultiSourceFileLister}.
+		 */
+		MULTISOURCEFILELISTER("MultiSourceFileLister.fxml"),
+		
+		/**
 		 * The {@link CuteController} for editing {@link Coordinates}.
 		 */
 		COORDINATES("Coordinates.fxml");
