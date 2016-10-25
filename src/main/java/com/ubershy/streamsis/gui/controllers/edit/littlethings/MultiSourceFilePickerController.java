@@ -284,7 +284,7 @@ public class MultiSourceFilePickerController extends AbstractCuteController {
 		manualTitledPane.setExpanded(!editableCopyOfPicker.isFindingSourcesInSrcPath());
 		manualTitledPane.expandedProperty().addListener(paneExpansionListener);
 		chooseFilesRandomlyCheckBox.selectedProperty().addListener((o, oldVal, newVal) -> {
-			buttonStateManager.reportNewValueOfControl(origPicker.isPickingFilesRandomly(),
+			buttonStateManager.reportNewValueOfControl(origPicker.isPickFilesRandomly(),
 					newVal, chooseFilesRandomlyCheckBox, null);
 		});
 		// Set up bindings to read-only properties.

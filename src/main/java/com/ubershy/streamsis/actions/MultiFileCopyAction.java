@@ -87,7 +87,7 @@ public class MultiFileCopyAction extends FileCopyAction {
 		this.dstFilePath.set(dstFilePath);
 		filePicker.setFindingSourcesInSrcPath(true);
 		filePicker.setSrcPath(srcDirectoryPath);
-		filePicker.setPickingFilesRandomly(chooseFileRandomly);
+		filePicker.setPickFilesRandomly(chooseFileRandomly);
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class MultiFileCopyAction extends FileCopyAction {
 		this.dstFilePath.set(dstFilePath);
 		filePicker.setFindingSourcesInSrcPath(false);
 		filePicker.getPersistentSourceFileList().setAll(persistentSourceFileList);
-		filePicker.setPickingFilesRandomly(chooseFileRandomly);
+		filePicker.setPickFilesRandomly(chooseFileRandomly);
 	}
 
 	/**
@@ -162,7 +162,7 @@ public class MultiFileCopyAction extends FileCopyAction {
 			// already broken by filePicker.initTemporaryFileList() or null extension
 			return;
 		}
-		if (filePicker.isPickingFilesRandomly()) {
+		if (filePicker.isPickFilesRandomly()) {
 			filePicker.computeNextFileIndex();
 		}
 	}

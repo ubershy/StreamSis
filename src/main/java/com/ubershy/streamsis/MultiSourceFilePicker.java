@@ -50,9 +50,71 @@ import javafx.collections.ObservableList;
  */
 public class MultiSourceFilePicker {
 
+	// Properties
+	
 	/** Defines if to pick each next file randomly or sequentially. */
-	@JsonIgnore
+	@JsonProperty("pickFilesRandomly")
 	protected BooleanProperty pickFilesRandomly = new SimpleBooleanProperty(true);
+	public BooleanProperty pickFilesRandomlyProperty() {return pickFilesRandomly;}
+	public boolean isPickFilesRandomly() {return pickFilesRandomly.get();}
+	public void setPickFilesRandomly(boolean pickRandomly) {
+		this.pickFilesRandomly.set(pickRandomly);
+	}
+	
+	/**
+	 * Defines if this {@link Action} should: <br>
+	 * Use {@link #srcFilePath} directory to find source files automatically. <br>
+	 * <b>OR</b> <br>
+	 * Use {@link #persistentSourceFileList} as list of source files.
+	 */
+	@JsonProperty("findingSourcesInSrcPath")
+	protected BooleanProperty findingSourcesInSrcPath = new SimpleBooleanProperty(true);
+	public BooleanProperty findingSourcesInSrcPathProperty() {return findingSourcesInSrcPath;}
+	public boolean isFindingSourcesInSrcPath() {return findingSourcesInSrcPath.get();}
+	public void setFindingSourcesInSrcPath(boolean findingSourcesInSrcPath) {
+		this.findingSourcesInSrcPath.set(findingSourcesInSrcPath);
+	}
+
+	/**
+	 * The persistent list of source files to use when {@link #findingSourcesInSrcPath} is false.
+	 */
+	@JsonProperty("persistentSourceFileList")
+	protected ObjectProperty<ObservableList<File>> persistentSourceFileList = new SimpleObjectProperty<>(
+			FXCollections.observableArrayList());
+	public ObjectProperty<ObservableList<File>> persistentSourceFileListProperty() {
+		return persistentSourceFileList;
+	}
+	public ObservableList<File> getPersistentSourceFileList() {
+		return persistentSourceFileList.get();
+	}
+	public void setPersistentSourceFileList(ObservableList<File> persistentSourceFileList) {
+		this.persistentSourceFileList.set(persistentSourceFileList);;
+	}
+
+	/** The path where to search files when {@link #findingSourcesInSrcPath} is true. */
+	@JsonProperty("srcPath")
+	protected StringProperty srcPath = new SimpleStringProperty("");
+	public StringProperty srcPathProperty() {return srcPath;}
+	public String getSrcPath() {return srcPath.get();}
+	public void setSrcPath(String srcPath) {this.srcPath.set(srcPath);}
+
+	// Runtime variables
+	
+	/** The acceptable extensions of source files. Each in "*.extension" format. */
+	@JsonIgnore
+	protected ListProperty<String> acceptableExtensions = new SimpleListProperty<String>(
+			FXCollections.observableArrayList());
+	public ListProperty<String> acceptableExtensionsProperty() {return acceptableExtensions;}
+	public ObservableList<String> getAcceptableExtensions() {
+		return this.acceptableExtensions.get();
+	}
+	public void setAcceptableExtensions(List<String> acceptableExtensions) {
+		this.acceptableExtensions.get().setAll(acceptableExtensions);
+	}
+
+	/** The random index generator. */
+	@JsonIgnore
+	protected NonRepeatingRandom random = new NonRepeatingRandom();
 
 	/**
 	 * The index of current file in {@link #temporarySourceFileList}.
@@ -61,34 +123,11 @@ public class MultiSourceFilePicker {
 	 */
 	@JsonIgnore
 	protected IntegerProperty currentFileIndex = new SimpleIntegerProperty(0);
-
-	/**
-	 * Defines if this {@link Action} should: <br>
-	 * Use {@link #srcFilePath} directory to find source files automatically. <br>
-	 * <b>OR</b> <br>
-	 * Use {@link #persistentSourceFileList} as list of source files.
-	 */
-	@JsonIgnore
-	protected BooleanProperty findingSourcesInSrcPath = new SimpleBooleanProperty(true);
-
-	/**
-	 * The persistent list of source files to use when {@link #findingSourcesInSrcPath} is false.
-	 */
-	@JsonProperty
-	protected ObjectProperty<ObservableList<File>> persistentSourceFileList = new SimpleObjectProperty<>(
-			FXCollections.observableArrayList());
-
-	/** The acceptable extensions of source files. Each in "*.extension" format. */
-	@JsonIgnore
-	protected ListProperty<String> acceptableExtensions = new SimpleListProperty<String>(
-			FXCollections.observableArrayList());
-
-	/** The random index generator. */
-	protected NonRepeatingRandom random = new NonRepeatingRandom();
-
-	/** The path where to search files when {@link #findingSourcesInSrcPath} is true. */
-	@JsonIgnore
-	protected StringProperty srcPath = new SimpleStringProperty("");
+	public IntegerProperty currentFileIndexProperty() {return currentFileIndex;}
+	public int getCurrentFileIndex() {return currentFileIndex.get();}
+	public void setCurrentFileIndex(int currentFileIndex) {
+		this.currentFileIndex.set(currentFileIndex);
+	}
 
 	/**
 	 * The actual list of files from where to get the next file. <br>
@@ -100,6 +139,13 @@ public class MultiSourceFilePicker {
 	@JsonIgnore
 	protected ReadOnlyListWrapper<File> temporarySourceFileList = new ReadOnlyListWrapper<File>(
 			this, "temporarySourceFileList", FXCollections.observableArrayList());
+	/**
+	 * @return The {@link #temporarySourceFileList} read-only property.
+	 */
+	@JsonIgnore
+	public ReadOnlyListProperty<File> getTemporarySourceFileList() {
+		return temporarySourceFileList.getReadOnlyProperty();
+	}
 
 	public MultiSourceFilePicker() {
 
@@ -263,151 +309,4 @@ public class MultiSourceFilePicker {
 		}
 	}
 
-	/**
-	 * @return The value of {@link #srcPath}.
-	 */
-	@JsonProperty("srcPath")
-	public String getSrcPath() {
-		return srcPath.get();
-	}
-
-	/**
-	 * @param srcPath
-	 *            The {@link #srcPath}'s value to set.
-	 */
-	@JsonProperty("srcPath")
-	public void setSrcPath(String srcPath) {
-		this.srcPath.set(srcPath);
-	}
-
-	/**
-	 * @return The {@link #srcPath} property.
-	 */
-	public StringProperty srcPathProperty() {
-		return srcPath;
-	}
-	
-	/**
-	 * @return The value of {@link #pickFilesRandomly}.
-	 */
-	@JsonProperty("pickFilesRandomly")
-	public boolean isPickingFilesRandomly() {
-		return pickFilesRandomly.get();
-	}
-
-	/**
-	 * @param pickRandomly
-	 *            The {@link #pickFilesRandomly}'s value to set.
-	 */
-	@JsonProperty("pickFilesRandomly")
-	public void setPickingFilesRandomly(boolean pickRandomly) {
-		this.pickFilesRandomly.set(pickRandomly);
-	}
-	
-	/**
-	 * @return The {@link #pickFilesRandomly} property.
-	 */
-	public BooleanProperty pickFilesRandomlyProperty() {
-		return pickFilesRandomly;
-	}
-	
-	/**
-	 * @return The value of {@link #findingSourcesInSrcPath}.
-	 */
-	@JsonProperty("findingSourcesInSrcPath")
-	public boolean isFindingSourcesInSrcPath() {
-		return findingSourcesInSrcPath.get();
-	}
-
-	/**
-	 * @param findingSourcesInSrcPath
-	 *            The {@link #findingSourcesInSrcPath}'s value to set.
-	 */
-	@JsonProperty("findingSourcesInSrcPath")
-	public void setFindingSourcesInSrcPath(boolean findingSourcesInSrcPath) {
-		this.findingSourcesInSrcPath.set(findingSourcesInSrcPath);
-	}
-	
-	/**
-	 * @return The {@link #findingSourcesInSrcPath} property.
-	 */
-	public BooleanProperty findingSourcesInSrcPathProperty() {
-		return findingSourcesInSrcPath;
-	}
-
-	/**
-	 * @return The {@link #persistentSourceFileList} property..
-	 */
-	public ObjectProperty<ObservableList<File>> persistentSourceFileListProperty() {
-		return persistentSourceFileList;
-	}
-	
-	/**
-	 * @return The {@link #persistentSourceFileList}'s current list.
-	 */
-	public ObservableList<File> getPersistentSourceFileList() {
-		return persistentSourceFileList.get();
-	}
-
-	/**
-	 * @param persistentSourceFileList The {@link #persistentSourceFileList}'s value to set.
-	 */
-	public void setPersistentSourceFileList(ObservableList<File> persistentSourceFileList) {
-		this.persistentSourceFileList.set(persistentSourceFileList);;
-	}
-	
-	/**
-	 * @return The value of {@link #currentFileIndex}.
-	 */
-	public int getCurrentFileIndex() {
-		return currentFileIndex.get();
-	}
-
-	/**
-	 * @param currentFileIndex
-	 *            The {@link #currentFileIndex}'s value to set.
-	 */
-	public void setCurrentFileIndex(int currentFileIndex) {
-		this.currentFileIndex.set(currentFileIndex);
-	}
-	
-	/**
-	 * @return The {@link #currentFileIndex} property.
-	 */
-	public IntegerProperty currentFileIndexProperty() {
-		return currentFileIndex;
-	}
-	
-	/**
-	 * @return The {@link #acceptableExtensions} property.
-	 */
-	@JsonIgnore
-	public ListProperty<String> acceptableExtensionsProperty() {
-		return acceptableExtensions;
-	}
-	
-	/**
-	 * @param acceptableExtensions
-	 *            The {@link #acceptableExtensions}'s value to set.
-	 */
-	@JsonIgnore
-	public void setAcceptableExtensions(List<String> acceptableExtensions) {
-		this.acceptableExtensions.get().setAll(acceptableExtensions);
-	}
-	
-	/**
-	 * @return The {@link #acceptableExtensions} value.
-	 */
-	@JsonIgnore
-	public ObservableList<String> getAcceptableExtensions() {
-		return this.acceptableExtensions.get();
-	}
-	
-	/**
-	 * @return The {@link #temporarySourceFileList} read-only property.
-	 */
-	public ReadOnlyListProperty<File> getTemporarySourceFileList() {
-		return temporarySourceFileList.getReadOnlyProperty();
-	}
-	
 }

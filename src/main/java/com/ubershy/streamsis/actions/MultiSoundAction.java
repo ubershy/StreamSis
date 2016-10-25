@@ -62,7 +62,7 @@ public class MultiSoundAction extends SoundAction {
 		this();
 		this.volume.set(volume);;
 		filePicker.setSrcPath(soundDirectoryPath);
-		filePicker.setPickingFilesRandomly(chooseFileRandomly);
+		filePicker.setPickFilesRandomly(chooseFileRandomly);
 		filePicker.setFindingSourcesInSrcPath(true);
 	}
 
@@ -81,7 +81,7 @@ public class MultiSoundAction extends SoundAction {
 		this();
 		this.volume.set(volume);
 		filePicker.getPersistentSourceFileList().setAll(persistentSourceFileList);
-		filePicker.setPickingFilesRandomly(chooseFileRandomly);
+		filePicker.setPickFilesRandomly(chooseFileRandomly);
 		filePicker.setFindingSourcesInSrcPath(false);
 		filePicker.setAcceptableExtensions(allowedExtensions);
 	}
@@ -129,7 +129,7 @@ public class MultiSoundAction extends SoundAction {
 		soundToPlay = initializeSound(
 				filePicker.getTemporarySourceFileList().get(filePicker.getCurrentFileIndex())
 						.getPath());
-		if (filePicker.isPickingFilesRandomly()) {
+		if (filePicker.isPickFilesRandomly()) {
 			filePicker.computeNextFileIndex();
 		}
 	}
