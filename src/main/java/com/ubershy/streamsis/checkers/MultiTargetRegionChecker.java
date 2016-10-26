@@ -19,6 +19,7 @@ package com.ubershy.streamsis.checkers;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.sikuli.script.Finder;
 import org.sikuli.script.Pattern;
@@ -28,17 +29,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ubershy.streamsis.MultiSourceFileLister;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.project.AbstractCuteNode;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyListProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.SimpleObjectProperty;
+
 /**
  * MultiTarget Region Checker. <br>
- * This {@link Checker} is similar to {@link RegionChecker}, but instead of finding one targetPattern image within a region, it tries to find many targets. <br>
- * When it's {@link #useANDOperator} is <b>true</b> this {@link Checker} will return true on {@link #check()} only if <b>all</b> targets are found within the
- * region. <br>
- * When it's {@link #useANDOperator} is <b>false</b> this {@link Checker} will return true on {@link #check()} if <b>at least one</b> of the targets is found
- * within the region. <br>
+ * This {@link Checker} is similar to {@link RegionChecker}, but instead of finding one
+ * targetPattern image within a region, it tries to find many targets. <br>
+ * When it's {@link #useANDOperator} is <b>true</b> this {@link Checker} will return true on
+ * {@link #check()} only if <b>all</b> targets are found within the region. <br>
+ * When it's {@link #useANDOperator} is <b>false</b> this {@link Checker} will return true on
+ * {@link #check()} if <b>at least one</b> of the targets is found within the region. <br>
  */
 @SuppressWarnings("unchecked")
 public class MultiTargetRegionChecker extends AbstractCuteNode implements Checker {
@@ -47,52 +59,124 @@ public class MultiTargetRegionChecker extends AbstractCuteNode implements Checke
 
 	/** The {@link Coordinates} of region where to search the image. */
 	@JsonProperty
-	protected Coordinates coords = new Coordinates(0, 0, 100, 100);
-
-	/** The {@link org.sikuli.script.Screen} to work with. */
-	protected Screen screen;
+	protected ObjectProperty<Coordinates> coords = new SimpleObjectProperty<Coordinates>(
+			new Coordinates(0, 0, 100, 100));
+	public ObjectProperty<Coordinates> coordsProperty() {return coords;}
+	public Coordinates getCoords() {return coords.get();}
+	public void setCoords(Coordinates coords) {this.coords.set(coords);}
 
 	/**
 	 * The similarity. <br>
-	 * A float number from 0 to 1.00 specifying the tolerance of how different the searched image can look in region. <br>
+	 * A float number from 0 to 1.00 specifying the tolerance of how different the searched image
+	 * can look in region. <br>
 	 * E.g. "1.00f" - exact image. <br>
 	 */
 	@JsonProperty
-	protected float similarity = 1.00f;
+	protected FloatProperty similarity = new SimpleFloatProperty(0.95f);
+	public FloatProperty similarityProperty() {return similarity;}
+	public float getSimilarity() {return similarity.get();}
+	public void setSimilarity(float similarity) {this.similarity.set(similarity);}
 
 	/** The targetPatterns {@link org.sikuli.script.Pattern Patterns} to internally work with. */
+	@JsonIgnore
 	protected ArrayList<Pattern> targets;
 
-	/** The path of directory containing targetPattern images. */
+	/**
+	 * If true, use AND operator(find all Target Images), else - OR operator (find at least one
+	 * Target image) for the positive result.
+	 */
 	@JsonProperty
-	protected String targetsPath = "";
-
-	/** If true, MultiTargetRegionChecker will use AND operator, else - OR operator */
+	protected BooleanProperty useANDOperator = new SimpleBooleanProperty(false);
+	public BooleanProperty useANDOperatorProperty() {return useANDOperator;}
+	public boolean isUseANDOperator() {return useANDOperator.get();}
+	public void setUseANDOperator(boolean useANDOperator) {this.useANDOperator.set(useANDOperator);}
+	
+	/** The file lister that provides flexible list of targets. */
 	@JsonProperty
-	protected boolean useANDOperator = false;
+	private SimpleObjectProperty<MultiSourceFileLister> fileLister = new SimpleObjectProperty<MultiSourceFileLister>(
+			new MultiSourceFileLister());
+	public SimpleObjectProperty<MultiSourceFileLister> fileListerProperty() {return fileLister;}
+	public MultiSourceFileLister getFileLister() {return fileLister.get();}
+	public void setFileLister(MultiSourceFileLister fileLister) {this.fileLister.set(fileLister);}
+	
+	/** The acceptable extensions of Target image files. */
+	@JsonIgnore
+	public final static List<String> allowedExtensions = Util.singleItemAsList("*.png");
 
 	public MultiTargetRegionChecker() {
+		fileLister.get().setAcceptableExtensions(allowedExtensions);
 	}
 
 	/**
-	 * Instantiates a new multi targetPattern region checker.
+	 * Instantiates a new MultiTarget Region Checker via directory containing target image files.
 	 *
 	 * @param coords
-	 *            the coords
+	 *            The {@link Coordinates} where to find image.
 	 * @param targetsDirectoryPath
-	 *            the targets directory path
+	 *            The directory containing Target image files.
 	 * @param similarity
-	 *            the similarity
+	 *            The image {@link #similarity} from 0 to 1.0.
 	 * @param useANDOperator
-	 *            the and condition
+	 *            If true, use AND operator(find all Target Images), else - OR operator (find at
+	 *            least one Target image) for the positive result.
+	 */
+	public MultiTargetRegionChecker(Coordinates coords, String targetsDirectoryPath,
+			float similarity, boolean useANDOperator) {
+		this();
+		this.coords.set(coords);
+		this.fileLister.get().setSrcPath(targetsDirectoryPath);
+		this.fileLister.get().setFindingSourcesInSrcPath(true);
+		this.similarity.set(similarity);
+		this.useANDOperator.set(useANDOperator);
+	}
+	
+	/**
+	 * Instantiates a new MultiTarget Region Checker via list of target image files.
+	 *
+	 * @param coords
+	 *            The {@link Coordinates} where to find image.
+	 * @param persistentSourceFileList
+	 *            The list with Target image files.
+	 * @param similarity
+	 *            The image {@link #similarity} from 0 to 1.0.
+	 * @param useANDOperator
+	 *            If true, use AND operator(find all Target Images), else - OR operator (find at
+	 *            least one Target image) for the positive result.
+	 */
+	public MultiTargetRegionChecker(Coordinates coords, ArrayList<File> persistentSourceFileList,
+			float similarity, boolean useANDOperator) {
+		this();
+		this.coords.set(coords);
+		this.fileLister.get().getPersistentSourceFileList().setAll(persistentSourceFileList);
+		this.fileLister.get().setFindingSourcesInSrcPath(false);
+		this.similarity.set(similarity);
+		this.useANDOperator.set(useANDOperator);
+	}
+	
+	/**
+	 * Instantiates a new MultiTarget Region Checker via {@link MultiSourceFileLister}.
+	 * Used by deserialization.
+	 *
+	 * @param coords
+	 *            The {@link Coordinates} where to find image.
+	 * @param fileLister
+	 *            The instance of {@link MultiSourceFileLister}.
+	 * @param similarity
+	 *            The image {@link #similarity} from 0 to 1.0.
+	 * @param useANDOperator
+	 *            If true, use AND operator(find all Target Images), else - OR operator (find at
+	 *            least one Target image) for the positive result.
 	 */
 	@JsonCreator
-	public MultiTargetRegionChecker(@JsonProperty("coords") Coordinates coords, @JsonProperty("targetsPath") String targetsDirectoryPath,
-			@JsonProperty("similarity") float similarity, @JsonProperty("useANDOperator") boolean useANDOperator) {
-		this.coords = coords;
-		this.targetsPath = targetsDirectoryPath;
-		this.similarity = similarity;
-		this.useANDOperator = useANDOperator;
+	public MultiTargetRegionChecker(@JsonProperty("coords") Coordinates coords,
+			@JsonProperty("fileLister") MultiSourceFileLister fileLister,
+			@JsonProperty("similarity") float similarity,
+			@JsonProperty("useANDOperator") boolean useANDOperator) {
+		this.coords.set(coords);
+		this.fileLister.set(fileLister);
+		this.fileLister.get().setAcceptableExtensions(allowedExtensions);
+		this.similarity.set(similarity);
+		this.useANDOperator.set(useANDOperator);
 	}
 
 	@Override
@@ -104,9 +188,10 @@ public class MultiTargetRegionChecker extends AbstractCuteNode implements Checke
 			// if (Util.debugMode) {
 			// coords.highlightRegion();
 			// }
-			ScreenImage screenImage = screen.capture(coords.getRegion());
+			Screen screen = (Screen) coords.get().getRegion().getScreen();
+			ScreenImage screenImage = screen.capture(coords.get().getRegion());
 			Finder finder = new Finder(screenImage);
-			if (useANDOperator == true) { // AND operator
+			if (useANDOperator.get() == true) { // AND operator
 				result = true;
 				for (Pattern p : targets) {
 					finder.find(p);
@@ -128,75 +213,28 @@ public class MultiTargetRegionChecker extends AbstractCuteNode implements Checke
 		return result;
 	}
 
-	public Coordinates getCoords() {
-		return coords;
-	}
-
-	public float getSimilarity() {
-		return similarity;
-	}
-
-	public String getTargetsPath() {
-		return targetsPath;
-	}
-
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
-		coords.initRegion(elementInfo);
+		coords.get().initRegion(elementInfo);
 		if (elementInfo.isBroken()) {
-			// already broken by coords.initRegion();
+			// already broken by coords.get().initRegion();
 			return;
 		}
-		this.screen = (Screen) coords.getRegion().getScreen();
-		if (similarity > 1 || similarity <= 0) {
+		if (similarity.get() > 1 || similarity.get() <= 0) {
 			elementInfo.setAsBroken("Similarity parameter must be from 0 to 1.00");
 			return;
 		}
-		if (targetsPath.isEmpty()) {
-			elementInfo.setAsBroken("Target images directory is not defined");
+		fileLister.get().initTemporaryFileList(elementInfo, "Target image files", null);
+		if (elementInfo.isBroken()) {
+			// already broken by fileLister.get().initTemporaryFileList() or null extension
 			return;
 		}
-		File[] targetsList = Util.findFilesInDirectory(targetsPath,
-				Util.singleStringAsArrayOfStrings("*.png"));
-		if (targetsList != null) {
-			if (targetsList.length == 0) {
-				elementInfo.setAsBroken(
-						"No '.png' image files are found in the Target images directory: "
-								+ targetsPath);
-				return;
-			}
-		} else {
-			elementInfo.setAsBroken(
-					"Something is wrong with the Target images directory: " + targetsPath);
-			return;
+		ReadOnlyListProperty<File> targetsList = fileLister.get().getTemporarySourceFileList();
+		targets = new ArrayList<Pattern>(targetsList.size());
+		for (File f : targetsList) {
+			targets.add(new Pattern(f.toString()).similar(similarity.get()));
 		}
-		if (!elementInfo.isBroken()) {
-			targets = new ArrayList<Pattern>(targetsList.length);
-			for (File f : targetsList) {
-				targets.add(new Pattern(f.toString()).similar(similarity));
-			}
-		}
-	}
-
-	public boolean isUseANDOperator() {
-		return useANDOperator;
-	}
-
-	public void setCoords(Coordinates coords) {
-		this.coords = coords;
-	}
-
-	public void setSimilarity(float similarity) {
-		this.similarity = similarity;
-	}
-
-	public void setTargetsPath(String targetsPath) {
-		this.targetsPath = targetsPath;
-	}
-
-	public void setUseANDOperator(boolean useANDOperator) {
-		this.useANDOperator = useANDOperator;
 	}
 
 }
