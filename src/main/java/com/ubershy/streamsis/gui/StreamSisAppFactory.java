@@ -124,6 +124,11 @@ public class StreamSisAppFactory {
 		MULTISOURCEFILELISTER("MultiSourceFileLister.fxml"),
 		
 		/**
+		 * The {@link CuteController} for editing Similarity parameter.
+		 */
+		SIMILARITY("Similarity.fxml"),
+		
+		/**
 		 * The {@link CuteController} for editing {@link Coordinates}.
 		 */
 		COORDINATES("Coordinates.fxml");

@@ -25,9 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.imageio.ImageIO;
 
-import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
-import org.controlsfx.validation.Validator;
 import org.sikuli.script.Screen;
 import org.sikuli.script.ScreenImage;
 import org.sikuli.util.EventObserver;
@@ -42,6 +40,7 @@ import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.gui.controllers.edit.AbstractCuteController;
 import com.ubershy.streamsis.gui.controllers.edit.littlethings.CoordinatesController;
 import com.ubershy.streamsis.gui.controllers.edit.littlethings.MultiSourceFileListerController;
+import com.ubershy.streamsis.gui.controllers.edit.littlethings.SimilarityController;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteElement;
@@ -54,7 +53,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.Alert.AlertType;
@@ -71,38 +69,32 @@ import javafx.scene.text.Text;
 public class MultiTargetRegionCheckerController extends AbstractCuteController
 		implements CuteElementController, EventObserver {
 
-	@FXML
-	private GridPane root;
+    @FXML
+    private GridPane root;
 
-	@FXML
-	private Label similarityLabel;
+    @FXML
+    private VBox coordsVBox;
 
-	@FXML
-	private Slider similaritySlider;
+    @FXML
+    private HBox fileListerHBox;
 
-	@FXML
-	private Label similarityDescriptionLabel;
+    @FXML
+    private CheckBox operatorCheckBox;
 
-	@FXML
-	private VBox coordsVBox;
+    @FXML
+    private StackPane targetImageViewPane;
 
-	@FXML
-	private HBox fileListerHBox;
+    @FXML
+    private ImageView targetImageView;
 
-	@FXML
-	private CheckBox operatorCheckBox;
+    @FXML
+    private Label targetSizeLabel;
 
-	@FXML
-	private StackPane targetImageViewPane;
-
-	@FXML
-	private ImageView targetImageView;
-	
     @FXML
     private Button selectTargetButton;
 
-	@FXML
-	private Label targetSizeLabel;
+    @FXML
+    private VBox similarityVBox;
 
 	/** The {@link MultiTargetRegionChecker} to edit. */
 	protected MultiTargetRegionChecker mtregChecker;
@@ -121,9 +113,10 @@ public class MultiTargetRegionCheckerController extends AbstractCuteController
 
 	protected MultiSourceFileListerController listerController = (MultiSourceFileListerController) StreamSisAppFactory
 			.buildLittleCuteController(LittleCuteControllerType.MULTISOURCEFILELISTER);
-
-	private String similarityLabelOrigText;
 	
+	protected SimilarityController simController = (SimilarityController) StreamSisAppFactory
+			.buildLittleCuteController(LittleCuteControllerType.SIMILARITY);
+
 	private ImageView fullTargetImageView = new ImageView();
 	
 	private Text crosshairIcon = GlyphsDude.createIcon(FontAwesomeIcon.CROSSHAIRS);
@@ -135,6 +128,7 @@ public class MultiTargetRegionCheckerController extends AbstractCuteController
 	public void initialize(URL location, ResourceBundle resources) {
 		coordsVBox.getChildren().add(coordsController.getView());
 		fileListerHBox.getChildren().add(listerController.getView());
+		similarityVBox.getChildren().add(simController.getView());
 		listerController.replaceFileTypeNameTagInLabeledControls("Target image");
 		listerController.sampleFileProperty().addListener((o, oldVal, newVal) -> {
 			if (newVal != null) {
@@ -154,8 +148,6 @@ public class MultiTargetRegionCheckerController extends AbstractCuteController
 		
 		allowedExtensions = RegionChecker.allowedExtensions.toArray(new String[0]);
 		
-		similarityLabelOrigText = similarityLabel.getText();
-		similarityLabel.setText(similarityLabelOrigText + 100 + "%");
 		selectTargetButton.setGraphic(crosshairIcon);
 		
 		// Set tooltip with full size Target image on targetImageViewPane mouse hover.
@@ -175,9 +167,8 @@ public class MultiTargetRegionCheckerController extends AbstractCuteController
 			buttonStateManager.reportNewValueOfControl(origmtRegChecker.isUseANDOperator(), newVal,
 					operatorCheckBox, null);
 		});
-		similaritySlider.setValue(mtregChecker.getSimilarity()*100.0);
-		bindNormalAndRemember(mtregChecker.similarityProperty(),
-				similaritySlider.valueProperty().divide(100.0));
+		simController.bindToSimilarity(mtregChecker.similarityProperty(),
+				origmtRegChecker.similarityProperty());
 		coordsController.bindToCoordinates(mtregChecker.getCoords(), origmtRegChecker.getCoords());
 		listerController.bindToMultiSourceFileLister(mtregChecker.getFileLister(),
 				origmtRegChecker.getFileLister());
@@ -223,47 +214,7 @@ public class MultiTargetRegionCheckerController extends AbstractCuteController
 		this.validationSupport = validationSupport;
 		coordsController.setValidationSupport(validationSupport);
 		listerController.setValidationSupport(validationSupport);
-		Validator<Number> similaritySliderValidator = (c, newValue) -> {
-			// Not using newValue.intValue(), because we want rounded value, not truncated.
-			int intValue = Math.round(newValue.floatValue());
-			ValidationResult zeroResult = ValidationResult.fromErrorIf(c,
-					"Zero minimum acceptable similarity means any random image on screen can be "
-							+ "matched with Target image. It's pointless. Forget about it.",
-					intValue < 1);
-			ValidationResult lowResult = ValidationResult.fromWarningIf(c,
-					"Minimum acceptable similarity is too low. This Checker will often react like "
-					+ "it sees the Target image on screen when something else is on the screen. "
-					+ "False positive result.",
-					intValue >= 1 && intValue <= 40);
-			int originalValue = Math.round(origmtRegChecker.getSimilarity()*100);
-			buttonStateManager.reportNewValueOfControl(originalValue, intValue, c, zeroResult);
-			String similarityComment;
-			if (intValue > 98) {
-				similarityComment = "Find an exact match. May not recognize even identical image "
-						+ "in some cases.";
-			} else if (intValue >= 95) {
-				similarityComment = "Find a precise match. Recommended to use.";
-			} else if (intValue >= 70) {
-				similarityComment = "Find a good match or better. Some risk of false positive "
-						+ "results.";
-			} else if (intValue >= 40) {
-				similarityComment = "Find a bad match or better. "
-						+ "High risk of false positive results.";
-			} else if (intValue >= 30) {
-				similarityComment = "Find almost any match. Super high risk of false positive "
-						+ "results.";
-			} else if (intValue >= 20) {
-				similarityComment = "You want false positive results? Because that's how you get "
-						+ "false positive results.";
-			} else {
-				similarityComment = "No. Just no.";
-			}
-			similarityDescriptionLabel.setText(similarityComment);
-			similarityLabel.setText(similarityLabelOrigText + newValue.intValue() + "%");
-			ValidationResult finalResult = ValidationResult.fromResults(zeroResult, lowResult);
-			return finalResult;
-		};
-		this.validationSupport.registerValidator(similaritySlider, similaritySliderValidator);
+		simController.setValidationSupport(validationSupport);
 	}
 	
 	/*
@@ -274,6 +225,7 @@ public class MultiTargetRegionCheckerController extends AbstractCuteController
 		super.setCuteButtonsStatesManager(buttonStateManager);
 		coordsController.setCuteButtonsStatesManager(buttonStateManager);
 		listerController.setCuteButtonsStatesManager(buttonStateManager);
+		simController.setCuteButtonsStatesManager(buttonStateManager);
 	}
 	
     @FXML

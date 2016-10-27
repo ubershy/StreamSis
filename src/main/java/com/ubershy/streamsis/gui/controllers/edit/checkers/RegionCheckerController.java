@@ -41,6 +41,7 @@ import com.ubershy.streamsis.gui.StreamSisAppFactory.LittleCuteControllerType;
 import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.gui.controllers.edit.AbstractCuteController;
 import com.ubershy.streamsis.gui.controllers.edit.littlethings.CoordinatesController;
+import com.ubershy.streamsis.gui.controllers.edit.littlethings.SimilarityController;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteElement;
@@ -53,7 +54,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -69,35 +69,29 @@ import javafx.scene.text.Text;
 public class RegionCheckerController extends AbstractCuteController
 		implements CuteElementController, EventObserver {
 
-	@FXML
-	private GridPane root;
-    
+    @FXML
+    private GridPane root;
+
     @FXML
     private TextField targetTextField;
 
     @FXML
-    private Slider similaritySlider;
+    private Button selectTargetButton;
 
     @FXML
-    private Label similarityLabel;
-    
-    @FXML
-    private Label targetSizeLabel;
-    
-    @FXML
-    private Button selectTargetButton;
-    
-    @FXML
-    private Label similarityDescriptionLabel;
-    
-    @FXML
     private StackPane targetImageViewPane;
-    
+
     @FXML
     private ImageView targetImageView;
-    
+
+    @FXML
+    private Label targetSizeLabel;
+
     @FXML
     private VBox coordsVBox;
+
+    @FXML
+    private VBox similarityVBox;
 
     /** The {@link RegionChecker} to edit. */
 	protected RegionChecker regChecker;
@@ -111,9 +105,10 @@ public class RegionCheckerController extends AbstractCuteController
     
 	protected CoordinatesController coordsController = (CoordinatesController) StreamSisAppFactory
 			.buildLittleCuteController(LittleCuteControllerType.COORDINATES);
-
-	private String similarityLabelOrigText;
 	
+	protected SimilarityController simController = (SimilarityController) StreamSisAppFactory
+			.buildLittleCuteController(LittleCuteControllerType.SIMILARITY);
+
 	private ImageView fullTargetImageView = new ImageView();
 	
 	private Text crosshairIcon = GlyphsDude.createIcon(FontAwesomeIcon.CROSSHAIRS);
@@ -132,8 +127,7 @@ public class RegionCheckerController extends AbstractCuteController
 		targetImageView.setCache(true);
 		allowedExtensions = RegionChecker.allowedExtensions.toArray(new String[0]);
 		coordsVBox.getChildren().add(coordsController.getView());
-		similarityLabelOrigText = similarityLabel.getText();
-		similarityLabel.setText(similarityLabelOrigText + 100 + "%");
+		similarityVBox.getChildren().add(simController.getView());
 		selectTargetButton.setGraphic(crosshairIcon);
 		
 		// Set tooltip with full size Target image on targetImageViewPane mouse hover.
@@ -149,9 +143,8 @@ public class RegionCheckerController extends AbstractCuteController
 		origRegChecker = (RegionChecker) origCE;
 		bindBidirectionalAndRemember(targetTextField.textProperty(),
 				regChecker.targetImagePathProperty());
-		similaritySlider.setValue(regChecker.getSimilarity()*100.0);
-		bindNormalAndRemember(regChecker.similarityProperty(),
-				similaritySlider.valueProperty().divide(100.0));
+		simController.bindToSimilarity(regChecker.similarityProperty(),
+				origRegChecker.similarityProperty());
 		coordsController.bindToCoordinates(regChecker.getCoords(), origRegChecker.getCoords());
 	}
 	
@@ -193,6 +186,7 @@ public class RegionCheckerController extends AbstractCuteController
 	public void setValidationSupport(ValidationSupport validationSupport) {
 		this.validationSupport = validationSupport;
 		coordsController.setValidationSupport(validationSupport);
+		simController.setValidationSupport(validationSupport);
 		Validator<String> targetFieldValidator = (c, newValue) -> {
 			boolean extensionsValidationPassed = true;
 			if (!newValue.isEmpty()) {
@@ -222,47 +216,6 @@ public class RegionCheckerController extends AbstractCuteController
 			return finalResult;
 		};
 		this.validationSupport.registerValidator(targetTextField, targetFieldValidator);
-		Validator<Number> similaritySliderValidator = (c, newValue) -> {
-			// Not using newValue.intValue(), because we want rounded value, not truncated.
-			int intValue = Math.round(newValue.floatValue());
-			ValidationResult zeroResult = ValidationResult.fromErrorIf(c,
-					"Zero minimum acceptable similarity means any random image on screen can be "
-							+ "matched with Target image. It's pointless. Forget about it.",
-					intValue < 1);
-			ValidationResult lowResult = ValidationResult.fromWarningIf(c,
-					"Minimum acceptable similarity is too low. This Checker will often react like "
-					+ "it sees the Target image on screen when something else is on the screen. "
-					+ "False positive result.",
-					intValue >= 1 && intValue <= 40);
-			int originalValue = Math.round(origRegChecker.getSimilarity()*100);
-			buttonStateManager.reportNewValueOfControl(originalValue, intValue, c, zeroResult);
-			String similarityComment;
-			if (intValue > 98) {
-				similarityComment = "Find an exact match. May not recognize even identical image "
-						+ "in some cases.";
-			} else if (intValue >= 95) {
-				similarityComment = "Find a precise match. Recommended to use.";
-			} else if (intValue >= 70) {
-				similarityComment = "Find a good match or better. Some risk of false positive "
-						+ "results.";
-			} else if (intValue >= 40) {
-				similarityComment = "Find a bad match or better. "
-						+ "High risk of false positive results.";
-			} else if (intValue >= 30) {
-				similarityComment = "Find almost any match. Super high risk of false positive "
-						+ "results.";
-			} else if (intValue >= 20) {
-				similarityComment = "You want false positive results? Because that's how you get "
-						+ "false positive results.";
-			} else {
-				similarityComment = "No. Just no.";
-			}
-			similarityDescriptionLabel.setText(similarityComment);
-			similarityLabel.setText(similarityLabelOrigText + newValue.intValue() + "%");
-			ValidationResult finalResult = ValidationResult.fromResults(zeroResult, lowResult);
-			return finalResult;
-		};
-		this.validationSupport.registerValidator(similaritySlider, similaritySliderValidator);
 	}
 	
 	/*
@@ -272,6 +225,7 @@ public class RegionCheckerController extends AbstractCuteController
 	public void setCuteButtonsStatesManager(CuteButtonsStatesManager buttonStateManager) {
 		super.setCuteButtonsStatesManager(buttonStateManager);
 		coordsController.setCuteButtonsStatesManager(buttonStateManager);
+		simController.setCuteButtonsStatesManager(buttonStateManager);
 	}
 	
     @FXML
