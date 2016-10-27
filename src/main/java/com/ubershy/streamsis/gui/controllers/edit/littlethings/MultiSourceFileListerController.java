@@ -40,6 +40,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyListProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -136,6 +138,39 @@ public class MultiSourceFileListerController extends AbstractCuteController {
 	/** Tells in which directions the selected items in {@link #fileTable} can be moved. */
 	protected ObjectProperty<PossibleMoves> possibleMovesForSelection = new SimpleObjectProperty<>();
 
+	/**
+	 * A property that gives to external parent node a sample of File so it can be, for example,
+	 * previewed.
+	 */
+	private ReadOnlyObjectWrapper<File> sampleFile = new ReadOnlyObjectWrapper<File>(this,
+			"sampleFile", null);
+	public ReadOnlyObjectProperty<File> sampleFileProperty() {
+		return sampleFile.getReadOnlyProperty();
+	}
+	
+	/**
+	 * This listener listens to {@link MultiSourceFileLister#getTemporarySourceFileList()} and sets
+	 * {@link #sampleFilePath} each time.
+	 */
+	protected ListChangeListener<File> tempFileListListener = c -> {
+		while (c.next()) {}; // Get to the last change.
+		@SuppressWarnings("unchecked")
+		ObservableList<File> currentFiles = (ObservableList<File>) c.getList();
+		int size = currentFiles.size();
+		if (size > 0) {
+			if (c.wasAdded()) {
+				List<? extends File> addedFiles = c.getAddedSubList();
+				// Set sample to the last file added.
+				sampleFile.set(addedFiles.get(addedFiles.size() - 1));
+			} else {
+				// Set sample to the first file in list.
+				sampleFile.set(currentFiles.get(0));
+			}
+		} else {
+			sampleFile.set(null);
+		}
+	};
+
 	/*
 	 * @inheritDoc
 	 */
@@ -156,6 +191,9 @@ public class MultiSourceFileListerController extends AbstractCuteController {
 				"Editing list of <filetype> files", '.',
 				manualTitledPane.textProperty(), 1, 500, Timeline.INDEFINITE);
 		setValidationForFileTableWithDelay.setCycleCount(1);
+		fileTable.getSelectionModel().selectedItemProperty().addListener((o, oldVal, newVal) -> {
+			sampleFile.set(newVal);
+		});
 		initializeListeners();
 	}
 	
@@ -284,11 +322,18 @@ public class MultiSourceFileListerController extends AbstractCuteController {
 		bindNormalAndRemember(allowedExtensionsLabel.textProperty(),
 				Bindings.concat(addToExtensionsText)
 						.concat(this.lister.acceptableExtensionsProperty().asString()));
+		lister.getTemporarySourceFileList().addListener(tempFileListListener);
+		// Set initial value for sampleFile.
+		ReadOnlyListProperty<File> tempListOfCurrentFiles = lister.getTemporarySourceFileList();
+		if (tempListOfCurrentFiles.size() != 0) {
+			sampleFile.set(tempListOfCurrentFiles.get(0));
+		}
 	}
 
 	public void unbindFromMultiSourceFileLister() {
 		unbindAllRememberedBinds();
 		manualTitledPane.expandedProperty().removeListener(paneExpansionListener);
+		lister.getTemporarySourceFileList().removeListener(tempFileListListener);
 	}
 
 	/*
@@ -328,6 +373,9 @@ public class MultiSourceFileListerController extends AbstractCuteController {
 							"No files selected", newValue.size() == 0);
 					buttonStateManager.reportNewValueOfControl(
 							origLister.getPersistentSourceFileList(), newValue, c, emptyResult);
+					if (emptyResult.getErrors().size() != 0) {
+						sampleFile.set(null);
+					}
 					return emptyResult;
 				};
 				validationSupport.registerValidator(fileTable, true, fileTableValidator);
@@ -361,6 +409,9 @@ public class MultiSourceFileListerController extends AbstractCuteController {
 							notDirectoryResult, invalidPathResult, notAbsolutePathResult);
 					buttonStateManager.reportNewValueOfControl(origLister.getSrcPath(), newValue,
 							c, finalResult);
+					if (finalResult.getErrors().size() != 0) {
+						sampleFile.set(null);
+					}
 					return finalResult;
 				};
 				validationSupport.registerValidator(srcPathTextField, true,
