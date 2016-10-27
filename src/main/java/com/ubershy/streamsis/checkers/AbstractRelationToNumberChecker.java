@@ -25,46 +25,110 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.counters.Counter;
 import com.ubershy.streamsis.project.AbstractCuteNode;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
  * Relation To Number Checker (abstract). <br>
  * This abstract {@link Checker} is working with {@link Counter}. <br>
- * On {@link #check()} it compares a number returned by {@link Counter#count()} with the {@link #CompareNumber}CompareNumber. <br>
+ * On {@link #check()} it compares a number returned by {@link Counter#count()} with the
+ * {@link #CompareNumber}CompareNumber. <br>
  * And based on comparison result, it returns true or false. <br>
- * The user must specify {@link BooleanNumberOperator} that defines type of comparison, e.g. if Counter result must be greater or equal.
+ * The user must specify {@link BooleanNumberOperator} that defines type of comparison, e.g. if
+ * Counter result must be greater or equal.
  */
-public abstract class AbstractRelationToNumberChecker extends AbstractCuteNode implements Checker {
+public abstract class AbstractRelationToNumberChecker extends AbstractCuteNode
+		implements Checker, RelationToNumberChecker {
 
 	/**
-	 * The Enum BooleanNumberOperator, with values like EQUAL or GREATER or LESSOREQUAL.
+	 * The Enum BooleanNumberOperator, with the values like EQUAL or GREATER or LESSOREQUAL.
 	 */
 	public enum BooleanNumberOperator {
+		/**
+		 * Defines if Counter's result number must be equal to
+		 * {@link AbstractRelationToNumberChecker#compareNumber compare number}.
+		 */
+		EQUAL("Makes this checker return True if Counter's result number is equal to"),
+		/**
+		 * Defines if Counter's result number must be greater than
+		 * {@link AbstractRelationToNumberChecker#compareNumber compare number}.
+		 */
+		GREATER("Makes this checker return True if Counter's result number is greater than"),
+		/**
+		 * Defines if Counter's result number must not be equal or greater than
+		 * {@link AbstractRelationToNumberChecker#compareNumber compare number}.
+		 */
+		GREATEROREQUAL("Makes this checker return True if Counter's result number is greater or "
+				+ "equal to"),
+		/**
+		 * Defines if Counter's result number must be less than
+		 * {@link AbstractRelationToNumberChecker#compareNumber compare number}.
+		 */
+		LESS("Makes this checker return True if Counter's result number is less than"),
+		/**
+		 * Defines if Counter's result number must not be equal or less than
+		 * {@link AbstractRelationToNumberChecker#compareNumber compare number}.
+		 */
+		LESSOREQUAL("Makes this checker return True if Counter's result number is less or equal "
+				+ "to"),
+		/**
+		 * Defines if Counter's result number must not be equal to
+		 * {@link AbstractRelationToNumberChecker#compareNumber compare number}.
+		 */
+		NOTEQUAL("Makes this checker return True if Counter's result number is not equal to");
 
-		/** Defines if Counter's result number must be equal to {@link #compareNumber}. */
-		EQUAL, /** Defines if Counter's result number must be greater than {@link #compareNumber}. */
-		GREATER, /** Defines if Counter's result number must not be equal or greater than {@link #compareNumber}. */
-		GREATEROREQUAL, /** Defines if Counter's result number must be less than {@link #compareNumber}. */
-		LESS, /** Defines if Counter's result number must not be equal or less than {@link #compareNumber}. */
-		LESSOREQUAL, /** Defines if Counter's result number must not be equal to {@link #compareNumber}. */
-		NOTEQUAL
+		/** The message that describes operation that produces boolean result. */
+		private final String description;
+
+		/**
+		 * Instantiates a new BooleanNumberOperator.
+		 *
+		 * @param description
+		 *            The partial {@link #description} of BooleanNumberOperator.
+		 */
+		private BooleanNumberOperator(String description) {
+			this.description = description;
+		}
+
+		@Override
+		public String toString() {
+			return description;
+		}
 	}
 
 	static final Logger logger = LoggerFactory.getLogger(AbstractRelationToNumberChecker.class);
+	
+	static String compareNumberDescription;
 
-	/** The number always to compare with Counter's result number. */
 	@JsonProperty("compareNumber")
-	protected int compareNumber = 0;
+	protected IntegerProperty compareNumber = new SimpleIntegerProperty(0);
+	@Override
+	public IntegerProperty compareNumberProperty() {return compareNumber;}
+	@Override
+	public int getCompareNumber() {return compareNumber.get();}
+	@Override
+	public void setCompareNumber(int compareNumber) {this.compareNumber.set(compareNumber);}
 
-	/** Contained {@link Counter}. Actually in this ObservableList can only be one Counter. It's just for getChildren() method. */
+	/**
+	 * Contained {@link Counter}. Actually in this ObservableList can only be one Counter. It's just
+	 * for getChildren() method.
+	 */
 	@JsonProperty("counter")
 	protected final ObservableList<Counter> counter = FXCollections.observableArrayList();
 
-	/** The Boolean Number Operator, e.g. EQUAL or GREATER. */
 	@JsonProperty("operator")
-	protected BooleanNumberOperator operator = BooleanNumberOperator.EQUAL;
-
+	protected SimpleObjectProperty<BooleanNumberOperator> operator = new SimpleObjectProperty<BooleanNumberOperator>(
+			BooleanNumberOperator.EQUAL);
+	@Override
+	public SimpleObjectProperty<BooleanNumberOperator> operatorProperty() {return operator;}
+	@Override
+	public BooleanNumberOperator getOperator() {return operator.get();}
+	@Override
+	public void setOperator(BooleanNumberOperator operator) {this.operator.set(operator);}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@JsonIgnore
 	@Override
@@ -77,19 +141,11 @@ public abstract class AbstractRelationToNumberChecker extends AbstractCuteNode i
 	public AddableChildrenTypeInfo getAddableChildrenTypeInfo() {
 		return AddableChildrenTypeInfo.COUNTER;
 	}
-	
+
 	@JsonIgnore
 	@Override
 	public MaxAddableChildrenCount getMaxAddableChildrenCount() {
 		return MaxAddableChildrenCount.ONE;
-	}
-	
-	public int getCompareNumber() {
-		return compareNumber;
-	}
-
-	public BooleanNumberOperator getOperator() {
-		return operator;
 	}
 
 	@Override
@@ -102,18 +158,18 @@ public abstract class AbstractRelationToNumberChecker extends AbstractCuteNode i
 			}
 			counter.get(0).init();
 			if (counter.get(0).getElementInfo().isBroken()) {
-				elementInfo.setAsBroken("Contained " + counter.get(0).getClass().getSimpleName() + " is broken. Please fix it first");
+				elementInfo.setAsBroken("Contained " + counter.get(0).getClass().getSimpleName()
+						+ " is broken. Please fix it first");
 			}
 		} else {
 			elementInfo.setAsBroken("No Counter is assigned to this Checker");
 		}
 	}
-
-	public void setCompareNumber(int compareNumber) {
-		this.compareNumber = compareNumber;
+	
+	@JsonIgnore
+	@Override
+	public String getFullDescriptionOfOperator(BooleanNumberOperator operator) {
+		return operator.toString() + " " + compareNumberDescription + ".";
 	}
 
-	public void setOperator(BooleanNumberOperator operator) {
-		this.operator = operator;
-	}
 }

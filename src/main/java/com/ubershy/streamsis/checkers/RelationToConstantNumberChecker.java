@@ -29,16 +29,20 @@ import com.ubershy.streamsis.counters.Counter;
 /**
  * Relation To Constant Number Checker. <br>
  * This {@link Checker} is working with {@link Counter}. <br>
- * On {@link #check()} it compares a number returned by {@link Counter#count()} with a <b>constant(not in terms of programming) number</b> specified by the
- * user. <br>
+ * On {@link #check()} it compares a number returned by {@link Counter#count()} with a
+ * <b>constant(not in terms of programming) number</b> specified by the user. <br>
  * And based on comparison result, it returns true or false. <br>
- * The user must specify {@link AbstractRelationToNumberChecker#operator operator} that defines type of comparison, e.g. if Counter result must be greater or
- * equal than the constant number.
+ * The user must specify {@link AbstractRelationToNumberChecker#operator operator} that defines type
+ * of comparison, e.g. if Counter result must be greater or equal than the constant number.
  */
 @SuppressWarnings("unchecked")
 public class RelationToConstantNumberChecker extends AbstractRelationToNumberChecker {
 
 	static final Logger logger = LoggerFactory.getLogger(RelationToConstantNumberChecker.class);
+	
+	static {
+		compareNumberDescription = "provided constant number";
+	}
 
 	public RelationToConstantNumberChecker() {
 	}
@@ -47,18 +51,22 @@ public class RelationToConstantNumberChecker extends AbstractRelationToNumberChe
 	 * Instantiates a new {@link RelationToConstantNumberChecker} (used by deserializator).
 	 *
 	 * @param counter
-	 *            the ArrayList with single {@link Counter} which result to compare with compareNumber
+	 *            the ArrayList with single {@link Counter} which result to compare with
+	 *            compareNumber
 	 * @param operator
-	 *            the operator, defines how Counter's result number must relate to compareNumber, e.g. EQUAL or GREATER
+	 *            the operator, defines how Counter's result number must relate to compareNumber,
+	 *            e.g. EQUAL or GREATER
 	 * @param compareNumber
-	 *            the constant(not in terms of programming) number always to compare with Counter's result
+	 *            the constant(not in terms of programming) number always to compare with Counter's
+	 *            result
 	 */
 	@JsonCreator
-	public RelationToConstantNumberChecker(@JsonProperty("counter") ArrayList<Counter> counter, @JsonProperty("operator") BooleanNumberOperator operator,
+	public RelationToConstantNumberChecker(@JsonProperty("counter") ArrayList<Counter> counter,
+			@JsonProperty("operator") BooleanNumberOperator operator,
 			@JsonProperty("compareNumber") int constantNumber) {
-		this.operator = operator;
+		this.operator.set(operator);
 		this.counter.setAll(counter);
-		this.compareNumber = constantNumber;
+		this.compareNumber.set(constantNumber);
 	}
 
 	/**
@@ -67,14 +75,17 @@ public class RelationToConstantNumberChecker extends AbstractRelationToNumberChe
 	 * @param counter
 	 *            the {@link Counter} which result to compare with compareNumber
 	 * @param operator
-	 *            the operator, defines how Counter's result number must relate to compareNumber, e.g. EQUAL or GREATER
+	 *            the operator, defines how Counter's result number must relate to compareNumber,
+	 *            e.g. EQUAL or GREATER
 	 * @param compareNumber
-	 *            the constant(not in terms of programming) number always to compare with Counter's result
+	 *            the constant(not in terms of programming) number always to compare with Counter's
+	 *            result
 	 */
-	public RelationToConstantNumberChecker(Counter counter, BooleanNumberOperator operator, int constantNumber) {
-		this.operator = operator;
+	public RelationToConstantNumberChecker(Counter counter, BooleanNumberOperator operator,
+			int constantNumber) {
+		this.operator.set(operator);
 		this.counter.setAll(counter);
-		this.compareNumber = constantNumber;
+		this.compareNumber.set(constantNumber);
 	}
 
 	@Override
@@ -83,24 +94,24 @@ public class RelationToConstantNumberChecker extends AbstractRelationToNumberChe
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
 			int count = counter.get(0).count();
-			switch (operator) {
+			switch (operator.get()) {
 			case GREATER:
-				result = (count > compareNumber);
+				result = (count > compareNumber.get());
 				break;
 			case LESS:
-				result = (count < compareNumber);
+				result = (count < compareNumber.get());
 				break;
 			case EQUAL:
-				result = (count == compareNumber);
+				result = (count == compareNumber.get());
 				break;
 			case NOTEQUAL:
-				result = (count != compareNumber);
+				result = (count != compareNumber.get());
 				break;
 			case LESSOREQUAL:
-				result = (count <= compareNumber);
+				result = (count <= compareNumber.get());
 				break;
 			case GREATEROREQUAL:
-				result = (count >= compareNumber);
+				result = (count >= compareNumber.get());
 				break;
 			}
 			elementInfo.setBooleanResult(result);

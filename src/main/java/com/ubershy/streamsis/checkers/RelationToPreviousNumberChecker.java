@@ -26,14 +26,20 @@ import com.ubershy.streamsis.counters.Counter;
 /**
  * Relation To Previous Number Checker. <br>
  * This {@link Checker} is working with {@link Counter}. <br>
- * On {@link #check()} it compares a number returned by {@link Counter#count()} with a <b>previous Counter's result</b>. <br>
+ * On {@link #check()} it compares a number returned by {@link Counter#count()} with a <b>previous
+ * Counter's result</b>. <br>
  * And based on comparison result, it returns true or false. <br>
- * The user must specify {@link AbstractRelationToNumberChecker#operator operator} that defines type of comparison, e.g. if Counter result must be greater or
- * equal than the previous Counter's result. <br>
+ * The user must specify {@link AbstractRelationToNumberChecker#operator operator} that defines type
+ * of comparison, e.g. if Counter result must be greater or equal than the previous Counter's
+ * result. <br>
  * The user must set initial value for "previous Counter's result".
  */
 @SuppressWarnings("unchecked")
 public class RelationToPreviousNumberChecker extends AbstractRelationToNumberChecker {
+	
+	static {
+		compareNumberDescription = "previous Counter's result";
+	}
 	
 	public RelationToPreviousNumberChecker() {
 	}
@@ -42,17 +48,20 @@ public class RelationToPreviousNumberChecker extends AbstractRelationToNumberChe
 	 * Instantiates a new {@link RelationToPreviousNumberChecker} (used by deserializator).
 	 *
 	 * @param counter
-	 *            the ArrayList with single {@link Counter} which current result to compare with it's previous result
+	 *            the ArrayList with single {@link Counter} which current result to compare with
+	 *            it's previous result
 	 * @param operator
-	 *            the operator, defines how Counter's result number must relate to it's previous result, e.g. EQUAL or GREATER
+	 *            the operator, defines how Counter's result number must relate to it's previous
+	 *            result, e.g. EQUAL or GREATER
 	 * @param compareNumber
 	 *            the initial value to set as Counter's previous result
 	 */
 	@JsonCreator
-	public RelationToPreviousNumberChecker(@JsonProperty("counter") ArrayList<Counter> counter, @JsonProperty("operator") BooleanNumberOperator operator,
+	public RelationToPreviousNumberChecker(@JsonProperty("counter") ArrayList<Counter> counter,
+			@JsonProperty("operator") BooleanNumberOperator operator,
 			@JsonProperty("compareNumber") int previousValue) {
-		this.compareNumber = previousValue;
-		this.operator = operator;
+		this.compareNumber.set(previousValue);
+		this.operator.set(operator);
 		this.counter.setAll(counter);
 	}
 
@@ -62,14 +71,16 @@ public class RelationToPreviousNumberChecker extends AbstractRelationToNumberChe
 	 * @param counter
 	 *            the {@link Counter} which current result to compare with it's previous result
 	 * @param operator
-	 *            the operator, defines how Counter's result number must relate to it's previous result, e.g. EQUAL or GREATER
+	 *            the operator, defines how Counter's result number must relate to it's previous
+	 *            result, e.g. EQUAL or GREATER
 	 * @param compareNumber
 	 *            the initial value to set as Counter's previous result
 	 */
-	public RelationToPreviousNumberChecker(Counter counter, BooleanNumberOperator operator, int previousValue) {
-		this.operator = operator;
+	public RelationToPreviousNumberChecker(Counter counter, BooleanNumberOperator operator,
+			int previousValue) {
+		this.operator.set(operator);
 		this.counter.setAll(counter);
-		this.compareNumber = previousValue;
+		this.compareNumber.set(previousValue);
 	}
 
 	@Override
@@ -78,27 +89,27 @@ public class RelationToPreviousNumberChecker extends AbstractRelationToNumberChe
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
 			int count = counter.get(0).count();
-			switch (operator) {
+			switch (operator.get()) {
 			case GREATER:
-				result = (count > compareNumber);
+				result = (count > compareNumber.get());
 				break;
 			case LESS:
-				result = (count < compareNumber);
+				result = (count < compareNumber.get());
 				break;
 			case EQUAL:
-				result = (count == compareNumber);
+				result = (count == compareNumber.get());
 				break;
 			case NOTEQUAL:
-				result = (count != compareNumber);
+				result = (count != compareNumber.get());
 				break;
 			case LESSOREQUAL:
-				result = (count <= compareNumber);
+				result = (count <= compareNumber.get());
 				break;
 			case GREATEROREQUAL:
-				result = (count >= compareNumber);
+				result = (count >= compareNumber.get());
 				break;
 			}
-			compareNumber = count;
+			compareNumber.set(count);
 			elementInfo.setBooleanResult(result);
 		}
 		return result;
