@@ -367,6 +367,8 @@ public class ElementEditorController implements Initializable {
 			}
 			// Allow user input.
 			propsWithNameController.setInputAllowed(true);
+			propsWithNameController
+					.setEmptyNameAllowed(currentElement.getElementInfo().isEmptyNameAllowed());
 		}
 		
 		elementWorkingCopy.init();

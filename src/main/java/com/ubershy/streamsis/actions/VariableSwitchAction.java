@@ -97,6 +97,7 @@ public class VariableSwitchAction extends AbstractCuteNode implements Action {
 		this.cases.setAll(cases);
 		for (CuteNodeContainer<Action> container: cases) {
 			container.getElementInfo().setEditable(true);
+			container.getElementInfo().setEmptyNameAllowed(true);
 		}
 	}
 
@@ -118,6 +119,7 @@ public class VariableSwitchAction extends AbstractCuteNode implements Action {
 					entry.getKey(), AddableChildrenTypeInfo.ACTION,
 					MaxAddableChildrenCount.INFINITY);
 			container.getElementInfo().setEditable(true);
+			container.getElementInfo().setEmptyNameAllowed(true);
 			genCases.add(container);
 		}
 		return genCases;
@@ -262,7 +264,7 @@ public class VariableSwitchAction extends AbstractCuteNode implements Action {
 	@Override
 	public ContainerCreationParams getChildContainerCreationParams() {
 		return new CuteNode.ContainerCreationParams(AddableChildrenTypeInfo.ACTION,
-				MaxAddableChildrenCount.INFINITY, true, "Variable's Value",
+				MaxAddableChildrenCount.INFINITY, true, true, "Variable's Value",
 				"Variable's Value (replace it)",
 				"A container of Actions which name(Value) is compared to Variable's current Value."
 						+ "\nIf they are equal, the contained Actions are run.");

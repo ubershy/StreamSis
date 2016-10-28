@@ -320,6 +320,8 @@ public class TreeContextMenuBuilder {
 				cuteNodeContainerToAdd = CuteNodeContainer.createEmptyCuteNodeContainer(name,
 						params.childrenType, params.childrenMaxCount);
 				cuteNodeContainerToAdd.getElementInfo().setEditable(params.editable);
+				cuteNodeContainerToAdd.getElementInfo()
+						.setEmptyNameAllowed(params.emptyNameAllowed);
 
 			} catch (Exception e) {
 				throw new RuntimeException("Can't instantiate Container inside "

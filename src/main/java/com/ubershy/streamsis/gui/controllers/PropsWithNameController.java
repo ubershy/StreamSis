@@ -75,6 +75,8 @@ public class PropsWithNameController implements Initializable {
 	private ValidationSupport validationSupport;
 	
 	private boolean inputAllowed = true;
+
+	private boolean allowEmptyName = false;
 	
 	public Node getView() {
 		return root;
@@ -184,10 +186,6 @@ public class PropsWithNameController implements Initializable {
 		}
 	}
 
-	private boolean validateNameEmptiness(Control c, String name) {
-		return name.equals("");
-	}
-
 	private boolean validateNameAlreadyExistence(Control c, String newValue) {
 		if (newValue.equals(originalName))
 			return false;
@@ -230,7 +228,7 @@ public class PropsWithNameController implements Initializable {
 					"The name is already taken. Please choose another one",
 					validateNameAlreadyExistence(c, newValue));
 			ValidationResult emptyResult = ValidationResult.fromErrorIf(c,
-					"Please choose a name for the element", validateNameEmptiness(c, newValue));
+					"Please choose a name for the element", !allowEmptyName && newValue.equals(""));
 			ValidationResult finalResult = ValidationResult.fromResults(emptyResult,
 					alreadyExistanceResult);
 			buttonStateManager.reportNewValueOfControl(originalName, newValue, c, finalResult);
@@ -250,6 +248,16 @@ public class PropsWithNameController implements Initializable {
 		if (currentCuteElementController != null) {
 			currentCuteElementController.setInputAllowed(allowInput);
 		}
+	}
+
+	/**
+	 * Allows or restricts input of empty name in {@link #nameTextField}.
+	 * 
+	 * @param allowEmptyName
+	 *            True to allow input of empty name, False to restrict input of empty name.
+	 */
+	public void setEmptyNameAllowed(boolean allowEmptyName) {
+		this.allowEmptyName  = allowEmptyName;
 	}
 
 }

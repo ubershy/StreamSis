@@ -195,6 +195,10 @@ public class ElementInfo {
 	@JsonIgnore
 	private BooleanProperty editable = new SimpleBooleanProperty(true);
 
+	/** Tells if the {@link CuteElement} can have an empty name. */
+	@JsonIgnore
+	private BooleanProperty emptyNameAllowed = new SimpleBooleanProperty(false);
+
 	/**
 	 * Instantiates a new ElementInfo normally.
 	 *
@@ -293,6 +297,15 @@ public class ElementInfo {
 	 */
 	public boolean isEditable() {
 		return editable.get();
+	}
+	
+	/**
+	 * Tells if this {@link CuteElement} can have an empty name.
+	 * 
+	 * @return true, if it can have an empty name. False - if not.
+	 */
+	public boolean isEmptyNameAllowed() {
+		return emptyNameAllowed.get();
 	}
 
 	/**
@@ -455,6 +468,16 @@ public class ElementInfo {
 	public void setEditable(boolean editable) {
 		this.editable.set(editable);;
 	}
+	
+	/**
+	 * Set this {@link CuteElement} as the one that can have an empty name.
+	 * 
+	 * @param emptyNameAllowed
+	 *            true, if it can have an empty name. False - if not.
+	 */
+	public void setEmptyNameAllowed(boolean emptyNameAllowed) {
+		this.emptyNameAllowed.set(emptyNameAllowed);;
+	}
 
 	/**
 	 * The current {@link ElementState} of the {@link CuteElement}.
@@ -503,6 +526,15 @@ public class ElementInfo {
 	 */
 	public BooleanProperty editableProperty() {
 		return editable;
+	}
+	
+	/**
+	 * Tells if {@link CuteElement} can have an empty name.
+	 *
+	 * @return the boolean property
+	 */
+	public BooleanProperty emptyNameAllowedProperty() {
+		return emptyNameAllowed;
 	}
 	
 }

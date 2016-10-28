@@ -69,16 +69,19 @@ public interface CuteNode extends RecursiveParent<CuteNode>, CuteElement {
 		public final String creationBaseName;
 		public final String GUIDescription;
 		public final boolean editable;
+		public final boolean emptyNameAllowed;
 		
 		public ContainerCreationParams(AddableChildrenTypeInfo childrenType,
-				MaxAddableChildrenCount childrenMaxCount, boolean editable, String GUIItemMenuName,
-				String creationBaseName, String GUIDescription) {
+				MaxAddableChildrenCount childrenMaxCount, boolean editable,
+				boolean emptyNameAllowed, String GUIItemMenuName, String creationBaseName,
+				String GUIDescription) {
 			this.childrenType = childrenType;
 			this.childrenMaxCount = childrenMaxCount;
 			this.editable = editable;
 			this.GUIItemMenuName = GUIItemMenuName;
 			this.creationBaseName = creationBaseName;
 			this.GUIDescription = GUIDescription;
+			this.emptyNameAllowed = emptyNameAllowed;
 		}
 	}
 
