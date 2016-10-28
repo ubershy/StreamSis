@@ -18,6 +18,7 @@
 package com.ubershy.streamsis.actions;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -173,13 +174,15 @@ public class VariableSwitchAction extends AbstractCuteNode implements Action {
 					+ "should be added inside VariableSwitchAction");
 			return;
 		}
+		LinkedList<String> caseNamesForFindingDuplicates = new LinkedList<>();
 		for (CuteNodeContainer<Action> container: cases) {
 			String caseName = container.getElementInfo().getName();
-			if (caseName.isEmpty()) {
-				elementInfo.setAsBroken(
-						"VariableSwitchAction can't contain empty Value of Variable");
+			if (caseNamesForFindingDuplicates.contains(caseName)) {
+				// Already contains such a name added from previous iteration
+				elementInfo.setAsBroken("Duplicate Value detected - '" + caseName + "'");
 				return;
 			}
+			caseNamesForFindingDuplicates.add(caseName);
 			if (container.getChildren().size() == 0) {
 				elementInfo.setAsBroken(
 						"The Value '" + caseName + "' don't have any Actions assigned to it.");
