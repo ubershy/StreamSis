@@ -164,6 +164,7 @@ public class RegionChecker extends AbstractCuteNode implements Checker {
 					.setAsBroken("Can't find or read Target image file: " + targetImagePath.get());
 			return;
 		}
+		Image.unCacheBundledImage(targetImagePath.get());
 		targetPattern = new Pattern(targetImagePath.get()).similar(similarity.get());
 		Image image = targetPattern.getImage();
 		if (image.getSize().getWidth() > coords.getW()) {

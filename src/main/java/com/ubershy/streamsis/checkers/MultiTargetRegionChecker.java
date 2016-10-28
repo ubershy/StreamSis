@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.sikuli.script.Finder;
+import org.sikuli.script.Image;
 import org.sikuli.script.Pattern;
 import org.sikuli.script.Screen;
 import org.sikuli.script.ScreenImage;
@@ -233,6 +234,7 @@ public class MultiTargetRegionChecker extends AbstractCuteNode implements Checke
 		ReadOnlyListProperty<File> targetsList = fileLister.get().getTemporarySourceFileList();
 		targets = new ArrayList<Pattern>(targetsList.size());
 		for (File f : targetsList) {
+			Image.unCacheBundledImage(f.getAbsolutePath());
 			targets.add(new Pattern(f.toString()).similar(similarity.get()));
 		}
 	}
