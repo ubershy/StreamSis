@@ -18,51 +18,86 @@
 package com.ubershy.streamsis.counters;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.sikuli.script.FindFailed;
+import org.sikuli.script.Image;
 import org.sikuli.script.Match;
 import org.sikuli.script.Pattern;
-import org.sikuli.script.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.checkers.Coordinates;
 import com.ubershy.streamsis.project.AbstractCuteNode;
 
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 /**
  * Region Target Counter. <br>
- * This {@link Counter} finds and counts how many image instances are located inside the specified region on the screen. <br>
- * For example, it can count how many shortcuts the user have on his OS desktop by finding all instances of shortcut arrow image.
+ * This {@link Counter} finds and counts how many image instances are located inside the specified
+ * region on the screen. <br>
+ * For example, it can count how many shortcuts the user have on his OS desktop by finding all
+ * instances of shortcut arrow image.
  */
 @SuppressWarnings("unchecked")
 public class RegionTargetCounter extends AbstractCuteNode implements Counter {
+	// TODO: fix duplicate code shared with RegionChecker.
 
 	static final Logger logger = LoggerFactory.getLogger(RegionTargetCounter.class);
 
-	/** The {@link Coordinates} of region where to search the image. */
+	/** 
+	 * The {@link Coordinates} of region where to search instances of the Target image. 
+	 */
 	@JsonProperty
 	protected Coordinates coords = new Coordinates(0, 0, 100, 100);
-
-	/** The {@link org.sikuli.script.Region Region} to internally work with. */
-	protected Region region;
+	public Coordinates getCoords() {return coords;}
+	public void setCoords(Coordinates coords) {this.coords = coords;}
 
 	/**
 	 * The similarity. <br>
-	 * A float number from 0 to 1.0 specifying the tolerance of how different the searched image can look in region. <br>
+	 * A float number from 0 to 1.00 specifying the tolerance of how different the searched image
+	 * can look in region. <br>
 	 * E.g. "1.00f" - exact image. <br>
 	 */
 	@JsonProperty
-	protected float similarity = 1.00f;
+	protected FloatProperty similarity = new SimpleFloatProperty(0.95f);
+	public FloatProperty similarityProperty() {return similarity;};
+	public float getSimilarity() {return similarity.get();}
+	public void setSimilarity(float similarity) {this.similarity.set(similarity);}
 
-	/** The path of the target image. */
+	/** 
+	 * The file path of target image which instances this Checker will try to find on screen.
+	 */
 	@JsonProperty
-	protected String targetImagePath = "";
+	protected StringProperty targetImagePath = new SimpleStringProperty("");
+	public StringProperty targetImagePathProperty() {return targetImagePath;}
+	public String getTargetImagePath() {return targetImagePath.get();}
+	public void setTargetImagePath(String targetImagePath) {
+		this.targetImagePath.set(targetImagePath);
+	}
 
 	/** The target {@link org.sikuli.script.Pattern Pattern} to internally work with. */
 	protected Pattern targetPattern;
+	
+	/**
+	 * The acceptable extensions of image files.
+	 * <p>
+	 * Even though *.jpg and *.jpeg images are also supported by Sikuli library, let's restrict
+	 * image files to only *.png files as it is a lossless format. This will allow to avoid
+	 * complains from the users like: <br>
+	 * <i> "The exact image is on my screen and similarity is 100%, but StreamSis can't find this
+	 * image! =(" </i> <br>
+	 * while this user provided very compressed *.jpg image as Target.
+	 */
+	@JsonIgnore
+	public final static List<String> allowedExtensions = Util.singleItemAsList("*.png");
 
 	public RegionTargetCounter() {
 	}
@@ -78,10 +113,11 @@ public class RegionTargetCounter extends AbstractCuteNode implements Counter {
 	 *            the image {@link #similarity} from 0 to 1.0
 	 */
 	@JsonCreator
-	public RegionTargetCounter(@JsonProperty("coords") Coordinates coords, @JsonProperty("targetImagePath") String targetImagePath,
+	public RegionTargetCounter(@JsonProperty("coords") Coordinates coords,
+			@JsonProperty("targetImagePath") String targetImagePath,
 			@JsonProperty("similarity") float similarity) {
-		this.similarity = similarity;
-		this.targetImagePath = targetImagePath;
+		this.similarity.set(similarity);
+		this.targetImagePath.set(targetImagePath);
 		this.coords = coords;
 	}
 
@@ -92,7 +128,7 @@ public class RegionTargetCounter extends AbstractCuteNode implements Counter {
 			elementInfo.setAsWorking();
 			Iterator<Match> matchResult = null;
 			try {
-				matchResult = region.findAll(targetPattern);
+				matchResult = coords.getRegion().findAll(targetPattern);
 			} catch (FindFailed notImportant) {
 				// Really, it's not that important. =)
 			}
@@ -104,18 +140,6 @@ public class RegionTargetCounter extends AbstractCuteNode implements Counter {
 		return result;
 	}
 
-	public Coordinates getCoords() {
-		return coords;
-	}
-
-	public float getSimilarity() {
-		return similarity;
-	}
-
-	public String getTargetImagePath() {
-		return targetImagePath;
-	}
-
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
@@ -124,34 +148,31 @@ public class RegionTargetCounter extends AbstractCuteNode implements Counter {
 			// already broken by coords.initRegion();
 			return;
 		}
-		if (!region.isValid()) {
-			elementInfo.setAsBroken("Something wrong with Region. Please enter valid Coordinates");
-		}
-		if (similarity > 1 || similarity <= 0) {
+		if (similarity.get() > 1 || similarity.get() <= 0) {
 			elementInfo.setAsBroken("Similarity parameter must be from 0.0 to 1.00");
 		}
-		if (!targetImagePath.isEmpty()) {
-			if (Util.checkSingleFileExistanceAndExtension(targetImagePath,
-					Util.singleStringAsArrayOfStrings("*.png"))) {
-				targetPattern = new Pattern(targetImagePath).similar(similarity);
-			} else {
-				elementInfo.setAsBroken("Can't find or read Target image file " + targetImagePath);
-			}
-		} else {
+		if (targetImagePath.get().isEmpty()) {
 			elementInfo.setAsBroken("Target image file is not defined");
+			return;
 		}
-	}
-
-	public void setCoords(Coordinates coords) {
-		this.coords = coords;
-	}
-
-	public void setSimilarity(float similarity) {
-		this.similarity = similarity;
-	}
-
-	public void setTargetImagePath(String targetImagePath) {
-		this.targetImagePath = targetImagePath;
+		if (!Util.checkSingleFileExistanceAndExtension(targetImagePath.get(),
+				allowedExtensions.toArray(new String[0]))) {
+			elementInfo
+					.setAsBroken("Can't find or read Target image file: " + targetImagePath.get());
+			return;
+		}
+		targetPattern = new Pattern(targetImagePath.get()).similar(similarity.get());
+		Image image = targetPattern.getImage();
+		if (image.getSize().getWidth() > coords.getW()) {
+			elementInfo.setAsBroken(
+					"Target image's width should be smaller than width of specified Region");
+			return;
+		}
+		if (image.getSize().getHeight() > coords.getH()) {
+			elementInfo.setAsBroken(
+					"Target image's height should be smaller than height of specified Region");
+			return;
+		}
 	}
 
 }
