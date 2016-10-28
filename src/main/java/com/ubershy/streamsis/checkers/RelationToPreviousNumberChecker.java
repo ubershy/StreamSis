@@ -37,6 +37,13 @@ import com.ubershy.streamsis.counters.Counter;
 @SuppressWarnings("unchecked")
 public class RelationToPreviousNumberChecker extends AbstractRelationToNumberChecker {
 	
+	/**
+	 * The runtime variable for storing previous result. On {@link #init()} it acquires it's initial
+	 * value from {@link #compareNumberProperty()}. After {@link #check()} it has previous Counter's
+	 * result as value.
+	 */
+	int previousResult;
+	
 	static {
 		compareNumberDescription = "previous Counter's result";
 	}
@@ -91,28 +98,37 @@ public class RelationToPreviousNumberChecker extends AbstractRelationToNumberChe
 			int count = counter.get(0).count();
 			switch (operator.get()) {
 			case GREATER:
-				result = (count > compareNumber.get());
+				result = (count > previousResult);
 				break;
 			case LESS:
-				result = (count < compareNumber.get());
+				result = (count < previousResult);
 				break;
 			case EQUAL:
-				result = (count == compareNumber.get());
+				result = (count == previousResult);
 				break;
 			case NOTEQUAL:
-				result = (count != compareNumber.get());
+				result = (count != previousResult);
 				break;
 			case LESSOREQUAL:
-				result = (count <= compareNumber.get());
+				result = (count <= previousResult);
 				break;
 			case GREATEROREQUAL:
-				result = (count >= compareNumber.get());
+				result = (count >= previousResult);
 				break;
 			}
-			compareNumber.set(count);
+			previousResult = count;
 			elementInfo.setBooleanResult(result);
 		}
 		return result;
+	}
+	
+	@Override
+	public void init() {
+		super.init();
+		if (elementInfo.isBroken()) {
+			return; // Already broken by super.init()
+		}
+		previousResult = compareNumber.get();
 	}
 
 }
