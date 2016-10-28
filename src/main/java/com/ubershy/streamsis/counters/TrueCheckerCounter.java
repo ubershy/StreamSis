@@ -34,7 +34,8 @@ import javafx.collections.ObservableList;
 
 /**
  * True Checker Counter. <br>
- * This {@link Counter} on {@link #count()} performs {@link Checker#check() check()} on contained {@link Checker Checkers}. <br>
+ * This {@link Counter} on {@link #count()} performs {@link Checker#check() check()} on contained
+ * {@link Checker Checkers}. <br>
  * Then it counts how many of them have returned true.
  */
 public class TrueCheckerCounter extends AbstractCuteNode implements Counter {
@@ -69,7 +70,8 @@ public class TrueCheckerCounter extends AbstractCuteNode implements Counter {
 		for (Checker checker : checkers) {
 			checker.init();
 			if (checker.getElementInfo().isBroken()) {
-				elementInfo.setAsBroken("One or more contained checkers are broken. Please fix them first or delete");
+				elementInfo.setAsBroken(
+						"One or more contained checkers are broken. Please fix them first or delete");
 			}
 		}
 	}
@@ -99,7 +101,7 @@ public class TrueCheckerCounter extends AbstractCuteNode implements Counter {
 	public AddableChildrenTypeInfo getAddableChildrenTypeInfo() {
 		return AddableChildrenTypeInfo.CHECKER;
 	}
-	
+
 	@JsonIgnore
 	@Override
 	public MaxAddableChildrenCount getMaxAddableChildrenCount() {
