@@ -416,10 +416,12 @@ public class FullModeController implements Initializable {
 		File file = fileChooser.showSaveDialog(rootNode.getScene().getWindow());
 		if (file != null) {
 			try {
+				String absolutePath = file.getAbsolutePath();
 				CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastFileDirectory",
 						file.getParentFile().getAbsolutePath());
-				ProjectSerializator.serializeToFile(project, file.getAbsolutePath());
-				OpenRecentManager.setRecentProject(file.getAbsolutePath());
+				ProjectSerializator.serializeToFile(project, absolutePath);
+				OpenRecentManager.setRecentProject(absolutePath);
+				ProjectManager.setProjectFilePath(absolutePath);
 				initializeOpenRecentMenu();
 			} catch (IOException e) {
 				Alert alert = new Alert(AlertType.ERROR);

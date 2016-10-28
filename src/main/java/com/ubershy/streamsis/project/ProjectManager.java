@@ -39,21 +39,14 @@ public final class ProjectManager {
 
 	/** The Constant logger. */
 	static final Logger logger = LoggerFactory.getLogger(ProjectManager.class);
-
+	
 	/** The current CuteProject's file path. */
-	static String currentProjectFilePath;
+	private static String currentProjectFilePath;
+	public static String getProjectFilePath() {return currentProjectFilePath;}
+	public static void setProjectFilePath(String path) {currentProjectFilePath = path;}
 
 	/** The current CuteProject. */
 	static CuteProject currentProject;
-
-	/**
-	 * Gets the current CuteProject's file path.
-	 *
-	 * @return the path of the current CuteProject
-	 */
-	public static String getProjectFilePath() {
-		return currentProjectFilePath;
-	}
 
 	/**
 	 * Gets the current CuteProject.
