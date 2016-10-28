@@ -26,8 +26,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.project.AbstractCuteNode;
 import com.ubershy.streamsis.project.UserVars;
 
+import impl.org.controlsfx.i18n.SimpleLocalizedStringProperty;
+import javafx.beans.property.StringProperty;
+
 /**
- * Value Checker. <br>
+ * Variable Checker. <br>
  * This {@link Checker} checks if the specified variable in {@link UserVars} equals to specified
  * expected value. <br>
  * If variable is not found in UserVars, this Checker returns false;
@@ -39,11 +42,17 @@ public class VariableChecker extends AbstractCuteNode implements Checker {
 
 	/** The value to expect under the variable in {@link UserVars}. */
 	@JsonProperty
-	private String expectedValue = "";
+	private StringProperty expectedValue = new SimpleLocalizedStringProperty("");
+	public StringProperty expectedValueProperty() {return expectedValue;}
+	public String getExpectedValue() {return expectedValue.get();}
+	public void setExpectedValue(String expectedValue) {this.expectedValue.set(expectedValue);;}
 
 	/** The variable to check in {@link UserVars}. */
 	@JsonProperty
-	private String key = "";
+	private StringProperty key = new SimpleLocalizedStringProperty("");
+	public StringProperty keyProperty() {return key;}
+	public String getKey() {return key.get();}
+	public void setKey(String key) {this.key.set(key);}
 
 	/** The variable for storing previous result. Helps to prevent spamming to log. */
 	@JsonIgnore
@@ -63,8 +72,8 @@ public class VariableChecker extends AbstractCuteNode implements Checker {
 	@JsonCreator
 	public VariableChecker(@JsonProperty("key") String key,
 			@JsonProperty("expectedValue") String expectedValue) {
-		this.key = key;
-		this.expectedValue = expectedValue;
+		this.key.set(key);
+		this.expectedValue.set(expectedValue);
 	}
 
 	@Override
@@ -72,17 +81,17 @@ public class VariableChecker extends AbstractCuteNode implements Checker {
 		boolean result = false;
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
-			String currentValue = UserVars.get(key);
+			String currentValue = UserVars.get(key.get());
 			if (expectedValue.equals(currentValue)) {
 				if (!previousResult) {
-					logger.info("Variable: '" + key + "' EQUALS expected Value: '" + expectedValue
-							+ "'");
+					logger.info("Variable: '" + key.get() + "' EQUALS expected Value: '"
+							+ expectedValue.get() + "'");
 				}
 				result = true;
 			} else {
 				if (previousResult) {
-					logger.info("Variable: '" + key + "' NOT EQUALS expected Value: '"
-							+ expectedValue + "'. Current Value: '" + currentValue + "'");
+					logger.info("Variable: '" + key.get() + "' NOT EQUALS expected Value: '"
+							+ expectedValue.get() + "'. Current Value: '" + currentValue + "'");
 				}
 			}
 			elementInfo.setBooleanResult(result);
@@ -91,29 +100,14 @@ public class VariableChecker extends AbstractCuteNode implements Checker {
 		return result;
 	}
 
-	public String getExpectedValue() {
-		return expectedValue;
-	}
-
-	public String getKey() {
-		return key;
-	}
 
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
-		if (key.isEmpty())
+		if (key.get().isEmpty())
 			elementInfo.setAsBroken("Variable name is empty");
 		if (expectedValue == null)
 			throw new RuntimeException("Expected value can't be set to null.");
-	}
-
-	public void setExpectedValue(String expectedValue) {
-		this.expectedValue = expectedValue;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
 	}
 
 }
