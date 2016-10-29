@@ -100,7 +100,6 @@ public class VariableChecker extends AbstractCuteNode implements Checker {
 		return result;
 	}
 
-
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();

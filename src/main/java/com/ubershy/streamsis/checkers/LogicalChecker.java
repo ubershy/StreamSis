@@ -298,14 +298,13 @@ public class LogicalChecker extends AbstractCuteNode implements Checker {
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
-		if (checkers.size() == 0) {
-			elementInfo.setAsBroken("No Checkers are assigned to this Checker");
-			return;
-		}
 		String operatorIsBrokenMessage = whyOperatorCantBeAppliedToCurrentAmountOfCheckers(
 				operator.get());
 		if (operatorIsBrokenMessage != null) {
 			elementInfo.setAsBroken(operatorIsBrokenMessage);
+		}
+		if (checkers.size() == 0) {
+			elementInfo.setAsBroken("No Checkers are assigned to this Checker");
 			return;
 		}
 		for (Checker checker : checkers) {
@@ -313,7 +312,6 @@ public class LogicalChecker extends AbstractCuteNode implements Checker {
 			if (checker.getElementInfo().isBroken()) {
 				elementInfo.setAsBroken("Contained Checker " + checker.getClass().getSimpleName()
 						+ " is broken. Please fix it first");
-				return;
 			}
 		}
 	}

@@ -70,8 +70,8 @@ public class TrueCheckerCounter extends AbstractCuteNode implements Counter {
 		for (Checker checker : checkers) {
 			checker.init();
 			if (checker.getElementInfo().isBroken()) {
-				elementInfo.setAsBroken(
-						"One or more contained checkers are broken. Please fix them first or delete");
+				elementInfo.setAsBroken("One or more contained checkers are broken. "
+						+ "Please fix them first or delete");
 			}
 		}
 	}

@@ -34,6 +34,7 @@ import com.ubershy.streamsis.gui.helperclasses.CuteTreeCell;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteNode;
 import com.ubershy.streamsis.project.CuteNodeContainer;
+import com.ubershy.streamsis.project.ProjectManager;
 import com.ubershy.streamsis.project.CuteNode.AddableChildrenTypeInfo;
 import com.ubershy.streamsis.project.CuteNode.ContainerCreationParams;
 
@@ -276,12 +277,8 @@ public class TreeContextMenuBuilder {
 					ObservableList<CuteNode> whereToAddCasted = (ObservableList<CuteNode>) whereToAdd
 							.getChildren();
 					whereToAddCasted.add(nodeToAdd);
-					// Initialize CuteNode to highlight that it is still not configured
-					GUIUtil.reinitElementAndWholeProject(nodeToAdd);
-					// Initialize also parent as method above does not guarantee that parent will
-					// be reinitialized, but it's needed because it might be broken because of
-					// missing children.
-					whereToAdd.init();
+					// Initialize whole project, it may highlight unconfigured CuteNode.
+					ProjectManager.getProject().init();
 				}
 			});
 			addNewCuteNodeMenu.getItems().add(newCuteNodeMenuItem);
@@ -332,13 +329,8 @@ public class TreeContextMenuBuilder {
 				ObservableList<CuteNode> whereToAddCasted = (ObservableList<CuteNode>) whereToAdd
 						.getChildren();
 				whereToAddCasted.add(cuteNodeContainerToAdd);
-				// Initialize cuteNodeContainerToAdd though currently it does nothing.
-				// But reinitializing the whole project still needed.
-				GUIUtil.reinitElementAndWholeProject(cuteNodeContainerToAdd);
-				// Initialize also parent as method above does not guarantee that parent will
-				// be reinitialized, but it's needed because parent might be broken because of
-				// missing children.
-				whereToAdd.init();
+				// Initialize whole project to reinitialize any parents that can be broken.
+				ProjectManager.getProject().init();
 			}
 		});
 		menu.getItems().add(newContainerMenuItem);

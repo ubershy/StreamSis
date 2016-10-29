@@ -107,23 +107,16 @@ public class ConfirmedDelayedActions extends DelayedActions {
 	@Override
 	public void init() {
 		super.init();
-		if (checker != null) {
-			if (!checker.isEmpty()) {
-				if (checker.get(0) != null) {
-					checker.get(0).init();
-					if (checker.get(0).getElementInfo().isBroken()) {
-						elementInfo.setAsBroken("Contained " + checker.get(0).getClass().getSimpleName() + " is broken");
-					}
-				} else {
-					elementInfo.setAsBroken("Checker is not defined");
-				}
-			} else {
-				elementInfo.setAsBroken("Checker is not assigned");
-			}
-		} else {
-			elementInfo.setAsBroken("Contained list of Checkers is not defined");
+		if (checker.isEmpty()) {
+			elementInfo.setAsBroken("Checker is not assigned");
+			return;
 		}
-
+		Checker checkerInstance = checker.get(0);
+		checkerInstance.init();
+		if (checkerInstance.getElementInfo().isBroken()) {
+			elementInfo.setAsBroken(
+					"Contained " + checkerInstance.getClass().getSimpleName() + " is broken");
+		}
 	}
 
 	@Override

@@ -122,24 +122,15 @@ public class DelayedActions extends AbstractCuteNode implements Action {
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
-		if (actions != null) {
-			if (!actions.isEmpty()) {
-				for (Action action : actions) {
-					if (action != null) {
-						action.init();
-						if (action.getElementInfo().isBroken()) {
-							elementInfo.setAsBroken("Contained Action "
-									+ action.getClass().getSimpleName() + " is broken");
-						}
-					} else {
-						elementInfo.setAsBroken("Contained Action is not defined");
-					}
-				}
-			} else {
-				elementInfo.setAsBroken("No Actions are assigned");
+		if (actions.isEmpty()) {
+			elementInfo.setAsBroken("No Actions are assigned");
+		}
+		for (Action action : actions) {
+			action.init();
+			if (action.getElementInfo().isBroken()) {
+				elementInfo.setAsBroken(
+						"Contained Action " + action.getClass().getSimpleName() + " is broken");
 			}
-		} else {
-			elementInfo.setAsBroken("Contained list of Actions is not defined");
 		}
 	}
 

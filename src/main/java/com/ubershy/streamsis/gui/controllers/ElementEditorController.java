@@ -35,7 +35,6 @@ import com.ubershy.streamsis.gui.StreamSisAppFactory.SpecialCuteElementControlle
 import com.ubershy.streamsis.gui.animations.HorizontalShadowAnimation;
 import com.ubershy.streamsis.gui.animations.ThreeDotsAnimation;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
-import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.CuteNode;
 import com.ubershy.streamsis.project.ElementInfo;
@@ -472,7 +471,9 @@ public class ElementEditorController implements Initializable {
 			throw new RuntimeException("For some reason can't transfer changes from copy of the "
 					+ "current CuteElement to the current CuteElement", e);
 		}
-		GUIUtil.reinitElementAndWholeProject(getCurrentElement());
+		// Initialize whole project, it may fix parents and it may highlight problems in this
+		// CuteElement.
+		ProjectManager.getProject().init();
 		connectToCuteElement(getCurrentElement());
 	}
 	

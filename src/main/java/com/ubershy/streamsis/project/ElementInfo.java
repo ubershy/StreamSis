@@ -328,7 +328,8 @@ public class ElementInfo {
 	}
 
 	/**
-	 * Sets the "broken message" for the {@link CuteElement}, <br>
+	 * If {@link CuteElement} is not already broken, this method: <br>
+	 * Sets the "broken message" for the CuteElement, <br>
 	 * Sets the CuteElement's health as {@link ElementHealth#BROKEN}, <br>
 	 * Sets the CuteElement's state as {@link ElementState#NEEDINIT}.
 	 * <p>
@@ -340,14 +341,20 @@ public class ElementInfo {
 	 * </i> - a good example of "broken message" for the "Coder" CuteElement. <br>
 	 *
 	 * @param whyUnhealthy
-	 *            a string telling a story why this CuteElement is broken
+	 *            A string telling a story why this CuteElement is broken.
+	 *            
+	 * @note If CuteElement is already broken, this method does nothing.
 	 */
 	public void setAsBroken(String whyUnhealthy) {
+		String name = (nameProperty.get().isEmpty()) ? "NONAME" : nameProperty.get();
+		String loggerStart = "Name: '" + name + "' of type: '" + objectSimpleName + "' is ";
+		if (isBroken()) {
+			logger.debug(loggerStart + "already broken, but someone is still kicking it's corpse.");
+			return;
+		}
 		elementHealthProperty.set(ElementHealth.BROKEN);
 		whyUnhealthyProperty.set(whyUnhealthy);
-		String name = (nameProperty.get().isEmpty()) ? "NONAME" : nameProperty.get();
-		logger.info("Name: '" + name + "' of type: '" + objectSimpleName + "' is broken: "
-				+ whyUnhealthy);
+		logger.info(loggerStart + "broken: " + whyUnhealthy);
 	}
 
 	/**

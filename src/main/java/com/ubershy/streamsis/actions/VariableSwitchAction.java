@@ -167,38 +167,34 @@ public class VariableSwitchAction extends AbstractCuteNode implements Action {
 		elementInfo.setAsReadyAndHealthy();
 		if (key.get().isEmpty()) {
 			elementInfo.setAsBroken("Variable name is empty");
-			return;
 		}
 		if (cases.size() == 0) {
-			elementInfo.setAsBroken("At least one Variable's Value "
-					+ "should be added inside VariableSwitchAction");
-			return;
+			elementInfo.setAsBroken(
+					"At least one Variable's Value should be added inside VariableSwitchAction");
 		}
 		LinkedList<String> caseNamesForFindingDuplicates = new LinkedList<>();
 		for (CuteNodeContainer<Action> container: cases) {
 			String caseName = container.getElementInfo().getName();
+			// Check duplicate names of Containers.
 			if (caseNamesForFindingDuplicates.contains(caseName)) {
-				// Already contains such a name added from previous iteration
-				elementInfo.setAsBroken("Duplicate Value detected - '" + caseName + "'");
-				return;
+				// Already contains such a name added from previous iteration.
+				elementInfo.setAsBroken("Duplicate Variable's Value detected inside - '" + caseName + "'");
 			}
 			caseNamesForFindingDuplicates.add(caseName);
+			// Check if Container doesn't have Actions inside.
 			if (container.getChildren().size() == 0) {
-				elementInfo.setAsBroken(
-						"The Value '" + caseName + "' don't have any Actions assigned to it.");
-				return;
+				elementInfo.setAsBroken("The Variable's Value '" + caseName
+						+ "' don't have any Actions assigned to it.");
 			}
-		}
-		for (CuteNodeContainer<Action> container: cases) {
-			String caseName = container.getElementInfo().getName();
-			for (CuteNode node: container.getChildren()) {
+			// Init each Action in this Container.
+			for (CuteNode node : container.getChildren()) {
 				node.init();
 				if (node.getElementInfo().isBroken()) {
-					elementInfo.setAsBroken(
-							"One or more Actions assigned to Value '" + caseName + "' are broken");
+					elementInfo.setAsBroken("One or more Actions assigned to Variable's Value '"
+							+ caseName + "' are broken");
 				}
 			}
-		};
+		}
 	}
 
 	/**

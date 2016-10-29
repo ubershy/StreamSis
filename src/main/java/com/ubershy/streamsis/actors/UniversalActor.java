@@ -63,6 +63,7 @@ public class UniversalActor extends AbstractActor implements Actor {
 		this.repeatInterval.set(repeatInterval);
 		this.setDoOnRepeat(doOnRepeat);
 		this.setDoOffRepeat(doOffRepeat);
+		addSafetyListeners();
 	}
 
 	/**
@@ -188,55 +189,43 @@ public class UniversalActor extends AbstractActor implements Actor {
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
-		addSafetyListeners();
-		if (elementInfo.getName() != null) {
-			if (elementInfo.getName().isEmpty()) {
-				elementInfo.setAsBroken("Actor's name must not be empty");
-				return;
-			}
-		} else {
-			elementInfo.setAsBroken("Actor's name is not defined... ");
-			return;
-		}
-		if (checkers.isEmpty()) {
-			elementInfo.setAsBroken("You must assign a Checker to Actor before it can work");
-			return;
+		if (elementInfo.getName().isEmpty()) {
+			elementInfo.setAsBroken("Actor's name must not be empty");
 		}
 		if (checkInterval.get() < ConstsAndVars.minimumCheckInterval) {
 			elementInfo.setAsBroken("Actor check interval must not be less than "
 					+ ConstsAndVars.minimumCheckInterval + " ms");
-			return;
 		}
 		if (repeatInterval.get() < ConstsAndVars.minimumCheckInterval
 				&& (getDoOnRepeat() || getDoOffRepeat())) {
 			elementInfo.setAsBroken("Actor repeat interval must not be less than "
 					+ ConstsAndVars.minimumCheckInterval + " ms");
-			return;
+		}
+		if (checkers.isEmpty()) {
+			elementInfo.setAsBroken("You must assign a Checker to Actor before it can work");
+		} else {
+			checkers.get(0).init();
+			if (checkers.get(0).getElementInfo().isBroken()) {
+				elementInfo.setAsBroken(
+						"The Checker assigned to this Actor is broken. Please fix it first");
+			}
 		}
 		if ((onActions.size() == 0) && (offActions.size() == 0)) {
 			elementInfo.setAsBroken("Actor must have at least one Action assigned to it");
-			return;
-		}
-		checkers.get(0).init();
-		if (checkers.get(0).getElementInfo().isBroken()) {
-			elementInfo.setAsBroken(
-					"The Checker assigned to this Actor is broken. Please fix it first");
-			return;
-		}
-		for (Action action : onActions) {
-			action.init();
-			if (action.getElementInfo().isBroken()) {
-				elementInfo.setAsBroken(
-						"One or more contained OnActions are broken. Please fix them first or delete");
-				return;
+		} else {
+			for (Action action : onActions) {
+				action.init();
+				if (action.getElementInfo().isBroken()) {
+					elementInfo.setAsBroken("One or more contained On Actions are broken. "
+							+ "Please fix them first or delete");
+				}
 			}
-		}
-		for (Action action : offActions) {
-			action.init();
-			if (action.getElementInfo().isBroken()) {
-				elementInfo.setAsBroken(
-						"One or more contained OffActions are broken. Please fix them first or delete");
-				return;
+			for (Action action : offActions) {
+				action.init();
+				if (action.getElementInfo().isBroken()) {
+					elementInfo.setAsBroken("One or more contained Off Actions are broken. "
+							+ "Please fix them first or delete");
+				}
 			}
 		}
 	}

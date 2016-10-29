@@ -151,18 +151,14 @@ public abstract class AbstractRelationToNumberChecker extends AbstractCuteNode
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
-		if (counter.size() != 0) {
-			if (counter.get(0) == null) {
-				elementInfo.setAsBroken("Counter is not defined");
-				return;
-			}
-			counter.get(0).init();
-			if (counter.get(0).getElementInfo().isBroken()) {
-				elementInfo.setAsBroken("Contained " + counter.get(0).getClass().getSimpleName()
-						+ " is broken. Please fix it first");
-			}
-		} else {
+		if (counter.size() == 0) {
 			elementInfo.setAsBroken("No Counter is assigned to this Checker");
+			return;
+		}
+		counter.get(0).init();
+		if (counter.get(0).getElementInfo().isBroken()) {
+			elementInfo.setAsBroken("Contained " + counter.get(0).getClass().getSimpleName()
+					+ " is broken. Please fix it first");
 		}
 	}
 	
