@@ -64,7 +64,6 @@ public class CuteNodeContainerController extends AbstractCuteController
 		listener = new ListChangeListener<CuteNode>() {
 			public void onChanged(ListChangeListener.Change<? extends CuteNode> c) {
 				currentQuantityLabel.setText(String.valueOf(c.getList().size()));
-				System.out.println("YeehawGUI");
 			}
 		};
 	}
