@@ -18,16 +18,20 @@
 package com.ubershy.streamsis.project;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.ubershy.streamsis.actions.Action;
+import com.ubershy.streamsis.checkers.Checker;
+import com.ubershy.streamsis.counters.Counter;
+import com.ubershy.streamsis.gui.helperclasses.RecursiveParent;
 
 /**
- * CuteElement can {@link #init()} itself and {@link #getElementInfo()} about itself.
+ * CuteElement is a {@link CuteElement} and {@link RecursiveParent} simultaneously with additional
+ * methods useful in Hierarchical structures.
  * <p>
+ * Very useful for {@link com.ubershy.streamsis.StreamSis StreamSis} GUI rendering. <br>
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,
-		    include = JsonTypeInfo.As.PROPERTY,
-		    property = "@class")
-public interface CuteElement {
-
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public interface CuteElement extends RecursiveParent<CuteElement> {
+	
 	/**
 	 * Gets the {@link ElementInfo}. <br>
 	 * ElementInfo allows to see {@link CuteElement}'s name, state.
@@ -38,7 +42,7 @@ public interface CuteElement {
 
 	/**
 	 * Initializes the {@link CuteElement} so it's ready to work.
-	 * If this CuteElement is a {@link CuteNode}, initializes it's children.
+	 * If this CuteElement is a {@link CuteElement}, initializes it's children.
 	 * <p>
 	 * Optional things it can do: <br>
 	 * 1. Decide if CuteElement is fully functional and not {@link ElementInfo#isBroken() broken}.
@@ -53,4 +57,125 @@ public interface CuteElement {
 	 */
 	public void init();
 
+	/**
+	 * Gets this {@link CuteElement}'s {@link AddableChildrenTypeInfo}.
+	 *
+	 * @return the AddableChildrenTypeInfo,<br>
+	 *         null, if no information provided, so the user will be unable to add or remove
+	 *         children to this CuteElement
+	 */
+	public AddableChildrenTypeInfo getAddableChildrenTypeInfo();
+
+	/**
+	 * Gets this {@link CuteElement}'s {@link MaxAddableChildrenCount}.
+	 *
+	 * @return the MaxAddableChildrenCount, <br>
+	 *         null, if no information provided, so the user will be unable to add or remove
+	 *         children to this CuteElement
+	 */
+	public MaxAddableChildrenCount getMaxAddableChildrenCount();
+	
+	/**
+	 * Gets {@link ContainerCreationParams} of this {@link CuteElement} if it can have
+	 * CuteElementContainers as children.
+	 *
+	 * @return {@link ContainerCreationParams} of this {@link CuteElement},<br>
+	 *         null if this CuteElement can't have CuteElementContainers as children.
+	 */
+	public ContainerCreationParams getChildContainerCreationParams();
+	
+	/**
+	 * ContainerParams has all information required for creating {@link CuteElementContainer} as
+	 * CuteElement's child by request of the user. This class is only useful when CuteElement can
+	 * have CuteElementContainers created by the user - see
+	 * {@link CuteElement#getAddableChildrenTypeInfo()}.
+	 */
+	public class ContainerCreationParams {
+		public final AddableChildrenTypeInfo childrenType;
+		public final MaxAddableChildrenCount childrenMaxCount;
+		public final String GUIItemMenuName;
+		public final String creationBaseName;
+		public final String GUIDescription;
+		public final boolean editable;
+		public final boolean emptyNameAllowed;
+		
+		public ContainerCreationParams(AddableChildrenTypeInfo childrenType,
+				MaxAddableChildrenCount childrenMaxCount, boolean editable,
+				boolean emptyNameAllowed, String GUIItemMenuName, String creationBaseName,
+				String GUIDescription) {
+			this.childrenType = childrenType;
+			this.childrenMaxCount = childrenMaxCount;
+			this.editable = editable;
+			this.GUIItemMenuName = GUIItemMenuName;
+			this.creationBaseName = creationBaseName;
+			this.GUIDescription = GUIDescription;
+			this.emptyNameAllowed = emptyNameAllowed;
+		}
+	}
+
+	/**
+	 * MaxAddableChildrenCount contains information describing how many children can be added to
+	 * this {@link CuteElement}. <br>
+	 * So the GUI(if it currently exists) will know how to manage this CuteElement. <br>
+	 */
+	public enum MaxAddableChildrenCount {
+
+		/** The undefinedorzero. */
+		UNDEFINEDORZERO,
+		/** The one. */
+		ONE,
+		/** The infinity. */
+		INFINITY
+	}
+
+	/**
+	 * AddableChildrenTypeInfo contains information describing type of the {@link CuteElement} that can
+	 * be added by user to this CuteElement's list of children. <br>
+	 * So the GUI(if it currently exists) will know how to manage this CuteElement.
+	 */
+	public enum AddableChildrenTypeInfo {
+		/**
+		 * Indicates that a {@link Action} can be added by user to this {@link CuteElement}'s children.
+		 */
+		ACTION(Action.class),
+
+		/**
+		 * Indicates that a {@link Checker} can be added by user to this {@link CuteElement}'s
+		 * children.
+		 */
+		CHECKER(Checker.class),
+
+		/**
+		 * Indicates that a {@link Counter} can be added by user to this {@link CuteElement}'s
+		 * children.
+		 */
+		COUNTER(Counter.class),
+
+		/**
+		 * Indicates that a {@link CuteElementContainer} can be added by user to this {@link CuteElement}
+		 * 's children.
+		 */
+		CONTAINER(CuteElementContainer.class);
+
+		/** The type. */
+		private final Class<? extends CuteElement> type;
+		
+		/**
+		 * Instantiates a new addable children type info.
+		 *
+		 * @param type the type
+		 */
+		private AddableChildrenTypeInfo(final Class<? extends CuteElement> type) {
+			this.type = type;
+		}
+
+		/**
+		 * Gets the type.
+		 *
+		 * @return the type
+		 */
+		public Class<? extends CuteElement> getType() {
+			return type;
+		}
+	}
 }

@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ubershy.streamsis.project.AbstractCuteNode;
+import com.ubershy.streamsis.project.AbstractCuteElement;
 import com.ubershy.streamsis.project.UserVars;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -34,7 +34,7 @@ import javafx.beans.property.StringProperty;
  * If user variable(key) already exists in {@link UserVars}, it's value will be overwritten. <br>
  */
 @SuppressWarnings("unchecked")
-public class VariableSetterAction extends AbstractCuteNode implements Action {
+public class VariableSetterAction extends AbstractCuteElement implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(VariableSetterAction.class);
 

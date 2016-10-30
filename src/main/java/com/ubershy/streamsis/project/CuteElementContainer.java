@@ -30,17 +30,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
- * This container is useful for GUI rendering when an {@link CuteNode} has more than one list of
+ * This container is useful for GUI rendering when an {@link CuteElement} has more than one list of
  * children. Sometimes it can be used as part of the model.
  * 
  * @see {@link AbstractActor} as example. <br>
  *      It has 3 ObservableLists of children: checker, onActions, offActions inside corresponding
- *      CuteNodeContainers. It can't return all these three lists in getChildren() method. Instead
- *      it returns three CuteNodeContainers each one wrapping corresponding ObservableList.
+ *      CuteElementContainers. It can't return all these three lists in getChildren() method.
+ *      Instead it returns three CuteElementContainers each one wrapping corresponding
+ *      ObservableList.
  */
-public class CuteNodeContainer<T extends CuteNode> extends AbstractCuteNode {
+public class CuteElementContainer<T extends CuteElement> extends AbstractCuteElement {
 
-	/** The children with {@link CuteNode}s. */
+	/** The children with {@link CuteElement}s. */
 	@JsonProperty("children")
 	protected ObservableList<T> children = FXCollections.observableArrayList();
 
@@ -52,26 +53,26 @@ public class CuteNodeContainer<T extends CuteNode> extends AbstractCuteNode {
 	@JsonProperty("maxMaxAddableChildrenCount")
 	protected MaxAddableChildrenCount maxMaxAddableChildrenCount;
 	
-	public CuteNodeContainer() {
-		// CuteNodeContainers more often used as not part of the model. So let's set them as
+	public CuteElementContainer() {
+		// CuteElementContainers more often used as not part of the model. So let's set them as
 		// not editable.
 		elementInfo.setEditable(false);
 	}
 
 	/**
-	 * Instantiates a new CuteNodeContainer normally. It's children list is same as passed
+	 * Instantiates a new CuteElementContainer normally. It's children list is same as passed
 	 * children list argument.
 	 *
 	 * @param children
-	 *            The children to store inside CuteNodeContainer.
+	 *            The children to store inside CuteElementContainer.
 	 * @param name
-	 *            The name of this CuteNodeContainer.
+	 *            The name of this CuteElementContainer.
 	 * @param childrenType
 	 *            The allowed type of children.
 	 * @param maxMaxAddableChildrenCount
 	 *            The allowed quantity of children.
 	 */
-	public CuteNodeContainer(ObservableList<T> children, String name,
+	public CuteElementContainer(ObservableList<T> children, String name,
 			AddableChildrenTypeInfo childrenType,
 			MaxAddableChildrenCount maxMaxAddableChildrenCount) {
 		this();
@@ -82,19 +83,19 @@ public class CuteNodeContainer<T extends CuteNode> extends AbstractCuteNode {
 	}
 	
 	/**
-	 * Instantiates a new CuteNodeContainer. Used for deserialization. It's list children is just a
+	 * Instantiates a new CuteElementContainer. Used for deserialization. It's list children is just a
 	 * non-deep copy of passed children list argument.
 	 *
 	 * @param children
-	 *            The children to store inside CuteNodeContainer.
+	 *            The children to store inside CuteElementContainer.
 	 * @param name
-	 *            The name of this CuteNodeContainer.
+	 *            The name of this CuteElementContainer.
 	 * @param childrenType
 	 *            The allowed type of children.
 	 * @param maxChildren
 	 *            The allowed quantity of children.
 	 */
-	public CuteNodeContainer(@JsonProperty("children") ArrayList<T> children,
+	public CuteElementContainer(@JsonProperty("children") ArrayList<T> children,
 			@JsonProperty("name") String name,
 			@JsonProperty("childrenType") AddableChildrenTypeInfo childrenType,
 			@JsonProperty("maxMaxAddableChildrenCount") MaxAddableChildrenCount maxChildren) {
@@ -107,7 +108,7 @@ public class CuteNodeContainer<T extends CuteNode> extends AbstractCuteNode {
 
 	@JsonIgnore
 	@Override
-	public ObservableList<? extends CuteNode> getChildren() {
+	public ObservableList<? extends CuteElement> getChildren() {
 		return children;
 	}
 
@@ -125,39 +126,39 @@ public class CuteNodeContainer<T extends CuteNode> extends AbstractCuteNode {
 
 	@Override
 	public void init() {
-		// Let init() of contained children happen in CuteNodes where this CuteNodeContainer is
-		// stored.
+		// Let init() of contained children happen in CuteElements where this CuteElementContainer
+		// is stored.
 	}
 	
 	/**
-	 * Instantiates a new CuteNodeContainer, but doesn't require programmer to provide an empty list
+	 * Instantiates a new CuteElementContainer, but doesn't require programmer to provide an empty list
 	 * and specify it's generic subtype, because passed childrenType parameter already contains
 	 * information about subtype.
 	 *
 	 * @param name
-	 *            The name of this CuteNodeContainer.
+	 *            The name of this CuteElementContainer.
 	 * @param childrenType
 	 *            The allowed type of children.
 	 * @param maxMaxAddableChildrenCount
 	 *            The allowed quantity of children.
 	 */
-	public static CuteNodeContainer<?> createEmptyCuteNodeContainer(String name,
+	public static CuteElementContainer<?> createEmptyCuteElementContainer(String name,
 			AddableChildrenTypeInfo childrenType,
 			MaxAddableChildrenCount maxMaxAddableChildrenCount) {
-		CuteNodeContainer<?> container = null;
+		CuteElementContainer<?> container = null;
 		switch (childrenType) {
 		case ACTION:
-			container =  new CuteNodeContainer<Action>(FXCollections.observableArrayList(), name,
+			container =  new CuteElementContainer<Action>(FXCollections.observableArrayList(), name,
 					childrenType, maxMaxAddableChildrenCount);
 			break;
 		case CHECKER:
-			container =  new CuteNodeContainer<Checker>(FXCollections.observableArrayList(), name,
+			container =  new CuteElementContainer<Checker>(FXCollections.observableArrayList(), name,
 					childrenType, maxMaxAddableChildrenCount);
 			break;
 		case CONTAINER:
 			throw new RuntimeException("Container can't have containers as children.");
 		case COUNTER:
-			container = new CuteNodeContainer<Counter>(FXCollections.observableArrayList(), name,
+			container = new CuteElementContainer<Counter>(FXCollections.observableArrayList(), name,
 					childrenType, maxMaxAddableChildrenCount);
 			break;
 		default:

@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.Util;
-import com.ubershy.streamsis.project.AbstractCuteNode;
+import com.ubershy.streamsis.project.AbstractCuteElement;
 
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleFloatProperty;
@@ -48,7 +48,7 @@ import javafx.collections.ObservableList;
  * "0" - everything.
  */
 @SuppressWarnings("unchecked")
-public class RegionChecker extends AbstractCuteNode implements Checker {
+public class RegionChecker extends AbstractCuteElement implements Checker {
 
 	static final Logger logger = LoggerFactory.getLogger(RegionChecker.class);
 

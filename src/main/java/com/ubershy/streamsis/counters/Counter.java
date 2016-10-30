@@ -17,7 +17,7 @@
  */
 package com.ubershy.streamsis.counters;
 
-import com.ubershy.streamsis.project.CuteNode;
+import com.ubershy.streamsis.project.CuteElement;
 
 /**
  * Counter is any class that can {@link #count()} something. <br>
@@ -25,7 +25,7 @@ import com.ubershy.streamsis.project.CuteNode;
  * For example, Counter may count how many ponies are located on the user's screen or how much damage they have caused to the user's life. <br>
  * In a game with ponies. If such game exists...
  */
-public interface Counter extends CuteNode {
+public interface Counter extends CuteElement {
 
 	/**
 	 * Counts something.

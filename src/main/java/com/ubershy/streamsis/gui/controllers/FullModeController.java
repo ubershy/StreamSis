@@ -34,7 +34,7 @@ import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.gui.helperclasses.OpenRecentManager;
-import com.ubershy.streamsis.project.CuteNode;
+import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.ProjectManager;
 import com.ubershy.streamsis.project.ProjectSerializator;
@@ -151,7 +151,7 @@ public class FullModeController implements Initializable {
 		gridPane.add(actorsView, 1, 1);
 	}
 
-	private void initializeCheckerTreeView(TreeView<CuteNode> treeView) {
+	private void initializeCheckerTreeView(TreeView<CuteElement> treeView) {
 		gridPane.add(treeView, 2, 1);
 	}
 
@@ -163,11 +163,11 @@ public class FullModeController implements Initializable {
 		editorAccordion.getPanes().add((TitledPane) elementEditor.getView());
 	}
 
-	private void initializeOffActionsTreeView(TreeView<CuteNode> treeView) {
+	private void initializeOffActionsTreeView(TreeView<CuteElement> treeView) {
 		gridPane.add(treeView, 4, 1);
 	}
 
-	private void initializeOnActionsTreeView(TreeView<CuteNode> treeView) {
+	private void initializeOnActionsTreeView(TreeView<CuteElement> treeView) {
 		gridPane.add(treeView, 3, 1);
 	}
 

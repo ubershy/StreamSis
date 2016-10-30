@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.Util;
-import com.ubershy.streamsis.project.AbstractCuteNode;
+import com.ubershy.streamsis.project.AbstractCuteElement;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -47,7 +47,7 @@ import javafx.scene.media.MediaException;
  * TODO: some ".wav" files can't be played as they have different format. Find a solution.
  */
 @SuppressWarnings("unchecked")
-public class SoundAction extends AbstractCuteNode implements Action {
+public class SoundAction extends AbstractCuteElement implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(SoundAction.class);
 

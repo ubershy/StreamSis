@@ -20,7 +20,7 @@ package com.ubershy.streamsis.gui.contextmenu;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.ubershy.streamsis.project.CuteNode;
+import com.ubershy.streamsis.project.CuteElement;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -30,11 +30,11 @@ import javafx.scene.control.TreeView;
 
 public class TreeViewContextMenuManager {
 
-	private TreeView<CuteNode> treeView;
+	private TreeView<CuteElement> treeView;
 
-	private Map<TreeItem<CuteNode>, ListChangeListener<TreeItem<CuteNode>>> childrenListeners = new HashMap<TreeItem<CuteNode>, ListChangeListener<TreeItem<CuteNode>>>();
+	private Map<TreeItem<CuteElement>, ListChangeListener<TreeItem<CuteElement>>> childrenListeners = new HashMap<TreeItem<CuteElement>, ListChangeListener<TreeItem<CuteElement>>>();
 
-	public TreeViewContextMenuManager(TreeView<CuteNode> treeView) {
+	public TreeViewContextMenuManager(TreeView<CuteElement> treeView) {
 		this.treeView = treeView;
 		startManaging();
 	}
@@ -45,10 +45,10 @@ public class TreeViewContextMenuManager {
 				TreeContextMenuBuilder.createRootTreeItemContextMenu(treeView.getRoot()));
 		// Lets start reacting to root TreeItem's children list changes
 		subscribeToRootTreeItemChildren(treeView.getRoot());
-		ChangeListener<TreeItem<CuteNode>> rootChangeListener = new ChangeListener<TreeItem<CuteNode>>() {
+		ChangeListener<TreeItem<CuteElement>> rootChangeListener = new ChangeListener<TreeItem<CuteElement>>() {
 			@Override
-			public void changed(ObservableValue<? extends TreeItem<CuteNode>> observable,
-					TreeItem<CuteNode> oldValue, TreeItem<CuteNode> newValue) {
+			public void changed(ObservableValue<? extends TreeItem<CuteElement>> observable,
+					TreeItem<CuteElement> oldValue, TreeItem<CuteElement> newValue) {
 				if (newValue != null) {
 					// Lets generate new context menu
 					treeView.setContextMenu(
@@ -68,20 +68,20 @@ public class TreeViewContextMenuManager {
 		treeView.rootProperty().addListener(rootChangeListener);
 	}
 
-	protected void unsubscribeToRootTreeItemChildren(TreeItem<CuteNode> rootTreeItem) {
+	protected void unsubscribeToRootTreeItemChildren(TreeItem<CuteElement> rootTreeItem) {
 		if (rootTreeItem != null) {
-			ListChangeListener<TreeItem<CuteNode>> listenerToRemove = childrenListeners
+			ListChangeListener<TreeItem<CuteElement>> listenerToRemove = childrenListeners
 					.get(rootTreeItem);
 			rootTreeItem.getChildren().removeListener(listenerToRemove);
 			childrenListeners.remove(rootTreeItem);
 		}
 	}
 
-	private void subscribeToRootTreeItemChildren(TreeItem<CuteNode> rootTreeItem) {
+	private void subscribeToRootTreeItemChildren(TreeItem<CuteElement> rootTreeItem) {
 		if (rootTreeItem != null) {
-			ListChangeListener<TreeItem<CuteNode>> childrenChangeListener = new ListChangeListener<TreeItem<CuteNode>>() {
+			ListChangeListener<TreeItem<CuteElement>> childrenChangeListener = new ListChangeListener<TreeItem<CuteElement>>() {
 				@Override
-				public void onChanged(ListChangeListener.Change<? extends TreeItem<CuteNode>> c) {
+				public void onChanged(ListChangeListener.Change<? extends TreeItem<CuteElement>> c) {
 					// Lets generate new context menu
 					treeView.setContextMenu(
 							TreeContextMenuBuilder.createRootTreeItemContextMenu(rootTreeItem));

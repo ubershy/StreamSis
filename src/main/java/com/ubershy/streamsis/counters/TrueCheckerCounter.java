@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.checkers.Checker;
-import com.ubershy.streamsis.project.AbstractCuteNode;
+import com.ubershy.streamsis.project.AbstractCuteElement;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -38,7 +38,7 @@ import javafx.collections.ObservableList;
  * {@link Checker Checkers}. <br>
  * Then it counts how many of them have returned true.
  */
-public class TrueCheckerCounter extends AbstractCuteNode implements Counter {
+public class TrueCheckerCounter extends AbstractCuteElement implements Counter {
 
 	static final Logger logger = LoggerFactory.getLogger(TrueCheckerCounter.class);
 

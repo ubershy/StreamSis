@@ -22,9 +22,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.ConstsAndVars;
 import com.ubershy.streamsis.actions.Action;
 import com.ubershy.streamsis.checkers.Checker;
-import com.ubershy.streamsis.project.AbstractCuteNode;
-import com.ubershy.streamsis.project.CuteNode;
-import com.ubershy.streamsis.project.CuteNodeContainer;
+import com.ubershy.streamsis.project.AbstractCuteElement;
+import com.ubershy.streamsis.project.CuteElement;
+import com.ubershy.streamsis.project.CuteElementContainer;
 import com.ubershy.streamsis.project.ElementInfo;
 
 import javafx.beans.property.BooleanProperty;
@@ -38,7 +38,7 @@ import javafx.scene.control.TreeView;
 /**
  * AbstractActor is very abstract.
  */
-public abstract class AbstractActor extends AbstractCuteNode implements Actor {
+public abstract class AbstractActor extends AbstractCuteElement implements Actor {
 
 	/**
 	 * The list of Checkers assigned to Actor. <br>
@@ -124,7 +124,7 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 
 	/** The list of Actor's External children needed just for {@link #getChildren()} method. */
 	@JsonIgnore
-	protected ObservableList<CuteNode> children = generateExternalChildrenList();
+	protected ObservableList<CuteElement> children = generateExternalChildrenList();
 
 	@JsonIgnore
 	@Override
@@ -319,18 +319,18 @@ public abstract class AbstractActor extends AbstractCuteNode implements Actor {
 
 	@JsonIgnore
 	@Override
-	public ObservableList<CuteNode> getChildren() {
+	public ObservableList<CuteElement> getChildren() {
 		return children;
 	}
 
-	private ObservableList<CuteNode> generateExternalChildrenList() {
-		CuteNodeContainer<Checker> checkersContainer = new CuteNodeContainer<Checker>(checkers,
+	private ObservableList<CuteElement> generateExternalChildrenList() {
+		CuteElementContainer<Checker> checkersContainer = new CuteElementContainer<Checker>(checkers,
 				"Checker", AddableChildrenTypeInfo.CHECKER, MaxAddableChildrenCount.ONE);
-		CuteNodeContainer<Action> onActionsContainer = new CuteNodeContainer<Action>(onActions,
+		CuteElementContainer<Action> onActionsContainer = new CuteElementContainer<Action>(onActions,
 				"On Actions", AddableChildrenTypeInfo.ACTION, MaxAddableChildrenCount.INFINITY);
-		CuteNodeContainer<Action> offActionsContainer = new CuteNodeContainer<Action>(offActions,
+		CuteElementContainer<Action> offActionsContainer = new CuteElementContainer<Action>(offActions,
 				"Off Actions", AddableChildrenTypeInfo.ACTION, MaxAddableChildrenCount.INFINITY);
-		ObservableList<CuteNode> result = FXCollections.observableArrayList(checkersContainer,
+		ObservableList<CuteElement> result = FXCollections.observableArrayList(checkersContainer,
 				onActionsContainer, offActionsContainer);
 		return result;
 	}

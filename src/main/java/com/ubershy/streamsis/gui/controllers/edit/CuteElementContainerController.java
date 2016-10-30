@@ -23,8 +23,7 @@ import org.controlsfx.validation.ValidationSupport;
 import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.gui.controllers.edit.AbstractCuteController;
 import com.ubershy.streamsis.project.CuteElement;
-import com.ubershy.streamsis.project.CuteNode;
-import com.ubershy.streamsis.project.CuteNodeContainer;
+import com.ubershy.streamsis.project.CuteElementContainer;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -32,10 +31,10 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 
 /**
- * CuteNodeContainerController, the controller that allows to view {@link CuteNodeContainer}'s
+ * CuteElementContainerController, the controller that allows to view {@link CuteElementContainer}'s
  * information in Element Editor panel. That's right. No editing.
  */
-public class CuteNodeContainerController extends AbstractCuteController
+public class CuteElementContainerController extends AbstractCuteController
 		implements CuteElementController {
 
 	/** The root node. */
@@ -51,18 +50,18 @@ public class CuteNodeContainerController extends AbstractCuteController
     @FXML
     private Label currentQuantityLabel;
 
-	/** The {@link CuteNodeContainer}.. */
-	private CuteNodeContainer<?> container;
+	/** The {@link CuteElementContainer}.. */
+	private CuteElementContainer<?> container;
 	
-	private ListChangeListener<CuteNode> listener;
+	private ListChangeListener<CuteElement> listener;
 
 	/*
 	 * @inheritDoc
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		listener = new ListChangeListener<CuteNode>() {
-			public void onChanged(ListChangeListener.Change<? extends CuteNode> c) {
+		listener = new ListChangeListener<CuteElement>() {
+			public void onChanged(ListChangeListener.Change<? extends CuteElement> c) {
 				currentQuantityLabel.setText(String.valueOf(c.getList().size()));
 			}
 		};
@@ -81,8 +80,8 @@ public class CuteNodeContainerController extends AbstractCuteController
 	 */
 	@Override
 	public void bindToCuteElement(CuteElement editableCopyOfCE, CuteElement origCE) {
-		container = (CuteNodeContainer<?>) editableCopyOfCE;
-		CuteNodeContainer<?> origContainer = (CuteNodeContainer<?>) origCE;
+		container = (CuteElementContainer<?>) editableCopyOfCE;
+		CuteElementContainer<?> origContainer = (CuteElementContainer<?>) origCE;
 		// Set.
 		typeLabel.setText(container.getAddableChildrenTypeInfo().toString());
 		maxQuantityLabel.setText(container.getMaxAddableChildrenCount().toString());

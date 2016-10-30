@@ -29,7 +29,7 @@ import com.ubershy.streamsis.gui.controllers.ElementEditorController;
 import com.ubershy.streamsis.gui.controllers.FullModeController;
 import com.ubershy.streamsis.gui.controllers.MainController;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
-import com.ubershy.streamsis.project.CuteNode;
+import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.SisScene;
 import com.ubershy.streamsis.project.ProjectManager;
@@ -46,15 +46,15 @@ import javafx.stage.Stage;
 
 public final class GUIManager {
 	public static ListView<Actor> actorList;
-	public static TreeView<CuteNode> checkerTree;
+	public static TreeView<CuteElement> checkerTree;
 	public static ListView<SisScene> sisSceneList;
 	private static Actor lastSelectedActor;
 
 	static final Logger logger = LoggerFactory.getLogger(GUIManager.class);
 	public static MainController mainController;
 	private static Scene mainScene;
-	public static TreeView<CuteNode> offActionsTree;
-	public static TreeView<CuteNode> onActionsTree;
+	public static TreeView<CuteElement> offActionsTree;
+	public static TreeView<CuteElement> onActionsTree;
 	public static ElementEditorController elementEditor;
 	private static Stage primaryStage;
 	private static NotificationPane fullModeNotificationPane;

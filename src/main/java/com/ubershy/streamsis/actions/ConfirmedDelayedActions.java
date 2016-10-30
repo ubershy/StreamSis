@@ -26,8 +26,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.checkers.Checker;
-import com.ubershy.streamsis.project.CuteNode;
-import com.ubershy.streamsis.project.CuteNodeContainer;
+import com.ubershy.streamsis.project.CuteElement;
+import com.ubershy.streamsis.project.CuteElementContainer;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -51,7 +51,7 @@ public class ConfirmedDelayedActions extends DelayedActions {
 	
 	/** The list of Actor's External children needed just for {@link #getChildren()} method. */
 	@JsonIgnore
-	protected ObservableList<CuteNode> children = generateExternalChildrenList();
+	protected ObservableList<CuteElement> children = generateExternalChildrenList();
 	
 	public ConfirmedDelayedActions() {
 	}
@@ -59,10 +59,10 @@ public class ConfirmedDelayedActions extends DelayedActions {
 	/**
 	 * @return
 	 */
-	private ObservableList<CuteNode> generateExternalChildrenList() {
-		CuteNodeContainer<Action> actionsContainer = new CuteNodeContainer<Action>(actions,
+	private ObservableList<CuteElement> generateExternalChildrenList() {
+		CuteElementContainer<Action> actionsContainer = new CuteElementContainer<Action>(actions,
 				"Actions", AddableChildrenTypeInfo.ACTION, MaxAddableChildrenCount.INFINITY);
-		CuteNodeContainer<Checker> checkersContainer = new CuteNodeContainer<Checker>(checker,
+		CuteElementContainer<Checker> checkersContainer = new CuteElementContainer<Checker>(checker,
 				"Checker", AddableChildrenTypeInfo.CHECKER, MaxAddableChildrenCount.ONE);
 		return FXCollections.observableArrayList(checkersContainer, actionsContainer);
 	}
@@ -100,7 +100,7 @@ public class ConfirmedDelayedActions extends DelayedActions {
 	}
 
 	@Override
-	public ObservableList<CuteNode> getChildren() {
+	public ObservableList<CuteElement> getChildren() {
 		return children;
 	}
 

@@ -20,7 +20,7 @@ package com.ubershy.streamsis.checkers;
 import com.ubershy.streamsis.actions.Action;
 import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.counters.Counter;
-import com.ubershy.streamsis.project.CuteNode;
+import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.UserVars;
 
 /**
@@ -31,11 +31,12 @@ import com.ubershy.streamsis.project.UserVars;
  * Or if the user variable in {@link UserVars} has the right value. <br>
  * <p>
  * {@link Actor} always has one Checker. <br>
- * Checker can be complex and contain inside other {@link CuteNode CuteNodes}: {@link Checker Checkers}, {@link Action Actions}, {@link Counter Counters}.
+ * Checker can be complex and contain inside other {@link CuteElement}s: {@link Checker Checkers},
+ * {@link Action Actions}, {@link Counter Counters}.
  * <p>
- * Checker extends {@link CuteNode} interface.
+ * Checker extends {@link CuteElement} interface.
  */
-public interface Checker extends CuteNode {
+public interface Checker extends CuteElement {
 
 	/**
 	 * Checks something. <br>

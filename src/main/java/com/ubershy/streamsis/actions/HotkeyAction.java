@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.LowLevel;
 import com.ubershy.streamsis.LowLevel.OS;
-import com.ubershy.streamsis.project.AbstractCuteNode;
+import com.ubershy.streamsis.project.AbstractCuteElement;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.input.KeyCode;
@@ -47,7 +47,7 @@ import javafx.scene.input.KeyCombination.ModifierValue;
  * @see {@link OBSHotkeyAction}
  */
 @SuppressWarnings("unchecked")
-public class HotkeyAction extends AbstractCuteNode implements Action {
+public class HotkeyAction extends AbstractCuteElement implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(HotkeyAction.class);
 

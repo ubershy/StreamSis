@@ -28,9 +28,9 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ubershy.streamsis.project.AbstractCuteNode;
-import com.ubershy.streamsis.project.CuteNode;
-import com.ubershy.streamsis.project.CuteNodeContainer;
+import com.ubershy.streamsis.project.AbstractCuteElement;
+import com.ubershy.streamsis.project.CuteElement;
+import com.ubershy.streamsis.project.CuteElementContainer;
 import com.ubershy.streamsis.project.UserVars;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -44,17 +44,17 @@ import javafx.collections.ObservableList;
  * And based on what the value is, it executes associated {@link Action} stored inside it's
  * {@link #actionsMap}. <br>
  */
-public class VariableSwitchAction extends AbstractCuteNode implements Action {
+public class VariableSwitchAction extends AbstractCuteElement implements Action {
 
 	/** The Constant logger. */
 	static final Logger logger = LoggerFactory.getLogger(VariableSwitchAction.class);
 
 	/**
-	 * List with cases (possible Variable's Values) ({@link CuteNodeContainer}) each one containing
+	 * List with cases (possible Variable's Values) ({@link CuteElementContainer}) each one containing
 	 * associated {@link Action Actions}.
 	 */
 	@JsonProperty("cases")
-	ObservableList<CuteNodeContainer<Action>> cases = FXCollections.observableArrayList(); 
+	ObservableList<CuteElementContainer<Action>> cases = FXCollections.observableArrayList(); 
 
 	/** The name of user Variable(key) to check for Values. */
 	@JsonProperty("key")
@@ -93,30 +93,30 @@ public class VariableSwitchAction extends AbstractCuteNode implements Action {
 	 */
 	@JsonCreator
 	public VariableSwitchAction(@JsonProperty("key") String key,
-			@JsonProperty("cases") ArrayList<CuteNodeContainer<Action>> cases) {
+			@JsonProperty("cases") ArrayList<CuteElementContainer<Action>> cases) {
 		this.key.set(key);
 		this.cases.setAll(cases);
-		for (CuteNodeContainer<Action> container: cases) {
+		for (CuteElementContainer<Action> container: cases) {
 			container.getElementInfo().setEditable(true);
 			container.getElementInfo().setEmptyNameAllowed(true);
 		}
 	}
 
 	/**
-	 * Generates list of {@link CuteNodeContainer}s containing Action from the map of string Values
-	 * and corresponding Actions.
+	 * Generates list of {@link CuteElementContainer}s containing Action from the map of string
+	 * Values and corresponding Actions.
 	 * 
 	 * @param actionsMap
 	 *            map which keys are Values and it's values are corresponding lists of Actions.
-	 * @return ObservableList of CuteNodeContainers which contain lists of Actions. Names of
-	 *         CuteNodeContainers are Values.
+	 * @return ObservableList of CuteElementContainers which contain lists of Actions. Names of
+	 *         CuteElementContainers are Values.
 	 *
 	 */
-	private ObservableList<CuteNodeContainer<Action>> generateCasesBasedOnMap(
+	private ObservableList<CuteElementContainer<Action>> generateCasesBasedOnMap(
 			TreeMap<String, ArrayList<Action>> actionsMap) {
-		ObservableList<CuteNodeContainer<Action>> genCases = FXCollections.observableArrayList();
+		ObservableList<CuteElementContainer<Action>> genCases = FXCollections.observableArrayList();
 		for (Entry<String, ArrayList<Action>> entry : actionsMap.entrySet()) {
-			CuteNodeContainer<Action> container = new CuteNodeContainer<Action>(entry.getValue(),
+			CuteElementContainer<Action> container = new CuteElementContainer<Action>(entry.getValue(),
 					entry.getKey(), AddableChildrenTypeInfo.ACTION,
 					MaxAddableChildrenCount.INFINITY);
 			container.getElementInfo().setEditable(true);
@@ -139,14 +139,14 @@ public class VariableSwitchAction extends AbstractCuteNode implements Action {
 				return;
 			}
 			boolean foundCase = false;
-			for (CuteNodeContainer<Action> container : cases) {
+			for (CuteElementContainer<Action> container : cases) {
 				String caseName = container.getElementInfo().getName();
 				if (aquiredValue.equals(caseName)) {
 					foundCase = true;
 					logger.info(
 							"Actions are found for Key: " + key.get() + " Value: " + aquiredValue);
-					for (CuteNode node : container.getChildren()) {
-						Action actionToExecute = (Action) node;
+					for (CuteElement element : container.getChildren()) {
+						Action actionToExecute = (Action) element;
 						logger.info("Executing '" + actionToExecute.getElementInfo().getName()
 								+ "'(" + actionToExecute.getClass().getSimpleName() + ")");
 						actionToExecute.execute();
@@ -174,7 +174,7 @@ public class VariableSwitchAction extends AbstractCuteNode implements Action {
 					"At least one Variable's Value should be added inside VariableSwitchAction");
 		}
 		LinkedList<String> caseNamesForFindingDuplicates = new LinkedList<>();
-		for (CuteNodeContainer<Action> container: cases) {
+		for (CuteElementContainer<Action> container: cases) {
 			String caseName = container.getElementInfo().getName();
 			// Check duplicate names of Containers.
 			if (caseNamesForFindingDuplicates.contains(caseName)) {
@@ -188,9 +188,9 @@ public class VariableSwitchAction extends AbstractCuteNode implements Action {
 						+ "' don't have any Actions assigned to it.");
 			}
 			// Init each Action in this Container.
-			for (CuteNode node : container.getChildren()) {
-				node.init();
-				if (node.getElementInfo().isBroken()) {
+			for (CuteElement element : container.getChildren()) {
+				element.init();
+				if (element.getElementInfo().isBroken()) {
 					elementInfo.setAsBroken("One or more Actions assigned to Variable's Value '"
 							+ caseName + "' are broken");
 				}
@@ -227,7 +227,7 @@ public class VariableSwitchAction extends AbstractCuteNode implements Action {
 	 * @return the {@link #cases}.
 	 */
 	@JsonIgnore
-	public ObservableList<CuteNodeContainer<Action>> getCases() {
+	public ObservableList<CuteElementContainer<Action>> getCases() {
 		return cases;
 	}
 
@@ -253,7 +253,7 @@ public class VariableSwitchAction extends AbstractCuteNode implements Action {
 	 * @inheritDoc
 	 */
 	@Override
-	public ObservableList<CuteNodeContainer<Action>> getChildren() {
+	public ObservableList<CuteElementContainer<Action>> getChildren() {
 		return cases;
 	}
 	
@@ -263,7 +263,7 @@ public class VariableSwitchAction extends AbstractCuteNode implements Action {
 	@JsonIgnore
 	@Override
 	public ContainerCreationParams getChildContainerCreationParams() {
-		return new CuteNode.ContainerCreationParams(AddableChildrenTypeInfo.ACTION,
+		return new CuteElement.ContainerCreationParams(AddableChildrenTypeInfo.ACTION,
 				MaxAddableChildrenCount.INFINITY, true, true, "Variable's Value",
 				"Variable's Value (replace it)",
 				"A container of Actions which name(Value) is compared to Variable's current Value."

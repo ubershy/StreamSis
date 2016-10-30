@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.counters.Counter;
-import com.ubershy.streamsis.project.AbstractCuteNode;
+import com.ubershy.streamsis.project.AbstractCuteElement;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -40,7 +40,7 @@ import javafx.collections.ObservableList;
  * The user must specify {@link BooleanNumberOperator} that defines type of comparison, e.g. if
  * Counter result must be greater or equal.
  */
-public abstract class AbstractRelationToNumberChecker extends AbstractCuteNode
+public abstract class AbstractRelationToNumberChecker extends AbstractCuteElement
 		implements Checker, RelationToNumberChecker {
 
 	/**

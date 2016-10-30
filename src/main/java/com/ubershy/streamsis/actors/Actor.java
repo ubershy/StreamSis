@@ -24,7 +24,7 @@ import javafx.collections.ObservableList;
 import com.ubershy.streamsis.StreamSis;
 import com.ubershy.streamsis.actions.Action;
 import com.ubershy.streamsis.checkers.Checker;
-import com.ubershy.streamsis.project.CuteNode;
+import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.ElementInfo;
 
 /**
@@ -36,11 +36,11 @@ import com.ubershy.streamsis.project.ElementInfo;
  * If {@link Checker#check()} is false, the Actor is switching Off and starting to execute his {@link Action offActions}. <br>
  * Based on how Actor is configured, {@link Action Actions} will repeat executing with specified time interval or will not repeat executing at all. <br>
  * <p>
- * Actor extends {@link CuteNode} interface.
+ * Actor extends {@link CuteElement} interface.
  * <p>
  * Note: please consider that Actor's Switch (that can be On or Off) <b>is not</b> related to {@link ElementInfo ElementInfo's} isEnabled property.
  */
-public interface Actor extends CuteNode {
+public interface Actor extends CuteElement {
 
 	/**
 	 * Adds the {@link Action} to Actor's On Actions.

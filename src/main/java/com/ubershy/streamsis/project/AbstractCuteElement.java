@@ -23,11 +23,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The abstract implementation of {@link CuteNode}.
+ * The abstract implementation of {@link CuteElement}.
  * <p>
  * Subtypes must override {@link #init()} method with super.init().
  */
-public abstract class AbstractCuteNode implements CuteNode {
+public abstract class AbstractCuteElement implements CuteElement {
 
 	/** Object's {@link ElementInfo}. */
 	@JsonProperty

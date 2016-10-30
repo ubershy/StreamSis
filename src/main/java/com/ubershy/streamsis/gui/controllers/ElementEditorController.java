@@ -36,7 +36,6 @@ import com.ubershy.streamsis.gui.animations.HorizontalShadowAnimation;
 import com.ubershy.streamsis.gui.animations.ThreeDotsAnimation;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.project.CuteElement;
-import com.ubershy.streamsis.project.CuteNode;
 import com.ubershy.streamsis.project.ElementInfo;
 import com.ubershy.streamsis.project.StuffSerializator;
 import com.ubershy.streamsis.project.ProjectManager;
@@ -455,16 +454,13 @@ public class ElementEditorController implements Initializable {
 			// Note: if you notice copyProperties() works without throwing an exception, but doesn't
 			// transfer all needed changes, CuteElement's properties and getters and setters might
 			// not be set up properly.
-			if (getCurrentElement() instanceof CuteNode) {
-				CuteNode node = (CuteNode) getCurrentElement();
-				int childrenListIdentifierBefore = System.identityHashCode(node.getChildren());
-				PropertyUtils.copyProperties(getCurrentElement(), elementWorkingCopy);
-				if (System.identityHashCode(node.getChildren()) != childrenListIdentifierBefore) {
-					throw new RuntimeException("Programmer. You are not allowed to substitute list "
-							+ "of children of original CuteNode.");
-				}
-			} else {
-				PropertyUtils.copyProperties(getCurrentElement(), elementWorkingCopy);
+			int childrenListIdentifierBefore = System
+					.identityHashCode(getCurrentElement().getChildren());
+			PropertyUtils.copyProperties(getCurrentElement(), elementWorkingCopy);
+			if (System.identityHashCode(
+					getCurrentElement().getChildren()) != childrenListIdentifierBefore) {
+				throw new RuntimeException("Programmer. You are not allowed to substitute list "
+						+ "of children of original CuteElement.");
 			}
 			
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {

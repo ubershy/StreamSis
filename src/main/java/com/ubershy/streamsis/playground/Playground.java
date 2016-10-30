@@ -47,8 +47,8 @@ import com.ubershy.streamsis.checkers.LogicalChecker;
 import com.ubershy.streamsis.checkers.RegionChecker;
 import com.ubershy.streamsis.checkers.RelationToPreviousNumberChecker;
 import com.ubershy.streamsis.counters.TrueCheckerCounter;
-import com.ubershy.streamsis.project.CuteNode;
-import com.ubershy.streamsis.project.CuteNodeContainer;
+import com.ubershy.streamsis.project.CuteElement;
+import com.ubershy.streamsis.project.CuteElementContainer;
 import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.ProjectSerializator;
 import com.ubershy.streamsis.project.SisScene;
@@ -457,36 +457,36 @@ public final class Playground {
 	
 	private static void setRandomNamesForCheckersActionsCountersInProject(CuteProject project) {
 		for (Actor actor : project.getGlobalActors()) {
-			setRandomNameForCuteNodeRecursively(actor.getChecker());
+			setRandomNameForCuteElementRecursively(actor.getChecker());
 			for (Action action : actor.getOnActions()) {
-				setRandomNameForCuteNodeRecursively(action);
+				setRandomNameForCuteElementRecursively(action);
 			}
 			for (Action action : actor.getOffActions()) {
-				setRandomNameForCuteNodeRecursively(action);
+				setRandomNameForCuteElementRecursively(action);
 			}
 		}
 	}
 	
-	private static void setRandomNameForCuteNodeRecursively(CuteNode node) {
-		if (node != null) {
-			setRandomNameForCuteNode(node);
-			ObservableList<? extends CuteNode> children = node.getChildren();
+	private static void setRandomNameForCuteElementRecursively(CuteElement element) {
+		if (element != null) {
+			setRandomNameForCuteElement(element);
+			ObservableList<? extends CuteElement> children = element.getChildren();
 			if (children != null) {
-				for(CuteNode subNode : children) {
-					setRandomNameForCuteNodeRecursively(subNode);
+				for(CuteElement subNode : children) {
+					setRandomNameForCuteElementRecursively(subNode);
 				}
 			}
 		}
 	}
 
-	private static void setRandomNameForCuteNode(CuteNode node) {
-		if (node != null) {
-			// Some CuteNodeContainers have names that are important in context. Let's not modify
+	private static void setRandomNameForCuteElement(CuteElement element) {
+		if (element != null) {
+			// Some CuteElementContainers have names that are important in context. Let's not modify
 			// their names.
-			if (node.getClass() != CuteNodeContainer.class) { 
-				String firstPart = node.getClass().getSimpleName();
+			if (element.getClass() != CuteElementContainer.class) { 
+				String firstPart = element.getClass().getSimpleName();
 				String secondPart = String.valueOf((new Random().nextInt(10000)));
-				node.getElementInfo().setName(firstPart+secondPart);
+				element.getElementInfo().setName(firstPart+secondPart);
 			}
 		}
 	}

@@ -26,7 +26,7 @@ import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.contextmenu.ActorContextMenuBuilder;
 import com.ubershy.streamsis.gui.contextmenu.PossibleMoves;
-import com.ubershy.streamsis.project.CuteNode;
+import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.ElementInfo.ElementHealth;
 import com.ubershy.streamsis.project.ElementInfo.ElementState;
 
@@ -106,11 +106,11 @@ public class ActorCell extends ListCell<Actor> {
 	/** Defines if {@link #heart} animates. */
 	private boolean animationOn = true;
 
-	/** The property linked to the {@link CuteNode}'s state. */
+	/** The property linked to the {@link CuteElement}'s state. */
 	private ObjectProperty<ElementState> elementElementStateProperty = new SimpleObjectProperty<>(
 			ElementState.READY);
 
-	/** The property linked to the {@link CuteNode}'s health. */
+	/** The property linked to the {@link CuteElement}'s health. */
 	private ObjectProperty<ElementHealth> elementHealthProperty = new SimpleObjectProperty<>(
 			ElementHealth.HEALTHY);
 

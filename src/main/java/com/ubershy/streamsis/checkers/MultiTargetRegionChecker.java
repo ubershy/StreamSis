@@ -34,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.MultiSourceFileLister;
 import com.ubershy.streamsis.Util;
-import com.ubershy.streamsis.project.AbstractCuteNode;
+import com.ubershy.streamsis.project.AbstractCuteElement;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.FloatProperty;
@@ -54,7 +54,7 @@ import javafx.beans.property.SimpleObjectProperty;
  * {@link #check()} if <b>at least one</b> of the targets is found within the region. <br>
  */
 @SuppressWarnings("unchecked")
-public class MultiTargetRegionChecker extends AbstractCuteNode implements Checker {
+public class MultiTargetRegionChecker extends AbstractCuteElement implements Checker {
 
 	static final Logger logger = LoggerFactory.getLogger(MultiTargetRegionChecker.class);
 

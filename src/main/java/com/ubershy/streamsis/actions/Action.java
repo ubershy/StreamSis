@@ -21,7 +21,7 @@ import com.ubershy.streamsis.StreamSis;
 import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.counters.Counter;
-import com.ubershy.streamsis.project.CuteNode;
+import com.ubershy.streamsis.project.CuteElement;
 
 /**
  * Actions are {@link Actor}'s hands. <br>
@@ -31,11 +31,12 @@ import com.ubershy.streamsis.project.CuteNode;
  * For example, plays a sound or switches scene in Streaming Program.
  * <p>
  * Actions are usually contained inside {@link Actor}. <br>
- * Actions can be complex and contain inside other {@link CuteNode CuteNodes}: {@link Checker Checkers}, {@link Action Actions}, {@link Counter Counters}.
+ * Actions can be complex and contain inside other {@link CuteElement}s: {@link Checker Checkers},
+ * {@link Action Actions}, {@link Counter Counters}.
  * <p>
- * Action extends {@link CuteNode} interface.
+ * Action extends {@link CuteElement} interface.
  */
-public interface Action extends CuteNode {
+public interface Action extends CuteElement {
 
 	/**
 	 * It can do anything that can be useful for the {@link StreamSis} user.

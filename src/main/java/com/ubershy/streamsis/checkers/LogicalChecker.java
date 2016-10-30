@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ubershy.streamsis.project.AbstractCuteNode;
+import com.ubershy.streamsis.project.AbstractCuteElement;
 import com.ubershy.streamsis.project.ElementInfo;
 
 import javafx.beans.property.SimpleObjectProperty;
@@ -50,7 +50,7 @@ import javafx.collections.ObservableList;
  * @see {@link BooleanOperator#NOT}
  * @see {@link BooleanOperator#XOR}
  */
-public class LogicalChecker extends AbstractCuteNode implements Checker {
+public class LogicalChecker extends AbstractCuteElement implements Checker {
 
 	/**
 	 * Enum of boolean operators (logical operations that produce boolean result).

@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.Util;
-import com.ubershy.streamsis.project.AbstractCuteNode;
+import com.ubershy.streamsis.project.AbstractCuteElement;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -37,7 +37,7 @@ import javafx.beans.property.StringProperty;
  * This {@link Action} can copy Source file to Destination file.
  */
 @SuppressWarnings("unchecked")
-public class FileCopyAction extends AbstractCuteNode implements Action {
+public class FileCopyAction extends AbstractCuteElement implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(FileCopyAction.class);
 

@@ -22,8 +22,8 @@ import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.counters.Counter;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.contextmenu.TreeContextMenuBuilder;
-import com.ubershy.streamsis.project.CuteNode;
-import com.ubershy.streamsis.project.CuteNodeContainer;
+import com.ubershy.streamsis.project.CuteElement;
+import com.ubershy.streamsis.project.CuteElementContainer;
 import com.ubershy.streamsis.project.ElementInfo;
 import com.ubershy.streamsis.project.ElementInfo.ElementHealth;
 import com.ubershy.streamsis.project.ElementInfo.Result;
@@ -50,15 +50,15 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 /**
- * A Tree Cell that contains {@link CuteNode}. <br>
- * Is responsive to CuteNode's properties and changes it's view accordingly.
+ * A Tree Cell that contains {@link CuteElement}. <br>
+ * Is responsive to CuteElement's properties and changes it's view accordingly.
  */
-public class CuteTreeCell extends TreeCell<CuteNode> {
+public class CuteTreeCell extends TreeCell<CuteElement> {
 
-	/** The text field for editing the {@link CuteNode}'s name. */
+	/** The text field for editing the {@link CuteElement}'s name. */
 	private TextField textField;
 
-	/** The property linked to the {@link CuteNode}'s health. */
+	/** The property linked to the {@link CuteElement}'s health. */
 	private ObjectProperty<ElementHealth> elementHealthProperty = new SimpleObjectProperty<>(
 			ElementHealth.HEALTHY);
 	
@@ -71,7 +71,7 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 	/** The Color of {@link #resultLabel}, when the {@link Result} is unknown. */
 	private Color unknownResultColor = Color.HOTPINK;
 
-	/** The property linked to the {@link CuteNode}'s last result of working. */
+	/** The property linked to the {@link CuteElement}'s last result of working. */
 	private ObjectProperty<ElementInfo.Result<?>> lastResultProperty = new SimpleObjectProperty<>(
 			unknownResult);
 
@@ -96,7 +96,7 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 	/** The UNKNOWN icon for {@link Counter} used in {@link #resultLabel}. */
 	private Text resultUnknownTextForCounter = GlyphsDude.createIcon(FontAwesomeIcon.TH_LARGE);
 	
-	/** The UNKNOWN icon for {@link CuteNodeContainer} used in {@link #resultLabel}. */
+	/** The UNKNOWN icon for {@link CuteElementContainer} used in {@link #resultLabel}. */
 	private Text resultUnknownTextForContainer = GlyphsDude.createIcon(FontAwesomeIcon.CUBES);
 
 	/** The text with number used in {@link #resultLabel} for {@link Counter}. */
@@ -111,7 +111,7 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 			resultFailTextForAction, unknownResultColor, Color.RED);
 
 	/**
-	 * The Label with icon representing current {@link Result} of {@link CuteNode} inside this cell.
+	 * The Label with icon representing current {@link Result} of {@link CuteElement} inside this cell.
 	 */
 	private final Label resultLabel = new Label("");
 
@@ -149,7 +149,7 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 	}
 
 	@Override
-	public void updateItem(CuteNode item, boolean empty) {
+	public void updateItem(CuteElement item, boolean empty) {
 		super.updateItem(item, empty);
 		if (empty || item == null) {
 			lastResultProperty.unbind();
@@ -186,7 +186,7 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 	}
 
 	/**
-	 * Set coloring behavior for the result icon based on {@link CuteNode}'s Health.
+	 * Set coloring behavior for the result icon based on {@link CuteElement}'s Health.
 	 * 
 	 * @param color
 	 */
@@ -209,7 +209,7 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 	}
 
 	/**
-	 * Set Color for the result icon when the result of {@link CuteNode} is unknown.
+	 * Set Color for the result icon when the result of {@link CuteElement} is unknown.
 	 * 
 	 * @param color
 	 */
@@ -231,19 +231,19 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 	 * @param newResult the new result
 	 */
 	private void refreshResultIconBasedOnResult(Result<?> newResult) {
-		CuteNode currentElement = getItem();
+		CuteElement currentElement = getItem();
 		if (currentElement instanceof Checker) {
 			processResultForChecker(newResult);
 		} else if (currentElement instanceof Counter) {
 			processResultForCounter(newResult);
 		} else if (currentElement instanceof Action) {
 			processResultForAction(newResult);
-		} else if (currentElement instanceof CuteNodeContainer) {
+		} else if (currentElement instanceof CuteElementContainer) {
 			processResultForContainer(newResult);
 		} else if (currentElement == null) {
 			return;
 		} else {
-			throw new RuntimeException("Unknown CuteNode type");
+			throw new RuntimeException("Unknown CuteElement type");
 		}
 	}
 
@@ -312,7 +312,7 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 	}
 	
 	/**
-	 * Process result for {@link CuteNodeContainer} to change {@link #resultLabel} view.
+	 * Process result for {@link CuteElementContainer} to change {@link #resultLabel} view.
 	 *
 	 * @param newResult the new result
 	 */
@@ -321,7 +321,7 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 		if (object == null) {
 			resultLabel.setGraphic(resultUnknownTextForContainer);
 		} else {
-			throw new RuntimeException("CuteNodeContainer can only have null as result.");
+			throw new RuntimeException("CuteElementContainer can only have null as result.");
 		}
 	}
 
@@ -369,7 +369,7 @@ public class CuteTreeCell extends TreeCell<CuteNode> {
 	 * @return the string to show as cell's text
 	 */
 	private String getString() {
-		CuteNode item = getItem();
+		CuteElement item = getItem();
 		String result = "";
 		if (item != null) {
 			String className = item.getClass().getSimpleName();

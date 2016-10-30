@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ubershy.streamsis.project.AbstractCuteNode;
+import com.ubershy.streamsis.project.AbstractCuteElement;
 import com.ubershy.streamsis.project.UserVars;
 
 import impl.org.controlsfx.i18n.SimpleLocalizedStringProperty;
@@ -36,7 +36,7 @@ import javafx.beans.property.StringProperty;
  * If variable is not found in UserVars, this Checker returns false;
  */
 @SuppressWarnings("unchecked")
-public class VariableChecker extends AbstractCuteNode implements Checker {
+public class VariableChecker extends AbstractCuteElement implements Checker {
 
 	static final Logger logger = LoggerFactory.getLogger(VariableChecker.class);
 

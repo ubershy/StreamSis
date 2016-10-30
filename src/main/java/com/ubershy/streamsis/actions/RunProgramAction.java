@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.Util;
-import com.ubershy.streamsis.project.AbstractCuteNode;
+import com.ubershy.streamsis.project.AbstractCuteElement;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -41,7 +41,7 @@ import javafx.beans.property.StringProperty;
  * directory provided by the user.
  */
 @SuppressWarnings("unchecked")
-public class RunProgramAction extends AbstractCuteNode implements Action {
+public class RunProgramAction extends AbstractCuteElement implements Action {
 
 	/** The Constant logger. */
 	static final Logger logger = LoggerFactory.getLogger(RunProgramAction.class);

@@ -32,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.checkers.Coordinates;
-import com.ubershy.streamsis.project.AbstractCuteNode;
+import com.ubershy.streamsis.project.AbstractCuteElement;
 
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleFloatProperty;
@@ -47,7 +47,7 @@ import javafx.beans.property.StringProperty;
  * instances of shortcut arrow image.
  */
 @SuppressWarnings("unchecked")
-public class RegionTargetCounter extends AbstractCuteNode implements Counter {
+public class RegionTargetCounter extends AbstractCuteElement implements Counter {
 	// TODO: fix duplicate code shared with RegionChecker.
 
 	static final Logger logger = LoggerFactory.getLogger(RegionTargetCounter.class);

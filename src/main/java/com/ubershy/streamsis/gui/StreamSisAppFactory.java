@@ -44,8 +44,7 @@ import com.ubershy.streamsis.gui.helperclasses.AutoTreeItem;
 import com.ubershy.streamsis.gui.helperclasses.CuteTreeCell;
 import com.ubershy.streamsis.gui.helperclasses.SisSceneCell;
 import com.ubershy.streamsis.project.CuteElement;
-import com.ubershy.streamsis.project.CuteNode;
-import com.ubershy.streamsis.project.CuteNodeContainer;
+import com.ubershy.streamsis.project.CuteElementContainer;
 import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.ProjectManager;
 import com.ubershy.streamsis.project.SisScene;
@@ -331,13 +330,13 @@ public class StreamSisAppFactory {
 	 *            the {@link ListView} with {@link Actor Actors}
 	 * @param typeOfTree
 	 *            the type of TreeView to create
-	 * @return the tree view with CuteNode items
+	 * @return the tree view with CuteElement items
 	 */
-	static TreeView<CuteNode> buildTreeView(ListView<Actor> actorsView,
+	static TreeView<CuteElement> buildTreeView(ListView<Actor> actorsView,
 			CuteTreeViewType typeOfTree) {
 		CuteProject project = ProjectManager.getProject();
-		TreeView<CuteNode> resultTreeView = new TreeView<CuteNode>();
-		AutoTreeItem<CuteNode> emptyRoot = new AutoTreeItem<CuteNode>();
+		TreeView<CuteElement> resultTreeView = new TreeView<CuteElement>();
+		AutoTreeItem<CuteElement> emptyRoot = new AutoTreeItem<CuteElement>();
 		resultTreeView.setCellFactory(p -> new CuteTreeCell());
 		resultTreeView.setShowRoot(false);
 		resultTreeView.setRoot(emptyRoot);
@@ -345,7 +344,7 @@ public class StreamSisAppFactory {
 		// to get collapsed.
 		resultTreeView.addEventFilter(KeyEvent.ANY, e -> {
 			if (e.getCode() == KeyCode.LEFT) {
-				TreeItem<CuteNode> selectedItem = resultTreeView.getSelectionModel()
+				TreeItem<CuteElement> selectedItem = resultTreeView.getSelectionModel()
 						.getSelectedItem();
 				if (selectedItem.getParent() == resultTreeView.getRoot()) {
 					// The item is a child of root. A single wrong move will select root item!
@@ -376,12 +375,12 @@ public class StreamSisAppFactory {
 			if (actors.size() != 0) {
 				Actor firstActor = actors.get(0);
 				if (firstActor != null) {
-					// Actor(CuteNode) returns 3 CuteNodeContainer children. One with Checker
+					// Actor(CuteElement) returns 3 CuteElementContainer children. One with Checker
 					// inside, one with OnActions inside, one with OffActions inside.
 					// And here we select the child we want by using index.
-					CuteNodeContainer<?> childrenContainer = (CuteNodeContainer<?>) firstActor
+					CuteElementContainer<?> childrenContainer = (CuteElementContainer<?>) firstActor
 							.getChildren().get(typeOfTree.ordinal());
-					AutoTreeItem<CuteNode> treeItemRoot = new AutoTreeItem<CuteNode>(
+					AutoTreeItem<CuteElement> treeItemRoot = new AutoTreeItem<CuteElement>(
 							childrenContainer);
 					treeItemRoot.setExpanded(true);
 					resultTreeView.setRoot(treeItemRoot);
@@ -391,13 +390,13 @@ public class StreamSisAppFactory {
 			actorsView.getSelectionModel().selectedItemProperty()
 					.addListener((ChangeListener<Actor>) (observable, oldValue, newValue) -> {
 						if (newValue != null) {
-							// Actor(CuteNode) returns 3 CuteNodeContainer children. One with
+							// Actor(CuteElement) returns 3 CuteElementContainer children. One with
 							// Checker inside, one with OnActions inside, one with OffActions
 							// inside.
 							// And here we select the child we want by using index.
-							CuteNodeContainer<?> childrenContainer = (CuteNodeContainer<?>) newValue
+							CuteElementContainer<?> childrenContainer = (CuteElementContainer<?>) newValue
 									.getChildren().get(typeOfTree.ordinal());
-							AutoTreeItem<CuteNode> treeItemRoot = new AutoTreeItem<CuteNode>(
+							AutoTreeItem<CuteElement> treeItemRoot = new AutoTreeItem<CuteElement>(
 									childrenContainer);
 							treeItemRoot.setExpanded(true);
 							resultTreeView.setRoot(treeItemRoot);
@@ -407,14 +406,14 @@ public class StreamSisAppFactory {
 						}
 					});
 			resultTreeView.getFocusModel().focusedItemProperty()
-					.addListener((ChangeListener<? super TreeItem<CuteNode>>) (observable, oldValue,
+					.addListener((ChangeListener<? super TreeItem<CuteElement>>) (observable, oldValue,
 							newValue) -> {
 						if (resultTreeView.isFocused()) {
-							CuteNode nodeToEdit = null;
+							CuteElement elemToEdit = null;
 							if (newValue != null) {
-								nodeToEdit = newValue.getValue();
+								elemToEdit = newValue.getValue();
 							}
-							GUIManager.elementEditor.setCurrentElement(nodeToEdit);
+							GUIManager.elementEditor.setCurrentElement(elemToEdit);
 						}
 					});
 		}

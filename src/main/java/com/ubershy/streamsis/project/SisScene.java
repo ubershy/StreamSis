@@ -41,7 +41,8 @@ import javafx.collections.ObservableList;
  * The additional ObservableList will be required then to maintain the order of SisScene
  * names. </i>
  */
-public class SisScene implements CuteElement {
+@SuppressWarnings("unchecked")
+public class SisScene extends AbstractCuteElement {
 
 	static final Logger logger = LoggerFactory.getLogger(SisScene.class);
 

@@ -32,11 +32,11 @@ import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.counters.Counter;
 import com.ubershy.streamsis.gui.helperclasses.CuteTreeCell;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
-import com.ubershy.streamsis.project.CuteNode;
-import com.ubershy.streamsis.project.CuteNodeContainer;
+import com.ubershy.streamsis.project.CuteElement;
+import com.ubershy.streamsis.project.CuteElementContainer;
 import com.ubershy.streamsis.project.ProjectManager;
-import com.ubershy.streamsis.project.CuteNode.AddableChildrenTypeInfo;
-import com.ubershy.streamsis.project.CuteNode.ContainerCreationParams;
+import com.ubershy.streamsis.project.CuteElement.AddableChildrenTypeInfo;
+import com.ubershy.streamsis.project.CuteElement.ContainerCreationParams;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -53,11 +53,11 @@ public class TreeContextMenuBuilder {
 
 	static final Logger logger = LoggerFactory.getLogger(TreeContextMenuBuilder.class);
 
-	private static List<Class<? extends Action>> allAvailableNewActions = getAvailableCuteNodes(
+	private static List<Class<? extends Action>> allAvailableNewActions = getAvailableCuteElements(
 			"com.ubershy.streamsis.actions", Action.class);
-	private static List<Class<? extends Checker>> allAvailableNewCheckers = getAvailableCuteNodes(
+	private static List<Class<? extends Checker>> allAvailableNewCheckers = getAvailableCuteElements(
 			"com.ubershy.streamsis.checkers", Checker.class);
-	private static List<Class<? extends Counter>> allAvailableNewCounters = getAvailableCuteNodes(
+	private static List<Class<? extends Counter>> allAvailableNewCounters = getAvailableCuteElements(
 			"com.ubershy.streamsis.counters", Counter.class);
 
 	/**
@@ -68,8 +68,8 @@ public class TreeContextMenuBuilder {
 	 * @return the ContextMenu
 	 */
 	public static ContextMenu createCuteTreeCellContextMenu(CuteTreeCell treeCell) {
-		CuteNode cuteNode = (CuteNode) treeCell.getItem();
-		if (cuteNode == null)
+		CuteElement cuteElement = (CuteElement) treeCell.getItem();
+		if (cuteElement == null)
 			return null;
 		ContextMenu cm = new ContextMenu();
 		CustomMenuItem moveUpMenuItem = GUIUtil.createTooltipedMenuItem("Move Up",
@@ -81,12 +81,12 @@ public class TreeContextMenuBuilder {
 		CustomMenuItem deleteMenuItem = GUIUtil.createTooltipedMenuItem("Delete",
 				"Are you sure?\nAre you going to throw this little item away..?");
 		deleteMenuItem.setOnAction((ActionEvent event) -> {
-			ObservableList<? extends CuteNode> list = treeCell.getTreeItem().getParent().getValue()
-					.getChildren();
+			ObservableList<? extends CuteElement> list = treeCell.getTreeItem().getParent()
+					.getValue().getChildren();
 			if (list != null) {
 				if (!list.isEmpty()) {
-					if (list.contains(cuteNode)) {
-						list.remove(cuteNode);
+					if (list.contains(cuteElement)) {
+						list.remove(cuteElement);
 						// Initialize whole project to reinitialize any parents that might get
 						// broken.
 						ProjectManager.getProject().init();
@@ -104,7 +104,7 @@ public class TreeContextMenuBuilder {
 		// Let's determine where the Item can move.
 		// By default let's have ability to move in both directions.
 		PossibleMoves possibleMoves = PossibleMoves.UPORDOWN;
-		TreeItem<CuteNode> treeItem = treeCell.getTreeItem();
+		TreeItem<CuteElement> treeItem = treeCell.getTreeItem();
 		int treeItemIndex = treeItem.getParent().getChildren().indexOf(treeItem);
 		int sizeOfList = treeItem.getParent().getChildren().size();
 		if (sizeOfList != 1) {
@@ -117,8 +117,8 @@ public class TreeContextMenuBuilder {
 		}
 
 		// Let's add all MenuItems to Context Menu
-		if (canChildrenBeAdded(cuteNode)) {
-			cm.getItems().add(generateNewCuteNodeMenu(cuteNode));
+		if (canChildrenBeAdded(cuteElement)) {
+			cm.getItems().add(generateNewCuteElementMenu(cuteElement));
 		}
 		if (!possibleMoves.equals(PossibleMoves.NOWHERE)) {
 			if (possibleMoves.equals(PossibleMoves.UPORDOWN)) {
@@ -131,7 +131,7 @@ public class TreeContextMenuBuilder {
 					cm.getItems().add(moveDownMenuItem);
 			}
 		}
-		if (!CuteNode.MaxAddableChildrenCount.UNDEFINEDORZERO.equals(
+		if (!CuteElement.MaxAddableChildrenCount.UNDEFINEDORZERO.equals(
 				treeCell.getTreeItem().getParent().getValue().getMaxAddableChildrenCount())) {
 			cm.getItems().add(deleteMenuItem);
 		}
@@ -141,17 +141,17 @@ public class TreeContextMenuBuilder {
 
 	/**
 	 * Gets the available list of subtypes of specified type. <br>
-	 * Convenient for finding subtypes of chosen {@link CuteNode} type.
+	 * Convenient for finding subtypes of chosen {@link CuteElement} type.
 	 *
 	 * @param <T>
 	 *            the generic type
 	 * @param packageName
-	 *            the Package Name where CuteNode classes reside
+	 *            the Package Name where CuteElement classes reside
 	 * @param type
-	 *            the preferred type of CuteNode
+	 *            the preferred type of CuteElement
 	 * @return the available list of subclasses
 	 */
-	private static <T> List<Class<? extends T>> getAvailableCuteNodes(String packageName,
+	private static <T> List<Class<? extends T>> getAvailableCuteElements(String packageName,
 			Class<T> type) {
 		// Lets use reflections to find all subtypes of type
 		Reflections reflections = new Reflections(packageName);
@@ -190,13 +190,13 @@ public class TreeContextMenuBuilder {
 		return new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				CuteNode cuteNode = (CuteNode) treeCell.getItem();
-				ObservableList<? extends CuteNode> list = treeCell.getTreeItem().getParent()
+				CuteElement cuteElement = (CuteElement) treeCell.getItem();
+				ObservableList<? extends CuteElement> list = treeCell.getTreeItem().getParent()
 						.getValue().getChildren();
 				if (list != null) {
 					if (!list.isEmpty()) {
-						if (list.contains(cuteNode)) {
-							int index = list.indexOf(cuteNode);
+						if (list.contains(cuteElement)) {
+							int index = list.indexOf(cuteElement);
 							if (up) {
 								Collections.swap(list, index, index - 1);
 							} else {
@@ -216,27 +216,28 @@ public class TreeContextMenuBuilder {
 	}
 
 	/**
-	 * Generate {@link Menu} for adding new {@link CuteNode}s as children to the chosen CuteNode.
+	 * Generate {@link Menu} for adding new {@link CuteElement}s as children to the chosen
+	 * CuteElement.
 	 *
 	 * @param whereToAdd
-	 *            the CuteNode where to add new child using generated Menu
+	 *            the CuteElement where to add new child using generated Menu
 	 * @return the Menu
 	 */
-	private static Menu generateNewCuteNodeMenu(CuteNode whereToAdd) {
+	private static Menu generateNewCuteElementMenu(CuteElement whereToAdd) {
 		AddableChildrenTypeInfo typeInfo = whereToAdd.getAddableChildrenTypeInfo();
-		Class<? extends CuteNode> type = typeInfo.getType();
-		List<Class<? extends CuteNode>> listWithCuteNodeClasses;
+		Class<? extends CuteElement> type = typeInfo.getType();
+		List<Class<? extends CuteElement>> listWithCuteElementClasses;
 		switch (typeInfo) {
 		case ACTION:
-			listWithCuteNodeClasses = new ArrayList<Class<? extends CuteNode>>(
+			listWithCuteElementClasses = new ArrayList<Class<? extends CuteElement>>(
 					allAvailableNewActions);
 			break;
 		case CHECKER:
-			listWithCuteNodeClasses = new ArrayList<Class<? extends CuteNode>>(
+			listWithCuteElementClasses = new ArrayList<Class<? extends CuteElement>>(
 					allAvailableNewCheckers);
 			break;
 		case COUNTER:
-			listWithCuteNodeClasses = new ArrayList<Class<? extends CuteNode>>(
+			listWithCuteElementClasses = new ArrayList<Class<? extends CuteElement>>(
 					allAvailableNewCounters);
 			break;
 		case CONTAINER:
@@ -248,90 +249,90 @@ public class TreeContextMenuBuilder {
 					+ " is not implemented. You can fix it =)");
 		}
 		
-		Menu addNewCuteNodeMenu = new Menu("Add new " + type.getSimpleName() + "...");
+		Menu addNewCuteElementMenu = new Menu("Add new " + type.getSimpleName() + "...");
 		
-		for (Class<? extends CuteNode> cuteNodeClass : listWithCuteNodeClasses) {
-			// TODO: Set good description of CuteNodes instead of smile :3
-			CustomMenuItem newCuteNodeMenuItem = GUIUtil
-					.createTooltipedMenuItem(cuteNodeClass.getSimpleName(), ":3");
-			newCuteNodeMenuItem.setOnAction((ActionEvent event) -> {
+		for (Class<? extends CuteElement> cuteElementClass : listWithCuteElementClasses) {
+			// TODO: Set good description of CuteElements instead of smile :3
+			CustomMenuItem newCuteElementMenuItem = GUIUtil
+					.createTooltipedMenuItem(cuteElementClass.getSimpleName(), ":3");
+			newCuteElementMenuItem.setOnAction((ActionEvent event) -> {
 				
-				// This list will later help to generate name for the new CuteNode.
+				// This list will later help to generate name for the new CuteElement.
 				List<String> existingChildrenNames = new ArrayList<String>();
-				for (CuteNode node : whereToAdd.getChildren()) {
+				for (CuteElement node : whereToAdd.getChildren()) {
 					existingChildrenNames.add(node.getElementInfo().getName());
 				}
 				
-				CuteNode nodeToAdd = null;
+				CuteElement elemToAdd = null;
 				try {
-					// Instantiate CuteNode
-					nodeToAdd = cuteNodeClass.newInstance();
-					// Set Appropriate name for CuteNode
-					nodeToAdd.getElementInfo().setName(generateUniqueNameForCuteNode(
-							cuteNodeClass.getSimpleName(), existingChildrenNames));
+					// Instantiate CuteElement
+					elemToAdd = cuteElementClass.newInstance();
+					// Set Appropriate name for CuteElement
+					elemToAdd.getElementInfo().setName(generateUniqueNameForCuteElement(
+							cuteElementClass.getSimpleName(), existingChildrenNames));
 				} catch (Exception e) {
 					throw new RuntimeException(
-							"Can't instantiate element: " + cuteNodeClass.getSimpleName()
+							"Can't instantiate element: " + cuteElementClass.getSimpleName()
 									+ " inside " + whereToAdd.getClass().getSimpleName(),
 							e);
 				}
-				if (nodeToAdd != null) {
+				if (elemToAdd != null) {
 					@SuppressWarnings("unchecked")
-					ObservableList<CuteNode> whereToAddCasted = (ObservableList<CuteNode>) whereToAdd
+					ObservableList<CuteElement> whereToAddCasted = (ObservableList<CuteElement>) whereToAdd
 							.getChildren();
-					whereToAddCasted.add(nodeToAdd);
-					// Initialize whole project, it may highlight unconfigured CuteNode.
+					whereToAddCasted.add(elemToAdd);
+					// Initialize whole project, it may highlight unconfigured CuteElement.
 					ProjectManager.getProject().init();
 				}
 			});
-			addNewCuteNodeMenu.getItems().add(newCuteNodeMenuItem);
+			addNewCuteElementMenu.getItems().add(newCuteElementMenuItem);
 		}
-		return addNewCuteNodeMenu;
+		return addNewCuteElementMenu;
 	}
 
 	/**
-	 * Generate {@link Menu} for adding new {@link CuteNodeContainer}s as children to the chosen
-	 * CuteNode.
+	 * Generate {@link Menu} for adding new {@link CuteElementContainer}s as children to the chosen
+	 * CuteElement.
 	 *
 	 * @param whereToAdd
-	 *            the CuteNode where to add new child using generated Menu
+	 *            the CuteElement where to add new child using generated Menu
 	 * @return the Menu
 	 */
-	private static Menu generateMenuForAddingNewContainer(CuteNode whereToAdd) {
+	private static Menu generateMenuForAddingNewContainer(CuteElement whereToAdd) {
 		ContainerCreationParams params = whereToAdd.getChildContainerCreationParams();
 		Menu menu = new Menu("Add new " + params.GUIItemMenuName + "...");
 		
 		CustomMenuItem newContainerMenuItem = GUIUtil
 				.createTooltipedMenuItem(params.GUIItemMenuName, params.GUIDescription);
 		newContainerMenuItem.setOnAction((ActionEvent event) -> {
-			CuteNode cuteNodeContainerToAdd = null;
+			CuteElement cuteElementContainerToAdd = null;
 			
 			// This list will later help to generate name for the new Container.
 			List<String> existingChildrenNames = new ArrayList<String>();
-			for (CuteNode node : whereToAdd.getChildren()) {
-				existingChildrenNames.add(node.getElementInfo().getName());
+			for (CuteElement element : whereToAdd.getChildren()) {
+				existingChildrenNames.add(element.getElementInfo().getName());
 			}
 			
 			try {
 				// Determine proper name for new container
-				String name = generateUniqueNameForCuteNode(params.creationBaseName,
+				String name = generateUniqueNameForCuteElement(params.creationBaseName,
 						existingChildrenNames);
 				// Instantiate Container
-				cuteNodeContainerToAdd = CuteNodeContainer.createEmptyCuteNodeContainer(name,
+				cuteElementContainerToAdd = CuteElementContainer.createEmptyCuteElementContainer(name,
 						params.childrenType, params.childrenMaxCount);
-				cuteNodeContainerToAdd.getElementInfo().setEditable(params.editable);
-				cuteNodeContainerToAdd.getElementInfo()
+				cuteElementContainerToAdd.getElementInfo().setEditable(params.editable);
+				cuteElementContainerToAdd.getElementInfo()
 						.setEmptyNameAllowed(params.emptyNameAllowed);
 
 			} catch (Exception e) {
 				throw new RuntimeException("Can't instantiate Container inside "
 						+ whereToAdd.getClass().getSimpleName(), e);
 			}
-			if (cuteNodeContainerToAdd != null) {
+			if (cuteElementContainerToAdd != null) {
 				@SuppressWarnings("unchecked")
-				ObservableList<CuteNode> whereToAddCasted = (ObservableList<CuteNode>) whereToAdd
+				ObservableList<CuteElement> whereToAddCasted = (ObservableList<CuteElement>) whereToAdd
 						.getChildren();
-				whereToAddCasted.add(cuteNodeContainerToAdd);
+				whereToAddCasted.add(cuteElementContainerToAdd);
 				// Initialize whole project to reinitialize any parents that might get broken.
 				ProjectManager.getProject().init();
 			}
@@ -341,20 +342,20 @@ public class TreeContextMenuBuilder {
 	}
 
 	/**
-	 * Generates possible name for {@link CuteNode} which will be created inside parent CuteNode as
+	 * Generates possible name for {@link CuteElement} which will be created inside parent CuteElement as
 	 * a child. <br>
-	 * The name will be unique only in parent CuteNode's scope, not project scope. <br>
-	 * The name will look like this: "New SomeCuteNodeClassName". <br>
+	 * The name will be unique only in parent CuteElement's scope, not project scope. <br>
+	 * The name will look like this: "New SomeCuteElementClassName". <br>
 	 * An incrementing number in parentheses might be added to ensure this name is unique.
 	 * 
 	 * @param baseName
-	 *            Base name to use. It is usually CuteNode class's simple name.
+	 *            Base name to use. It is usually CuteElement class's simple name.
 	 * @param existingChildrenNames
-	 *            A list with the names of parent CuteNode's existing children.
+	 *            A list with the names of parent CuteElement's existing children.
 	 * 
-	 * @return A Name which unique in parent CuteNode's scope.
+	 * @return A Name which unique in parent CuteElement's scope.
 	 */
-	private static String generateUniqueNameForCuteNode(String baseName,
+	private static String generateUniqueNameForCuteElement(String baseName,
 			List<String> existingChildrenNames) {
 		String genericName = "New " + baseName;
 		String alteredName = genericName;
@@ -368,20 +369,20 @@ public class TreeContextMenuBuilder {
 
 	/**
 	 * Creates the special {@link ContextMenu} for the root {@link TreeItem} in {@link TreeView}
-	 * which contains {@link CuteNodes}.
+	 * which contains {@link CuteElement}s.
 	 *
 	 * @param treeItem
 	 *            the TreeItem for which Context Menu will be created
 	 * @return Context Menu
 	 */
-	public static ContextMenu createRootTreeItemContextMenu(TreeItem<CuteNode> treeItem) {
+	public static ContextMenu createRootTreeItemContextMenu(TreeItem<CuteElement> treeItem) {
 		ContextMenu cm = null;
 		if (treeItem != null) {
 			cm = new ContextMenu();
-			CuteNode rootCuteNode = treeItem.getValue();
-			if (rootCuteNode != null) {
-				if (canChildrenBeAdded(rootCuteNode)) {
-					cm.getItems().add(generateNewCuteNodeMenu(rootCuteNode));
+			CuteElement rootCuteElement = treeItem.getValue();
+			if (rootCuteElement != null) {
+				if (canChildrenBeAdded(rootCuteElement)) {
+					cm.getItems().add(generateNewCuteElementMenu(rootCuteElement));
 				}
 			}
 			cm.autoHideProperty().set(true);
@@ -390,23 +391,23 @@ public class TreeContextMenuBuilder {
 	}
 
 	/**
-	 * Determines if children can be added to the chosen {@link CuteNode}.
+	 * Determines if children can be added to the chosen {@link CuteElement}.
 	 *
-	 * @param cuteNode
-	 *            the CuteNode to check
-	 * @return true, if children can be added to this CuteNode
+	 * @param cuteElement
+	 *            the CuteElement to check
+	 * @return true, if children can be added to this CuteElement
 	 */
-	private static boolean canChildrenBeAdded(CuteNode cuteNode) {
-		if (cuteNode.getAddableChildrenTypeInfo() == null)
+	private static boolean canChildrenBeAdded(CuteElement cuteElement) {
+		if (cuteElement.getAddableChildrenTypeInfo() == null)
 			return false;
-		if (cuteNode.getMaxAddableChildrenCount() == null)
+		if (cuteElement.getMaxAddableChildrenCount() == null)
 			return false;
-		CuteNode.MaxAddableChildrenCount maxChildren = cuteNode.getMaxAddableChildrenCount();
+		CuteElement.MaxAddableChildrenCount maxChildren = cuteElement.getMaxAddableChildrenCount();
 		switch (maxChildren) {
 		case INFINITY:
 			break;
 		case ONE:
-			if (cuteNode.getChildren().size() >= 1) {
+			if (cuteElement.getChildren().size() >= 1) {
 				return false;
 			}
 			break;
