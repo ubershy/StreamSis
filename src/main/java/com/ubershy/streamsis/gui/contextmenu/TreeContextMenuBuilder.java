@@ -300,10 +300,10 @@ public class TreeContextMenuBuilder {
 	 */
 	private static Menu generateMenuForAddingNewContainer(CuteElement whereToAdd) {
 		ContainerCreationParams params = whereToAdd.getChildContainerCreationParams();
-		Menu menu = new Menu("Add new " + params.GUIItemMenuName + "...");
+		Menu menu = new Menu("Add new " + params.containerFakeTypeName + "...");
 		
 		CustomMenuItem newContainerMenuItem = GUIUtil
-				.createTooltipedMenuItem(params.GUIItemMenuName, params.GUIDescription);
+				.createTooltipedMenuItem(params.containerFakeTypeName, params.GUIDescription);
 		newContainerMenuItem.setOnAction((ActionEvent event) -> {
 			CuteElement cuteElementContainerToAdd = null;
 			
@@ -318,8 +318,9 @@ public class TreeContextMenuBuilder {
 				String name = generateUniqueNameForCuteElement(params.creationBaseName,
 						existingChildrenNames);
 				// Instantiate Container
-				cuteElementContainerToAdd = CuteElementContainer.createEmptyCuteElementContainer(name,
-						params.childrenType, params.childrenMaxCount);
+				cuteElementContainerToAdd = CuteElementContainer.createEmptyCuteElementContainer(
+						name, params.childrenType, params.childrenMaxCount,
+						params.childrenMinCount, params.containerFakeTypeName);
 				cuteElementContainerToAdd.getElementInfo().setEditable(params.editable);
 				cuteElementContainerToAdd.getElementInfo()
 						.setEmptyNameAllowed(params.emptyNameAllowed);

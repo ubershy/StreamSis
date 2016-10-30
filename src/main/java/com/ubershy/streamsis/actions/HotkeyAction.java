@@ -46,7 +46,6 @@ import javafx.scene.input.KeyCombination.ModifierValue;
  * 
  * @see {@link OBSHotkeyAction}
  */
-@SuppressWarnings("unchecked")
 public class HotkeyAction extends AbstractCuteElement implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(HotkeyAction.class);
@@ -198,7 +197,6 @@ public class HotkeyAction extends AbstractCuteElement implements Action {
 	@Override
 	public void init() {
 		super.init();
-		elementInfo.setAsReadyAndHealthy();
 		if (keysProperty.get() != null) {
 			if (keysProperty.get().isEmpty()) {
 				elementInfo.setAsBroken("Hotkey is empty");

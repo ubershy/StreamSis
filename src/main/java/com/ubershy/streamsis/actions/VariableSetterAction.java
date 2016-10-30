@@ -33,7 +33,6 @@ import javafx.beans.property.StringProperty;
  * This {@link Action} can create a new user variable(key):value pair in {@link UserVars} <br>
  * If user variable(key) already exists in {@link UserVars}, it's value will be overwritten. <br>
  */
-@SuppressWarnings("unchecked")
 public class VariableSetterAction extends AbstractCuteElement implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(VariableSetterAction.class);
@@ -92,7 +91,6 @@ public class VariableSetterAction extends AbstractCuteElement implements Action 
 	@Override
 	public void init() {
 		super.init();
-		elementInfo.setAsReadyAndHealthy();
 		if (key.get().isEmpty()) {
 			elementInfo.setAsBroken("Variable name is empty");
 			return;

@@ -223,6 +223,8 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 			resultUnknownTextForChecker.setFill(color);
 		if (!resultUnknownTextForAction.getFill().equals(color))
 			resultUnknownTextForAction.setFill(color);
+		if (!resultUnknownTextForContainer.getFill().equals(color))
+			resultUnknownTextForContainer.setFill(color);
 	}
 	
 	/**

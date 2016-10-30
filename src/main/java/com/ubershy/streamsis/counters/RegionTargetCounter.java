@@ -46,7 +46,6 @@ import javafx.beans.property.StringProperty;
  * For example, it can count how many shortcuts the user have on his OS desktop by finding all
  * instances of shortcut arrow image.
  */
-@SuppressWarnings("unchecked")
 public class RegionTargetCounter extends AbstractCuteElement implements Counter {
 	// TODO: fix duplicate code shared with RegionChecker.
 
@@ -143,7 +142,6 @@ public class RegionTargetCounter extends AbstractCuteElement implements Counter 
 	@Override
 	public void init() {
 		super.init();
-		elementInfo.setAsReadyAndHealthy();
 		coords.initRegion(elementInfo);
 		if (elementInfo.isBroken()) {
 			// already broken by coords.initRegion();

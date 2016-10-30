@@ -56,14 +56,13 @@ public class ConfirmedDelayedActions extends DelayedActions {
 	public ConfirmedDelayedActions() {
 	}
 
-	/**
-	 * @return
-	 */
 	private ObservableList<CuteElement> generateExternalChildrenList() {
 		CuteElementContainer<Action> actionsContainer = new CuteElementContainer<Action>(actions,
-				"Actions", AddableChildrenTypeInfo.ACTION, MaxAddableChildrenCount.INFINITY);
+				"Actions container", AddableChildrenTypeInfo.ACTION,
+				MaxAddableChildrenCount.INFINITY, MinAddableChildrenCount.ONE, "Actions");
 		CuteElementContainer<Checker> checkersContainer = new CuteElementContainer<Checker>(checker,
-				"Checker", AddableChildrenTypeInfo.CHECKER, MaxAddableChildrenCount.ONE);
+				"Checker container", AddableChildrenTypeInfo.CHECKER, MaxAddableChildrenCount.ONE,
+				MinAddableChildrenCount.ONE, "Checker");
 		return FXCollections.observableArrayList(checkersContainer, actionsContainer);
 	}
 
@@ -78,8 +77,8 @@ public class ConfirmedDelayedActions extends DelayedActions {
 	 *            the execution delay in milliseconds
 	 */
 	@JsonCreator
-	private ConfirmedDelayedActions(@JsonProperty("actions") ArrayList<Action> actions, @JsonProperty("delay") int delay,
-			@JsonProperty("checker") ArrayList<Checker> checker) {
+	private ConfirmedDelayedActions(@JsonProperty("actions") ArrayList<Action> actions,
+			@JsonProperty("delay") int delay, @JsonProperty("checker") ArrayList<Checker> checker) {
 		super(actions, delay);
 		this.checker.setAll(checker);
 	}
@@ -107,16 +106,6 @@ public class ConfirmedDelayedActions extends DelayedActions {
 	@Override
 	public void init() {
 		super.init();
-		if (checker.isEmpty()) {
-			elementInfo.setAsBroken("Checker is not assigned");
-			return;
-		}
-		Checker checkerInstance = checker.get(0);
-		checkerInstance.init();
-		if (checkerInstance.getElementInfo().isBroken()) {
-			elementInfo.setAsBroken(
-					"Contained " + checkerInstance.getClass().getSimpleName() + " is broken");
-		}
 	}
 
 	@Override

@@ -40,7 +40,6 @@ import javafx.beans.property.StringProperty;
  * This {@link Action} can execute a program or script by using path, arguments and working
  * directory provided by the user.
  */
-@SuppressWarnings("unchecked")
 public class RunProgramAction extends AbstractCuteElement implements Action {
 
 	/** The Constant logger. */
@@ -231,7 +230,6 @@ public class RunProgramAction extends AbstractCuteElement implements Action {
 	@Override
 	public void init() {
 		super.init();
-		elementInfo.setAsReadyAndHealthy();
 		if (getPath().isEmpty()) {
 			elementInfo.setAsBroken("The path to the program is empty");
 			return;

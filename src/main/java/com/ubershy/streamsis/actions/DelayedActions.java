@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.project.AbstractCuteElement;
+import com.ubershy.streamsis.project.CuteElement;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -87,9 +88,8 @@ public class DelayedActions extends AbstractCuteElement implements Action {
 		}
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public ObservableList getChildren() {
+	public ObservableList<? extends CuteElement> getChildren() {
 		return actions;
 	}
 
@@ -103,6 +103,12 @@ public class DelayedActions extends AbstractCuteElement implements Action {
 	@Override
 	public MaxAddableChildrenCount getMaxAddableChildrenCount() {
 		return MaxAddableChildrenCount.INFINITY;
+	}
+	
+	@JsonIgnore
+	@Override
+	public MinAddableChildrenCount getMinAddableChildrenCount() {
+		return MinAddableChildrenCount.ONE;
 	}
 
 	@JsonProperty("delay")
@@ -122,17 +128,6 @@ public class DelayedActions extends AbstractCuteElement implements Action {
 	@Override
 	public void init() {
 		super.init();
-		elementInfo.setAsReadyAndHealthy();
-		if (actions.isEmpty()) {
-			elementInfo.setAsBroken("No Actions are assigned");
-		}
-		for (Action action : actions) {
-			action.init();
-			if (action.getElementInfo().isBroken()) {
-				elementInfo.setAsBroken(
-						"Contained Action " + action.getClass().getSimpleName() + " is broken");
-			}
-		}
 	}
 
 	/**

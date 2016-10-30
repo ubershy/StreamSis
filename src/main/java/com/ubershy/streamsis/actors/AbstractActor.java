@@ -324,12 +324,17 @@ public abstract class AbstractActor extends AbstractCuteElement implements Actor
 	}
 
 	private ObservableList<CuteElement> generateExternalChildrenList() {
-		CuteElementContainer<Checker> checkersContainer = new CuteElementContainer<Checker>(checkers,
-				"Checker", AddableChildrenTypeInfo.CHECKER, MaxAddableChildrenCount.ONE);
-		CuteElementContainer<Action> onActionsContainer = new CuteElementContainer<Action>(onActions,
-				"On Actions", AddableChildrenTypeInfo.ACTION, MaxAddableChildrenCount.INFINITY);
-		CuteElementContainer<Action> offActionsContainer = new CuteElementContainer<Action>(offActions,
-				"Off Actions", AddableChildrenTypeInfo.ACTION, MaxAddableChildrenCount.INFINITY);
+		CuteElementContainer<Checker> checkersContainer = new CuteElementContainer<Checker>(
+				checkers, "Checker", AddableChildrenTypeInfo.CHECKER, MaxAddableChildrenCount.ONE,
+				MinAddableChildrenCount.ONE, "Checker");
+		CuteElementContainer<Action> onActionsContainer = new CuteElementContainer<Action>(
+				onActions, "On Actions", AddableChildrenTypeInfo.ACTION,
+				MaxAddableChildrenCount.INFINITY, MinAddableChildrenCount.UNDEFINEDORZERO,
+				"On Actions");
+		CuteElementContainer<Action> offActionsContainer = new CuteElementContainer<Action>(
+				offActions, "Off Actions", AddableChildrenTypeInfo.ACTION,
+				MaxAddableChildrenCount.INFINITY, MinAddableChildrenCount.UNDEFINEDORZERO,
+				"Off Actions");
 		ObservableList<CuteElement> result = FXCollections.observableArrayList(checkersContainer,
 				onActionsContainer, offActionsContainer);
 		return result;

@@ -120,8 +120,7 @@ public class MultiSoundAction extends SoundAction {
 
 	@Override
 	public void init() {
-		super.init();
-		elementInfo.setAsReadyAndHealthy();
+		super.doSuperInit();
 		filePicker.initTemporaryFileList(elementInfo, "sounds", null);
 		if (elementInfo.isBroken()) {
 			// already broken by filePicker.initTemporaryFileList()

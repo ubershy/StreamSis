@@ -46,7 +46,6 @@ import javafx.scene.media.MediaException;
  * Supports ".wav", ".mp3" and ".ogg" files <br>
  * TODO: some ".wav" files can't be played as they have different format. Find a solution.
  */
-@SuppressWarnings("unchecked")
 public class SoundAction extends AbstractCuteElement implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(SoundAction.class);
@@ -114,7 +113,6 @@ public class SoundAction extends AbstractCuteElement implements Action {
 	@Override
 	public void init() {
 		super.init();
-		elementInfo.setAsReadyAndHealthy();
 		if (volume.get() < 0 || volume.get() > 1)
 			elementInfo.setAsBroken("Volume must be in range from 0.0 to 1.0");
 		if (soundPath.get().isEmpty()) {
@@ -183,5 +181,9 @@ public class SoundAction extends AbstractCuteElement implements Action {
 	public DoubleProperty volumeProperty() {
 		return volume;
 	}
-	
+
+	public void doSuperInit() {
+		super.init();
+	}
+
 }

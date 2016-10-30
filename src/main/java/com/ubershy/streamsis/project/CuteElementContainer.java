@@ -49,9 +49,17 @@ public class CuteElementContainer<T extends CuteElement> extends AbstractCuteEle
 	@JsonProperty("childrenType")
 	protected AddableChildrenTypeInfo childrenType;
 	
-	/** The allowed quantity of children. */
-	@JsonProperty("maxMaxAddableChildrenCount")
-	protected MaxAddableChildrenCount maxMaxAddableChildrenCount;
+	/** The allowed type for children. */
+	@JsonProperty("containerFakeTypeName")
+	protected String containerFakeTypeName;
+	
+	/** The allowed max quantity of children. */
+	@JsonProperty("maxAddableChildrenCount")
+	protected MaxAddableChildrenCount maxAddableChildrenCount;
+	
+	/** The allowed min quantity of children. */
+	@JsonProperty("minAddableChildrenCount")
+	protected MinAddableChildrenCount minAddableChildrenCount;
 	
 	public CuteElementContainer() {
 		// CuteElementContainers more often used as not part of the model. So let's set them as
@@ -70,21 +78,27 @@ public class CuteElementContainer<T extends CuteElement> extends AbstractCuteEle
 	 * @param childrenType
 	 *            The allowed type of children.
 	 * @param maxMaxAddableChildrenCount
-	 *            The allowed quantity of children.
+	 *            The allowed max quantity of children.
+	 * @param minAddableChildrenCount
+	 *            The allowed min quantity of children.
+	 * @param containerFakeTypeName
+	 *            How to call this container. For example, "Adorable Actions".
 	 */
 	public CuteElementContainer(ObservableList<T> children, String name,
-			AddableChildrenTypeInfo childrenType,
-			MaxAddableChildrenCount maxMaxAddableChildrenCount) {
+			AddableChildrenTypeInfo childrenType, MaxAddableChildrenCount maxAddableChildrenCount,
+			MinAddableChildrenCount minAddableChildrenCount, String containerFakeTypeName) {
 		this();
 		this.children = children;
 		this.elementInfo.setName(name);
 		this.childrenType = childrenType;
-		this.maxMaxAddableChildrenCount = maxMaxAddableChildrenCount;
+		this.maxAddableChildrenCount = maxAddableChildrenCount;
+		this.minAddableChildrenCount = minAddableChildrenCount;
+		this.containerFakeTypeName = containerFakeTypeName;
 	}
 	
 	/**
-	 * Instantiates a new CuteElementContainer. Used for deserialization. It's list children is just a
-	 * non-deep copy of passed children list argument.
+	 * Instantiates a new CuteElementContainer. Used for deserialization. It's list children is just
+	 * a non-deep copy of passed children list argument.
 	 *
 	 * @param children
 	 *            The children to store inside CuteElementContainer.
@@ -93,17 +107,25 @@ public class CuteElementContainer<T extends CuteElement> extends AbstractCuteEle
 	 * @param childrenType
 	 *            The allowed type of children.
 	 * @param maxChildren
-	 *            The allowed quantity of children.
+	 *            The allowed max quantity of children.
+	 * @param minChildren
+	 *            The allowed min quantity of children.
+	 * @param containerFakeTypeName
+	 *            How to call this container. For example, "Adorable Actions".
 	 */
 	public CuteElementContainer(@JsonProperty("children") ArrayList<T> children,
 			@JsonProperty("name") String name,
 			@JsonProperty("childrenType") AddableChildrenTypeInfo childrenType,
-			@JsonProperty("maxMaxAddableChildrenCount") MaxAddableChildrenCount maxChildren) {
+			@JsonProperty("maxAddableChildrenCount") MaxAddableChildrenCount maxChildren,
+			@JsonProperty("minAddableChildrenCount") MinAddableChildrenCount minChildren,
+			@JsonProperty("containerFakeTypeName") String containerFakeTypeName) {
 		this();
 		this.children.setAll(children);
 		this.elementInfo.setName(name);
 		this.childrenType = childrenType;
-		this.maxMaxAddableChildrenCount = maxChildren;
+		this.maxAddableChildrenCount = maxChildren;
+		this.minAddableChildrenCount = minChildren;
+		this.containerFakeTypeName = containerFakeTypeName;
 	}
 
 	@JsonIgnore
@@ -121,45 +143,56 @@ public class CuteElementContainer<T extends CuteElement> extends AbstractCuteEle
 	@JsonIgnore
 	@Override
 	public MaxAddableChildrenCount getMaxAddableChildrenCount() {
-		return maxMaxAddableChildrenCount;
+		return maxAddableChildrenCount;
+	}
+	
+	@JsonIgnore
+	@Override
+	public MinAddableChildrenCount getMinAddableChildrenCount() {
+		return minAddableChildrenCount;
 	}
 
 	@Override
 	public void init() {
-		// Let init() of contained children happen in CuteElements where this CuteElementContainer
-		// is stored.
+		super.init();
 	}
 	
 	/**
-	 * Instantiates a new CuteElementContainer, but doesn't require programmer to provide an empty list
-	 * and specify it's generic subtype, because passed childrenType parameter already contains
+	 * Instantiates a new CuteElementContainer, but doesn't require programmer to provide an empty
+	 * list and specify it's generic subtype, because passed childrenType parameter already contains
 	 * information about subtype.
 	 *
 	 * @param name
 	 *            The name of this CuteElementContainer.
 	 * @param childrenType
 	 *            The allowed type of children.
-	 * @param maxMaxAddableChildrenCount
-	 *            The allowed quantity of children.
+	 * @param maxAddableChildrenCount
+	 *            The max allowed quantity of children.
+	 * @param minAddableChildrenCount
+	 *            The max allowed quantity of children.
 	 */
 	public static CuteElementContainer<?> createEmptyCuteElementContainer(String name,
 			AddableChildrenTypeInfo childrenType,
-			MaxAddableChildrenCount maxMaxAddableChildrenCount) {
+			MaxAddableChildrenCount maxAddableChildrenCount,
+			MinAddableChildrenCount minAddableChildrenCount, String ContainerFakeTypeName) {
 		CuteElementContainer<?> container = null;
 		switch (childrenType) {
 		case ACTION:
-			container =  new CuteElementContainer<Action>(FXCollections.observableArrayList(), name,
-					childrenType, maxMaxAddableChildrenCount);
+			container = new CuteElementContainer<Action>(FXCollections.observableArrayList(), name,
+					childrenType, maxAddableChildrenCount, minAddableChildrenCount,
+					ContainerFakeTypeName);
 			break;
 		case CHECKER:
-			container =  new CuteElementContainer<Checker>(FXCollections.observableArrayList(), name,
-					childrenType, maxMaxAddableChildrenCount);
+			container = new CuteElementContainer<Checker>(FXCollections.observableArrayList(), name,
+					childrenType, maxAddableChildrenCount, minAddableChildrenCount,
+					ContainerFakeTypeName);
 			break;
 		case CONTAINER:
 			throw new RuntimeException("Container can't have containers as children.");
 		case COUNTER:
 			container = new CuteElementContainer<Counter>(FXCollections.observableArrayList(), name,
-					childrenType, maxMaxAddableChildrenCount);
+					childrenType, maxAddableChildrenCount, minAddableChildrenCount,
+					ContainerFakeTypeName);
 			break;
 		default:
 			break;

@@ -144,23 +144,19 @@ public abstract class AbstractRelationToNumberChecker extends AbstractCuteElemen
 
 	@JsonIgnore
 	@Override
+	public MinAddableChildrenCount getMinAddableChildrenCount() {
+		return MinAddableChildrenCount.ONE;
+	}
+	
+	@JsonIgnore
+	@Override
 	public MaxAddableChildrenCount getMaxAddableChildrenCount() {
 		return MaxAddableChildrenCount.ONE;
 	}
-
+	
 	@Override
 	public void init() {
 		super.init();
-		elementInfo.setAsReadyAndHealthy();
-		if (counter.size() == 0) {
-			elementInfo.setAsBroken("No Counter is assigned to this Checker");
-			return;
-		}
-		counter.get(0).init();
-		if (counter.get(0).getElementInfo().isBroken()) {
-			elementInfo.setAsBroken("Contained " + counter.get(0).getClass().getSimpleName()
-					+ " is broken. Please fix it first");
-		}
 	}
 	
 	@JsonIgnore

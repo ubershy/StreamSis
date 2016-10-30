@@ -53,7 +53,6 @@ import javafx.beans.property.SimpleObjectProperty;
  * When it's {@link #useANDOperator} is <b>false</b> this {@link Checker} will return true on
  * {@link #check()} if <b>at least one</b> of the targets is found within the region. <br>
  */
-@SuppressWarnings("unchecked")
 public class MultiTargetRegionChecker extends AbstractCuteElement implements Checker {
 
 	static final Logger logger = LoggerFactory.getLogger(MultiTargetRegionChecker.class);
@@ -217,7 +216,6 @@ public class MultiTargetRegionChecker extends AbstractCuteElement implements Che
 	@Override
 	public void init() {
 		super.init();
-		elementInfo.setAsReadyAndHealthy();
 		coords.get().initRegion(elementInfo);
 		if (elementInfo.isBroken()) {
 			// already broken by coords.get().initRegion();

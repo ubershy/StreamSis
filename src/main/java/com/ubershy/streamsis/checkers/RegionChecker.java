@@ -47,7 +47,6 @@ import javafx.collections.ObservableList;
  * "0.5" - everything that slightly reminds the targetPattern image. <br>
  * "0" - everything.
  */
-@SuppressWarnings("unchecked")
 public class RegionChecker extends AbstractCuteElement implements Checker {
 
 	static final Logger logger = LoggerFactory.getLogger(RegionChecker.class);
@@ -140,7 +139,6 @@ public class RegionChecker extends AbstractCuteElement implements Checker {
 	@Override
 	public void init() {
 		super.init();
-		elementInfo.setAsReadyAndHealthy();
 		targetPattern = null;
 		coords.initRegion(elementInfo);
 		if (elementInfo.isBroken()) {

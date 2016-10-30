@@ -36,7 +36,6 @@ import javafx.beans.property.StringProperty;
  * File Copy Action. <br>
  * This {@link Action} can copy Source file to Destination file.
  */
-@SuppressWarnings("unchecked")
 public class FileCopyAction extends AbstractCuteElement implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(FileCopyAction.class);
@@ -72,7 +71,7 @@ public class FileCopyAction extends AbstractCuteElement implements Action {
 	}
 
 	/**
-	 * Check if Source and Destinations file paths are not null or empty.
+	 * Check if Source and Destinations file path are not empty.
 	 *
 	 * @return true, if successful
 	 */
@@ -116,7 +115,6 @@ public class FileCopyAction extends AbstractCuteElement implements Action {
 	@Override
 	public void init() {
 		super.init();
-		elementInfo.setAsReadyAndHealthy();
 		// The method below while executing can set the element as broken.
 		if (!checkForEmptinessAndNothingness())
 			return;
@@ -146,6 +144,10 @@ public class FileCopyAction extends AbstractCuteElement implements Action {
 			elementInfo.setAsBroken("The destination path seems slightly... invalid.");
 			return;
 		}
+	}
+	
+	protected void doSuperInit() {
+		super.init();
 	}
 
 	@JsonProperty("dstFilePath")

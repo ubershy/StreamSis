@@ -44,10 +44,9 @@ public abstract class AbstractCuteElement implements CuteElement {
 	/*
 	 * @inheritDoc
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@JsonIgnore
 	@Override
-	public ObservableList getChildren() {
+	public ObservableList<? extends CuteElement> getChildren() {
 		return null; // Childfree by default.
 	}
 
@@ -79,13 +78,78 @@ public abstract class AbstractCuteElement implements CuteElement {
 		return null; // No container parameters, because it can't have containers as children by
 		             // by default.
 	}
+
+	/*
+	 * @inheritDoc
+	 */
+	@JsonIgnore
+	@Override
+	public MinAddableChildrenCount getMinAddableChildrenCount() {
+		return MinAddableChildrenCount.UNDEFINEDORZERO; // No information how many children need be
+		                                                // added inside by default.
+	}
 	
 	/*
-	 * Subtypes must override {@link #init()} method with super.init().
+	 * Subtypes must override {@link #init()} method with super.init(). <br> There can be
+	 * exceptions, of course. <br> This init() sets CuteElement as healthy, reports to
+	 * ProjectManager, inits CuteElement's children.
 	 */
 	@JsonIgnore
 	@Override
 	public void init() {
+		elementInfo.setAsReadyAndHealthy();
 		ProjectManager.incrementInitNumberOfElements();
+		if (getAddableChildrenTypeInfo() != null) { // Null means no children can be added by user.
+			int childrenCount = getChildren().size();
+			String childrenTypeName = null;
+			if (getChildContainerCreationParams() != null) {
+				childrenTypeName = getChildContainerCreationParams().containerFakeTypeName;
+			} else {
+				childrenTypeName = getAddableChildrenTypeInfo().getType().getSimpleName();
+			}
+			switch (getMinAddableChildrenCount()) {
+			case ONE:
+				if (childrenCount < 1) {
+					getAddableChildrenTypeInfo().getType().getSimpleName();
+					elementInfo.setAsBroken(
+							"At least one " + childrenTypeName + " needs be added inside");
+				}
+				break;
+			case UNDEFINEDORZERO:
+				break;
+			default:
+				break;
+			}
+			switch (getMaxAddableChildrenCount()) {
+			case INFINITY:
+				break;
+			case ONE:
+				if (childrenCount > 1) {
+					throw new RuntimeException(
+							"How this thingy ended up having more than one child?");
+				}
+				break;
+			case UNDEFINEDORZERO:
+				break;
+			default:
+				break;
+			}
+		}
+		if (getChildren() != null) {
+			for (CuteElement child : getChildren()) {
+				child.init();
+				ElementInfo childInfo = child.getElementInfo();
+				if (childInfo.isBroken()) {
+					String childTypeName = null;
+					if (child instanceof CuteElementContainer<?>) {
+						childTypeName = ((CuteElementContainer<?>) child).containerFakeTypeName;
+					} else {
+						childTypeName = child.getClass().getSimpleName();
+					}
+					this.elementInfo.setAsBroken("The contained " + childTypeName + " '"
+							+ childInfo.getName() + "' is broken");
+				}
+			}
+		}
 	}
 }

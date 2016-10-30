@@ -41,7 +41,6 @@ import javafx.collections.ObservableList;
  * The additional ObservableList will be required then to maintain the order of SisScene
  * names. </i>
  */
-@SuppressWarnings("unchecked")
 public class SisScene extends AbstractCuteElement {
 
 	static final Logger logger = LoggerFactory.getLogger(SisScene.class);
@@ -112,8 +111,7 @@ public class SisScene extends AbstractCuteElement {
 
 	@Override
 	public void init() {
-		ProjectManager.incrementInitNumberOfElements();
-		elementInfo.setAsReadyAndHealthy();
+		super.init();
 		if ("".equals(elementInfo.getName())) {
 			elementInfo.setAsBroken("SisScene's name cannot be empty");
 			return;

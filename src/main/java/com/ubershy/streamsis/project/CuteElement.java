@@ -69,11 +69,16 @@ public interface CuteElement extends RecursiveParent<CuteElement> {
 	/**
 	 * Gets this {@link CuteElement}'s {@link MaxAddableChildrenCount}.
 	 *
-	 * @return the MaxAddableChildrenCount, <br>
-	 *         null, if no information provided, so the user will be unable to add or remove
-	 *         children to this CuteElement
+	 * @return the MaxAddableChildrenCount <br>
 	 */
 	public MaxAddableChildrenCount getMaxAddableChildrenCount();
+	
+	/**
+	 * Gets this {@link CuteElement}'s {@link MinAddableChildrenCount}.
+	 *
+	 * @return the MinAddableChildrenCount
+	 */
+	public MinAddableChildrenCount getMinAddableChildrenCount();
 	
 	/**
 	 * Gets {@link ContainerCreationParams} of this {@link CuteElement} if it can have
@@ -93,20 +98,22 @@ public interface CuteElement extends RecursiveParent<CuteElement> {
 	public class ContainerCreationParams {
 		public final AddableChildrenTypeInfo childrenType;
 		public final MaxAddableChildrenCount childrenMaxCount;
-		public final String GUIItemMenuName;
+		public final MinAddableChildrenCount childrenMinCount;
+		public final String containerFakeTypeName;
 		public final String creationBaseName;
 		public final String GUIDescription;
 		public final boolean editable;
 		public final boolean emptyNameAllowed;
 		
 		public ContainerCreationParams(AddableChildrenTypeInfo childrenType,
-				MaxAddableChildrenCount childrenMaxCount, boolean editable,
-				boolean emptyNameAllowed, String GUIItemMenuName, String creationBaseName,
-				String GUIDescription) {
+				MaxAddableChildrenCount childrenMaxCount, MinAddableChildrenCount childrenMinCount,
+				boolean editable, boolean emptyNameAllowed, String containerFakeTypeName,
+				String creationBaseName, String GUIDescription) {
 			this.childrenType = childrenType;
 			this.childrenMaxCount = childrenMaxCount;
+			this.childrenMinCount = childrenMinCount;
 			this.editable = editable;
-			this.GUIItemMenuName = GUIItemMenuName;
+			this.containerFakeTypeName = containerFakeTypeName;
 			this.creationBaseName = creationBaseName;
 			this.GUIDescription = GUIDescription;
 			this.emptyNameAllowed = emptyNameAllowed;
@@ -119,23 +126,34 @@ public interface CuteElement extends RecursiveParent<CuteElement> {
 	 * So the GUI(if it currently exists) will know how to manage this CuteElement. <br>
 	 */
 	public enum MaxAddableChildrenCount {
-
-		/** The undefinedorzero. */
+		/** Means children can't be added. */
 		UNDEFINEDORZERO,
-		/** The one. */
+		/** Means can add one child. */
 		ONE,
-		/** The infinity. */
+		/** Means can add infinity children. */
 		INFINITY
+	}
+	
+	/**
+	 * MinChildrenCount contains information describing the minimum amount of children this
+	 * {@link CuteElement} needs to have. <br>
+	 */
+	public enum MinAddableChildrenCount {
+		/** Means can have any number of children. */
+		UNDEFINEDORZERO,
+		/** Means should have at least one child. */
+		ONE
 	}
 
 	/**
-	 * AddableChildrenTypeInfo contains information describing type of the {@link CuteElement} that can
-	 * be added by user to this CuteElement's list of children. <br>
+	 * AddableChildrenTypeInfo contains information describing type of the {@link CuteElement} that
+	 * can be added by user to this CuteElement's list of children. <br>
 	 * So the GUI(if it currently exists) will know how to manage this CuteElement.
 	 */
 	public enum AddableChildrenTypeInfo {
 		/**
-		 * Indicates that a {@link Action} can be added by user to this {@link CuteElement}'s children.
+		 * Indicates that a {@link Action} can be added by user to this {@link CuteElement}'s
+		 * children.
 		 */
 		ACTION(Action.class),
 
@@ -152,18 +170,19 @@ public interface CuteElement extends RecursiveParent<CuteElement> {
 		COUNTER(Counter.class),
 
 		/**
-		 * Indicates that a {@link CuteElementContainer} can be added by user to this {@link CuteElement}
-		 * 's children.
+		 * Indicates that a {@link CuteElementContainer} can be added by user to this
+		 * {@link CuteElement} 's children.
 		 */
 		CONTAINER(CuteElementContainer.class);
 
 		/** The type. */
 		private final Class<? extends CuteElement> type;
-		
+
 		/**
 		 * Instantiates a new addable children type info.
 		 *
-		 * @param type the type
+		 * @param type
+		 *            the type
 		 */
 		private AddableChildrenTypeInfo(final Class<? extends CuteElement> type) {
 			this.type = type;

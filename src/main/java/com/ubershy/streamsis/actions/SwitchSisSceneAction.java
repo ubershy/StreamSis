@@ -35,7 +35,6 @@ import com.ubershy.streamsis.project.ProjectManager;
  * Switch Cute Scene Action. <br>
  * This {@link Action} can switch current {@link CuteProject CuteProject's} {@link SisScene} to another one.
  */
-@SuppressWarnings("unchecked")
 public class SwitchSisSceneAction extends AbstractCuteElement implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(SwitchSisSceneAction.class);
@@ -79,7 +78,6 @@ public class SwitchSisSceneAction extends AbstractCuteElement implements Action 
 	@Override
 	public void init() {
 		super.init();
-		elementInfo.setAsReadyAndHealthy();
 		if (sisSceneName.get().isEmpty()) {
 			elementInfo.setAsBroken("SisScene name is empty");
 		} else {

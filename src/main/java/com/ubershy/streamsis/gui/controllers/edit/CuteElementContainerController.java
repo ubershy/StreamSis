@@ -46,6 +46,9 @@ public class CuteElementContainerController extends AbstractCuteController
 
     @FXML
     private Label maxQuantityLabel;
+    
+    @FXML
+    private Label minQuantityLabel;
 
     @FXML
     private Label currentQuantityLabel;
@@ -85,6 +88,7 @@ public class CuteElementContainerController extends AbstractCuteController
 		// Set.
 		typeLabel.setText(container.getAddableChildrenTypeInfo().toString());
 		maxQuantityLabel.setText(container.getMaxAddableChildrenCount().toString());
+		minQuantityLabel.setText(container.getMinAddableChildrenCount().toString());
 		currentQuantityLabel.setText(String.valueOf(origContainer.getChildren().size()));
 		// Bind.
 		origContainer.getChildren().addListener(listener);

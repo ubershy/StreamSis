@@ -36,7 +36,6 @@ import javafx.scene.input.KeyCodeCombination;
  * 
  * @see {@link HotkeyAction}
  */
-@SuppressWarnings("unchecked")
 public class OBSHotkeyAction extends HotkeyAction implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(OBSHotkeyAction.class);

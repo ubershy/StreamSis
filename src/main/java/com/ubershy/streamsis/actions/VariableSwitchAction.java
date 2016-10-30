@@ -50,8 +50,8 @@ public class VariableSwitchAction extends AbstractCuteElement implements Action 
 	static final Logger logger = LoggerFactory.getLogger(VariableSwitchAction.class);
 
 	/**
-	 * List with cases (possible Variable's Values) ({@link CuteElementContainer}) each one containing
-	 * associated {@link Action Actions}.
+	 * List with cases (possible Variable's Values) ({@link CuteElementContainer}) each one
+	 * containing associated {@link Action Actions}.
 	 */
 	@JsonProperty("cases")
 	ObservableList<CuteElementContainer<Action>> cases = FXCollections.observableArrayList(); 
@@ -116,9 +116,10 @@ public class VariableSwitchAction extends AbstractCuteElement implements Action 
 			TreeMap<String, ArrayList<Action>> actionsMap) {
 		ObservableList<CuteElementContainer<Action>> genCases = FXCollections.observableArrayList();
 		for (Entry<String, ArrayList<Action>> entry : actionsMap.entrySet()) {
-			CuteElementContainer<Action> container = new CuteElementContainer<Action>(entry.getValue(),
-					entry.getKey(), AddableChildrenTypeInfo.ACTION,
-					MaxAddableChildrenCount.INFINITY);
+			CuteElementContainer<Action> container = new CuteElementContainer<Action>(
+					entry.getValue(), entry.getKey(), AddableChildrenTypeInfo.ACTION,
+					MaxAddableChildrenCount.INFINITY, MinAddableChildrenCount.ONE,
+					"Variable's Value");
 			container.getElementInfo().setEditable(true);
 			container.getElementInfo().setEmptyNameAllowed(true);
 			genCases.add(container);
@@ -165,13 +166,8 @@ public class VariableSwitchAction extends AbstractCuteElement implements Action 
 	@Override
 	public void init() {
 		super.init();
-		elementInfo.setAsReadyAndHealthy();
 		if (key.get().isEmpty()) {
 			elementInfo.setAsBroken("Variable name is empty");
-		}
-		if (cases.size() == 0) {
-			elementInfo.setAsBroken(
-					"At least one Variable's Value should be added inside VariableSwitchAction");
 		}
 		LinkedList<String> caseNamesForFindingDuplicates = new LinkedList<>();
 		for (CuteElementContainer<Action> container: cases) {
@@ -179,22 +175,10 @@ public class VariableSwitchAction extends AbstractCuteElement implements Action 
 			// Check duplicate names of Containers.
 			if (caseNamesForFindingDuplicates.contains(caseName)) {
 				// Already contains such a name added from previous iteration.
-				elementInfo.setAsBroken("Duplicate Variable's Value detected inside - '" + caseName + "'");
+				elementInfo.setAsBroken(
+						"Duplicate Variable's Value detected inside - '" + caseName + "'");
 			}
 			caseNamesForFindingDuplicates.add(caseName);
-			// Check if Container doesn't have Actions inside.
-			if (container.getChildren().size() == 0) {
-				elementInfo.setAsBroken("The Variable's Value '" + caseName
-						+ "' don't have any Actions assigned to it.");
-			}
-			// Init each Action in this Container.
-			for (CuteElement element : container.getChildren()) {
-				element.init();
-				if (element.getElementInfo().isBroken()) {
-					elementInfo.setAsBroken("One or more Actions assigned to Variable's Value '"
-							+ caseName + "' are broken");
-				}
-			}
 		}
 	}
 
@@ -249,6 +233,12 @@ public class VariableSwitchAction extends AbstractCuteElement implements Action 
 		return MaxAddableChildrenCount.INFINITY;
 	}
 	
+	@JsonIgnore
+	@Override
+	public MinAddableChildrenCount getMinAddableChildrenCount() {
+		return MinAddableChildrenCount.ONE;
+	}
+	
 	/*
 	 * @inheritDoc
 	 */
@@ -264,8 +254,8 @@ public class VariableSwitchAction extends AbstractCuteElement implements Action 
 	@Override
 	public ContainerCreationParams getChildContainerCreationParams() {
 		return new CuteElement.ContainerCreationParams(AddableChildrenTypeInfo.ACTION,
-				MaxAddableChildrenCount.INFINITY, true, true, "Variable's Value",
-				"Variable's Value (replace it)",
+				MaxAddableChildrenCount.INFINITY, MinAddableChildrenCount.ONE, true, true,
+				"Variable's Value", "Variable's Value (replace it)",
 				"A container of Actions which name(Value) is compared to Variable's current Value."
 						+ "\nIf they are equal, the contained Actions are run.");
 	}

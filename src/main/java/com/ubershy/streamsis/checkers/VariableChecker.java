@@ -35,7 +35,6 @@ import javafx.beans.property.StringProperty;
  * expected value. <br>
  * If variable is not found in UserVars, this Checker returns false;
  */
-@SuppressWarnings("unchecked")
 public class VariableChecker extends AbstractCuteElement implements Checker {
 
 	static final Logger logger = LoggerFactory.getLogger(VariableChecker.class);
@@ -103,7 +102,6 @@ public class VariableChecker extends AbstractCuteElement implements Checker {
 	@Override
 	public void init() {
 		super.init();
-		elementInfo.setAsReadyAndHealthy();
 		if (key.get().isEmpty())
 			elementInfo.setAsBroken("Variable name is empty");
 		if (expectedValue == null)
