@@ -262,6 +262,12 @@ public class LogicalChecker extends AbstractCuteElement implements Checker {
 		return MaxAddableChildrenCount.INFINITY;
 	}
 	
+	@JsonIgnore
+	@Override
+	public MinAddableChildrenCount getMinAddableChildrenCount() {
+		return MinAddableChildrenCount.ONE;
+	}
+	
 	/**
 	 * Gets NOT result.
 	 *
@@ -302,17 +308,6 @@ public class LogicalChecker extends AbstractCuteElement implements Checker {
 				operator.get());
 		if (operatorIsBrokenMessage != null) {
 			elementInfo.setAsBroken(operatorIsBrokenMessage);
-		}
-		if (checkers.size() == 0) {
-			elementInfo.setAsBroken("No Checkers are assigned to this Checker");
-			return;
-		}
-		for (Checker checker : checkers) {
-			checker.init();
-			if (checker.getElementInfo().isBroken()) {
-				elementInfo.setAsBroken("Contained Checker " + checker.getClass().getSimpleName()
-						+ " is broken. Please fix it first");
-			}
 		}
 	}
 

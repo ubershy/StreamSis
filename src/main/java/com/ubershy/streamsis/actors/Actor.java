@@ -245,5 +245,10 @@ public interface Actor extends CuteElement {
 	 * Stop the Actor. Internally Actor stops his {@link ActorCheckerService}
 	 */
 	public void stop();
+	
+	/**
+	 * Counts this Actor and Actor's children ( {@link CuteElement}s inside) recursively.
+	 */
+	public int countActorAndChildrenRecursivelyWithoutContainersOnTop();
 
 }

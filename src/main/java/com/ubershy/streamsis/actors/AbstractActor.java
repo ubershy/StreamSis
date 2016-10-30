@@ -339,4 +339,29 @@ public abstract class AbstractActor extends AbstractCuteElement implements Actor
 				onActionsContainer, offActionsContainer);
 		return result;
 	}
+	
+	@Override
+	public int countActorAndChildrenRecursivelyWithoutContainersOnTop() {
+		int count = 1;
+		for (CuteElement container: getChildren()) {
+			for (CuteElement child: container.getChildren()) {
+				count+=countCuteElementRecursively(child);
+			}
+		}
+		return count;
+	}
+	
+	private int countCuteElementRecursively(CuteElement element) {
+		int count = 0;
+		if (element != null) {
+			count++;
+			ObservableList<? extends CuteElement> children = element.getChildren();
+			if (children != null) {
+				for(CuteElement subElement : children) {
+					count += countCuteElementRecursively(subElement);
+				}
+			}
+		}
+		return count;
+	}
 }

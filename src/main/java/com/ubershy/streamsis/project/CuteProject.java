@@ -342,6 +342,8 @@ public class CuteProject implements Serializable {
 	 * Initializes the CuteProject. This will also initialize all of it's Actors and SisScenes.
 	 */
 	public void init() {
+		int count = countElementsInProject();
+		ProjectManager.setAllElementsNumber(count);
 		logger.info("Initializing Project...");
 		ProjectManager.setCurrentProjectAsInitializing();
 		if (isStarted())
@@ -373,6 +375,27 @@ public class CuteProject implements Serializable {
 		ProjectManager.setCurrentProjectAsInitialized();
 	}
 
+	/**
+	 * @return The number of CuteElements in this Project.
+	 */
+	private int countElementsInProject() {
+		logger.info("Counting all Elements in Project...");
+		int count = 0;
+		for (SisScene scene : sisScenes) {
+			if (scene.getChildren() != null) {
+				// For the future...
+				throw new RuntimeException("As scene can have children now, the counting code "
+						+ "needs be changed.");
+			}
+			count++;
+		}
+		for (Actor actor : globalActors) {
+			count+=actor.countActorAndChildrenRecursivelyWithoutContainersOnTop();
+		}
+		logger.info("Counted all Elements in Project: " + count);
+		return count;
+	}
+	
 	/**
 	 * Validates list with Actors/SisScenes. <br>
 	 * Throws exceptions if something is wrong telling programmer about errors he made.

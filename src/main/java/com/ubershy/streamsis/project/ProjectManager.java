@@ -67,6 +67,18 @@ public final class ProjectManager {
 	}
 	public static int getInitElementsNumber() {return initElementsNumber.get();}
 	
+	/**
+	 * The current {@link CuteProject}'s number of {@link CuteElement}s.
+	 */
+	private static final ReadOnlyIntegerWrapper allElementsNumber = new ReadOnlyIntegerWrapper(0);
+	public static ReadOnlyIntegerProperty allElementsNumberProperty() {
+		return allElementsNumber.getReadOnlyProperty();
+	}
+	public static int getAllElementsNumber() {return allElementsNumber.get();}
+	protected static void setAllElementsNumber(int count) {
+		allElementsNumber.set(count);
+	}
+	
 	/** Tells if current {@link CuteProject} is currently initializing. */
 	private static final ReadOnlyBooleanWrapper initializing = new ReadOnlyBooleanWrapper(false);
 	public static ReadOnlyBooleanProperty initializingProperty() {
@@ -154,6 +166,12 @@ public final class ProjectManager {
 	 */
 	public static void setCurrentProjectAsInitialized() {
 		initializing.set(false);
+		int all = allElementsNumber.get();
+		int inited = initElementsNumber.get();
+		if (inited != all) {
+			throw new RuntimeException("The number of initialized Elements(" + inited + ") doesn't "
+					+ "match with the " + "number of all Elements(" + all + ") in the Project.");
+		}
 	}
 
 }
