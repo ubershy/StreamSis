@@ -35,7 +35,19 @@ public class SisSceneContextMenuBuilder {
 		CustomMenuItem addSisSceneMenuItem = GUIUtil.createTooltipedMenuItem("Add new",
 				"Add new SisScene in which you can add Actors later.");
 		addSisSceneMenuItem.setOnAction((ActionEvent event) -> {
-			GUIUtil.addNewSisScene();
+			String genericName = "New SisScene";
+			String alteredName = genericName;
+			int counter = 0;
+			while (ProjectManager.getProject().getSisSceneByName(alteredName) != null) {
+				counter++;
+				alteredName = String.format("%s(%d)", genericName, counter);
+			}
+			SisScene newSisScene = new SisScene(alteredName, new String[] {});
+			// Initialize SisScene to highlight that it is still not configured
+			newSisScene.init();
+			ProjectManager.getProject().addSisScene(newSisScene);
+			// Initialize whole project
+			ProjectManager.getProject().init();
 		});
 		cm.getItems().add(addSisSceneMenuItem);
 		cm.autoHideProperty().set(true);
@@ -60,10 +72,14 @@ public class SisSceneContextMenuBuilder {
 		deleteSisSceneMenuItem.setOnAction((ActionEvent event) -> {
 			SisScene scene = sisSceneList.getSelectionModel().getSelectedItem();
 			project.removeSisScene(scene);
+			// Initialize whole project
+			ProjectManager.getProject().init();
 		});
 		deleteSisSceneWithActorsMenuItem.setOnAction((ActionEvent event) -> {
 			SisScene scene = sisSceneList.getSelectionModel().getSelectedItem();
 			project.removeSisSceneWithActors(scene);
+			// Initialize whole project
+			ProjectManager.getProject().init();
 		});
 		setPrimarySisSceneMenuItem.setOnAction((ActionEvent event) -> {
 			project.setPrimarySisSceneName(

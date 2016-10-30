@@ -38,6 +38,7 @@ public interface CuteElement {
 
 	/**
 	 * Initializes the {@link CuteElement} so it's ready to work.
+	 * If this CuteElement is a {@link CuteNode}, initializes it's children.
 	 * <p>
 	 * Optional things it can do: <br>
 	 * 1. Decide if CuteElement is fully functional and not {@link ElementInfo#isBroken() broken}.
@@ -47,6 +48,7 @@ public interface CuteElement {
 	 * 3. Check important class fields. <br>
 	 * 4. Fill important class fields with values. <br>
 	 * 5. Resolve required resources, e.g. images or sounds, and validate them. <br>
+	 * 6. Do {@link ProjectManager#incrementInitNumberOfElements()}.
 	 *
 	 */
 	public void init();

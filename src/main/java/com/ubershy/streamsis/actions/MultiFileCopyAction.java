@@ -146,6 +146,7 @@ public class MultiFileCopyAction extends FileCopyAction {
 
 	@Override
 	public void init() {
+		super.init();
 		elementInfo.setAsReadyAndHealthy();
 		if (dstFilePath.get().isEmpty()) {
 			elementInfo.setAsBroken("Destination path is not defined");

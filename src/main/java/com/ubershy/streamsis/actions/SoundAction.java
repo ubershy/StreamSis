@@ -113,6 +113,7 @@ public class SoundAction extends AbstractCuteNode implements Action {
 
 	@Override
 	public void init() {
+		super.init();
 		elementInfo.setAsReadyAndHealthy();
 		if (volume.get() < 0 || volume.get() > 1)
 			elementInfo.setAsBroken("Volume must be in range from 0.0 to 1.0");

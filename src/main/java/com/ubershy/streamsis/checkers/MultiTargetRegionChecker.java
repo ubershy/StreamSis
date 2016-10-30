@@ -216,6 +216,7 @@ public class MultiTargetRegionChecker extends AbstractCuteNode implements Checke
 
 	@Override
 	public void init() {
+		super.init();
 		elementInfo.setAsReadyAndHealthy();
 		coords.get().initRegion(elementInfo);
 		if (elementInfo.isBroken()) {

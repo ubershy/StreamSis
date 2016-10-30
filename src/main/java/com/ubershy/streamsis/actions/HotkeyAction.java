@@ -197,6 +197,7 @@ public class HotkeyAction extends AbstractCuteNode implements Action {
 
 	@Override
 	public void init() {
+		super.init();
 		elementInfo.setAsReadyAndHealthy();
 		if (keysProperty.get() != null) {
 			if (keysProperty.get().isEmpty()) {

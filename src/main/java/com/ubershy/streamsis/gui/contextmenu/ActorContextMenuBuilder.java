@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ubershy.streamsis.actors.Actor;
+import com.ubershy.streamsis.actors.UniversalActor;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteProject;
@@ -45,7 +46,18 @@ public final class ActorContextMenuBuilder {
 		CustomMenuItem addActorMenuItem = GUIUtil.createTooltipedMenuItem("Add new", "Create new global Actor and add to currently selected SisScene.");
 		Menu addExistingActorMenuItem = generateAddExistingActorMenu();
 		addActorMenuItem.setOnAction((ActionEvent event) -> {
-			GUIUtil.addNewActor();
+			String genericName = "New Actor";
+			String alteredName = genericName;
+			int counter = 0;
+			while (ProjectManager.getProject().getActorByName(alteredName) != null) {
+				counter++;
+				alteredName = String.format("%s(%d)", genericName, counter);
+			}
+			Actor newActor = new UniversalActor(alteredName, 1000, 1000, false, false);
+			ProjectManager.getProject().addActorToGlobalActors(newActor);
+			ProjectManager.getProject().addExistingActorToCurrentSisScene(newActor);
+			// Initialize whole project
+			ProjectManager.getProject().init();
 		});
 		cm.getItems().addAll(addActorMenuItem);
 		if (addExistingActorMenuItem.getItems().size() != 0) {
@@ -70,10 +82,14 @@ public final class ActorContextMenuBuilder {
 		deleteActorMenuItem.setOnAction((ActionEvent event) -> {
 			Actor actor = actorList.getSelectionModel().getSelectedItem();
 			project.removeActorFromCurrentSisScene(actor);
+			// Initialize whole project
+			ProjectManager.getProject().init();
 		});
 		deleteActorGloballyMenuItem.setOnAction((ActionEvent event) -> {
 			Actor actor = actorList.getSelectionModel().getSelectedItem();
 			project.removeActorGlobally(actor);
+			// Initialize whole project
+			ProjectManager.getProject().init();
 		});
 		moveUpActorMenuItem.setOnAction((ActionEvent event) -> {
 			Actor actor = actorList.getSelectionModel().getSelectedItem();

@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * The abstract implementation of {@link CuteNode}.
  * <p>
- * Does not contain {@link CuteNode#init()} method, forcing subtypes to define it.
+ * Subtypes must override {@link #init()} method with super.init().
  */
 public abstract class AbstractCuteNode implements CuteNode {
 
@@ -78,5 +78,14 @@ public abstract class AbstractCuteNode implements CuteNode {
 	public ContainerCreationParams getChildContainerCreationParams(){
 		return null; // No container parameters, because it can't have containers as children by
 		             // by default.
+	}
+	
+	/*
+	 * Subtypes must override {@link #init()} method with super.init().
+	 */
+	@JsonIgnore
+	@Override
+	public void init() {
+		ProjectManager.incrementInitNumberOfElements();
 	}
 }

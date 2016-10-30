@@ -110,7 +110,7 @@
             <Button alignment="CENTER" disable="true" mnemonicParsing="false" prefHeight="50.0" prefWidth="70.0" text="Current Variables" textAlignment="CENTER" wrapText="true" />
             <Button fx:id="showCompactModeButton" alignment="CENTER" mnemonicParsing="false" onAction="#showCompactMode" prefHeight="50.0" prefWidth="70.0" text="Compact Mode" textAlignment="CENTER" wrapText="true" />
             <Separator layoutX="276.0" layoutY="10.0" orientation="VERTICAL" prefHeight="50.0" />
-            <Button fx:id="showCompactModeButton1" alignment="CENTER" disable="true" layoutX="222.0" layoutY="10.0" mnemonicParsing="false" onAction="#showCompactMode" prefHeight="50.0" prefWidth="70.0" text="Stop All Sounds" textAlignment="CENTER" wrapText="true" />
+            <Button fx:id="stopAllSoundsButton" alignment="CENTER" disable="true" layoutX="222.0" layoutY="10.0" mnemonicParsing="false" onAction="#showCompactMode" prefHeight="50.0" prefWidth="70.0" text="Stop All Sounds" textAlignment="CENTER" wrapText="true" />
             <BorderPane prefHeight="50.0" prefWidth="120.0">
                <center>
                   <Slider fx:id="volumeSlider" blockIncrement="1.0" majorTickUnit="20.0" minorTickCount="19" onMouseReleased="#setVolume" prefHeight="30.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" BorderPane.alignment="CENTER" />
@@ -203,11 +203,21 @@
          </children>
       </VBox>
       <Accordion fx:id="editorAccordion" VBox.vgrow="NEVER" />
-      <HBox maxHeight="20.0" minHeight="20.0" prefHeight="20.0">
+      <HBox cache="true" maxHeight="20.0" minHeight="20.0" prefHeight="20.0">
          <children>
-            <Label text="Current SisScene:" />
-            <Pane HBox.hgrow="ALWAYS" />
-            <Label text="Project Status:" />
+            <Label cache="true" maxHeight="20.0" text="Project Path: " textFill="GREY" />
+            <Label fx:id="projectPathLabel" cache="true" maxHeight="20.0" text="Unknown" textFill="GREY" textOverrun="LEADING_ELLIPSIS">
+               <font>
+                  <Font name="System Italic" size="12.0" />
+               </font>
+            </Label>
+            <Pane cache="true" HBox.hgrow="ALWAYS" />
+            <Label cache="true" maxHeight="20.0" text="Number Of Elements: " textFill="GREY" />
+            <Label fx:id="numberOfElementsLabel" cache="true" maxHeight="20.0" text="Unknown" textFill="GREY">
+               <font>
+                  <Font name="System Italic" size="12.0" />
+               </font>
+            </Label>
          </children>
       </HBox>
   </children>

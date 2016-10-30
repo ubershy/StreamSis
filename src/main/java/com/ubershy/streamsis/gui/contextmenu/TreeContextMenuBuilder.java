@@ -87,6 +87,9 @@ public class TreeContextMenuBuilder {
 				if (!list.isEmpty()) {
 					if (list.contains(cuteNode)) {
 						list.remove(cuteNode);
+						// Initialize whole project to reinitialize any parents that might get
+						// broken.
+						ProjectManager.getProject().init();
 					} else {
 						logger.error("Nothing to remove from list");
 					}
@@ -329,7 +332,7 @@ public class TreeContextMenuBuilder {
 				ObservableList<CuteNode> whereToAddCasted = (ObservableList<CuteNode>) whereToAdd
 						.getChildren();
 				whereToAddCasted.add(cuteNodeContainerToAdd);
-				// Initialize whole project to reinitialize any parents that can be broken.
+				// Initialize whole project to reinitialize any parents that might get broken.
 				ProjectManager.getProject().init();
 			}
 		});

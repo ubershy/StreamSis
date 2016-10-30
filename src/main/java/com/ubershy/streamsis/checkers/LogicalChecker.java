@@ -297,6 +297,7 @@ public class LogicalChecker extends AbstractCuteNode implements Checker {
 
 	@Override
 	public void init() {
+		super.init();
 		elementInfo.setAsReadyAndHealthy();
 		String operatorIsBrokenMessage = whyOperatorCantBeAppliedToCurrentAmountOfCheckers(
 				operator.get());

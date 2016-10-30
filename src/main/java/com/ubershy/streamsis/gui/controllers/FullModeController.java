@@ -77,31 +77,41 @@ import javafx.util.Duration;
 
 //Under construction. Not working. Please unsee.
 public class FullModeController implements Initializable {
+	
+    @FXML
+    private VBox rootNode;
+    @FXML
+    private Menu openRecentMenu;
+    @FXML
+    private Button startStopButton;
+    @FXML
+    private Button showCompactModeButton;
+    @FXML
+    private Button stopAllSoundsButton;
+    @FXML
+    private Slider volumeSlider;
+    @FXML
+    private Label volumeLabel;
+    @FXML
+    private Button loveButton;
+    @FXML
+    private Button testButton;
+    @FXML
+    private VBox notificationPaneContainer;
+    @FXML
+    private VBox editableContentBox;
+    @FXML
+    private GridPane gridPane;
+    @FXML
+    private Accordion editorAccordion;
+    @FXML
+    private Label projectPathLabel;
+    @FXML
+    private Label numberOfElementsLabel;
+	
 	private int sisSceneToRenameIndex = -1;
-	@FXML
-	private VBox editableContentBox;
-	@FXML
-	private Accordion editorAccordion;
-	@FXML
-	private GridPane gridPane;
-	@FXML
-	private Button loveButton; // The most important button. The soul of StreamSis.
 	private NotificationPane notificationPane;
-	@FXML
-	private VBox notificationPaneContainer;
-	@FXML
-	public Menu openRecentMenu;
 	private CuteProject project;
-	@FXML
-	private Node rootNode;
-	@FXML
-	private Button startStopButton;
-	@FXML
-	private Button testButton;
-	@FXML
-	private Label volumeLabel;
-	@FXML
-	private Slider volumeSlider;
 
 	public Node getView() {
 		return rootNode;
@@ -109,6 +119,9 @@ public class FullModeController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
+		projectPathLabel.textProperty().bind(ProjectManager.projectFilePathProperty());
+		numberOfElementsLabel.textProperty()
+				.bind(ProjectManager.initElementsNumberProperty().asString());
 		// Putting editableContentBox into Notification Pane
 		notificationPane = new NotificationPane(editableContentBox);
 //		notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);

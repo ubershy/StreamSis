@@ -343,6 +343,7 @@ public class CuteProject implements Serializable {
 	 */
 	public void init() {
 		logger.info("Initializing Project...");
+		ProjectManager.setCurrentProjectAsInitializing();
 		if (isStarted())
 			stopProject();
 
@@ -369,6 +370,7 @@ public class CuteProject implements Serializable {
 			setPrimarySisSceneName(firstSisSceneName);
 		}
 		logger.info("Project Initialized");
+		ProjectManager.setCurrentProjectAsInitialized();
 	}
 
 	/**
@@ -797,4 +799,5 @@ public class CuteProject implements Serializable {
 		// Finally lets edit ElementInfo
 		element.getElementInfo().setName(newName);
 	}
+
 }

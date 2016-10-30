@@ -150,6 +150,7 @@ public abstract class AbstractRelationToNumberChecker extends AbstractCuteNode
 
 	@Override
 	public void init() {
+		super.init();
 		elementInfo.setAsReadyAndHealthy();
 		if (counter.size() == 0) {
 			elementInfo.setAsBroken("No Counter is assigned to this Checker");

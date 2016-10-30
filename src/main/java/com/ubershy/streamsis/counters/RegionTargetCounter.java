@@ -142,6 +142,7 @@ public class RegionTargetCounter extends AbstractCuteNode implements Counter {
 
 	@Override
 	public void init() {
+		super.init();
 		elementInfo.setAsReadyAndHealthy();
 		coords.initRegion(elementInfo);
 		if (elementInfo.isBroken()) {

@@ -62,6 +62,7 @@ public class TrueCheckerCounter extends AbstractCuteNode implements Counter {
 
 	@Override
 	public void init() {
+		super.init();
 		elementInfo.setAsReadyAndHealthy();
 		if (checkers.size() == 0) {
 			elementInfo.setAsBroken("At least one Checker must be assigned");

@@ -30,12 +30,7 @@ import org.controlsfx.validation.Validator;
 
 import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.Util;
-import com.ubershy.streamsis.actors.Actor;
-import com.ubershy.streamsis.actors.UniversalActor;
 import com.ubershy.streamsis.gui.GUIManager;
-import com.ubershy.streamsis.project.SisScene;
-import com.ubershy.streamsis.project.ProjectManager;
-
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -248,43 +243,6 @@ public final class GUIUtil {
 		Tooltip tp = new Tooltip(tooltip);
 		Tooltip.install(l, tp);
 		return menuItem;
-	}
-
-	/**
-	 * Adds a new empty SisScene with automatically generated name to the current Project.
-	 */
-	public static void addNewSisScene() {
-		String genericName = "New SisScene";
-		String alteredName = genericName;
-		int counter = 0;
-		while (ProjectManager.getProject().getSisSceneByName(alteredName) != null) {
-			counter++;
-			alteredName = String.format("%s(%d)", genericName, counter);
-		}
-		SisScene newSisScene = new SisScene(alteredName, new String[] {});
-		// Initialize SisScene to highlight that it is still not configured
-		newSisScene.init();
-		ProjectManager.getProject().addSisScene(newSisScene);
-		// GUIManager.setSisSceneToRenameIndex(
-		// ProjectManager.getProject().getSisScenes().indexOf(newSisScene));
-	}
-
-	/**
-	 * Adds a new empty Actor with automatically generated name to the current Project.
-	 */
-	public static void addNewActor() {
-		String genericName = "New Actor";
-		String alteredName = genericName;
-		int counter = 0;
-		while (ProjectManager.getProject().getActorByName(alteredName) != null) {
-			counter++;
-			alteredName = String.format("%s(%d)", genericName, counter);
-		}
-		Actor newActor = new UniversalActor(alteredName, 1000, 1000, false, false);
-		// Initialize Actor to highlight that it is still not configured
-		newActor.init();
-		ProjectManager.getProject().addActorToGlobalActors(newActor);
-		ProjectManager.getProject().addExistingActorToCurrentSisScene(newActor);
 	}
 
 	/**

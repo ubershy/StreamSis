@@ -230,6 +230,7 @@ public class RunProgramAction extends AbstractCuteNode implements Action {
 	 */
 	@Override
 	public void init() {
+		super.init();
 		elementInfo.setAsReadyAndHealthy();
 		if (getPath().isEmpty()) {
 			elementInfo.setAsBroken("The path to the program is empty");

@@ -78,6 +78,7 @@ public class SwitchSisSceneAction extends AbstractCuteNode implements Action {
 
 	@Override
 	public void init() {
+		super.init();
 		elementInfo.setAsReadyAndHealthy();
 		if (sisSceneName.get().isEmpty()) {
 			elementInfo.setAsBroken("SisScene name is empty");

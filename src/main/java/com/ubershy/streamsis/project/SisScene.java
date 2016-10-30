@@ -111,6 +111,7 @@ public class SisScene implements CuteElement {
 
 	@Override
 	public void init() {
+		ProjectManager.incrementInitNumberOfElements();
 		elementInfo.setAsReadyAndHealthy();
 		if ("".equals(elementInfo.getName())) {
 			elementInfo.setAsBroken("SisScene's name cannot be empty");

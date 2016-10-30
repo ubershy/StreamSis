@@ -139,6 +139,7 @@ public class RegionChecker extends AbstractCuteNode implements Checker {
 
 	@Override
 	public void init() {
+		super.init();
 		elementInfo.setAsReadyAndHealthy();
 		targetPattern = null;
 		coords.initRegion(elementInfo);

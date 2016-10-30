@@ -121,6 +121,7 @@ public class DelayedActions extends AbstractCuteNode implements Action {
 
 	@Override
 	public void init() {
+		super.init();
 		elementInfo.setAsReadyAndHealthy();
 		if (actions.isEmpty()) {
 			elementInfo.setAsBroken("No Actions are assigned");

@@ -102,6 +102,7 @@ public class VariableChecker extends AbstractCuteNode implements Checker {
 
 	@Override
 	public void init() {
+		super.init();
 		elementInfo.setAsReadyAndHealthy();
 		if (key.get().isEmpty())
 			elementInfo.setAsBroken("Variable name is empty");

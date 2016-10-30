@@ -115,6 +115,7 @@ public class FileCopyAction extends AbstractCuteNode implements Action {
 
 	@Override
 	public void init() {
+		super.init();
 		elementInfo.setAsReadyAndHealthy();
 		// The method below while executing can set the element as broken.
 		if (!checkForEmptinessAndNothingness())

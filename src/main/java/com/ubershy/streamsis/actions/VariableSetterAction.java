@@ -91,6 +91,7 @@ public class VariableSetterAction extends AbstractCuteNode implements Action {
 
 	@Override
 	public void init() {
+		super.init();
 		elementInfo.setAsReadyAndHealthy();
 		if (key.get().isEmpty()) {
 			elementInfo.setAsBroken("Variable name is empty");
