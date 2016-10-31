@@ -203,21 +203,18 @@
          </children>
       </VBox>
       <Accordion fx:id="editorAccordion" VBox.vgrow="NEVER" />
-      <HBox cache="true" maxHeight="20.0" minHeight="20.0" prefHeight="20.0">
+      <ProgressBar fx:id="projectInitProgressBar" maxHeight="6.0" maxWidth="1.7976931348623157E308" minHeight="6.0" prefHeight="6.0" progress="0.75" />
+      <HBox cache="true" maxHeight="23.0" minHeight="23.0" prefHeight="23.0">
          <children>
-            <Label cache="true" maxHeight="20.0" text="Project Path: " textFill="GREY" />
-            <Label fx:id="projectPathLabel" cache="true" maxHeight="20.0" text="Unknown" textFill="GREY" textOverrun="LEADING_ELLIPSIS">
+            <Label cache="true" text="Project Path: " textFill="GREY" />
+            <Label fx:id="projectPathLabel" cache="true" text="Unknown" textFill="GREY" textOverrun="LEADING_ELLIPSIS">
                <font>
                   <Font name="System Italic" size="12.0" />
                </font>
             </Label>
-            <HBox HBox.hgrow="ALWAYS">
-               <children>
-                  <ProgressBar fx:id="projectInitProgressBar" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" progress="0.5" HBox.hgrow="ALWAYS" />
-               </children>
-            </HBox>
-            <Label cache="true" maxHeight="20.0" text="Number Of Elements: " textFill="GREY" />
-            <Label fx:id="numberOfElementsLabel" cache="true" maxHeight="20.0" minWidth="35.0" text="0" textFill="GREY">
+            <HBox HBox.hgrow="ALWAYS" />
+            <Label cache="true" text="Number Of Elements: " textFill="GREY" />
+            <Label fx:id="numberOfElementsLabel" cache="true" minWidth="35.0" text="0" textFill="GREY">
                <font>
                   <Font name="System Italic" size="12.0" />
                </font>

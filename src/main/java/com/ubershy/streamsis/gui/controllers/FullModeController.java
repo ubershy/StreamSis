@@ -187,7 +187,7 @@ public class FullModeController implements Initializable {
 		project.initElementsNumberProperty().addListener((o, oldVal, newVal) -> {
 			Platform.runLater(() -> {
 				int allElements = project.getAllElementsNumber();
-				numberOfElementsLabel.setText(newVal.toString());
+				numberOfElementsLabel.setText(""+newVal.intValue());
 				if (allElements != 0) {
 					if (allElements != newVal.intValue()) {
 						double progress = newVal.doubleValue()/allElements;

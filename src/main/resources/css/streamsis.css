@@ -5,3 +5,13 @@
 .slider .axis .axis-minor-tick-mark {
     -fx-stroke: lightblue;
 }
+
+.progress-bar { 
+	-fx-box-border: deepskyblue; 
+	-fx-accent: #30CBFF;
+}
+
+.progress-bar .bar {
+    -fx-background-insets: 2 0 0 2;
+    -fx-padding: 0.15em;
+}
