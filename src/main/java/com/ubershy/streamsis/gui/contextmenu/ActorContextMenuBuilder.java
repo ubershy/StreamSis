@@ -57,7 +57,7 @@ public final class ActorContextMenuBuilder {
 			ProjectManager.getProject().addActorToGlobalActors(newActor);
 			ProjectManager.getProject().addExistingActorToCurrentSisScene(newActor);
 			// Initialize whole project
-			ProjectManager.getProject().init();
+			ProjectManager.initProjectOutsideJavaFXThread();
 		});
 		cm.getItems().addAll(addActorMenuItem);
 		if (addExistingActorMenuItem.getItems().size() != 0) {
@@ -83,13 +83,13 @@ public final class ActorContextMenuBuilder {
 			Actor actor = actorList.getSelectionModel().getSelectedItem();
 			project.removeActorFromCurrentSisScene(actor);
 			// Initialize whole project
-			ProjectManager.getProject().init();
+			ProjectManager.initProjectOutsideJavaFXThread();
 		});
 		deleteActorGloballyMenuItem.setOnAction((ActionEvent event) -> {
 			Actor actor = actorList.getSelectionModel().getSelectedItem();
 			project.removeActorGlobally(actor);
 			// Initialize whole project
-			ProjectManager.getProject().init();
+			ProjectManager.initProjectOutsideJavaFXThread();
 		});
 		moveUpActorMenuItem.setOnAction((ActionEvent event) -> {
 			Actor actor = actorList.getSelectionModel().getSelectedItem();

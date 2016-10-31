@@ -65,6 +65,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeView;
@@ -108,6 +109,8 @@ public class FullModeController implements Initializable {
     private Label projectPathLabel;
     @FXML
     private Label numberOfElementsLabel;
+    @FXML
+    private ProgressBar projectInitProgressBar;
 	
 	private int sisSceneToRenameIndex = -1;
 	private NotificationPane notificationPane;
@@ -120,8 +123,6 @@ public class FullModeController implements Initializable {
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
 		projectPathLabel.textProperty().bind(ProjectManager.projectFilePathProperty());
-		numberOfElementsLabel.textProperty()
-				.bind(ProjectManager.initElementsNumberProperty().asString());
 		// Putting editableContentBox into Notification Pane
 		notificationPane = new NotificationPane(editableContentBox);
 //		notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
@@ -169,6 +170,34 @@ public class FullModeController implements Initializable {
 
 	private void initializeOnActionsTreeView(TreeView<CuteElement> treeView) {
 		gridPane.add(treeView, 3, 1);
+	}
+	
+	private void initializeStatusBar() {
+		// Set projectInitProgressBar behavior
+		projectInitProgressBar.setOpacity(0.0);
+		project.allElementsNumberProperty().addListener((o, oldVal, newVal) -> {
+			if (newVal.intValue() == 0) {
+				// Counting started, setting indeterminate value for progressbar.
+				Platform.runLater(() -> {
+					projectInitProgressBar.setOpacity(1.0);
+					projectInitProgressBar.setProgress(-1.0);
+				});
+			}
+		});
+		project.initElementsNumberProperty().addListener((o, oldVal, newVal) -> {
+			Platform.runLater(() -> {
+				int allElements = project.getAllElementsNumber();
+				numberOfElementsLabel.setText(newVal.toString());
+				if (allElements != 0) {
+					if (allElements != newVal.intValue()) {
+						double progress = newVal.doubleValue()/allElements;
+						projectInitProgressBar.setProgress(progress);
+					} else {
+						projectInitProgressBar.setOpacity(0.0);
+					}
+				}
+			});
+		});
 	}
 
 	private void initializeOpenRecentMenu() {
@@ -283,19 +312,20 @@ public class FullModeController implements Initializable {
 			// startingAnimation.playFromStart();
 		}
 		project.isStartedProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue) {
-				startStopButton.setText("Stop");
-				// workingAnimation.play();
-				// stoppingAnimation.stop();
-				// startingAnimation.playFromStart();
-			} else {
-				startStopButton.setText("Start");
-				// workingAnimation.pause();
-				// startingAnimation.stop();
-				// stoppingAnimation.playFromStart();
-			}
+			Platform.runLater(() -> {
+				if (newValue) {
+					startStopButton.setText("Stop");
+					// workingAnimation.play();
+					// stoppingAnimation.stop();
+					// startingAnimation.playFromStart();
+				} else {
+					startStopButton.setText("Start");
+					// workingAnimation.pause();
+					// startingAnimation.stop();
+					// stoppingAnimation.playFromStart();
+				}
+			});
 		});
-
 	}
 
 	@FXML
@@ -380,6 +410,7 @@ public class FullModeController implements Initializable {
 			initializeOffActionsTreeView(GUIManager.offActionsTree);
 			initializeEditorPanel(GUIManager.elementEditor);
 			initializeToolBar();
+			initializeStatusBar();
 			initializeOpenRecentMenu();
 		}
 	}

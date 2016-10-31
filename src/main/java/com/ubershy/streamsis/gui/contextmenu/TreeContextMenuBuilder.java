@@ -89,7 +89,7 @@ public class TreeContextMenuBuilder {
 						list.remove(cuteElement);
 						// Initialize whole project to reinitialize any parents that might get
 						// broken.
-						ProjectManager.getProject().init();
+						ProjectManager.initProjectOutsideJavaFXThread();
 					} else {
 						logger.error("Nothing to remove from list");
 					}
@@ -282,7 +282,7 @@ public class TreeContextMenuBuilder {
 							.getChildren();
 					whereToAddCasted.add(elemToAdd);
 					// Initialize whole project, it may highlight unconfigured CuteElement.
-					ProjectManager.getProject().init();
+					ProjectManager.initProjectOutsideJavaFXThread();
 				}
 			});
 			addNewCuteElementMenu.getItems().add(newCuteElementMenuItem);
@@ -335,7 +335,7 @@ public class TreeContextMenuBuilder {
 						.getChildren();
 				whereToAddCasted.add(cuteElementContainerToAdd);
 				// Initialize whole project to reinitialize any parents that might get broken.
-				ProjectManager.getProject().init();
+				ProjectManager.initProjectOutsideJavaFXThread();
 			}
 		});
 		menu.getItems().add(newContainerMenuItem);

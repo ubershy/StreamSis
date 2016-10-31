@@ -98,7 +98,8 @@ public abstract class AbstractCuteElement implements CuteElement {
 	@Override
 	public void init() {
 		elementInfo.setAsReadyAndHealthy();
-		ProjectManager.incrementInitNumberOfElements();
+		if (ProjectManager.getProject() != null)
+			ProjectManager.getProject().incrementInitNumberOfElements();
 		if (getAddableChildrenTypeInfo() != null) { // Null means no children can be added by user.
 			int childrenCount = getChildren().size();
 			String childrenTypeName = null;

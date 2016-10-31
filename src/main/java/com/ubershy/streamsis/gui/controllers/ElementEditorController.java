@@ -308,22 +308,24 @@ public class ElementEditorController implements Initializable {
 				}
 			}
 		});
-		
-		ProjectManager.initializingProperty().addListener((o, oldVal, newVal) -> {
-			// After structure changes are made to the project via user in Structure View,
-			// the project initializes.
-			// It's better to reconnect CuteElement, because if the user will hit Apply button,
-			// the structure changes will be discarded. Also if CuteElement will get broken because
-			// of structure changes, without reconnecting to CuteElement the Element Editor panel
-			// will continue to show that CuteElement is still healthy.
-			if (!newVal) {// Finished initializing
-				// Let's reconnect to CuteElement
-				if (root.isExpanded()) {
-					connectToCuteElement(getCurrentElement());
+		ProjectManager.getProject().initializingProperty().addListener((o, oldVal, newVal) -> {
+			Platform.runLater(() -> {
+				// After structure changes are made to the project via user in Structure View,
+				// the project initializes.
+				// It's better to reconnect CuteElement, because if the user will hit Apply button,
+				// the structure changes will be discarded. Also if CuteElement will get broken
+				// because
+				// of structure changes, without reconnecting to CuteElement the Element Editor
+				// panel
+				// will continue to show that CuteElement is still healthy.
+				if (!newVal) {// Finished initializing
+					// Let's reconnect to CuteElement
+					if (root.isExpanded()) {
+						connectToCuteElement(getCurrentElement());
+					}
 				}
-			}
+			});
 		});
-		
 	}
 	
 	private void unbindTextsOfButtons() {
@@ -485,7 +487,7 @@ public class ElementEditorController implements Initializable {
 		}
 		// Initialize whole project, it may fix parents and it may highlight problems in this
 		// CuteElement.
-		ProjectManager.getProject().init();
+		ProjectManager.initProjectOutsideJavaFXThread();
 		connectToCuteElement(getCurrentElement());
 	}
 	

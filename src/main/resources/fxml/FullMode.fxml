@@ -211,9 +211,13 @@
                   <Font name="System Italic" size="12.0" />
                </font>
             </Label>
-            <Pane cache="true" HBox.hgrow="ALWAYS" />
+            <HBox HBox.hgrow="ALWAYS">
+               <children>
+                  <ProgressBar fx:id="projectInitProgressBar" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" progress="0.5" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
             <Label cache="true" maxHeight="20.0" text="Number Of Elements: " textFill="GREY" />
-            <Label fx:id="numberOfElementsLabel" cache="true" maxHeight="20.0" text="Unknown" textFill="GREY">
+            <Label fx:id="numberOfElementsLabel" cache="true" maxHeight="20.0" minWidth="35.0" text="0" textFill="GREY">
                <font>
                   <Font name="System Italic" size="12.0" />
                </font>

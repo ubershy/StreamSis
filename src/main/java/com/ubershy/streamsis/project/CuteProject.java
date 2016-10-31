@@ -31,7 +31,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.actors.Actor;
 
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -105,6 +110,32 @@ public class CuteProject implements Serializable {
 	/** The name of CuteProject */
 	@JsonIgnore
 	private StringProperty name = new SimpleStringProperty();
+	
+	/**
+	 * The current CuteProject's initializing (successfully or not) {@link CuteElement}. When there
+	 * are no mistakes in the code, after {@link CuteProject#init()} this number should equal to the
+	 * quantity of CuteElements in the whole project.
+	 */
+	private final ReadOnlyIntegerWrapper initElementsNumber = new ReadOnlyIntegerWrapper(0);
+	public ReadOnlyIntegerProperty initElementsNumberProperty() {
+		return initElementsNumber.getReadOnlyProperty();
+	}
+	public int getInitElementsNumber() {return initElementsNumber.get();}
+	
+	/**
+	 * The current CuteProject's number of {@link CuteElement}s.
+	 */
+	private final ReadOnlyIntegerWrapper allElementsNumber = new ReadOnlyIntegerWrapper(0);
+	public ReadOnlyIntegerProperty allElementsNumberProperty() {
+		return allElementsNumber.getReadOnlyProperty();
+	}
+	public int getAllElementsNumber() {return allElementsNumber.get();}
+	
+	/** Tells if current CuteProject is currently initializing. */
+	private final ReadOnlyBooleanWrapper initializing = new ReadOnlyBooleanWrapper(false);
+	public ReadOnlyBooleanProperty initializingProperty() {
+		return initializing.getReadOnlyProperty();
+	}
 
 	/**
 	 * Instantiates a new CuteProject with empty {@link #globalActors Global Actors} and
@@ -342,10 +373,11 @@ public class CuteProject implements Serializable {
 	 * Initializes the CuteProject. This will also initialize all of it's Actors and SisScenes.
 	 */
 	public void init() {
+		setStartedCountingElements();
 		int count = countElementsInProject();
-		ProjectManager.setAllElementsNumber(count);
+		setFinishedCountingElements(count);
 		logger.info("Initializing Project...");
-		ProjectManager.setCurrentProjectAsInitializing();
+		setProjectAsInitializing();
 		if (isStarted())
 			stopProject();
 
@@ -372,7 +404,7 @@ public class CuteProject implements Serializable {
 			setPrimarySisSceneName(firstSisSceneName);
 		}
 		logger.info("Project Initialized");
-		ProjectManager.setCurrentProjectAsInitialized();
+		setProjectAsInitialized();
 	}
 
 	/**
@@ -639,7 +671,11 @@ public class CuteProject implements Serializable {
 			if (!sisScenes.isEmpty()) {
 				if (!globalActors.isEmpty()) {
 					// Lets initialize everything before starting
-					init();
+					if (Platform.isFxApplicationThread()) {
+						ProjectManager.initProjectOutsideJavaFXThread();
+					} else {
+						init();
+					}
 					isStarted.set(true);
 					logger.info("Project '" + getName() + "' started");
 					switchSisSceneTo(getPrimarySisSceneName());
@@ -821,6 +857,45 @@ public class CuteProject implements Serializable {
 		}
 		// Finally lets edit ElementInfo
 		element.getElementInfo().setName(newName);
+	}
+	
+	/**
+	 * Increase the quantity of initialized (successful or not) {@link CuteElement}s during whole
+	 * {@link CuteProject#init()}.
+	 */
+	public void incrementInitNumberOfElements() {
+		if (initializing.get()) {
+			initElementsNumber.set(initElementsNumber.get() + 1);
+		}
+	}
+
+	/**
+	 * Sets the current {@link CuteProject} as currently initializing.
+	 */
+	private void setProjectAsInitializing() {
+		initializing.set(true);
+		initElementsNumber.set(0);
+	}
+
+	/**
+	 * Sets the current {@link CuteProject} as initialized.
+	 */
+	private void setProjectAsInitialized() {
+		initializing.set(false);
+		int all = allElementsNumber.get();
+		int inited = initElementsNumber.get();
+		if (inited != all) {
+			throw new RuntimeException("The number of initialized Elements(" + inited + ") doesn't "
+					+ "match with the " + "number of all Elements(" + all + ") in the Project.");
+		}
+	}
+	
+	private void setStartedCountingElements() {
+		allElementsNumber.set(0);
+	}
+
+	private void setFinishedCountingElements(int count) {
+		allElementsNumber.set(count);
 	}
 
 }

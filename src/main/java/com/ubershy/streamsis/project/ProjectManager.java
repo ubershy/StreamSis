@@ -26,12 +26,10 @@ import org.slf4j.LoggerFactory;
 import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.StreamSis;
 
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.property.ReadOnlyIntegerWrapper;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.concurrent.Task;
 
 /**
  * This class manages current StreamSis's CuteProject. <br>
@@ -54,42 +52,10 @@ public final class ProjectManager {
 	}
 	public static String getProjectFilePath() {return projectFilePath.get();}
 	public static void setProjectFilePath(String path) {projectFilePath.set(path);}
-	
-	/**
-	 * The current {@link CuteProject}'s number of initialized (successfully or not)
-	 * {@link CuteElement}s. When there are no mistakes in the code, after
-	 * {@link CuteProject#init()} this number should equal to the quantity of CuteElements in the
-	 * whole project.
-	 */
-	private static final ReadOnlyIntegerWrapper initElementsNumber = new ReadOnlyIntegerWrapper(0);
-	public static ReadOnlyIntegerProperty initElementsNumberProperty() {
-		return initElementsNumber.getReadOnlyProperty();
-	}
-	public static int getInitElementsNumber() {return initElementsNumber.get();}
-	
-	/**
-	 * The current {@link CuteProject}'s number of {@link CuteElement}s.
-	 */
-	private static final ReadOnlyIntegerWrapper allElementsNumber = new ReadOnlyIntegerWrapper(0);
-	public static ReadOnlyIntegerProperty allElementsNumberProperty() {
-		return allElementsNumber.getReadOnlyProperty();
-	}
-	public static int getAllElementsNumber() {return allElementsNumber.get();}
-	protected static void setAllElementsNumber(int count) {
-		allElementsNumber.set(count);
-	}
-	
-	/** Tells if current {@link CuteProject} is currently initializing. */
-	private static final ReadOnlyBooleanWrapper initializing = new ReadOnlyBooleanWrapper(false);
-	public static ReadOnlyBooleanProperty initializingProperty() {
-		return initializing.getReadOnlyProperty();
-	}
 
 	/** The current CuteProject. */
 	private static CuteProject currentProject;
-	public static CuteProject getProject() {
-		return currentProject;
-	}
+	public static CuteProject getProject() {return currentProject;}
 
 	/**
 	 * Sets the current CuteProject and initializes it.
@@ -106,7 +72,11 @@ public final class ProjectManager {
 		if (path != null && !path.isEmpty()) {
 			CuteConfig.setStringValue(CuteConfig.CUTE, "LastProjectLocation", path);
 		}
-		currentProject.init();
+		if (Platform.isFxApplicationThread()) {
+			ProjectManager.initProjectOutsideJavaFXThread();
+		} else {
+			currentProject.init();
+		}
 	}
 
 	/**
@@ -143,35 +113,16 @@ public final class ProjectManager {
 		return emptyProject;
 	}
 
-	/**
-	 * Increase the quantity of initialized (successful or not) {@link CuteElement}s during whole
-	 * {@link CuteProject#init()}.
-	 */
-	public static void incrementInitNumberOfElements() {
-		if (initializing.get()) {
-			initElementsNumber.set(initElementsNumber.get() + 1);
-		}
-	}
-
-	/**
-	 * Sets the current {@link CuteProject} as currently initializing.
-	 */
-	public static void setCurrentProjectAsInitializing() {
-		initializing.set(true);
-		initElementsNumber.set(0);
-	}
-
-	/**
-	 * Sets the current {@link CuteProject} as initialized.
-	 */
-	public static void setCurrentProjectAsInitialized() {
-		initializing.set(false);
-		int all = allElementsNumber.get();
-		int inited = initElementsNumber.get();
-		if (inited != all) {
-			throw new RuntimeException("The number of initialized Elements(" + inited + ") doesn't "
-					+ "match with the " + "number of all Elements(" + all + ") in the Project.");
-		}
+	public static void initProjectOutsideJavaFXThread() {
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				currentProject.init();
+				return null;
+			}
+		};
+		Thread th = new Thread(task);
+		th.start();
 	}
 
 }

@@ -64,7 +64,7 @@ public class SisSceneContextMenuBuilder {
 		newSisScene.init();
 		ProjectManager.getProject().addSisScene(newSisScene);
 		// Initialize whole project
-		ProjectManager.getProject().init();
+		ProjectManager.initProjectOutsideJavaFXThread();
 	}
 
 	public static ContextMenu createSisSceneItemContextMenu(PossibleMoves possibleMoves) {
@@ -96,7 +96,7 @@ public class SisSceneContextMenuBuilder {
 			SisScene scene = sisSceneList.getSelectionModel().getSelectedItem();
 			project.removeSisScene(scene);
 			// Initialize whole project
-			ProjectManager.getProject().init();
+			ProjectManager.initProjectOutsideJavaFXThread();
 		});
 		deleteSisSceneWithActorsMenuItem.setOnAction((ActionEvent event) -> {
 			SisScene scene = sisSceneList.getSelectionModel().getSelectedItem();
@@ -135,7 +135,7 @@ public class SisSceneContextMenuBuilder {
 			if (result.get() == ButtonType.OK) {
 				project.removeSisSceneWithActors(scene);
 				// Initialize whole project
-				ProjectManager.getProject().init();
+				ProjectManager.initProjectOutsideJavaFXThread();
 			}
 		});
 		setPrimarySisSceneMenuItem.setOnAction((ActionEvent event) -> {
