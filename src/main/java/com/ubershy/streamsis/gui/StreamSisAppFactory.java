@@ -55,6 +55,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -268,12 +269,12 @@ public class StreamSisAppFactory {
 	 *            the {@link CuteProject}
 	 * @return the {@link ListView}
 	 */
-	@SuppressWarnings("unused")
 	public static ListView<Actor> buildActorListView(CuteProject project) {
 		ListView<Actor> actorList = new ListView<Actor>();
 		// There are some problems with editable list(with ability to rename items)... I can't
 		// handle them.
 		actorList.setEditable(false);
+		actorList.setPlaceholder(new Label("Let's add some Actors!"));
 		if (project != null) {
 			actorList.setCellFactory(view -> new ActorCell());
 			// Set initial list. We don't set items directly to avoid ObservableList binding.
@@ -283,6 +284,7 @@ public class StreamSisAppFactory {
 			}
 			ActorListContextMenuManager contextMenuManager = new ActorListContextMenuManager(
 					actorList);
+			contextMenuManager.startManaging();
 			// Subscribe for changes
 			project.getCurrentActors()
 					.addListener((ListChangeListener.Change<? extends Actor> c) -> {

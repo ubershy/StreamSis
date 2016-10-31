@@ -28,7 +28,6 @@ public class ActorListContextMenuManager {
 	
 	public ActorListContextMenuManager(ListView<Actor> listView) {
 		this.listView = listView;
-		startManaging();
 	}
 	
 	public void startManaging() {
