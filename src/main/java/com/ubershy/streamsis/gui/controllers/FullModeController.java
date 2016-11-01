@@ -518,7 +518,7 @@ public class FullModeController implements Initializable {
 		} else {
 			if (sisSceneToRenameIndex == -1) // Means user is not editing cell
 				try {
-					project.startProject();
+					ProjectManager.startProjectOutsideJavaFXThread();
 				} catch (RuntimeException e) {
 					Alert alert = new Alert(AlertType.ERROR);
 					GUIUtil.cutifyAlert(alert);

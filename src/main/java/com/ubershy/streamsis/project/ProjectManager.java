@@ -125,4 +125,16 @@ public final class ProjectManager {
 		th.start();
 	}
 
+	public static void startProjectOutsideJavaFXThread() {
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				currentProject.startProject();
+				return null;
+			}
+		};
+		Thread th = new Thread(task);
+		th.start();
+	}
+
 }

@@ -127,7 +127,7 @@ public class CompactModeController implements Initializable {
 				project.stopProject();
 			} else {
 				try {
-					project.startProject();
+					ProjectManager.startProjectOutsideJavaFXThread();
 				} catch (RuntimeException e) {
 					Alert alert = new Alert(AlertType.ERROR);
 					GUIUtil.cutifyAlert(alert);

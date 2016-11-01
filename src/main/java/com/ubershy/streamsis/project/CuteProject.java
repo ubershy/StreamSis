@@ -31,7 +31,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.actors.Actor;
 
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -671,11 +670,7 @@ public class CuteProject implements Serializable {
 			if (!sisScenes.isEmpty()) {
 				if (!globalActors.isEmpty()) {
 					// Lets initialize everything before starting
-					if (Platform.isFxApplicationThread()) {
-						ProjectManager.initProjectOutsideJavaFXThread();
-					} else {
-						init();
-					}
+					init();
 					isStarted.set(true);
 					logger.info("Project '" + getName() + "' started");
 					switchSisSceneTo(getPrimarySisSceneName());
