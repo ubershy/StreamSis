@@ -198,15 +198,6 @@ public class ElementEditorController implements Initializable {
 	}
 
 	private void initializeAllListeners() {
-		currentElement
-				.addListener((ChangeListener<CuteElement>) (observable, oldValue, newValue) -> {
-					if (!propertiesPane.getContent().equals(propsWithNameController.getView())) {
-						propertiesPane.setContent(propsWithNameController.getView());
-					}
-					if (root.isExpanded()) {
-						connectToCuteElement(newValue);
-					}
-				});
 		root.expandedProperty()
 				.addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 					if (newValue) {
@@ -584,6 +575,12 @@ public class ElementEditorController implements Initializable {
 	
 	public void setCurrentElement(CuteElement element) {
 		currentElement.set(element);
+		if (!propertiesPane.getContent().equals(propsWithNameController.getView())) {
+			propertiesPane.setContent(propsWithNameController.getView());
+		}
+		if (root.isExpanded()) {
+			connectToCuteElement(element);
+		}
 	}
 	
 	private CuteElement getCurrentElement() {
