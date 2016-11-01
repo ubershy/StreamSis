@@ -45,12 +45,10 @@ import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
 
 public final class GUIManager {
+	static final Logger logger = LoggerFactory.getLogger(GUIManager.class);
 	public static ListView<Actor> actorList;
 	public static TreeView<CuteElement> checkerTree;
 	public static ListView<SisScene> sisSceneList;
-	private static Actor lastSelectedActor;
-
-	static final Logger logger = LoggerFactory.getLogger(GUIManager.class);
 	public static MainController mainController;
 	private static Scene mainScene;
 	public static TreeView<CuteElement> offActionsTree;
@@ -63,8 +61,6 @@ public final class GUIManager {
 	// First method to call
 	public static void buildGui(CuteProject project) {
 		logger.debug("GUI. Initializing...");
-
-		clearLocalProjectSpecificVariables();
 
 		mainController = StreamSisAppFactory.buildMainController();
 		CompactModeController compactModeController = StreamSisAppFactory
@@ -95,10 +91,6 @@ public final class GUIManager {
 		mainController.showLastMode();
 	}
 
-	private static void clearLocalProjectSpecificVariables() {
-		setLastSelectedActor(null);
-	}
-
 	public static void closeApplicatonSafely() {
 		if (primaryStage != null) {
 			GUIUtil.saveCurrentModeWindowStateAndEverything();
@@ -113,10 +105,6 @@ public final class GUIManager {
 		CuteProject project = ProjectManager.createAndSetNewProject();
 		GUIUtil.saveCurrentModeWindowStateAndEverything();
 		buildGui(project);
-	}
-
-	public static Actor getLastSelectedActor() {
-		return lastSelectedActor;
 	}
 
 	public static Scene getMainScene() {
@@ -158,10 +146,6 @@ public final class GUIManager {
 		}
 		GUIUtil.saveCurrentModeWindowStateAndEverything();
 		buildGui(project);
-	}
-
-	public static void setLastSelectedActor(Actor lastSelectedActor) {
-		GUIManager.lastSelectedActor = lastSelectedActor;
 	}
 
 	public static void setPrimaryStage(Stage mainStage) {

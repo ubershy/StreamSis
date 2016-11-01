@@ -18,6 +18,7 @@
 package com.ubershy.streamsis.gui;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -285,6 +286,7 @@ public class StreamSisAppFactory {
 			ActorListContextMenuManager contextMenuManager = new ActorListContextMenuManager(
 					actorList);
 			contextMenuManager.startManaging();
+			AtomicReference<Actor> lastSelectedActor = new AtomicReference<Actor>(null);
 			// Subscribe for changes
 			project.getCurrentActors()
 					.addListener((ListChangeListener.Change<? extends Actor> c) -> {
@@ -294,7 +296,7 @@ public class StreamSisAppFactory {
 							actorList.getItems().setAll(list);
 							// Lets try to select the last selected actor
 							if (actorList.getItems().size() != 0) {
-								Actor actorToSelect = GUIManager.getLastSelectedActor();
+								Actor actorToSelect = lastSelectedActor.get();
 								if (actorToSelect != null) {
 									int indexToSelect = actorList.getItems().indexOf(actorToSelect);
 									if (indexToSelect != -1) {
@@ -311,7 +313,7 @@ public class StreamSisAppFactory {
 			actorList.getSelectionModel().selectedItemProperty()
 					.addListener((ChangeListener<Actor>) (observable, oldValue, newValue) -> {
 						if (newValue != null) {
-							GUIManager.setLastSelectedActor(newValue);
+							lastSelectedActor.set(newValue);
 						}
 					});
 			actorList.getFocusModel().focusedItemProperty()
