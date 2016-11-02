@@ -116,7 +116,7 @@ public class CompactModeController implements Initializable {
 
 	@FXML
 	public void showFullMode() {
-		GUIManager.mainController.showFullMode();
+		GUIManager.mainController.useFullMode();
 	}
 
 	@FXML

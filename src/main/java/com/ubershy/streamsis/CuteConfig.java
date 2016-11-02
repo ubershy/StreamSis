@@ -67,7 +67,7 @@ public final class CuteConfig {
 	public final static String CUTE = "StreamSis";
 
 	/** The name of the GUI settings section in {@link Config} for {@link StreamSis}'s */
-	public final static String GUI = "UserGui";
+	public final static String USERGUI = "UserGUI";
 
 	/**
 	 * The name of the utility GUI settings section in {@link Config} for {@link StreamSis}'s <br>

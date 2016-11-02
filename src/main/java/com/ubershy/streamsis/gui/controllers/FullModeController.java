@@ -49,8 +49,6 @@ import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -74,6 +72,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.stage.Window;
 import javafx.util.Duration;
 
 //Under construction. Not working. Please unsee.
@@ -93,6 +92,10 @@ public class FullModeController implements Initializable {
     private Slider volumeSlider;
     @FXML
     private Label volumeLabel;
+    @FXML
+    private Slider opacitySlider;
+    @FXML
+    private Label opacityLabel;
     @FXML
     private Button loveButton;
     @FXML
@@ -236,11 +239,22 @@ public class FullModeController implements Initializable {
 		double initialVolume = CuteConfig.getDouble(CuteConfig.CUTE, "GlobalVolume") * 100;
 		volumeLabel.setText(String.format("Global Volume: %.0f", initialVolume) + "%");
 		volumeSlider.setValue(initialVolume);
-		volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
-			public void changed(ObservableValue<? extends Number> ov, Number old_val,
-					Number new_val) {
-				volumeLabel.setText(String.format("Global Volume: %.0f", new_val) + "%");
-			}
+		volumeSlider.valueProperty().addListener((o, oldVal, newVal) -> {
+			volumeLabel.setText(String.format("Global Volume: %.0f", newVal) + "%");
+		});
+		
+		// Opacity slider and label
+		double initialOpacity = CuteConfig.getDouble(CuteConfig.USERGUI, "MainWindowOpacity") * 100;
+		if (initialOpacity < 10.0) {
+			initialOpacity = 10.0;
+		}
+		if (initialOpacity > 100.0) {
+			initialOpacity = 100.0;
+		}
+		opacitySlider.setValue(initialOpacity);
+		setOpacity(initialOpacity);
+		opacitySlider.valueProperty().addListener((o, oldVal, newVal) -> {
+			setOpacity(newVal.doubleValue());
 		});
 
 		// Start/Stop button
@@ -327,6 +341,13 @@ public class FullModeController implements Initializable {
 				}
 			});
 		});
+	}
+	
+	public void setOpacity(double opacity) {
+		opacityLabel.setText(String.format("Opacity: %.0f", opacity) + "%");
+		Window window = getView().getScene().getWindow();
+		window.setOpacity(opacity / 100.0);
+		// See also setOpacityToConfig() method which is invoked on mouse release.
 	}
 
 	@FXML
@@ -503,13 +524,19 @@ public class FullModeController implements Initializable {
 //	}
 
 	@FXML
-	private void setVolume() {
-		CuteConfig.setDoubleValue(CuteConfig.CUTE, "GlobalVolume", volumeSlider.getValue() / 100);
+	private void setVolumeToConfig() { // Is invoked on mouse release on slider.
+		CuteConfig.setDoubleValue(CuteConfig.CUTE, "GlobalVolume", volumeSlider.getValue() / 100.0);
+	}
+
+	@FXML
+	private void setOpacityToConfig() { // Is invoked on mouse release on slider.
+		CuteConfig.setDoubleValue(CuteConfig.USERGUI, "MainWindowOpacity",
+				opacitySlider.getValue() / 100.0);
 	}
 
 	@FXML
 	private void showCompactMode() {
-		GUIManager.mainController.showCompactMode();
+		GUIManager.mainController.useCompactMode();
 	}
 
 	@FXML

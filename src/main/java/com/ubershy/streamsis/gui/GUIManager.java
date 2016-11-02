@@ -58,14 +58,27 @@ public final class GUIManager {
 	private static NotificationPane fullModeNotificationPane;
 	private static NotificationPane compactModeNotificationPane;
 
-	// First method to call
 	public static void buildGui(CuteProject project) {
+		if (primaryStage == null) {
+			throw new RuntimeException("You need to setPrimaryStage() first.");
+		}
 		logger.debug("GUI. Initializing...");
 
 		mainController = StreamSisAppFactory.buildMainController();
 		CompactModeController compactModeController = StreamSisAppFactory
 				.buildCompactModeController();
 		FullModeController fullModeController = StreamSisAppFactory.buildFullModeController();
+
+		// Size will be overridden later by showLastMode()
+		mainScene = new Scene((Parent) mainController.getView(), 777, 777);
+
+		// mainScene.getStylesheets().add("/com/ubershy/streamsis/gui/css/progressIndicators.css");
+		primaryStage.setScene(mainScene);
+		
+		mainController.init(primaryStage, fullModeController.getView(),
+				compactModeController.getView());
+
+		mainController.useLastMode();
 
 		sisSceneList = StreamSisAppFactory.buildSisSceneListView(project);
 		actorList = StreamSisAppFactory.buildActorListView(project);
@@ -79,16 +92,6 @@ public final class GUIManager {
 
 		fullModeController.bindToProject(project);
 		compactModeController.bindToProject(project);
-
-		// Size will be overridden later by showLastMode()
-		mainScene = new Scene((Parent) mainController.getView(), 777, 777);
-
-		// mainScene.getStylesheets().add("/com/ubershy/streamsis/gui/css/progressIndicators.css");
-		primaryStage.setScene(mainScene);
-
-		mainController.init(primaryStage, fullModeController.getView(),
-				compactModeController.getView());
-		mainController.showLastMode();
 	}
 
 	// GUI classes must use this method

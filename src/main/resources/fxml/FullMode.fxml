@@ -113,10 +113,18 @@
             <Button fx:id="stopAllSoundsButton" alignment="CENTER" disable="true" layoutX="222.0" layoutY="10.0" mnemonicParsing="false" onAction="#showCompactMode" prefHeight="50.0" prefWidth="70.0" text="Stop All Sounds" textAlignment="CENTER" wrapText="true" />
             <BorderPane prefHeight="50.0" prefWidth="120.0">
                <center>
-                  <Slider fx:id="volumeSlider" blockIncrement="1.0" majorTickUnit="20.0" minorTickCount="19" onMouseReleased="#setVolume" prefHeight="30.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" BorderPane.alignment="CENTER" />
+                  <Slider fx:id="volumeSlider" blockIncrement="1.0" majorTickUnit="20.0" onMouseReleased="#setVolumeToConfig" prefHeight="30.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" BorderPane.alignment="CENTER" />
                </center>
                <top>
                   <Label fx:id="volumeLabel" text="Global Volume" BorderPane.alignment="CENTER" />
+               </top>
+            </BorderPane>
+            <BorderPane prefHeight="50.0" prefWidth="100.0">
+               <center>
+                  <Slider fx:id="opacitySlider" blockIncrement="20.0" majorTickUnit="20.0" min="20.0" onMouseReleased="#setOpacityToConfig" prefHeight="30.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="100.0" BorderPane.alignment="CENTER" />
+               </center>
+               <top>
+                  <Label fx:id="opacityLabel" text="Opacity" BorderPane.alignment="CENTER" />
                </top>
             </BorderPane>
             <Pane HBox.hgrow="ALWAYS" />

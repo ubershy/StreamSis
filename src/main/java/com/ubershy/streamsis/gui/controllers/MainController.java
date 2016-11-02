@@ -66,24 +66,24 @@ public class MainController implements Initializable {
 		this.compactModeView = compactView;
 	}
 
-	public void showLastMode() {
+	public void useLastMode() {
 		contentPane.getChildren().clear();
 		String lastMode = CuteConfig.getString(CuteConfig.UTILGUI, "LastMode");
 		switch (lastMode) {
 		case "Compact":
 			GUIUtil.positionWindowBasedOnCurrentMode(defaultFullModeWidth, defaultFullModeHeight);
-			showCompactMode();
+			useCompactMode();
 			break;
 		case "Full":
 		default:
 			GUIUtil.positionWindowBasedOnCurrentMode(defaultCompactModeWidth,
 					defaultCompactModeHeight);
-			showFullMode();
+			useFullMode();
 			break;
 		}
 	}
 
-	public void showFullMode() {
+	public void useFullMode() {
 		currentModeIsFull = true;
 		// Firstly we will save the state of the window of the previous mode
 		GUIUtil.saveCurrentModeWindowStateAndEverything();
@@ -104,7 +104,7 @@ public class MainController implements Initializable {
 		AnchorPane.setBottomAnchor(view, 0.0);
 	}
 
-	public void showCompactMode() {
+	public void useCompactMode() {
 		currentModeIsFull = false;
 		// Firstly we will save the state of the window of the previous mode
 		GUIUtil.saveCurrentModeWindowStateAndEverything();
