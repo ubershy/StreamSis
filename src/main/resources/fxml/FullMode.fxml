@@ -77,11 +77,8 @@
         <Menu mnemonicParsing="false" text="View">
           <items>
             <MenuItem disable="true" mnemonicParsing="false" text="Compact Mode" />
-                  <MenuItem disable="true" mnemonicParsing="false" text="Variables">
-                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                     </accelerator></MenuItem>
-                  <MenuItem disable="true" mnemonicParsing="false" text="Global Actors" />
+                  <MenuItem disable="true" mnemonicParsing="false" text="Variables" />
+                  <MenuItem disable="true" mnemonicParsing="false" text="All Actors" />
           </items>
         </Menu>
             <Menu mnemonicParsing="false" text="Settings">
@@ -106,12 +103,11 @@
          <items>
             <Button fx:id="startStopButton" alignment="CENTER" mnemonicParsing="false" onAction="#startStopProject" prefHeight="50.0" prefWidth="50.0" text="Start" textAlignment="CENTER" />
             <Separator orientation="VERTICAL" prefHeight="50.0" />
-            <Button alignment="CENTER" disable="true" layoutX="74.0" layoutY="10.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="70.0" text="Global Actors" textAlignment="CENTER" wrapText="true" />
-            <Button alignment="CENTER" disable="true" mnemonicParsing="false" prefHeight="50.0" prefWidth="70.0" text="Current Variables" textAlignment="CENTER" wrapText="true" />
-            <Button fx:id="showCompactModeButton" alignment="CENTER" mnemonicParsing="false" onAction="#showCompactMode" prefHeight="50.0" prefWidth="70.0" text="Compact Mode" textAlignment="CENTER" wrapText="true" />
+            <Button alignment="CENTER" disable="true" layoutX="74.0" layoutY="10.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" text="All Actors" textAlignment="CENTER" wrapText="true" />
+            <Button alignment="CENTER" disable="true" mnemonicParsing="false" prefHeight="50.0" prefWidth="65.0" text="All Variables" textAlignment="CENTER" wrapText="true" />
             <Separator layoutX="276.0" layoutY="10.0" orientation="VERTICAL" prefHeight="50.0" />
-            <Button fx:id="stopAllSoundsButton" alignment="CENTER" disable="true" layoutX="222.0" layoutY="10.0" mnemonicParsing="false" onAction="#showCompactMode" prefHeight="50.0" prefWidth="70.0" text="Stop All Sounds" textAlignment="CENTER" wrapText="true" />
-            <BorderPane prefHeight="50.0" prefWidth="120.0">
+            <Button fx:id="stopAllSoundsButton" alignment="CENTER" disable="true" layoutX="222.0" layoutY="10.0" mnemonicParsing="false" onAction="#showCompactMode" prefHeight="50.0" prefWidth="60.0" text="Stop All Sounds" textAlignment="CENTER" wrapText="true" />
+            <BorderPane prefHeight="50.0" prefWidth="115.0">
                <center>
                   <Slider fx:id="volumeSlider" blockIncrement="1.0" majorTickUnit="20.0" onMouseReleased="#setVolumeToConfig" prefHeight="30.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" BorderPane.alignment="CENTER" />
                </center>
@@ -119,16 +115,18 @@
                   <Label fx:id="volumeLabel" text="Global Volume" BorderPane.alignment="CENTER" />
                </top>
             </BorderPane>
-            <BorderPane prefHeight="50.0" prefWidth="100.0">
+            <Separator orientation="VERTICAL" prefHeight="50.0" />
+            <Button fx:id="showCompactModeButton" alignment="CENTER" mnemonicParsing="false" onAction="#showCompactMode" prefHeight="50.0" prefWidth="65.0" text="Compact Mode" textAlignment="CENTER" wrapText="true" />
+            <BorderPane prefHeight="50.0" prefWidth="90.0">
                <center>
-                  <Slider fx:id="opacitySlider" blockIncrement="20.0" majorTickUnit="20.0" min="20.0" onMouseReleased="#setOpacityToConfig" prefHeight="30.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="100.0" BorderPane.alignment="CENTER" />
+                  <Slider fx:id="opacitySlider" blockIncrement="20.0" majorTickUnit="20.0" min="20.0" minorTickCount="1" onMouseReleased="#setOpacityToConfig" prefHeight="30.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="100.0" BorderPane.alignment="CENTER" />
                </center>
                <top>
                   <Label fx:id="opacityLabel" text="Opacity" BorderPane.alignment="CENTER" />
                </top>
             </BorderPane>
             <Pane HBox.hgrow="ALWAYS" />
-            <BorderPane prefHeight="50.0" prefWidth="120.0">
+            <BorderPane prefHeight="50.0" prefWidth="110.0">
                <bottom>
                   <Label text="Status" BorderPane.alignment="CENTER">
                      <padding>
@@ -148,7 +146,6 @@
                </top>
             </BorderPane>
             <Separator orientation="VERTICAL" prefHeight="50.0" />
-            <Button alignment="CENTER" disable="true" mnemonicParsing="false" prefHeight="50.0" text="Settings" textAlignment="CENTER" wrapText="true" />
             <Button fx:id="loveButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#makeSomeLove" prefHeight="50.0" prefWidth="50.0" text="Love" textAlignment="CENTER" wrapText="true">
                <graphic>
                   <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" prefHeight="50.0" prefWidth="50.0" text="♥" textAlignment="CENTER" textFill="#ff69b4">

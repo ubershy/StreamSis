@@ -245,8 +245,8 @@ public class FullModeController implements Initializable {
 		
 		// Opacity slider and label
 		double initialOpacity = CuteConfig.getDouble(CuteConfig.USERGUI, "MainWindowOpacity") * 100;
-		if (initialOpacity < 10.0) {
-			initialOpacity = 10.0;
+		if (initialOpacity < 20.0) {
+			initialOpacity = 20.0;
 		}
 		if (initialOpacity > 100.0) {
 			initialOpacity = 100.0;
