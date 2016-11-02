@@ -188,8 +188,7 @@ public class UniversalActor extends AbstractActor implements Actor {
 
 	@Override
 	public void init() {
-		elementInfo.setAsReadyAndHealthy();
-		ProjectManager.getProject().incrementInitNumberOfElements();
+		initWithoutChildrenStuff();
 		if (elementInfo.getName().isEmpty()) {
 			elementInfo.setAsBroken("Actor's name must not be empty");
 		}

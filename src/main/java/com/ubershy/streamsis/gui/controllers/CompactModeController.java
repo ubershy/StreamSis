@@ -52,7 +52,7 @@ public class CompactModeController implements Initializable {
 	@FXML
 	private ListView<Actor> actorList;
 
-	public void postInit(CuteProject project) {
+	public void bindToProject(CuteProject project) {
 		// TODO init views
 	}
 
@@ -139,7 +139,7 @@ public class CompactModeController implements Initializable {
 					if (e.getMessage().equals("sisScenes are empty")) {
 						alert.setContentText("You have to add at least one SisScene to this Project");
 					}
-					GUIUtil.showAlertInStageCenter(alert);
+					GUIUtil.showAlertInPrimaryStageCenter(alert);
 				}
 			}
 		}

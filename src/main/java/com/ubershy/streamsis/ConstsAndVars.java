@@ -38,9 +38,12 @@ public final class ConstsAndVars {
 	/** Defines if Actor will be really checking when asked to do so. */
 	public static boolean performChecking = true;
 
+	/** If greater than 0, slows down initialization of each CuteElement. */
+	public static int slowDownInitForMs = 0;
+
 	/** The Constant logger. */
 	static final Logger logger = LoggerFactory.getLogger(ConstsAndVars.class);
-
+	
 	/**
 	 * minimumCheckInterval is a minimum allowed length of time to sleep in milliseconds between
 	 * {@link Actor}'s checks.

@@ -19,8 +19,12 @@ package com.ubershy.streamsis.project;
 
 import javafx.collections.ObservableList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ubershy.streamsis.ConstsAndVars;
 
 /**
  * The abstract implementation of {@link CuteElement}.
@@ -28,6 +32,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Subtypes must override {@link #init()} method with super.init().
  */
 public abstract class AbstractCuteElement implements CuteElement {
+	
+	static final Logger abstractLogger = LoggerFactory.getLogger(AbstractCuteElement.class);
 
 	/** Object's {@link ElementInfo}. */
 	@JsonProperty
@@ -97,9 +103,7 @@ public abstract class AbstractCuteElement implements CuteElement {
 	@JsonIgnore
 	@Override
 	public void init() {
-		elementInfo.setAsReadyAndHealthy();
-		if (ProjectManager.getProject() != null)
-			ProjectManager.getProject().incrementInitNumberOfElements();
+		initWithoutChildrenStuff();
 		if (getAddableChildrenTypeInfo() != null) { // Null means no children can be added by user.
 			int childrenCount = getChildren().size();
 			String childrenTypeName = null;
@@ -152,5 +156,18 @@ public abstract class AbstractCuteElement implements CuteElement {
 				}
 			}
 		}
+	}
+
+	protected void initWithoutChildrenStuff() {
+		if (ConstsAndVars.slowDownInitForMs > 0) {
+			try {
+				Thread.sleep(ConstsAndVars.slowDownInitForMs);
+			} catch (InterruptedException e) {
+				abstractLogger.debug("Sleeping during init() was interrupted."); 
+			}
+		}
+		elementInfo.setAsReadyAndHealthy();
+		if (ProjectManager.getProject() != null)
+			ProjectManager.getProject().incrementInitNumberOfElements();
 	}
 }

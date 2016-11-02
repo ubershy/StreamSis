@@ -174,7 +174,8 @@ public class FullModeController implements Initializable {
 	
 	private void initializeStatusBar() {
 		// Set projectInitProgressBar behavior
-		projectInitProgressBar.setOpacity(0.0);
+		projectInitProgressBar.setOpacity(1.0);
+		projectInitProgressBar.setProgress(-1.0);
 		project.allElementsNumberProperty().addListener((o, oldVal, newVal) -> {
 			if (newVal.intValue() == 0) {
 				// Counting started, setting indeterminate value for progressbar.
@@ -211,7 +212,7 @@ public class FullModeController implements Initializable {
 					project.stopProject();
 					CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastFileDirectory", path);
 					OpenRecentManager.setRecentProject(path);
-					GUIManager.loadProject(path);
+					GUIManager.loadProject(path, false);
 				});
 				menuItems.add(item);
 			}
@@ -338,7 +339,7 @@ public class FullModeController implements Initializable {
 		ButtonType yesButton = new ButtonType("Yes");
 		ButtonType noButton = new ButtonType("No");
 		alert.getButtonTypes().setAll(yesButton, noButton);
-		Optional<ButtonType> result = GUIUtil.showAlertInStageCenter(alert);
+		Optional<ButtonType> result = GUIUtil.showAlertInPrimaryStageCenter(alert);
 		if (result.get() == yesButton) {
 			Alert subAlert = new Alert(AlertType.INFORMATION);
 			subAlert.setTitle("Love Button");
@@ -346,7 +347,7 @@ public class FullModeController implements Initializable {
 			subAlert.setContentText(
 					"Love Button is working as expected.\nMaybe I'm a good programmer.");
 			GUIUtil.cutifyAlert(subAlert);
-			GUIUtil.showAlertInStageCenter(subAlert);
+			GUIUtil.showAlertInPrimaryStageCenter(subAlert);
 		} else if (result.get() == noButton) {
 			Alert subAlert = new Alert(AlertType.ERROR);
 			GUIUtil.cutifyAlert(subAlert);
@@ -354,7 +355,7 @@ public class FullModeController implements Initializable {
 			subAlert.setHeaderText("Oh.");
 			subAlert.setContentText(
 					"Love Button seems not to be working...\nAnd shamefully goes away. =(");
-			GUIUtil.showAlertInStageCenter(subAlert);
+			GUIUtil.showAlertInPrimaryStageCenter(subAlert);
 			loveButton.setManaged(false);
 			loveButton.setDisable(true);
 			loveButton.setVisible(false);
@@ -396,11 +397,11 @@ public class FullModeController implements Initializable {
 					file.getParentFile().getAbsolutePath());
 			OpenRecentManager.setRecentProject(file.getAbsolutePath());
 			initializeOpenRecentMenu();
-			GUIManager.loadProject(file.getAbsolutePath());
+			GUIManager.loadProject(file.getAbsolutePath(), false);
 		}
 	}
 
-	public void postInit(CuteProject project) {
+	public void bindToProject(CuteProject project) {
 		this.project = project;
 		if (project != null) {
 			initializeSisSceneListView(GUIManager.sisSceneList);
@@ -440,7 +441,7 @@ public class FullModeController implements Initializable {
 				alert.setContentText(
 						"Original file is inaccessible.\nMaybe you have disconnected a memory device where Project file was stored.\n"
 								+ "Or your Project file is currently opened in another program that is blocking access.\n\nWho knows? ¯\\_(ツ)_/¯");
-				GUIUtil.showAlertInStageCenter(alert);
+				GUIUtil.showAlertInPrimaryStageCenter(alert);
 			}
 		}
 		GUIUtil.saveCurrentModeWindowStateAndEverything();
@@ -476,7 +477,7 @@ public class FullModeController implements Initializable {
 				alert.setContentText(
 						"Maybe you don't have rights to write there.\nOr location is not currently available to use.\n"
 								+ "Or you are trying to rewrite a file that is currently opened in another program that is blocking access.\n\nWho knows? ¯\\(°_o)/¯");
-				GUIUtil.showAlertInStageCenter(alert);
+				GUIUtil.showAlertInPrimaryStageCenter(alert);
 				saveProjectAs(null);
 			}
 		}
@@ -531,7 +532,7 @@ public class FullModeController implements Initializable {
 						alert.setContentText(
 								"You have to add at least one SisScene to this Project");
 					}
-					GUIUtil.showAlertInStageCenter(alert);
+					GUIUtil.showAlertInPrimaryStageCenter(alert);
 				}
 		}
 	}

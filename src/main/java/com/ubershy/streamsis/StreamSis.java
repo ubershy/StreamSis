@@ -17,7 +17,10 @@
  */
 package com.ubershy.streamsis;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,14 +28,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ubershy.streamsis.gui.GUIManager;
+import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.playground.Playground;
-import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.ProjectManager;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 /**
  * StreamSis.
@@ -45,13 +50,38 @@ import javafx.stage.WindowEvent;
 public class StreamSis extends Application {
 
 	static final Logger logger = LoggerFactory.getLogger(StreamSis.class);
+	
+	static final UncaughtExceptionHandler eHandler = (t, e) -> {
+		// FIXME: Backup changed project near the current project's path without prompting the user.
+		// Because, if prompted, the user might overwrite the original project file and there's no
+		// guarantee that he will be able to load this project next time. 
+		// If project is new and with unsaved changes, provide a button for the user to save it.
+		logger.error("Catched unhandled Exception", e);
+		Platform.runLater(() -> {
+			Alert alert = new Alert(AlertType.ERROR);
+			GUIUtil.cutifyAlert(alert);
+			alert.setTitle("Nobody expects the " + e.getClass().getSimpleName() + "!");
+			alert.setHeaderText("Something bad happened to StreamSis and it stopped working");
+			alert.setContentText("The problem occured in \"" + t.getName() + "\" thread.\n\n"
+					+ "Click the \"Show details\" button to see the stack trace."
+					+ " If you are not scared.");
+			ByteArrayOutputStream ostream = new ByteArrayOutputStream();
+			e.printStackTrace(new PrintStream(ostream));
+			TextArea stackTraceArea = new TextArea(ostream.toString());
+			stackTraceArea.setEditable(false);
+			stackTraceArea.setMinSize(600, 350);
+			alert.getDialogPane().setExpandableContent(stackTraceArea);
+			GUIUtil.showAlertInPrimaryStageCenter(alert);
+			Platform.exit();
+		});
+	};
 
 	/**
 	 * The main method.
 	 * <p>
 	 * You can use any combinations of these available arguments:<br>
 	 * <ul>
-	 * <li>"quiet". <br>
+	 * <li>"--quiet". <br>
 	 * Defines if StreamSis must run in quiet mode (non-GUI). <br>
 	 * Overrides "ProjectAutoLoad" and "ProjectAutoStart" settings. <br>
 	 * Automatically starts Project.</li>
@@ -61,94 +91,102 @@ public class StreamSis extends Application {
 	 * </ul>
 	 *
 	 * @param args
-	 *            the arguments
+	 *            The arguments.
 	 */
 	public static void main(String[] args) {
 		launch(args);
 	}
 
 	@Override
-	public void start(Stage primaryStage) {
+	public void start(Stage primaryStage) throws Exception {
 		logger.info("StreamSis has started =)");
-
+		
 		// Start of developer stuff
 
 		// Here we can disable actual Checking and/or Acting
 		// This helps to measure the performance of different parts of the program
 		// ConstsAndVars.performChecking = false;
 		// ConstsAndVars.performActing = false;
+		
+		// ConstsAndVars.slowDownInitForMs = 50;
 
-		// Lets generate hardcoded Projects for testing new features
+		// Let's generate hardcoded Projects for testing new features
 		// Because there's no way to construct Projects in GUI now
-		// Also it automatically serialize them to files, so we can check later, how they will
-		// deserialize
+		// Also it automatically serializes them to files, so we can check later, how they will
+		// deserialize.
 		Playground.generateHardcodedDefaultProject();
 		Playground.generateHardcodedTestProject();
 
 		// End of developer stuff
+		
+		// Let's get configuration parameters related to application start.
+		boolean projectAutoLoad = CuteConfig.getBoolean(CuteConfig.CUTE, "ProjectAutoLoad");
+		boolean projectAutoStart = CuteConfig.getBoolean(CuteConfig.CUTE, "ProjectAutoStart");
+		String projectToLoadPath = CuteConfig.getString(CuteConfig.CUTE, "LastProjectLocation");
 
-		// Lets parse passed command-line parameters
+		// Let's parse CLI arguments.
 		boolean quietMode = false;
-		final Parameters params = getParameters();
-		List<String> parameters = new ArrayList<String>(params.getRaw());
-		if (parameters.contains("quiet")) {
+		List<String> arguments = new ArrayList<String>(getParameters().getUnnamed());
+		if (arguments.contains("--quiet")) {
 			quietMode = true;
-			// After this operation, only path parameter will be left in parameters array, if
-			// existed
-			parameters.remove("quiet");
+			// After this operation, only path argument will be left in arguments array, if
+			// existed.
+			arguments.remove("--quiet");
 		}
-
-		// If path parameter exists, lets try to load Project at this path. If not, lets take the
-		// last Project location from configuration file
-		final String projectToLoad = !parameters.isEmpty() ? parameters.get(0)
-				: CuteConfig.getString(CuteConfig.CUTE, "LastProjectLocation");
-
-		// Lets automatically load Project from the variable above if StreamSis is in Quiet Mode or
-		// is set to AutoLoad last Project
-		// Else lets create a new Project
-		if (CuteConfig.getBoolean(CuteConfig.CUTE, "ProjectAutoLoad") || quietMode) {
+		// If CLI project path argument exists, let's override configuration's project path.
+		if (!arguments.isEmpty()) {
+			projectToLoadPath = arguments.get(0);
+			arguments.remove(0);
+			boolean valid = Util.checkSingleFileExistanceAndExtension(projectToLoadPath,
+					new String[] { "*.streamsis" });
+			if (!valid) {
+				logger.error("Invalid project file path command-line parameter, exiting...");
+				System.exit(1);
+			}
+		}
+		if (arguments.size() != 0) { // At this point, the list of CLI arguments must be empty.
+			logger.error("Unknown command-line parameters provided, exiting...");
+			System.exit(1);
+		}
+		
+		if (quietMode) { // Non-GUI mode.
 			try {
-				ProjectManager.loadProjectAndSet(projectToLoad);
+				ProjectManager.loadProjectAndSet(projectToLoadPath);
 			} catch (IOException e) {
-				ProjectManager.createAndSetNewProject();
+				logger.error(Util.whyProjectCantBeLoaded(e));
+				System.exit(1);
 			}
-		} else {
-			ProjectManager.createAndSetNewProject();
-		}
-
-		// Now lets automatically start Project if StreamSis is in Quiet Mode or is set to
-		// AutoStart
-		if (CuteConfig.getBoolean(CuteConfig.CUTE, "ProjectAutoStart") || quietMode) {
-			// Lets check if ProjectManager knows current Project path, because if not, it's
-			// probably a new empty CuteProject that is worthless of starting
-			if (ProjectManager.getProjectFilePath() != null) {
-				try {
-					ProjectManager.getProject().startProject();
-				} catch (RuntimeException e) {
-					// Lets find out why we can't start Project.
-					logger.info(e.getMessage());
-				}
-			}
-		}
-
-		// Lets start GUI if StreamSis is not in Quiet Mode
-		if (!quietMode) {
-			CuteProject project = ProjectManager.getProject();
 			try {
-				primaryStage.setTitle("StreamSis");
-				primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-					@Override
-					public void handle(WindowEvent event) {
-						GUIManager.closeApplicatonSafely();
-					}
-				});
-				GUIManager.setPrimaryStage(primaryStage);
-				GUIManager.buildGui(project);
-				primaryStage.show();
+				ProjectManager.getProject().startProject();
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Error during Project running", e);
+				System.exit(1);
 			}
+		} else { // GUI mode.
+			primaryStage.setTitle("StreamSis");
+			primaryStage.setOnCloseRequest(event -> stop());
+			GUIManager.setPrimaryStage(primaryStage);
+			Thread.setDefaultUncaughtExceptionHandler(eHandler);
+	        try {
+	        	// Always start with showing an empty project instead of loading screen or something
+				// like that.
+				GUIManager.createNewProject();
+				primaryStage.show();
+				if (projectAutoLoad) {
+					GUIManager.loadProject(projectToLoadPath, projectAutoStart);
+				}
+	        } catch (Exception e) {
+	        	eHandler.uncaughtException(Thread.currentThread(), e);
+	        }
 		}
 	}
+
+	@Override
+	public void stop() {
+		logger.info("Safely exiting StreamSis...");
+		if (GUIManager.getPrimaryStage() != null)
+			GUIUtil.saveCurrentModeWindowStateAndEverything();
+		System.exit(0);
+    }
 
 }

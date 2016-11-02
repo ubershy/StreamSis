@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.StreamSis;
 
-import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.concurrent.Task;
@@ -58,7 +57,7 @@ public final class ProjectManager {
 	public static CuteProject getProject() {return currentProject;}
 
 	/**
-	 * Sets the current CuteProject and initializes it.
+	 * Sets the current CuteProject.
 	 *
 	 * @param currentProject
 	 *            CuteProject you want to make current
@@ -72,15 +71,10 @@ public final class ProjectManager {
 		if (path != null && !path.isEmpty()) {
 			CuteConfig.setStringValue(CuteConfig.CUTE, "LastProjectLocation", path);
 		}
-		if (Platform.isFxApplicationThread()) {
-			ProjectManager.initProjectOutsideJavaFXThread();
-		} else {
-			currentProject.init();
-		}
 	}
 
 	/**
-	 * Loads CuteProject from path, sets it as current and initializes it.
+	 * Loads CuteProject from path, sets it as current.
 	 *
 	 * @param path
 	 *            path from where CuteProject will be loaded
@@ -92,13 +86,11 @@ public final class ProjectManager {
 		try {
 			project = ProjectSerializator.deSerializeFromFile(path);
 		} catch (IOException e) {
-			logger.error("Can't load Project.");
+			logger.error("Can't load project file: " + path);
 			throw e;
 		}
-		if (project != null) {
-			logger.info("Successfully loaded project file: " + path);
-			ProjectManager.setProject(project, path);
-		}
+		logger.info("Successfully loaded project file: " + path);
+		ProjectManager.setProject(project, path);
 		return project;
 	}
 

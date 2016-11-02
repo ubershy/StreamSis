@@ -31,6 +31,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ubershy.streamsis.project.CuteProject;
+
 /**
  * A utility class for {@link com.ubershy.streamsis.StreamSis StreamSis} that contains some useful methods.
  */
@@ -561,6 +563,26 @@ public final class Util {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Returns an explanation why {@link CuteProject} cannot be loaded bases on {@link IOException}.
+	 * 
+	 * @param e The IOException to analyze.
+	 * @return String explaining why CuteProject cannot be loaded.
+	 */
+	public static String whyProjectCantBeLoaded(IOException e) {
+		String ohmywhy = "Project can't be loaded. ";
+		if ("IOException".equals(e.getClass().getSimpleName())) { // Means not IOException subtype
+			ohmywhy += "Project file is inaccessible."
+					+ "\nMaybe you don't have system permissions to read this file.";
+		} else {
+			// Means we got one of the IOException subtypes: JsonMappingException and
+			// JsonGenerationException
+			ohmywhy += "Project file is corrupted or incompatible with this version of StreamSis."
+					+ "\nOr maybe the programmer needs to be spanked.";
+		}
+		return ohmywhy;
 	}
 
 }

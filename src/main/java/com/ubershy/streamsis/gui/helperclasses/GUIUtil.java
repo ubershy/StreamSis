@@ -174,24 +174,17 @@ public final class GUIUtil {
 	}
 
 	/**
-	 * Show {@link Alert} in Stage center.
+	 * Show {@link Alert} in Primary Stage center.
 	 *
 	 * @param alert
-	 *            the Alert to show in Stage center
+	 *            the Alert to show in Primary Stage center
 	 * @return Optional object
 	 */
-	public static Optional<ButtonType> showAlertInStageCenter(Alert alert) {
-		// Can't make it more pretty/convenient in Java 1.8.0_45 (Not yet shown alert has width, but
-		// has no height!)
-		// TODO: make it pretty in the future!
+	public static Optional<ButtonType> showAlertInPrimaryStageCenter(Alert alert) {
 		Stage window = GUIManager.getPrimaryStage();
-		alert.setOnShown((e) -> {
-			alert.setX(
-					window.getX() + window.getWidth() / 2 - alert.getDialogPane().getWidth() / 2);
-			// "110" to compensate
-			alert.setY(window.getY() + window.getHeight() / 2
-					- alert.getDialogPane().getHeight() / 2 - 110);
-		});
+		if (window.getOwner() != null) {
+			alert.initOwner(window.getOwner());
+		}
 		return alert.showAndWait();
 	}
 

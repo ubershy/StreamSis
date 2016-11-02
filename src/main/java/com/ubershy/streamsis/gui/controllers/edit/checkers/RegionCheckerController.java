@@ -288,7 +288,7 @@ public class RegionCheckerController extends AbstractCuteController
 									+ "IllegalArgumentException. It's one of the Seven Buggy Sins "
 									+ "that a programmer can make.");
 						}
-						GUIUtil.showAlertInStageCenter(alert);
+						GUIUtil.showAlertInPrimaryStageCenter(alert);
 					}
 				}
 			}
