@@ -126,12 +126,12 @@ public class MultiSoundAction extends SoundAction {
 			// already broken by filePicker.initTemporaryFileList()
 			return;
 		}
-		soundToPlay = initializeSound(
-				filePicker.getTemporarySourceFileList().get(filePicker.getCurrentFileIndex())
-						.getPath());
 		if (filePicker.isPickFilesRandomly()) {
 			filePicker.computeNextFileIndex();
 		}
+		soundToPlay = initializeSound(
+				filePicker.getTemporarySourceFileList().get(filePicker.getCurrentFileIndex())
+						.getPath());
 	}
 
 	/**
