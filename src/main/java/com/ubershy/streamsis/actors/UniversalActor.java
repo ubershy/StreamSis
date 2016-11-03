@@ -31,10 +31,8 @@ import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.actions.Action;
 import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.project.CuteProject;
-import com.ubershy.streamsis.project.ProjectManager;
 
 import javafx.application.Platform;
-import javafx.collections.ListChangeListener;
 import javafx.concurrent.Worker.State;
 
 /** The main implementation of {@link Actor} that is used in {@link StreamSis}. */
@@ -63,7 +61,6 @@ public class UniversalActor extends AbstractActor implements Actor {
 		this.repeatInterval.set(repeatInterval);
 		this.setDoOnRepeat(doOnRepeat);
 		this.setDoOffRepeat(doOffRepeat);
-		addSafetyListeners();
 	}
 
 	/**
@@ -131,37 +128,6 @@ public class UniversalActor extends AbstractActor implements Actor {
 						: new ArrayList<Action>(Arrays.asList(onActions)),
 				(offActions == null) ? new ArrayList<Action>()
 						: new ArrayList<Action>(Arrays.asList(offActions)));
-	}
-
-	/**
-	 * Adds the safety listeners for Actor's lists. <br>
-	 * They will ensure that current CuteProject is stopped on every change of any Actor's lists.
-	 * <br>
-	 * <p>
-	 * <i>The method is supposed to be called once from Actor's constructor </i>.
-	 */
-	public final void addSafetyListeners() {
-		this.checkers.addListener((ListChangeListener.Change<? extends Checker> c) -> {
-			CuteProject project = ProjectManager.getProject();
-			if (project != null) {
-				if (ProjectManager.getProject().isStarted())
-					ProjectManager.getProject().stopProject();
-			}
-		});
-		this.onActions.addListener((ListChangeListener.Change<? extends Action> c) -> {
-			CuteProject project = ProjectManager.getProject();
-			if (project != null) {
-				if (ProjectManager.getProject().isStarted())
-					ProjectManager.getProject().stopProject();
-			}
-		});
-		this.offActions.addListener((ListChangeListener.Change<? extends Action> c) -> {
-			CuteProject project = ProjectManager.getProject();
-			if (project != null) {
-				if (ProjectManager.getProject().isStarted())
-					ProjectManager.getProject().stopProject();
-			}
-		});
 	}
 
 	@Override
