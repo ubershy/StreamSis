@@ -29,6 +29,7 @@ import org.controlsfx.control.NotificationPane;
 
 import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.LowLevel;
+import com.ubershy.streamsis.SuperSoundManager;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.gui.GUIManager;
@@ -536,8 +537,10 @@ public class FullModeController implements Initializable {
 //	}
 
 	@FXML
-	private void setVolumeToConfig() { // Is invoked on mouse release on slider.
-		CuteConfig.setDoubleValue(CuteConfig.CUTE, "GlobalVolume", volumeSlider.getValue() / 100.0);
+	private void setVolumeToConfigAndLoadedSounds() { // Is invoked on mouse release on slider.
+		double volumeToSet = volumeSlider.getValue() / 100.0;
+		CuteConfig.setDoubleValue(CuteConfig.CUTE, "GlobalVolume", volumeToSet);
+		SuperSoundManager.setVolumeForAllSounds(volumeToSet);
 	}
 
 	@FXML
@@ -591,5 +594,10 @@ public class FullModeController implements Initializable {
 		// Playground.testNewMTRegionChecker(10000, 0, false);
 		// Playground.testOldMTRegionChecker(100, 0, false);
 	}
+	
+    @FXML
+    void stopAllSounds(ActionEvent event) {
+    	SuperSoundManager.stopAllSounds();
+    }
 
 }

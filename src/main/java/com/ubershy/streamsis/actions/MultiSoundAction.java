@@ -27,6 +27,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.MultiSourceFilePicker;
 
+import javafx.scene.media.MediaPlayer;
+
 /**
  * Multi Sound Action. <br>
  * This {@link Action} can play one of the sound files from Source file directory or from predefined
@@ -106,14 +108,23 @@ public class MultiSoundAction extends SoundAction {
 	public void execute() {
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
-			logger.info(
-					"Playing Source directory file # " + (filePicker.getCurrentFileIndex() + 1));
+			MediaPlayer currentSoundToPlay = soundToPlay;
+			currentSoundToPlay.setOnEndOfMedia(() -> {
+				// Using local reference, because soundToPlay field is substituted later.
+				removeFromManagerAndDisposeSound(currentSoundToPlay);
+			});
+			currentSoundToPlay.setOnStopped(() -> { // Stopped from SuperSoundManager.
+				removeFromManagerAndDisposeSound(currentSoundToPlay);
+			});
+			currentSoundToPlay.setOnError(() -> {
+				removeFromManagerAndDisposeSound(currentSoundToPlay);
+			});
 			boolean wasAbleToPlay = play();
 			filePicker.computeNextFileIndex();
 			File nextFileToPlay = filePicker.getTemporarySourceFileList()
 					.get(filePicker.getCurrentFileIndex());
 			String nextSoundToPlay = nextFileToPlay.getPath();
-			soundToPlay = initializeSound(nextSoundToPlay);
+			soundToPlay = initializeSoundAndAddToManager(nextSoundToPlay);
 			elementInfo.setBooleanResult(wasAbleToPlay);
 		}
 	}
@@ -126,12 +137,14 @@ public class MultiSoundAction extends SoundAction {
 			// already broken by filePicker.initTemporaryFileList()
 			return;
 		}
+		if (soundToPlay != null) {
+			removeFromManagerAndDisposeSound(soundToPlay);
+		}
 		if (filePicker.isPickFilesRandomly()) {
 			filePicker.computeNextFileIndex();
 		}
-		soundToPlay = initializeSound(
-				filePicker.getTemporarySourceFileList().get(filePicker.getCurrentFileIndex())
-						.getPath());
+		soundToPlay = initializeSoundAndAddToManager(filePicker.getTemporarySourceFileList()
+				.get(filePicker.getCurrentFileIndex()).getPath());
 	}
 
 	/**

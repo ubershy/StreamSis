@@ -107,10 +107,10 @@
             <Button alignment="CENTER" disable="true" layoutX="74.0" layoutY="10.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" text="All Actors" textAlignment="CENTER" wrapText="true" />
             <Button alignment="CENTER" disable="true" mnemonicParsing="false" prefHeight="50.0" prefWidth="65.0" text="All Variables" textAlignment="CENTER" wrapText="true" />
             <Separator layoutX="276.0" layoutY="10.0" orientation="VERTICAL" prefHeight="50.0" />
-            <Button fx:id="stopAllSoundsButton" alignment="CENTER" disable="true" layoutX="222.0" layoutY="10.0" mnemonicParsing="false" onAction="#showCompactMode" prefHeight="50.0" prefWidth="60.0" text="Stop All Sounds" textAlignment="CENTER" wrapText="true" />
+            <Button fx:id="stopAllSoundsButton" alignment="CENTER" layoutX="222.0" layoutY="10.0" mnemonicParsing="false" onAction="#stopAllSounds" prefHeight="50.0" prefWidth="60.0" text="Stop All Sounds" textAlignment="CENTER" wrapText="true" />
             <BorderPane prefHeight="50.0" prefWidth="115.0">
                <center>
-                  <Slider fx:id="volumeSlider" blockIncrement="1.0" majorTickUnit="20.0" onMouseReleased="#setVolumeToConfig" prefHeight="30.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" BorderPane.alignment="CENTER" />
+                  <Slider fx:id="volumeSlider" blockIncrement="1.0" majorTickUnit="20.0" onMouseReleased="#setVolumeToConfigAndLoadedSounds" prefHeight="30.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" BorderPane.alignment="CENTER" />
                </center>
                <top>
                   <Label fx:id="volumeLabel" text="Global Volume" BorderPane.alignment="CENTER" />

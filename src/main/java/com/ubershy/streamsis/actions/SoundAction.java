@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.CuteConfig;
+import com.ubershy.streamsis.SuperSoundManager;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.project.AbstractCuteElement;
 
@@ -37,8 +38,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
+import javafx.scene.media.MediaPlayer;
 
 /**
  * Sound Action. <br>
@@ -58,9 +60,9 @@ public class SoundAction extends AbstractCuteElement implements Action {
 	/** The path of sound file. */
 	@JsonProperty
 	protected StringProperty soundPath = new SimpleStringProperty("");
-
+	
 	/** The sound that will be played. */
-	protected AudioClip soundToPlay;
+	protected MediaPlayer soundToPlay;
 
 	/** The volume of sound from 0 to 1. */
 	@JsonProperty
@@ -113,6 +115,9 @@ public class SoundAction extends AbstractCuteElement implements Action {
 	@Override
 	public void init() {
 		super.init();
+		if (soundToPlay != null) {
+			removeFromManagerAndDisposeSound(soundToPlay);
+		}
 		if (volume.get() < 0 || volume.get() > 1)
 			elementInfo.setAsBroken("Volume must be in range from 0.0 to 1.0");
 		if (soundPath.get().isEmpty()) {
@@ -124,21 +129,22 @@ public class SoundAction extends AbstractCuteElement implements Action {
 			elementInfo.setAsBroken("Can't find or read sound file " + soundPath.get());
 			return;
 		}
-		soundToPlay = initializeSound(soundPath.get());
+		soundToPlay = initializeSoundAndAddToManager(soundPath.get());
 	}
 
 	/**
-	 * Initializes a sound at given path, produces an AudioClip.
+	 * Initializes a sound at given path, produces a MediaPlayer.
 	 *
 	 * @param soundPath
 	 *            the path of sound
-	 * @return the AudioClip
+	 * @return the MediaPlayer
 	 */
-	protected AudioClip initializeSound(String soundPath) {
+	protected MediaPlayer initializeSoundAndAddToManager(String soundPath) {
 		String URISoundPath = new File(soundPath).toURI().toString();
-		AudioClip result = null;
+		MediaPlayer result = null;
 		try {
-			result = new AudioClip(URISoundPath);
+			result = new MediaPlayer(new Media(URISoundPath));
+			SuperSoundManager.addSound(result);
 		} catch (MediaException e) {
 			elementInfo.setAsSick(
 					"Compressed WAVE sound file detected.\nSuch files can't be played:\n"
@@ -158,10 +164,10 @@ public class SoundAction extends AbstractCuteElement implements Action {
 			soundToPlay.setVolume(volume.get() * globalVolume);
 			soundToPlay.play();
 			logger.info(String.format("Playing(%.2f): %s", soundToPlay.getVolume(),
-					Paths.get(URI.create(soundToPlay.getSource()))));
+					Paths.get(URI.create(soundToPlay.getMedia().getSource()))));
 			return true;
 		} else {
-			logger.error("Can't play the sound. AudioClip is not defined.");
+			logger.error("Can't play the sound. MediaPlayer is not defined.");
 			return false;
 		}
 	}
@@ -184,6 +190,11 @@ public class SoundAction extends AbstractCuteElement implements Action {
 
 	public void doSuperInit() {
 		super.init();
+	}
+	
+	protected void removeFromManagerAndDisposeSound(MediaPlayer player) {
+		SuperSoundManager.removeSound(player);
+		player.dispose();
 	}
 
 }
