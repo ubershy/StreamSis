@@ -66,6 +66,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -86,6 +87,8 @@ public class FullModeController implements Initializable {
     private Button startStopButton;
     @FXML
     private Button showCompactModeButton;
+    @FXML
+    private ToggleButton onTopToggleButton;
     @FXML
     private Button stopAllSoundsButton;
     @FXML
@@ -255,6 +258,15 @@ public class FullModeController implements Initializable {
 		setOpacity(initialOpacity);
 		opacitySlider.valueProperty().addListener((o, oldVal, newVal) -> {
 			setOpacity(newVal.doubleValue());
+		});
+		
+		// "On Top" button
+		boolean stayOnTop = CuteConfig.getBoolean(CuteConfig.USERGUI, "OnTop");
+		onTopToggleButton.setSelected(stayOnTop);
+		GUIManager.getPrimaryStage().setAlwaysOnTop(stayOnTop);
+		onTopToggleButton.selectedProperty().addListener((o, oldVal, newVal) -> {
+			CuteConfig.setBooleanValue(CuteConfig.USERGUI, "OnTop", newVal);
+			GUIManager.getPrimaryStage().setAlwaysOnTop(newVal);
 		});
 
 		// Start/Stop button
