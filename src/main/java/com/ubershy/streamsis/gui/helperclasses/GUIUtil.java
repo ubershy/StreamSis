@@ -31,6 +31,9 @@ import org.controlsfx.validation.Validator;
 import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.gui.GUIManager;
+import com.ubershy.streamsis.gui.StreamSisAppFactory;
+import com.ubershy.streamsis.gui.controllers.SettingsController;
+
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -38,6 +41,7 @@ import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.effect.DropShadow;
@@ -55,6 +59,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -473,5 +478,19 @@ public final class GUIUtil {
 		fullPreviewTP.setStyle("-fx-effect: dropshadow(three-pass-box, black, 10,0.5,0,0);");
 		Tooltip.install(nodeToHaveTooltip, fullPreviewTP);
 	}
+	
+	/**
+	 * Shows window for editing Settings.
+	 */
+    public static void showSettingsWindow() {
+    	SettingsController sController = StreamSisAppFactory.buildSettingsController();
+    	Stage settingsStage = new Stage();
+    	Scene settingsScene = new Scene(sController.getView());
+    	settingsStage.setScene(settingsScene);
+    	settingsStage.initOwner(GUIManager.getPrimaryStage());
+    	settingsStage.initModality(Modality.APPLICATION_MODAL);
+    	settingsStage.setTitle("StreamSis Settings");
+    	settingsStage.show();
+    }
 	
 }

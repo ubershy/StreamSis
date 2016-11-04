@@ -84,7 +84,7 @@
         </Menu>
             <Menu mnemonicParsing="false" text="Settings">
                <items>
-                  <MenuItem disable="true" mnemonicParsing="false" text="Settings...">
+                  <MenuItem mnemonicParsing="false" onAction="#showSettings" text="Settings...">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="COMMA" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>

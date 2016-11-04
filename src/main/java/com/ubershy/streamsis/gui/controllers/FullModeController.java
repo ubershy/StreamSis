@@ -600,4 +600,9 @@ public class FullModeController implements Initializable {
     	SuperSoundManager.stopAllSounds();
     }
 
+    @FXML
+    void showSettings(ActionEvent event) {
+    	GUIUtil.showSettingsWindow();
+    }
+
 }
