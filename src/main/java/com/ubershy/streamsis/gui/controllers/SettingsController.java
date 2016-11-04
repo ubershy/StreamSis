@@ -1,6 +1,6 @@
 /** 
  * StreamSis
- * Copyright (C) 2015 Eva Balycheva
+ * Copyright (C) 2016 Eva Balycheva
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
