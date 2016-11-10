@@ -206,6 +206,12 @@ public class ElementEditorController implements Initializable {
 						}
 						tPaneDotsAnima.play();
 					} else {
+						if (getCurrentElement() != null) {
+							// This will disconnect propsWithNameController's view from scene.
+							// Some buttons will notice that they are not inside the scene and
+							// deactivate Hotkeys associated with them.
+							setViewAsNoneSelected();
+						}
 						tPaneDotsAnima.stop();
 					}
 				});
@@ -352,6 +358,12 @@ public class ElementEditorController implements Initializable {
 			return;
 		}
 		disconnectFromConnectedCuteElement();
+		
+		// propertiesPane can currently show noneSelectedController's view.
+		// If so, let's show propsWithNameController instead.
+		if (!propertiesPane.getContent().equals(propsWithNameController.getView())) {
+			propertiesPane.setContent(propsWithNameController.getView());
+		}
 		
 		// CuteElements of higher hierarchy levels are referring to current element, and it's hard
 		// to substitute this reference. It's easier to retain this reference.
@@ -575,9 +587,6 @@ public class ElementEditorController implements Initializable {
 	
 	public void setCurrentElement(CuteElement element) {
 		currentElement.set(element);
-		if (!propertiesPane.getContent().equals(propsWithNameController.getView())) {
-			propertiesPane.setContent(propsWithNameController.getView());
-		}
 		if (root.isExpanded()) {
 			connectToCuteElement(element);
 		}

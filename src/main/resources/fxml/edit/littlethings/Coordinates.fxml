@@ -27,16 +27,16 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane fx:id="root" hgap="10.0" maxWidth="1.7976931348623157E308" prefWidth="1200.0" vgap="10.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ubershy.streamsis.gui.controllers.edit.littlethings.CoordinatesController">
+<GridPane fx:id="root" hgap="5.0" maxWidth="1.7976931348623157E308" prefWidth="1200.0" vgap="10.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ubershy.streamsis.gui.controllers.edit.littlethings.CoordinatesController">
    <columnConstraints>
       <ColumnConstraints maxWidth="1.7976931348623157E308" minWidth="10.0" />
-      <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" />
+      <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="40.0" />
       <ColumnConstraints maxWidth="1.7976931348623157E308" minWidth="10.0" />
-      <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" />
+      <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="40.0" />
       <ColumnConstraints maxWidth="1.7976931348623157E308" minWidth="10.0" />
-      <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" />
+      <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="40.0" />
       <ColumnConstraints maxWidth="1.7976931348623157E308" minWidth="10.0" />
-      <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" />
+      <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="40.0" />
       <ColumnConstraints maxWidth="1.7976931348623157E308" minWidth="10.0" />
       <ColumnConstraints maxWidth="1.7976931348623157E308" minWidth="10.0" />
    </columnConstraints>
@@ -52,7 +52,7 @@
       <HBox fx:id="wHBox" prefWidth="25.0" GridPane.columnIndex="5" />
       <HBox fx:id="yHBox" prefWidth="25.0" GridPane.columnIndex="3" />
       <HBox fx:id="hHBox" prefWidth="25.0" GridPane.columnIndex="7" />
-      <Button fx:id="selectRegionButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onSelectRegion" prefHeight="50.0" text="Select Region by mouse" wrapText="true" GridPane.columnIndex="8" />
+      <Button fx:id="selectRegionButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onSelectRegion" prefHeight="50.0" text="Select Region" textOverrun="LEADING_WORD_ELLIPSIS" wrapText="true" GridPane.columnIndex="8" />
       <Button fx:id="showRegionButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onShowRegion" prefHeight="50.0" text="Show Region" wrapText="true" GridPane.columnIndex="9" />
    </children>
 </GridPane>

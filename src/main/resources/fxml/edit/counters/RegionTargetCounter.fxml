@@ -58,7 +58,7 @@
          <children>
             <Label maxHeight="1.7976931348623157E308" text="Specify image to count on screen" wrapText="true" />
             <Pane HBox.hgrow="ALWAYS" />
-            <Button fx:id="selectTargetButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#selectTarget" prefHeight="100.0" text="Select Target image and Region by mouse" textAlignment="CENTER" wrapText="true">
+            <Button fx:id="selectTargetButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#selectTarget" prefHeight="100.0" text="Select Target image and Region" textAlignment="CENTER" textOverrun="LEADING_ELLIPSIS" wrapText="true">
                <font>
                   <Font size="10.0" />
                </font>

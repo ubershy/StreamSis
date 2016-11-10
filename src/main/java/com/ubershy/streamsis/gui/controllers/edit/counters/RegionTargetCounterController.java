@@ -34,7 +34,9 @@ import org.sikuli.util.EventObserver;
 import org.sikuli.util.EventSubject;
 import org.sikuli.util.OverlayCapturePrompt;
 
+import com.ubershy.streamsis.HotkeyManager;
 import com.ubershy.streamsis.Util;
+import com.ubershy.streamsis.HotkeyManager.Hotkey;
 import com.ubershy.streamsis.checkers.RegionChecker;
 import com.ubershy.streamsis.counters.RegionTargetCounter;
 import com.ubershy.streamsis.gui.StreamSisAppFactory;
@@ -50,6 +52,8 @@ import com.ubershy.streamsis.project.CuteElement;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -58,6 +62,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Background;
@@ -114,6 +119,17 @@ public class RegionTargetCounterController extends AbstractCuteController
 	private ImageView fullTargetImageView = new ImageView();
 	
 	private Text crosshairIcon = GlyphsDude.createIcon(FontAwesomeIcon.CROSSHAIRS);
+
+	private Runnable selectImageRunnable = () -> {
+		Screen.doPrompt("Select Target Image on screen", this);
+	};
+	
+	private String selectTargetButtonOrigText;
+	
+	private ChangeListener<? super KeyCodeCombination> selectImageHotkeyListener = (o, oldVal,
+			newVal) -> {
+		changeSelectTargetButtonBasedOnKeyCombination(newVal);
+	};
 	
 	/*
 	 * @inheritDoc
@@ -130,10 +146,45 @@ public class RegionTargetCounterController extends AbstractCuteController
 		allowedExtensions = RegionChecker.allowedExtensions.toArray(new String[0]);
 		coordsVBox.getChildren().add(coordsController.getView());
 		similarityVBox.getChildren().add(simController.getView());
-		selectTargetButton.setGraphic(crosshairIcon);
 		
 		// Set tooltip with full size Target image on targetImageViewPane mouse hover.
 		GUIUtil.setImageViewTooltip(targetImageViewPane, fullTargetImageView);
+		
+		// Setup selectTargetButton.
+		selectTargetButton.setGraphic(crosshairIcon);
+		selectTargetButtonOrigText = selectTargetButton.getText();
+		selectTargetButton.sceneProperty().addListener((o, oldVal, newVal) -> {
+			ObjectProperty<KeyCodeCombination> opkcc = HotkeyManager
+					.getKeyCodeCombinationPropertyOfHotkey(Hotkey.SELECTIMAGE);
+			if (newVal != null) {
+				// If inside the Scene, add runnable of this button to Hotkey.
+				HotkeyManager.setSelectImageRunnable(selectImageRunnable);
+				// Change text of the button to show Hotkey.
+				changeSelectTargetButtonBasedOnKeyCombination(opkcc.get());
+				opkcc.addListener(selectImageHotkeyListener);
+			} else {
+				opkcc.removeListener(selectImageHotkeyListener);
+				changeSelectTargetButtonBasedOnKeyCombination(null);
+				// If outside the Scene, remove runnable of this button from Hotkey.
+				HotkeyManager.setSelectImageRunnable(null);
+			}
+		});
+	}
+
+	/**
+	 * Changes text of {@link #selectTargetButton} to show the Hotkey the user can to press to
+	 * select Image and Region.
+	 * 
+	 * @param kcc
+	 *            The current KeyCodeCombination of "Select Image" Hotkey.
+	 */
+	private void changeSelectTargetButtonBasedOnKeyCombination(KeyCodeCombination kcc) {
+		if (kcc != null) {
+			selectTargetButton
+					.setText(selectTargetButtonOrigText + " (" + kcc.getDisplayText() + ")");
+		} else {
+			selectTargetButton.setText(selectTargetButtonOrigText);
+		}
 	}
 
 	/*
@@ -242,7 +293,7 @@ public class RegionTargetCounterController extends AbstractCuteController
 
     @FXML
     void selectTarget(ActionEvent event) {
-    	Screen.doPrompt("Select Target image on screen", this);
+    	selectImageRunnable.run();
     }
 
 	@Override

@@ -175,6 +175,7 @@ public class StreamSis extends Application {
 				if (projectAutoLoad) {
 					GUIManager.loadProject(projectToLoadPath, projectAutoStart);
 				}
+				HotkeyManager.startListeningToHotkeys();
 	        } catch (Exception e) {
 	        	eHandler.uncaughtException(Thread.currentThread(), e);
 	        }

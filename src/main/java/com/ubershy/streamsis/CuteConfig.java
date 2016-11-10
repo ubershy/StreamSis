@@ -63,17 +63,20 @@ public final class CuteConfig {
 	/** The name of the root of all keys in {@link Config} */
 	private final static String MAINKEY = "Root";
 
-	/** The name of the main settings section in {@link Config} for {@link StreamSis}'s */
+	/** The name of the main settings section in {@link Config} for {@link StreamSis}. */
 	public final static String CUTE = "StreamSis";
 
-	/** The name of the GUI settings section in {@link Config} for {@link StreamSis}'s */
+	/** The name of the GUI settings section in {@link Config} for {@link StreamSis}. */
 	public final static String USERGUI = "UserGUI";
 
 	/**
-	 * The name of the utility GUI settings section in {@link Config} for {@link StreamSis}'s <br>
+	 * The name of the utility GUI settings section in {@link Config} for {@link StreamSis}. <br>
 	 * Such as last window size, last opened directory for {@link FileChooser} etc
 	 */
 	public final static String UTILGUI = "UtilGUI";
+	
+	/** The name of the Hotkey settings section in {@link Config} for {@link StreamSis}. */
+	public final static String HOTKEYS = "Hotkeys";
 
 	static {
 		conf = loadConfig();

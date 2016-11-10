@@ -30,6 +30,8 @@ import org.sikuli.util.EventObserver;
 import org.sikuli.util.EventSubject;
 import org.sikuli.util.OverlayCapturePrompt;
 
+import com.ubershy.streamsis.HotkeyManager;
+import com.ubershy.streamsis.HotkeyManager.Hotkey;
 import com.ubershy.streamsis.checkers.Coordinates;
 import com.ubershy.streamsis.gui.controllers.edit.AbstractCuteController;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
@@ -38,10 +40,13 @@ import com.ubershy.streamsis.gui.helperclasses.IntegerTextField;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
@@ -95,6 +100,17 @@ public class CoordinatesController extends AbstractCuteController implements Eve
 	
 	private Text crosshairIcon = GlyphsDude.createIcon(FontAwesomeIcon.CROSSHAIRS);
 
+	private Runnable selectRegionRunnable = () -> {
+		Screen.doPrompt("Select Region on screen", this);
+	};
+	
+	private String selectRegionButtonOrigText;
+	
+	private ChangeListener<? super KeyCodeCombination> selectRegionHotkeyListener = (o, oldVal,
+			newVal) -> {
+		changeSelectRegionButtonBasedOnKeyCombination(newVal);
+	};
+
 	/*
 	 * @inheritDoc
 	 */
@@ -104,9 +120,42 @@ public class CoordinatesController extends AbstractCuteController implements Eve
 		yHBox.getChildren().add(yTextField);
 		wHBox.getChildren().add(wTextField);
 		hHBox.getChildren().add(hTextField);
+		selectRegionButtonOrigText = selectRegionButton.getText();
 		selectRegionButton.setGraphic(crosshairIcon);
+		selectRegionButton.sceneProperty().addListener((o, oldVal, newVal) -> {
+			ObjectProperty<KeyCodeCombination> opkcc = HotkeyManager
+					.getKeyCodeCombinationPropertyOfHotkey(Hotkey.SELECTREGION);
+			if (newVal != null) {
+				// If inside the Scene, add runnable of this button to Hotkey.
+				HotkeyManager.setSelectRegionRunnable(selectRegionRunnable);
+				// Change text of the button to show Hotkey.
+				changeSelectRegionButtonBasedOnKeyCombination(opkcc.get());
+				opkcc.addListener(selectRegionHotkeyListener);
+			} else {
+				opkcc.removeListener(selectRegionHotkeyListener);
+				changeSelectRegionButtonBasedOnKeyCombination(null);
+				// If outside the Scene, remove runnable of this button from Hotkey.
+				HotkeyManager.setSelectRegionRunnable(null);
+			}
+		});
 	}
 	
+	/**
+	 * Changes text of {@link #selectRegionButton} to show the Hotkey the user can to press to
+	 * select Region.
+	 * 
+	 * @param kcc
+	 *            The current KeyCodeCombination of "Select Region" hotkey.
+	 */
+	private void changeSelectRegionButtonBasedOnKeyCombination(KeyCodeCombination kcc) {
+		if (kcc != null) {
+			selectRegionButton
+					.setText(selectRegionButtonOrigText + " (" + kcc.getDisplayText() + ")");
+		} else {
+			selectRegionButton.setText(selectRegionButtonOrigText);
+		}
+	}
+
 	/**
 	 * Sets the {@link Coordinates} to work with and binds view's controls to Coordinates's
 	 * properties.
@@ -195,7 +244,7 @@ public class CoordinatesController extends AbstractCuteController implements Eve
 
     @FXML
     void onSelectRegion(ActionEvent event) {
-    	Screen.doPrompt("Select Region on screen", this);
+    	selectRegionRunnable.run();
     }
     
 	@Override
