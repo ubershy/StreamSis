@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.LowLevel;
 import com.ubershy.streamsis.LowLevel.OS;
+import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.project.AbstractCuteElement;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -49,21 +50,6 @@ import javafx.scene.input.KeyCombination.ModifierValue;
 public class HotkeyAction extends AbstractCuteElement implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(HotkeyAction.class);
-
-	/**
-	 * Generate list for {@link KeyCodeCombination} with {@link ModifierValue#ANY} values.
-	 *
-	 * @return the list
-	 */
-	public static ArrayList<ModifierValue> generateDefaultModifiers() {
-		ModifierValue defMod = ModifierValue.ANY;
-		ArrayList<ModifierValue> modifiers = new ArrayList<ModifierValue>();
-		// There are only five modifiers in C
-		for (int i = 0; i < 5; i++) {
-			modifiers.add(defMod);
-		}
-		return modifiers;
-	}
 
 	/**
 	 * Lets define this {@link KeyCode} as empty main key in {@link KeyCodeCombination}. <br>
@@ -169,7 +155,7 @@ public class HotkeyAction extends AbstractCuteElement implements Action {
 	}
 
 	private String generateStubKeyCombinationString() {
-		ArrayList<ModifierValue> modifiers = generateDefaultModifiers();
+		ArrayList<ModifierValue> modifiers = Util.generateDefaultModifiersForKeyCombination();
 		// No way to create KeyCodeCombination with null keycode, using "Clear" that is not located
 		// on keyboard;
 		KeyCodeCombination kb = new KeyCodeCombination(emptyCode, modifiers.get(0),

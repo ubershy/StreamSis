@@ -32,7 +32,7 @@ import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.StreamSisAppFactory;
-import com.ubershy.streamsis.gui.controllers.SettingsController;
+import com.ubershy.streamsis.gui.controllers.settings.SettingsController;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -486,6 +486,12 @@ public final class GUIUtil {
     	SettingsController sController = StreamSisAppFactory.buildSettingsController();
     	Stage settingsStage = new Stage();
     	Scene settingsScene = new Scene(sController.getView());
+    	settingsStage.setMaxWidth(1000);
+    	settingsStage.setMaxHeight(1000);
+    	settingsStage.setMinWidth(400);
+    	settingsStage.setMinHeight(300);
+    	settingsStage.setWidth(600);
+    	settingsStage.setHeight(400);
     	settingsStage.setScene(settingsScene);
     	settingsStage.initOwner(GUIManager.getPrimaryStage());
     	settingsStage.initModality(Modality.APPLICATION_MODAL);

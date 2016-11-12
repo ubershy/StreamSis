@@ -24,6 +24,7 @@ import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 
+import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.actions.HotkeyAction;
 import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.gui.controllers.edit.AbstractCuteController;
@@ -84,8 +85,9 @@ public class HotkeyActionController extends AbstractCuteController
 				// When root's parent is focused, second hit to Escape key will close panel
 				root.getParent().requestFocus();
 			}
+			// This is a list with default modifiers - ModifierValue.ANY.
+			ArrayList<ModifierValue> modifiers = Util.generateDefaultModifiersForKeyCombination();
 			if (e.getCode().isModifierKey()) {
-				ArrayList<ModifierValue> modifiers = HotkeyAction.generateDefaultModifiers();
 				boolean anyModifiersPressed = false;
 				if (e.isShiftDown()) {
 					modifiers.set(0, ModifierValue.DOWN);
@@ -105,7 +107,7 @@ public class HotkeyActionController extends AbstractCuteController
 				}
 			} else {
 				if (e.getCode() == KeyCode.BACK_SPACE || e.getCode() == KeyCode.DELETE) {
-					setNewModifiersFromInput(HotkeyAction.generateDefaultModifiers());
+					setNewModifiersFromInput(modifiers);
 				}
 			}
 			e.consume();
@@ -168,7 +170,7 @@ public class HotkeyActionController extends AbstractCuteController
 	}
 
 	protected ArrayList<ModifierValue> getCurrentModifiers() {
-		ArrayList<ModifierValue> modifiers = HotkeyAction.generateDefaultModifiers();
+		ArrayList<ModifierValue> modifiers = Util.generateDefaultModifiersForKeyCombination();
 		modifiers.set(0, keyCombinationProperty.get().getShift());
 		modifiers.set(2, keyCombinationProperty.get().getAlt());
 		// control on Windows and meta (command key) on Mac

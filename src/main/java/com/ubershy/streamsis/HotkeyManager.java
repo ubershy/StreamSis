@@ -54,7 +54,7 @@ public final class HotkeyManager {
 			ProjectManager.getProject().stopProject();
 		}),
 
-		SELECTREGION("Select Region on screen (when available)", "Shift+F3", () -> {
+		SELECTREGION("Select screen Region (when available)", "Shift+F3", () -> {
 			if (currentSelectRegionRunnable != null) {
 				currentSelectRegionRunnable.run();
 			} else {
@@ -62,7 +62,7 @@ public final class HotkeyManager {
 			}
 		}),
 
-		SELECTIMAGE("Select Target Image (and sometimes Region) on screen (when available)",
+		SELECTIMAGE("Select Target Image (when available)",
 				"Shift+F4", () -> {
 					if (currentSelectImageRunnable != null) {
 						currentSelectImageRunnable.run();
@@ -130,8 +130,9 @@ public final class HotkeyManager {
 					+ (modifiers & NativeKeyEvent.META_MASK) != 0;
 			for (Entry<Hotkey, ObjectProperty<KeyCodeCombination>> entry : registeredHotkeys
 					.entrySet()) {
-				Hotkey hotkey = entry.getKey();
 				KeyCodeCombination kcc = entry.getValue().get();
+				if (kcc == null)
+					continue; // Do nothing if KeyCodeCombination is not set for this Hotkey.
 				// FIXME: provide compatibility with Java 9 (pretty easy).
 				if (e.getRawCode() != kcc.getCode().impl_getCode())
 					continue; // Key code does not match Hotkey.
@@ -147,6 +148,7 @@ public final class HotkeyManager {
 				}
 				// At this point the pressed key and modifiers match one of the registered Hotkeys.
 				// Let's run the associated runnable with this Hotkey.
+				Hotkey hotkey = entry.getKey();
 				logger.info("Catched the Hotkey: \"" + hotkey.name()
 						+ "\". Running the associated action.");
 				hotkeyIsPressed = true;
@@ -223,7 +225,12 @@ public final class HotkeyManager {
 		for (Hotkey hk : Hotkey.values()) {
 			// These are stringified keyboard keys. "Alt+F4" for example.
 			String keys = CuteConfig.getString(CuteConfig.HOTKEYS, hk.name());
-			KeyCodeCombination kcc = (KeyCodeCombination) KeyCodeCombination.valueOf(keys);
+			KeyCodeCombination kcc;
+			if (keys.isEmpty()) {
+				kcc = null;
+			} else {
+				kcc = (KeyCodeCombination) KeyCodeCombination.valueOf(keys);
+			}
 			ObjectProperty<KeyCodeCombination> opkcc = new SimpleObjectProperty<KeyCodeCombination>(
 					kcc);
 			registeredHotkeys.put(hk, opkcc);

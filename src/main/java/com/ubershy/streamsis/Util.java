@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ubershy.streamsis.project.CuteProject;
+
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyCombination.ModifierValue;
 
 /**
  * A utility class for {@link com.ubershy.streamsis.StreamSis StreamSis} that contains some useful methods.
@@ -583,6 +587,17 @@ public final class Util {
 					+ "\nOr maybe the programmer needs to be spanked.";
 		}
 		return ohmywhy;
+	}
+
+	/**
+	 * Generate list for {@link KeyCombination} with {@link ModifierValue#ANY} values.
+	 *
+	 * @return The list with {@link ModifierValue#ANY} values.
+	 */
+	public static ArrayList<ModifierValue> generateDefaultModifiersForKeyCombination() {
+		ArrayList<ModifierValue> modifiers = new ArrayList<ModifierValue>(
+				Collections.nCopies(5, ModifierValue.ANY));
+		return modifiers;
 	}
 
 }

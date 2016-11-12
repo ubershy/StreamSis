@@ -39,8 +39,8 @@ import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.gui.controllers.ElementEditorController;
 import com.ubershy.streamsis.gui.controllers.FullModeController;
 import com.ubershy.streamsis.gui.controllers.MainController;
-import com.ubershy.streamsis.gui.controllers.SettingsController;
 import com.ubershy.streamsis.gui.controllers.edit.NoSuchElementController;
+import com.ubershy.streamsis.gui.controllers.settings.SettingsController;
 import com.ubershy.streamsis.gui.helperclasses.ActorCell;
 import com.ubershy.streamsis.gui.helperclasses.AutoTreeItem;
 import com.ubershy.streamsis.gui.helperclasses.CuteTreeCell;
@@ -211,7 +211,7 @@ public class StreamSisAppFactory {
 	 * @return the {@link SettingsController}
 	 */
 	public static SettingsController buildSettingsController() {
-		return (SettingsController) buildControllerByRelativePath("Settings.fxml");
+		return (SettingsController) buildControllerByRelativePath("settings/Settings.fxml");
 	}
 
 	/**
