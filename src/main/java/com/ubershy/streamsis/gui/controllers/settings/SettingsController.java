@@ -189,6 +189,7 @@ public class SettingsController implements Initializable {
 			}
 			CuteConfig.setString(CuteConfig.HOTKEYS, hk.name(), toWriteToConfig);
 		}
+		CuteConfig.saveConfig();
 	}
 
     @FXML
