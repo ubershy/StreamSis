@@ -69,7 +69,7 @@ public class StreamSis extends Application {
 			e.printStackTrace(new PrintStream(ostream));
 			TextArea stackTraceArea = new TextArea(ostream.toString());
 			stackTraceArea.setEditable(false);
-			stackTraceArea.setMinSize(600, 350);
+			stackTraceArea.setMinSize(800, 450);
 			alert.getDialogPane().setExpandableContent(stackTraceArea);
 			GUIUtil.showAlertInPrimaryStageCenter(alert);
 			Platform.exit();
