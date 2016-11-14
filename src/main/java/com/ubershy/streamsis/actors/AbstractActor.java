@@ -203,12 +203,15 @@ public abstract class AbstractActor extends AbstractCuteElement implements Actor
 	@Override
 	public void setChecker(Checker checker) {
 		this.checkers.clear();
-		this.checkers.add(checker);
+		if (checker != null)
+			this.checkers.add(checker);
 	}
 
 	@JsonIgnore
 	@Override
 	public Checker getChecker() {
+		if (this.checkers.size() == 0)
+			return null;
 		return this.checkers.get(0);
 	}
 
