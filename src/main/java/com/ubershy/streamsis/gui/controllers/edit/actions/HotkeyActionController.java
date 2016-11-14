@@ -69,6 +69,12 @@ public class HotkeyActionController extends AbstractCuteController
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		initializeBindings();
+		initializeHandlers();
+		
+	}
+	
+	private void initializeHandlers() {
 		keyTextField.setOnKeyPressed(e -> {
 			// if (keycode.isLetterKey() || keycode.isDigitKey() || keycode.isFunctionKey()) {
 			if (!e.getCode().isModifierKey()) {
@@ -113,6 +119,24 @@ public class HotkeyActionController extends AbstractCuteController
 			e.consume();
 		});
 	}
+
+	private void initializeBindings() {
+		StringBinding readableKey = Bindings.createStringBinding(() -> {
+			KeyCodeCombination kcc = keyCombinationProperty.get();
+			if (kcc == null || kcc.getCode() == KeyCode.CLEAR) {
+				return "";
+			} else {
+				return kcc.getCode().getName();
+			}
+		}, keyCombinationProperty);
+		StringBinding readableModifiers = Bindings.createStringBinding(() -> {
+			return modifiersTextFromKeyCombination(keyCombinationProperty.get());
+		}, keyCombinationProperty);
+		modifiersTextField.textProperty().bind(readableModifiers);
+		keyTextField.textProperty().bind(readableKey);
+		// Disable Modifiers field if Key is not set.
+		modifiersTextField.disableProperty().bind(keyTextField.textProperty().isEmpty());
+	}
 	
 	/*
 	 * @inheritDoc
@@ -123,14 +147,9 @@ public class HotkeyActionController extends AbstractCuteController
 		origHkAction = (HotkeyAction) origCE;
 		String keys = hkAction.getHotkey();
 		keyCombinationProperty.set(parseKeyCodeCombinationFromString(keys));
-		StringBinding readableKey = Bindings.createStringBinding(
-				() -> keyFromKeyCombination(keyCombinationProperty.get()), keyCombinationProperty);
-		String newModifiers = modifiersFromKeyCombination(keyCombinationProperty.get());
-		modifiersTextField.setText(newModifiers);
 		StringBinding applyChangesToCuteElement = Bindings.createStringBinding(
 				() -> keyCombinationProperty.get().getName(), keyCombinationProperty);
 		hkAction.keysProperty().bind(applyChangesToCuteElement);
-		keyTextField.textProperty().bind(readableKey);
 	}
 
 	/*
@@ -142,34 +161,29 @@ public class HotkeyActionController extends AbstractCuteController
 		keyTextField.textProperty().unbind();
 	}
 	
-	protected String extractFullHotkeyFromKeyCombination(KeyCodeCombination kb) {
-		return kb.getDisplayText();
-	}
-
-	protected String keyFromKeyCombination(KeyCodeCombination kb) {
-		if (kb.getCode().equals(KeyCode.CLEAR)) {
+	private String keyTextFromKeyCombination(KeyCodeCombination kcc) {
+		if (kcc.getCode().equals(KeyCode.CLEAR)) {
 			// in HotkeyAction KeyCode.Clear is used as empty KeyCode
 			return "";
 		}
-		return kb.getCode().getName();
+		return kcc.getCode().getName();
 	}
 
-	protected String modifiersFromKeyCombination(KeyCodeCombination kb) {
+	private String modifiersTextFromKeyCombination(KeyCodeCombination kcc) {
+		if (kcc == null) {
+			return "";
+		}
 		ModifierValue downMod = ModifierValue.DOWN;
 		// If any modifier exist
-		if (kb.getAlt() == downMod || kb.getShortcut() == downMod || kb.getShift() == downMod) {
-			String FullHotkey = extractFullHotkeyFromKeyCombination(kb);
-			int lastPlusSignIndex = FullHotkey.lastIndexOf("+");
-			return FullHotkey.substring(0, lastPlusSignIndex);
+		if (kcc.getAlt() == downMod || kcc.getShortcut() == downMod || kcc.getShift() == downMod) {
+			String FullHotkeyText = kcc.getDisplayText();
+			int lastPlusSignIndex = FullHotkeyText.lastIndexOf("+");
+			return FullHotkeyText.substring(0, lastPlusSignIndex);
 		}
 		return "";
 	}
 
-	protected KeyCode getCurrentKeyCode() {
-		return keyCombinationProperty.get().getCode();
-	}
-
-	protected ArrayList<ModifierValue> getCurrentModifiers() {
+	private ArrayList<ModifierValue> getCurrentModifiers() {
 		ArrayList<ModifierValue> modifiers = Util.generateDefaultModifiersForKeyCombination();
 		modifiers.set(0, keyCombinationProperty.get().getShift());
 		modifiers.set(2, keyCombinationProperty.get().getAlt());
@@ -186,7 +200,7 @@ public class HotkeyActionController extends AbstractCuteController
 		return root;
 	}
 
-	protected KeyCodeCombination parseKeyCodeCombinationFromString(String stringToParse) {
+	private KeyCodeCombination parseKeyCodeCombinationFromString(String stringToParse) {
 		KeyCodeCombination kb = null;
 		if (!stringToParse.isEmpty()) {
 			kb = (KeyCodeCombination) KeyCombination.keyCombination(stringToParse);
@@ -194,20 +208,20 @@ public class HotkeyActionController extends AbstractCuteController
 		return kb;
 	}
 
-	protected void setNewKeyCodeFromInput(KeyCode keycode) {
+	private void setNewKeyCodeFromInput(KeyCode keycode) {
 		ArrayList<ModifierValue> modifiers = getCurrentModifiers();
 		keyCombinationProperty.set(new KeyCodeCombination(keycode, modifiers.get(0),
 				modifiers.get(1), modifiers.get(2), modifiers.get(3), modifiers.get(4)));
 	}
 
-	protected void setNewModifiersFromInput(ArrayList<ModifierValue> modifiers) {
-		keyCombinationProperty.set(new KeyCodeCombination(getCurrentKeyCode(), modifiers.get(0),
-				modifiers.get(1), modifiers.get(2), modifiers.get(3), modifiers.get(4)));
-		String newModifiers = modifiersFromKeyCombination(keyCombinationProperty.get());
+	private void setNewModifiersFromInput(ArrayList<ModifierValue> modifiers) {
+		keyCombinationProperty.set(
+				new KeyCodeCombination(keyCombinationProperty.get().getCode(), modifiers.get(0),
+						modifiers.get(1), modifiers.get(2), modifiers.get(3), modifiers.get(4)));
+		String newModifiers = modifiersTextFromKeyCombination(keyCombinationProperty.get());
 		KeyCodeCombination originalKB = parseKeyCodeCombinationFromString(origHkAction.getHotkey());
-		buttonStateManager.reportNewValueOfControl(modifiersFromKeyCombination(originalKB),
+		buttonStateManager.reportNewValueOfControl(modifiersTextFromKeyCombination(originalKB),
 				newModifiers, modifiersTextField, null);
-		modifiersTextField.setText(newModifiers);
 	}
 
 	/*
@@ -221,8 +235,8 @@ public class HotkeyActionController extends AbstractCuteController
 					"Please choose a keyboard key", newValue.isEmpty());
 			ValidationResult finalResult = ValidationResult.fromResults(emptyResult);
 			KeyCodeCombination OrigKK = parseKeyCodeCombinationFromString(origHkAction.getHotkey());
-			buttonStateManager.reportNewValueOfControl(keyFromKeyCombination(OrigKK), newValue, c,
-					finalResult);
+			buttonStateManager.reportNewValueOfControl(keyTextFromKeyCombination(OrigKK), newValue,
+					c, finalResult);
 			return finalResult;
 		};
 		this.validationSupport.registerValidator(keyTextField, keyTextFieldValidator);
