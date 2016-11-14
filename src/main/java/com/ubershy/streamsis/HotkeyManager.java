@@ -45,74 +45,55 @@ public final class HotkeyManager {
 	 * The Enum with all possible Hotkeys in StreamSis.
 	 */
 	public enum Hotkey implements Runnable {
-
-		START("Start Project", "Shift+F1", () -> {
+		START("Start Project", () -> {
 			ProjectManager.getProject().startProject();
 		}),
-
-		STOP("Stop Project", "Shift+F2", () -> {
+		STOP("Stop Project", () -> {
 			ProjectManager.getProject().stopProject();
 		}),
-
-		SELECTREGION("Select screen Region (when available)", "Shift+F3", () -> {
+		SELECTREGION("Select screen Region (when available)", () -> {
 			if (currentSelectRegionRunnable != null) {
 				currentSelectRegionRunnable.run();
 			} else {
 				logger.info("Selection of Region on screen is currently unavailable.");
 			}
 		}),
-
-		SELECTIMAGE("Select Target Image (when available)",
-				"Shift+F4", () -> {
+		SELECTIMAGE("Select Target Image (when available)", () -> {
 					if (currentSelectImageRunnable != null) {
 						currentSelectImageRunnable.run();
 					} else {
 						logger.info("Selection of Image on screen is currently unavailable.");
 					}
 				});
-
 		/** The Hotkey's user-friendly short description. */
 		private final String description;
-		
 		/** The action this Hotkey does. */
 		private final Runnable action;
-		
-		/** The default Keys for this Hotkey, for example, "Alt+F4". */
-		private final String defaultKeys;
-
 		/**
 		 * Instantiates a new Hotkey.
 		 *
 		 * @param description
 		 *            The Hotkey's user-friendly short description.
-		 * @param defaultKeys
-		 *            The default Keys for this Hotkey, for example, "Alt+F4".
 		 * @param action
 		 *            The action this Hotkey does.       
 		 */
-		private Hotkey(String description, String defaultKeys, Runnable action) {
+		private Hotkey(String description, Runnable action) {
 			this.description = description;
-			this.defaultKeys = defaultKeys;
 			this.action = action;
 		}
-
 		@Override
 		public String toString() {
 			return description;
 		}
-		
 		public void run() {
 			action.run();
 		}
-		
-		/** Gets {@link #defaultKeys} for this Hotkey. */
 		public String getDefaultKeys() {
-			return defaultKeys;
+			return CuteConfig.getStringDefault(CuteConfig.HOTKEYS, name());
 		}
 	}
 	
 	public static class NKListener implements NativeKeyListener {
-		
 		@SuppressWarnings("deprecation")
 		@Override
 		public void nativeKeyPressed(NativeKeyEvent e) {
@@ -169,7 +150,6 @@ public final class HotkeyManager {
 				new Thread(task).run();
 				break;
 			}
-			
 		}
 
 		@Override
