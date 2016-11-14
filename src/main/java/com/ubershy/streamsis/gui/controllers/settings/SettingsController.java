@@ -171,9 +171,9 @@ public class SettingsController implements Initializable {
 	 * Applies new settings.
 	 */
 	private void applySettings() {
-		CuteConfig.setBooleanValue(CuteConfig.CUTE, "ProjectAutoLoad",
+		CuteConfig.setBoolean(CuteConfig.CUTE, "ProjectAutoLoad",
 				projectAutoLoadCheckBox.isSelected());
-		CuteConfig.setBooleanValue(CuteConfig.CUTE, "ProjectAutoStart",
+		CuteConfig.setBoolean(CuteConfig.CUTE, "ProjectAutoStart",
 				projectAutoStartCheckBox.isSelected());
 		for (HotkeyRow hr : allHotkeyRows) {
 			Hotkey hk = hr.getHotkey();
@@ -187,7 +187,7 @@ public class SettingsController implements Initializable {
 			} else {
 				toWriteToConfig = newKCC.getName();
 			}
-			CuteConfig.setStringValue(CuteConfig.HOTKEYS, hk.name(), toWriteToConfig);
+			CuteConfig.setString(CuteConfig.HOTKEYS, hk.name(), toWriteToConfig);
 		}
 	}
 

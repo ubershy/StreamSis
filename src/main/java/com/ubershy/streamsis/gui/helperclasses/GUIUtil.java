@@ -214,10 +214,10 @@ public final class GUIUtil {
 		Stage window = GUIManager.getPrimaryStage();
 		if (window == null || !window.isShowing())
 			return;
-		CuteConfig.setDoubleValue(CuteConfig.UTILGUI, modeName + "Width", window.getWidth());
-		CuteConfig.setDoubleValue(CuteConfig.UTILGUI, modeName + "Height", window.getHeight());
-		CuteConfig.setDoubleValue(CuteConfig.UTILGUI, modeName + "X", window.getX());
-		CuteConfig.setDoubleValue(CuteConfig.UTILGUI, modeName + "Y", window.getY());
+		CuteConfig.setDouble(CuteConfig.UTILGUI, modeName + "Width", window.getWidth());
+		CuteConfig.setDouble(CuteConfig.UTILGUI, modeName + "Height", window.getHeight());
+		CuteConfig.setDouble(CuteConfig.UTILGUI, modeName + "X", window.getX());
+		CuteConfig.setDouble(CuteConfig.UTILGUI, modeName + "Y", window.getY());
 		CuteConfig.saveConfig();
 	}
 
@@ -324,7 +324,7 @@ public final class GUIUtil {
 			file = fileChooser.showOpenDialog(window);
 		}
 		if (file != null) {
-			CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastFileDirectory",
+			CuteConfig.setString(CuteConfig.UTILGUI, "LastFileDirectory",
 					file.getParentFile().getAbsolutePath());
 		}
 		return file;
@@ -363,7 +363,7 @@ public final class GUIUtil {
 		}
 		List<File> files = fileChooser.showOpenMultipleDialog(window);
 		if (files != null) {
-			CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastFileDirectory",
+			CuteConfig.setString(CuteConfig.UTILGUI, "LastFileDirectory",
 					files.get(0).getParentFile().getAbsolutePath());
 		}
 		return files;
@@ -393,7 +393,7 @@ public final class GUIUtil {
 		File file = null;
 		file = dirChooser.showDialog(window);
 		if (file != null) {
-			CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastFileDirectory",
+			CuteConfig.setString(CuteConfig.UTILGUI, "LastFileDirectory",
 					file.getAbsolutePath());
 			tfToSet.setText(file.getAbsolutePath());
 		}

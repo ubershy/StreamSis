@@ -116,7 +116,7 @@ public class RunProgramActionController extends AbstractCuteController
 		}
 		File file = fileChooser.showOpenDialog(root.getScene().getWindow());
 		if (file != null) {
-			CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastFileDirectory",
+			CuteConfig.setString(CuteConfig.UTILGUI, "LastFileDirectory",
 					file.getParentFile().getAbsolutePath());
 			pathTextField.setText(file.getAbsolutePath());
 		}
@@ -132,7 +132,7 @@ public class RunProgramActionController extends AbstractCuteController
 		}
 		File dir = dirChooser.showDialog(root.getScene().getWindow());
 		if (dir != null) {
-			CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastFileDirectory",
+			CuteConfig.setString(CuteConfig.UTILGUI, "LastFileDirectory",
 					dir.getParentFile().getAbsolutePath());
 			workingDirTextField.setText(dir.getAbsolutePath());
 		}

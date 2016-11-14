@@ -35,32 +35,41 @@ import com.typesafe.config.ConfigUtil;
 import javafx.stage.FileChooser;
 
 /**
- * This class performs saving {@link StreamSis}'s variables to configuration file and reading variables from configuration file.
+ * {@link StreamSis} configuration manager.
  * <p>
- * Internally it is working with single {@link Config} object which can be saved to file or read from file when necessary.
+ * Internally it is working with a single {@link Config} object which can be saved to file or read
+ * from a file when necessary. Can provide default value for each configuration key.
  * 
+ * @note: If adding new configuration key, default value for the key should be added to
+ *        {@link #fallbackConfigResourcePath} file.
  * @see: {@link ConstsAndVars} for managing runtime variables.
  */
 public final class CuteConfig {
 
 	static final Logger logger = LoggerFactory.getLogger(CuteConfig.class);
 
-	/** The options for saving configuration file */
-	private static ConfigRenderOptions opts = ConfigRenderOptions.defaults().setJson(false).setOriginComments(false);
+	/** The options for saving configuration file. */
+	private static ConfigRenderOptions opts = ConfigRenderOptions.defaults().setJson(false)
+			.setOriginComments(false);
 
-	/** {@link Config} object to work with */
+	/**
+	 * The {@link Config} object in RAM to work with. Has {@link #fallbackConf} as fallback Config.
+	 */
 	private static Config conf;
 
-	/** True if {@link Config} is changed and needs to be saved */
+	/** The fallback {@link Config} object to use as storage of default configuration values. */
+	private static Config fallbackConf;
+
+	/** True if {@link Config} is changed and needs to be saved. */
 	private static boolean needsSave;
 
-	/** Path of fallback configuration file */
-	private final static String fallbackConfigPath = "config/StreamSisFallback.conf";
+	/** Path of fallback configuration file {@link #fallbackConf}. */
+	private final static String fallbackConfigResourcePath = "config/StreamSisFallback.conf";
 
-	/** Path of configuration file */
+	/** Path of configuration file {@link #conf}. */
 	private static String configPath;
 
-	/** The name of the root of all keys in {@link Config} */
+	/** The name of the root of all keys in {@link Config}. */
 	private final static String MAINKEY = "Root";
 
 	/** The name of the main settings section in {@link Config} for {@link StreamSis}. */
@@ -71,103 +80,167 @@ public final class CuteConfig {
 
 	/**
 	 * The name of the utility GUI settings section in {@link Config} for {@link StreamSis}. <br>
-	 * Such as last window size, last opened directory for {@link FileChooser} etc
+	 * Such as last window size, last opened directory for {@link FileChooser}, etc.
 	 */
 	public final static String UTILGUI = "UtilGUI";
-	
+
 	/** The name of the Hotkey settings section in {@link Config} for {@link StreamSis}. */
 	public final static String HOTKEYS = "Hotkeys";
 
 	static {
-		conf = loadConfig();
-	}
-
-	/**
-	 * Loads {@link Config} from user data location. If not possible, uses fallback configuration.
-	 *
-	 * @return the {@link Config}
-	 */
-	public static Config loadConfig() {
-		Config result = null;
+		// Initialize conf and fallbackConf.
 		configPath = LowLevel.getAppDataPath() + "StreamSis.conf";
 		logger.info("Loading configuration file: " + configPath + " ...");
 		try {
-			Config fallbackConfig = ConfigFactory.parseResources(fallbackConfigPath);
-			if (fallbackConfig == null) {
-				throw new RuntimeException("Fallback configuration file cannot be loaded. Probably problem with Maven");
+			fallbackConf = ConfigFactory.parseResources(fallbackConfigResourcePath);
+			if (fallbackConf == null) {
+				throw new RuntimeException("Fallback configuration file cannot be loaded."
+						+ " Probably problem with Maven setup.");
 			}
-			result = ConfigFactory.parseFile(new File(configPath));
-			if (result.isEmpty()) {
-				logger.error("Can't load configuration file. Using fallback configuration");
+			conf = ConfigFactory.parseFile(new File(configPath));
+			if (conf.isEmpty()) {
+				logger.error(
+						"Can't find or load configuration file. Using fallback configuration.");
 			} else {
-				logger.info("Configuration file successfully loaded");
+				logger.info("Configuration file successfully loaded to RAM.");
 			}
-			result = result.withFallback(fallbackConfig);
+			conf = conf.withFallback(fallbackConf);
 		} catch (NullPointerException e) {
 			logger.error("gosh");
 		}
-		return result;
+	}
+	
+	/**
+	 * Gets a variable's value from configuration as String.
+	 *
+	 * @param key
+	 *            The name of settings section.
+	 * @param subKey
+	 *            The name of needed variable.
+	 * @return The string value of variable.
+	 */
+	private static String getStringFromConfig(Config config, String key, String subKey) {
+		try {
+			return config.getString(MAINKEY + "." + key + "." + subKey);
+		} catch (ConfigException e) {
+			throw new RuntimeException("Missing parameter in configuration: " + key + "." + subKey);
+		}
 	}
 
 	/**
-	 * Gets a variable from {@link Config} as string.
+	 * Gets a variable's value from current configuration as String.
 	 *
 	 * @param key
-	 *            the name of settings section
+	 *            The name of settings section.
 	 * @param subKey
-	 *            the name of needed variable
-	 * @return the string value of variable
+	 *            The name of needed variable.
+	 * @return The string value of variable.
 	 */
 	public static String getString(String key, String subKey) {
+		return getStringFromConfig(conf, key, subKey);
+	}
+
+	/**
+	 * Gets a variable's value from configuration as boolean value.
+	 *
+	 * @param key
+	 *            The name of settings section.
+	 * @param subKey
+	 *            The name of needed variable.
+	 * @return The boolean value of variable.
+	 */
+	private static boolean getBooleanFromConfig(Config config, String key, String subKey) {
 		try {
-			return conf.getString(MAINKEY + "." + key + "." + subKey);
+			return config.getBoolean(MAINKEY + "." + key + "." + subKey);
 		} catch (ConfigException e) {
-			e.printStackTrace();
-			logger.error("Missing parameter in configuration: " + key + "." + subKey);
-			return "";
+			throw new RuntimeException("Missing parameter in configuration: " + key + "." + subKey);
 		}
 	}
 
 	/**
-	 * Gets a variable from {@link Config} as boolean value.
+	 * Gets the default variable's value from fallback configuration as String.
 	 *
 	 * @param key
-	 *            the name of settings section
+	 *            The name of settings section.
 	 * @param subKey
-	 *            the name of needed variable
-	 * @return the boolean value of variable
+	 *            The name of needed variable.
+	 * @return The string value of variable.
+	 */
+	public static String getStringDefault(String key, String subKey) {
+		return getStringFromConfig(fallbackConf, key, subKey);
+	}
+
+	/**
+	 * Gets a variable's value from current configuration as boolean value.
+	 *
+	 * @param key
+	 *            The name of settings section.
+	 * @param subKey
+	 *            The name of needed variable.
+	 * @return The boolean value of variable.
 	 */
 	public static boolean getBoolean(String key, String subKey) {
-		try {
-			return conf.getBoolean(MAINKEY + "." + key + "." + subKey);
-		} catch (ConfigException e) {
-			e.printStackTrace();
-			logger.error("Missing parameter in configuration: " + key + "." + subKey);
-			return false;
-		}
+		return getBooleanFromConfig(conf, key, subKey);
 	}
-
+	
 	/**
-	 * Gets a variable from {@link Config} as double value.
+	 * Gets the default variable's value from fallback configuration as boolean value.
 	 *
 	 * @param key
-	 *            the name of settings section
+	 *            The name of settings section.
 	 * @param subKey
-	 *            the name of needed variable
-	 * @return the double value of variable
+	 *            The name of needed variable.
+	 * @return The boolean value of variable.
 	 */
-	public static double getDouble(String key, String subKey) {
+	public static boolean getBooleanDefault(String key, String subKey) {
+		return getBooleanFromConfig(fallbackConf, key, subKey);
+	}
+
+	/**
+	 * Gets a variable's value from configuration as double value.
+	 *
+	 * @param key
+	 *            The name of settings section.
+	 * @param subKey
+	 *            The name of needed variable.
+	 * @return The double value of variable.
+	 */
+	public static double getDoubleFromConfig(Config config, String key, String subKey) {
 		try {
-			return conf.getDouble(MAINKEY + "." + key + "." + subKey);
+			return config.getDouble(MAINKEY + "." + key + "." + subKey);
 		} catch (ConfigException e) {
-			e.printStackTrace();
-			logger.error("Missing parameter in configuration: " + key + "." + subKey);
-			return -1;
+			throw new RuntimeException("Missing parameter in configuration: " + key + "." + subKey);
 		}
 	}
 
 	/**
-	 * Save {@link Config} to file.
+	 * Gets a variable's value from current configuration as double value.
+	 *
+	 * @param key
+	 *            The name of settings section.
+	 * @param subKey
+	 *            The name of needed variable.
+	 * @return The double value of variable.
+	 */
+	public static double getDouble(String key, String subKey) {
+		return getDoubleFromConfig(conf, key, subKey);
+	}
+
+	/**
+	 * Gets the default variable's value from fallback configuration as double value.
+	 *
+	 * @param key
+	 *            The name of settings section.
+	 * @param subKey
+	 *            The name of needed variable.
+	 * @return The double value of variable.
+	 */
+	public static double getDoubleDefault(String key, String subKey) {
+		return getDoubleFromConfig(fallbackConf, key, subKey);
+	}
+
+	/**
+	 * Saves current configuration {@link #conf} to file at {@link #configPath} path.
 	 */
 	public static void saveConfig() {
 		if (!needsSave) {
@@ -180,58 +253,58 @@ public final class CuteConfig {
 			br.write(conf.root().withOnlyKey(MAINKEY).render(opts));
 			logger.info("Updated configuration file: " + configPath);
 		} catch (IOException e) {
-			logger.error("Can't rewrite configuration file for some reason: " + configPath);
-			e.printStackTrace();
+			logger.error("Can't rewrite configuration file for some reason: " + configPath, e);
 		}
 	}
 
 	/**
-	 * Sets the double value for {@link Config} variable.
+	 * Sets the double value for current configuration's variable.
 	 *
 	 * @param key
-	 *            the name of settings section
+	 *            The name of settings section.
 	 * @param subKey
-	 *            the name of needed variable
+	 *            The name of needed variable.
 	 * @param value
-	 *            the value to set
+	 *            The value to set.
 	 */
-	public static void setDoubleValue(String key, String subKey, double value) {
-		setStringValue(key, subKey, String.valueOf(value));
+	public static void setDouble(String key, String subKey, double value) {
+		setString(key, subKey, String.valueOf(value));
 	}
 
 	/**
-	 * Sets the boolean value for {@link Config} variable.
+	 * Sets the boolean value for current configuration's variable.
 	 *
 	 * @param key
-	 *            the name of settings section
+	 *            The name of settings section.
 	 * @param subKey
-	 *            the name of needed variable
+	 *            The name of needed variable.
 	 * @param value
-	 *            the value to set
+	 *            The value to set.
 	 */
-	public static void setBooleanValue(String key, String subKey, boolean value) {
-		setStringValue(key, subKey, String.valueOf(value));
+	public static void setBoolean(String key, String subKey, boolean value) {
+		setString(key, subKey, String.valueOf(value));
 	}
 
 	/**
-	 * Sets the string value for {@link Config} variable.
+	 * Sets the String value for current configuration's variable.
 	 *
 	 * @param key
-	 *            the name of settings section
+	 *            The name of settings section.
 	 * @param subKey
-	 *            the name of needed variable
+	 *            The name of needed variable.
 	 * @param value
-	 *            the value to set
+	 *            The value to set.
 	 */
-	public static void setStringValue(String key, String subKey, String newValue) {
+	public static void setString(String key, String subKey, String newValue) {
 		String fullPath = MAINKEY + "." + key + "." + subKey;
 		if (getString(key, subKey).equals(newValue)) {
-			logger.debug(String.format("Configuration value unchanged. Key: %s.%s Value: %s", key, subKey, newValue));
+			logger.debug(String.format("Configuration value unchanged. Key: %s.%s Value: %s", key,
+					subKey, newValue));
 			return;
 		}
 		String processedNewValue = ConfigUtil.quoteString(newValue);
-		// Lets make new Config object with just a single variable
-		// Also lets preserve the comments from original Config
+		// Lets make new Config object with just a single variable.
+		// Also lets preserve the comments from the original Config.
 		ConfigOrigin or = conf.getValue(fullPath).origin();
 		StringBuilder toParse = new StringBuilder();
 		for (String comment : or.comments()) {
@@ -239,10 +312,11 @@ public final class CuteConfig {
 		}
 		toParse.append(fullPath).append("=").append(processedNewValue);
 		Config newLittleConfig = ConfigFactory.parseString(toParse.toString());
-		// Now we have our little Config with the single variable and old comments
-		// Let's merge it with old Config
+		// Now we have our little Config with the single variable and old comments.
+		// Let's merge it with the old Config.
 		conf = newLittleConfig.withFallback(conf);
-		logger.info(String.format("Configuration update. Key: %s.%s Value: %s", key, subKey, newValue));
+		logger.info(String.format("Configuration update in RAM. Key: %s.%s Value: %s", key, subKey,
+				newValue));
 		needsSave = true;
 	}
 

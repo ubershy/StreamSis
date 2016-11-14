@@ -70,7 +70,7 @@ public final class OpenRecentManager {
 			} else {
 				valueToSet = "";
 			}
-			CuteConfig.setStringValue(CuteConfig.UTILGUI, "OpenRecent" + i, valueToSet);
+			CuteConfig.setString(CuteConfig.UTILGUI, "OpenRecent" + i, valueToSet);
 		}
 		CuteConfig.saveConfig();
 	}

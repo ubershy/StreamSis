@@ -69,7 +69,7 @@ public final class ProjectManager {
 		ProjectManager.currentProject = currentProject;
 		ProjectManager.projectFilePath.set(path);
 		if (path != null && !path.isEmpty()) {
-			CuteConfig.setStringValue(CuteConfig.CUTE, "LastProjectLocation", path);
+			CuteConfig.setString(CuteConfig.CUTE, "LastProjectLocation", path);
 		}
 	}
 

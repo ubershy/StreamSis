@@ -87,7 +87,7 @@ public class MainController implements Initializable {
 		currentModeIsFull = true;
 		// Firstly we will save the state of the window of the previous mode
 		GUIUtil.saveCurrentModeWindowStateAndEverything();
-		CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastMode", "Full");
+		CuteConfig.setString(CuteConfig.UTILGUI, "LastMode", "Full");
 		window.setMaxWidth(1500);
 		window.setMaxHeight(1000);
 		window.setMinWidth(415);
@@ -108,7 +108,7 @@ public class MainController implements Initializable {
 		currentModeIsFull = false;
 		// Firstly we will save the state of the window of the previous mode
 		GUIUtil.saveCurrentModeWindowStateAndEverything();
-		CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastMode", "Compact");
+		CuteConfig.setString(CuteConfig.UTILGUI, "LastMode", "Compact");
 
 		window.setMinHeight(200);
 		window.setMinWidth(100);

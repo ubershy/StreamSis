@@ -217,7 +217,7 @@ public class FullModeController implements Initializable {
 				MenuItem item = new MenuItem(path);
 				item.setOnAction((ActionEvent event) -> {
 					project.stopProject();
-					CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastFileDirectory", path);
+					CuteConfig.setString(CuteConfig.UTILGUI, "LastFileDirectory", path);
 					OpenRecentManager.setRecentProject(path);
 					GUIManager.loadProject(path, false);
 				});
@@ -266,7 +266,7 @@ public class FullModeController implements Initializable {
 		onTopToggleButton.setSelected(stayOnTop);
 		GUIManager.getPrimaryStage().setAlwaysOnTop(stayOnTop);
 		onTopToggleButton.selectedProperty().addListener((o, oldVal, newVal) -> {
-			CuteConfig.setBooleanValue(CuteConfig.USERGUI, "OnTop", newVal);
+			CuteConfig.setBoolean(CuteConfig.USERGUI, "OnTop", newVal);
 			GUIManager.getPrimaryStage().setAlwaysOnTop(newVal);
 		});
 
@@ -427,7 +427,7 @@ public class FullModeController implements Initializable {
 		if (file != null) {
 			if (project != null)
 				project.stopProject();
-			CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastFileDirectory",
+			CuteConfig.setString(CuteConfig.UTILGUI, "LastFileDirectory",
 					file.getParentFile().getAbsolutePath());
 			OpenRecentManager.setRecentProject(file.getAbsolutePath());
 			initializeOpenRecentMenu();
@@ -496,7 +496,7 @@ public class FullModeController implements Initializable {
 		if (file != null) {
 			try {
 				String absolutePath = file.getAbsolutePath();
-				CuteConfig.setStringValue(CuteConfig.UTILGUI, "LastFileDirectory",
+				CuteConfig.setString(CuteConfig.UTILGUI, "LastFileDirectory",
 						file.getParentFile().getAbsolutePath());
 				ProjectSerializator.serializeToFile(project, absolutePath);
 				OpenRecentManager.setRecentProject(absolutePath);
@@ -539,13 +539,13 @@ public class FullModeController implements Initializable {
 	@FXML
 	private void setVolumeToConfigAndLoadedSounds() { // Is invoked on mouse release on slider.
 		double volumeToSet = volumeSlider.getValue() / 100.0;
-		CuteConfig.setDoubleValue(CuteConfig.CUTE, "GlobalVolume", volumeToSet);
+		CuteConfig.setDouble(CuteConfig.CUTE, "GlobalVolume", volumeToSet);
 		SuperSoundManager.setVolumeForAllSounds(volumeToSet);
 	}
 
 	@FXML
 	private void setOpacityToConfig() { // Is invoked on mouse release on slider.
-		CuteConfig.setDoubleValue(CuteConfig.USERGUI, "MainWindowOpacity",
+		CuteConfig.setDouble(CuteConfig.USERGUI, "MainWindowOpacity",
 				opacitySlider.getValue() / 100.0);
 	}
 
