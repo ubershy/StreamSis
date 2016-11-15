@@ -375,10 +375,12 @@ public class CuteProject implements Serializable {
 		setStartedCountingElements();
 		int count = countElementsInProject();
 		setFinishedCountingElements(count);
-		logger.info("Initializing Project...");
-		setProjectAsInitializing();
 		if (isStarted())
 			stopProject();
+		logger.info("Initializing Project...");
+		setProjectAsInitializing();
+		
+		UserVars.clear();
 
 		checkAndFixCurrentAndPrimarySisScenes();
 
