@@ -41,6 +41,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayer.Status;
 
 /**
  * Sound Action. <br>
@@ -162,6 +163,8 @@ public class SoundAction extends AbstractCuteElement implements Action {
 		double globalVolume = CuteConfig.getDouble(CuteConfig.CUTE, "GlobalVolume");
 		if (soundToPlay != null) {
 			soundToPlay.setVolume(volume.get() * globalVolume);
+			if (soundToPlay.getStatus() == Status.PLAYING)
+				soundToPlay.stop();
 			soundToPlay.play();
 			logger.info(String.format("Playing(%.2f): %s", soundToPlay.getVolume(),
 					Paths.get(URI.create(soundToPlay.getMedia().getSource()))));
