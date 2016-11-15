@@ -142,7 +142,7 @@ public class VariableSwitchAction extends AbstractCuteElement implements Action 
 			boolean foundCase = false;
 			for (CuteElementContainer<Action> container : cases) {
 				String caseName = container.getElementInfo().getName();
-				if (aquiredValue.equals(caseName)) {
+				if (aquiredValue.equalsIgnoreCase(caseName)) {
 					foundCase = true;
 					logger.info(
 							"Actions are found for Key: " + key.get() + " Value: " + aquiredValue);

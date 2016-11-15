@@ -81,7 +81,7 @@ public class VariableChecker extends AbstractCuteElement implements Checker {
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
 			String currentValue = UserVars.get(key.get());
-			if (expectedValue.get().equals(currentValue)) {
+			if (expectedValue.get().equalsIgnoreCase(currentValue)) {
 				if (!previousResult) {
 					logger.info("Variable: '" + key.get() + "' EQUALS expected Value: '"
 							+ expectedValue.get() + "'");

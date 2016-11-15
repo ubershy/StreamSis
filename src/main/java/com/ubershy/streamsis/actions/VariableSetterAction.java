@@ -70,7 +70,7 @@ public class VariableSetterAction extends AbstractCuteElement implements Action 
 		if (elementInfo.canWork()) {
 			logger.info("Set Variable(key): '" + key.get() + "' to Value: '" + value.get() + "'");
 			elementInfo.setAsWorking();
-			if (value.get().equals(UserVars.get(key.get()))) {
+			if (value.get().equalsIgnoreCase(UserVars.get(key.get()))) {
 				// Such key already has this value, set false result
 				elementInfo.setBooleanResult(false);
 			} else {

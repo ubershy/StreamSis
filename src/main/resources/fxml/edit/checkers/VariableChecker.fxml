@@ -37,6 +37,7 @@
       <RowConstraints fillHeight="false" maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="NEVER" />
       <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="25.0" vgrow="NEVER" />
       <RowConstraints fillHeight="false" maxHeight="25.0" minHeight="25.0" prefHeight="30.0" vgrow="NEVER" />
+      <RowConstraints fillHeight="false" maxHeight="25.0" minHeight="25.0" prefHeight="30.0" vgrow="NEVER" />
    </rowConstraints>
    <children>
       <Label text="Specify the Variable which value you want to check." wrapText="true" GridPane.columnSpan="2" GridPane.vgrow="ALWAYS" />
@@ -45,5 +46,6 @@
       <Label text="Specify the expected value for the Variable.  If current value will be equal to the expected value, this Checker will return True result." wrapText="true" GridPane.columnSpan="2" GridPane.rowIndex="2" />
       <Label maxHeight="1.7976931348623157E308" text="Expected value" GridPane.rowIndex="3" />
       <TextField fx:id="valueTextField" promptText="For example, &quot;Competitive&quot;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <Label maxHeight="1.7976931348623157E308" text="Note: cases of letters do not matter." GridPane.columnSpan="2" GridPane.rowIndex="4" />
    </children>
 </GridPane>

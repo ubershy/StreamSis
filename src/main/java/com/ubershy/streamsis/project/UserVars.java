@@ -26,22 +26,28 @@ import com.ubershy.streamsis.actions.VariableSwitchAction;
 import com.ubershy.streamsis.checkers.VariableChecker;
 
 /**
- * This class is for creating and using string variables the user wants to use in his {@link CuteProject}.
+ * This class is for creating and using string variables the user wants to use in his
+ * {@link CuteProject}.
  * <p>
- * Combined with {@link VariableSetterAction}, {@link VariableSwitchAction} and {@link VariableChecker} variables can affect how user's CuteProject behaves.
+ * Combined with {@link VariableSetterAction}, {@link VariableSwitchAction} and
+ * {@link VariableChecker} variables can affect how user's CuteProject behaves.
  * <p>
  * <b>Example:</b> <br>
- * The user is playing an online game. After winning or loosing a match the game is always showing main menu. <br>
- * When StreamSis detects the user has won, {@link VariableSetterAction} can execute to set a new variable "WinOrLose" with value <b>"Win"</b>.<br>
- * When main menu finally starts showing and one of the Checkers detects it, {@link VariableSwitchAction} can execute to change Streaming Program layout to
- * something <b>happy</b>. <br>
- * However, If user has lost his match and "WinOrLose" variable is set to <b>"Lose"</b>, {@link VariableSwitchAction} can change Streaming Program layout to
- * something <b>sad</b>.<br>
+ * The user is playing an online game. After winning or loosing a match the game is always showing
+ * main menu. <br>
+ * When StreamSis detects the user has won, {@link VariableSetterAction} can execute to set a new
+ * variable "WinOrLose" with value <b>"Win"</b>.<br>
+ * When main menu finally starts showing and one of the Checkers detects it,
+ * {@link VariableSwitchAction} can execute to change Streaming Program layout to something
+ * <b>happy</b>. <br>
+ * However, If user has lost his match and "WinOrLose" variable is set to <b>"Lose"</b>,
+ * {@link VariableSwitchAction} can change Streaming Program layout to something <b>sad</b>.<br>
  */
 public final class UserVars {
 
-	/** The variables in format key:value */
-	private static Map<String, String> variables = new TreeMap<String, String>();
+	/** The map in format variable(key):value. The comparison of keys is case-insensitive. */
+	private static Map<String, String> variables = new TreeMap<String, String>(
+			String.CASE_INSENSITIVE_ORDER);
 
 	/**
 	 * Gets the value of the variable stored in {@link UserVars}.
@@ -55,13 +61,14 @@ public final class UserVars {
 	 */
 	public static String get(String key) {
 		if (key == null || key.isEmpty()) {
-			throw new IllegalArgumentException("UserVars key is null or empty");
+			throw new IllegalArgumentException("Argument key is null or empty");
 		}
 		return variables.get(key);
 	}
 
 	/**
-	 * Sets the value for the variable stored in {@link UserVars}. If the variable with specified name does not exist, it will be created.
+	 * Sets the value for the variable stored in {@link UserVars}. If the variable with specified
+	 * name does not exist, it will be created.
 	 *
 	 * @param key
 	 *            the name of variable which value we want to set <br>
@@ -73,10 +80,10 @@ public final class UserVars {
 	 */
 	public static void set(String key, String value) {
 		if (key == null || key.isEmpty()) {
-			throw new IllegalArgumentException("UserVars key is null or empty");
+			throw new IllegalArgumentException("Provided key is null or empty");
 		}
 		if (value == null) {
-			throw new IllegalArgumentException("UserVars value is null");
+			throw new IllegalArgumentException("Provided value is null");
 		}
 		variables.put(key, value);
 	}
@@ -87,7 +94,7 @@ public final class UserVars {
 	public static void clear() {
 		variables.clear();
 	}
-	
+
 	/**
 	 * Gets a deep copy of current map with variables and values.
 	 */
@@ -100,5 +107,5 @@ public final class UserVars {
 			throw new RuntimeException("Can't make a copy of current variables.");
 		}
 	}
-	
+
 }
