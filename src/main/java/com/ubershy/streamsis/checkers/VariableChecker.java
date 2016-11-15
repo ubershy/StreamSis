@@ -81,7 +81,7 @@ public class VariableChecker extends AbstractCuteElement implements Checker {
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
 			String currentValue = UserVars.get(key.get());
-			if (expectedValue.equals(currentValue)) {
+			if (expectedValue.get().equals(currentValue)) {
 				if (!previousResult) {
 					logger.info("Variable: '" + key.get() + "' EQUALS expected Value: '"
 							+ expectedValue.get() + "'");
@@ -104,7 +104,7 @@ public class VariableChecker extends AbstractCuteElement implements Checker {
 		super.init();
 		if (key.get().isEmpty())
 			elementInfo.setAsBroken("Variable name is empty");
-		if (expectedValue == null)
+		if (expectedValue.get() == null)
 			throw new RuntimeException("Expected value can't be set to null.");
 	}
 

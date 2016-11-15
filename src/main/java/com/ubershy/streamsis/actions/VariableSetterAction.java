@@ -70,7 +70,7 @@ public class VariableSetterAction extends AbstractCuteElement implements Action 
 		if (elementInfo.canWork()) {
 			logger.info("Set Variable(key): '" + key.get() + "' to Value: '" + value.get() + "'");
 			elementInfo.setAsWorking();
-			if (value.equals(UserVars.get(key.get()))) {
+			if (value.get().equals(UserVars.get(key.get()))) {
 				// Such key already has this value, set false result
 				elementInfo.setBooleanResult(false);
 			} else {
@@ -95,7 +95,7 @@ public class VariableSetterAction extends AbstractCuteElement implements Action 
 			elementInfo.setAsBroken("Variable name is empty");
 			return;
 		}
-		if (value.equals(null))
+		if (value.get().equals(null))
 			throw new RuntimeException("Value can't be set to null");
 	}
 
