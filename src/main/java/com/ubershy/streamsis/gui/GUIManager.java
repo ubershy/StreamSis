@@ -188,7 +188,7 @@ public final class GUIManager {
 	/** Save the coordinates of all windows of {@link GUIManager} to config. */
 	public static void saveCoordinatesOfAllWindows() {
 		// Save primary stage coordinates.
-		if (primaryStage != null) {
+		if (primaryStage != null && primaryStage.isShowing()) {
 			String currentMode = CuteConfig.getString(CuteConfig.UTILGUI, "LastMode") + "Mode";
 			GUIUtil.saveWindowCoordinates(primaryStage, currentMode);
 		}
