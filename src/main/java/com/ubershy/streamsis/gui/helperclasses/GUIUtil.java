@@ -18,6 +18,9 @@
 package com.ubershy.streamsis.gui.helperclasses;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
@@ -33,6 +36,7 @@ import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.StreamSisAppFactory;
 import com.ubershy.streamsis.gui.controllers.settings.SettingsController;
+import com.ubershy.streamsis.project.StuffSerializator;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -146,24 +150,42 @@ public final class GUIUtil {
 	}
 
 	/**
-	 * Position Window based on current mode.
-	 * <p>
+	 * Position window based on coordinates from config.
 	 * 
+	 * @param window
+	 *            The window to position.
+	 * @param windowName
+	 *            The name of window in config.
 	 * @param defaultWidth
-	 *            default window width
+	 *            Default window width.
 	 * @param defaultHeight
-	 *            default window height
+	 *            Default window height.
 	 */
-	public static void positionWindowBasedOnCurrentMode(double defaultWidth, double defaultHeight) {
-		Stage window = GUIManager.getPrimaryStage();
-		if (window == null)
-			return;
-		String modeName = CuteConfig.getString(CuteConfig.UTILGUI, "LastMode") + "Mode";
+	@SuppressWarnings("unchecked")
+	public static void positionWindowBasedOnConfigCoordinates(Stage window, String windowName) {
+		String subKey = windowName + "Coordinates";
 		Rectangle2D fullBounds = getMultiScreenBounds();
-		double prefWidth = CuteConfig.getDouble(CuteConfig.UTILGUI, modeName + "Width");
-		double prefHeight = CuteConfig.getDouble(CuteConfig.UTILGUI, modeName + "Height");
-		double prefX = CuteConfig.getDouble(CuteConfig.UTILGUI, modeName + "X");
-		double prefY = CuteConfig.getDouble(CuteConfig.UTILGUI, modeName + "Y");
+		String defaultCoordsString = CuteConfig.getStringDefault(CuteConfig.UTILGUI, subKey);
+		ArrayList<Double> defaultCoords;
+		try {
+			defaultCoords = (ArrayList<Double>) StuffSerializator
+					.deserializeFromString(defaultCoordsString, ArrayList.class);
+		} catch (IOException e1) {
+			throw new RuntimeException("The default " + subKey + " is not deserializable");
+		}
+		String coordsString = CuteConfig.getString(CuteConfig.UTILGUI, subKey);
+		ArrayList<Double> coords;
+		try {
+			coords = (ArrayList<Double>) StuffSerializator.deserializeFromString(coordsString,
+					ArrayList.class);
+		} catch (IOException e) {
+			// If there's a problem deserializing values, let's use default coordinates.
+			coords = defaultCoords;
+		}
+		double prefX = coords.get(0);
+		double prefY = coords.get(1);
+		double prefWidth = coords.get(2);
+		double prefHeight = coords.get(3);
 		Rectangle2D prefWindow = new Rectangle2D(prefX, prefY, prefWidth, prefHeight);
 		// If window is hardly accessible, we need to reset it's position.
 		if (prefWindow.intersects(fullBounds)) {
@@ -172,8 +194,8 @@ public final class GUIUtil {
 			window.setX(prefX);
 			window.setY(prefY);
 		} else {
-			window.setWidth(defaultWidth);
-			window.setHeight(defaultHeight);
+			window.setWidth(defaultCoords.get(2));
+			window.setHeight(defaultCoords.get(3));
 			window.centerOnScreen();
 		}
 	}
@@ -194,30 +216,23 @@ public final class GUIUtil {
 	}
 
 	/**
-	 * Save current mode window state and everything. <br>
-	 * Writes the parameters of current window to file.
-	 */
-	public static void saveCurrentModeWindowStateAndEverything() {
-		if (GUIManager.getPrimaryStage() == null || !GUIManager.getPrimaryStage().isShowing())
-			return;
-		String currentMode = CuteConfig.getString(CuteConfig.UTILGUI, "LastMode") + "Mode";
-		saveModeCoordinates(currentMode);
-	}
-
-	/**
-	 * Saves the coordinates of current window and assigns them to current mode.
+	 * Saves coordinates of window.
 	 *
-	 * @param modeName
-	 *            mode name
+	 * @param window
+	 *            The window which coordinates to save.
+	 * @param windowName
+	 *            The name of window in config.
 	 */
-	private static void saveModeCoordinates(String modeName) {
-		Stage window = GUIManager.getPrimaryStage();
-		if (window == null || !window.isShowing())
-			return;
-		CuteConfig.setDouble(CuteConfig.UTILGUI, modeName + "Width", window.getWidth());
-		CuteConfig.setDouble(CuteConfig.UTILGUI, modeName + "Height", window.getHeight());
-		CuteConfig.setDouble(CuteConfig.UTILGUI, modeName + "X", window.getX());
-		CuteConfig.setDouble(CuteConfig.UTILGUI, modeName + "Y", window.getY());
+	public static void saveWindowCoordinates(Stage window, String windowName) {
+		String subKey = windowName + "Coordinates";
+		String serialized;
+		try {
+			serialized = StuffSerializator.serializeToString(Arrays.asList(window.getX(),
+					window.getY(), window.getWidth(), window.getHeight()), false);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		CuteConfig.setString(CuteConfig.UTILGUI, subKey, serialized);
 		CuteConfig.saveConfig();
 	}
 

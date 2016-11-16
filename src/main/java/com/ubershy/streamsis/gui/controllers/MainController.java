@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.ubershy.streamsis.CuteConfig;
+import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 
 import javafx.beans.InvalidationListener;
@@ -39,18 +40,6 @@ public class MainController implements Initializable {
 
 	private Node fullModeView;
 	private Node compactModeView;
-
-	/** Default Compact Mode window height. */
-	private final double defaultCompactModeHeight = 250;
-
-	/** Default Compact Mode window width. */
-	private final double defaultCompactModeWidth = 360;
-
-	/** Default Full Mode window height. */
-	private final double defaultFullModeHeight = 662;
-
-	/** Default Full Mode window width. */
-	private final double defaultFullModeWidth = 1000;
 
 	private Stage window;
 	
@@ -71,29 +60,32 @@ public class MainController implements Initializable {
 		String lastMode = CuteConfig.getString(CuteConfig.UTILGUI, "LastMode");
 		switch (lastMode) {
 		case "Compact":
-			GUIUtil.positionWindowBasedOnCurrentMode(defaultFullModeWidth, defaultFullModeHeight);
 			useCompactMode();
 			break;
 		case "Full":
-		default:
-			GUIUtil.positionWindowBasedOnCurrentMode(defaultCompactModeWidth,
-					defaultCompactModeHeight);
 			useFullMode();
+			break;
+		default:
 			break;
 		}
 	}
 
 	public void useFullMode() {
 		currentModeIsFull = true;
+		String lastMode = "Full";
+		String configModeSubKey = lastMode + "Mode";
 		// Firstly we will save the state of the window of the previous mode
-		GUIUtil.saveCurrentModeWindowStateAndEverything();
-		CuteConfig.setString(CuteConfig.UTILGUI, "LastMode", "Full");
+		GUIManager.saveCoordinatesOfAllWindows();
+		CuteConfig.setString(CuteConfig.UTILGUI, "LastMode", lastMode);
 		window.setMaxWidth(1500);
 		window.setMaxHeight(1000);
 		window.setMinWidth(415);
 		window.setMinHeight(600);
 
-		GUIUtil.positionWindowBasedOnCurrentMode(defaultFullModeWidth, defaultFullModeHeight);
+		Stage window = GUIManager.getPrimaryStage();
+		if (window != null) {
+			GUIUtil.positionWindowBasedOnConfigCoordinates(window, configModeSubKey);
+		}
 
 		Node view = this.fullModeView;
 		contentPane.getChildren().clear();
@@ -106,8 +98,10 @@ public class MainController implements Initializable {
 
 	public void useCompactMode() {
 		currentModeIsFull = false;
+		String lastMode = "Compact";
+		String configModeSubKey = lastMode + "Mode";
 		// Firstly we will save the state of the window of the previous mode
-		GUIUtil.saveCurrentModeWindowStateAndEverything();
+		GUIManager.saveCoordinatesOfAllWindows();
 		CuteConfig.setString(CuteConfig.UTILGUI, "LastMode", "Compact");
 
 		window.setMinHeight(200);
@@ -115,7 +109,10 @@ public class MainController implements Initializable {
 		window.setMaxHeight(500);
 		window.setMaxWidth(500);
 
-		GUIUtil.positionWindowBasedOnCurrentMode(defaultCompactModeWidth, defaultCompactModeHeight);
+		Stage window = GUIManager.getPrimaryStage();
+		if (window != null) {
+			GUIUtil.positionWindowBasedOnConfigCoordinates(window, configModeSubKey);
+		}
 
 		Node view = this.compactModeView;
 		contentPane.getChildren().clear();

@@ -186,7 +186,7 @@ public class StreamSis extends Application {
 	public void stop() {
 		logger.info("Safely exiting StreamSis...");
 		if (GUIManager.getPrimaryStage() != null)
-			GUIUtil.saveCurrentModeWindowStateAndEverything();
+			GUIManager.saveCoordinatesOfAllWindows();
 		System.exit(0);
     }
 

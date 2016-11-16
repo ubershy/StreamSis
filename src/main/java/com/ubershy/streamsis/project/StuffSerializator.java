@@ -46,11 +46,14 @@ public final class StuffSerializator {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static String serializeToString(Object object) throws IOException {
+	public static String serializeToString(Object object, boolean pretty) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		String serialized = null;
 		try {
-			serialized = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
+			if (pretty)
+				serialized = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
+			else
+				serialized = mapper.writeValueAsString(object);
 		} catch (JsonGenerationException e) {
 			logger.error(object + "object serializing to string fail: JsonGeneration error.");
 			e.printStackTrace();
@@ -104,7 +107,7 @@ public final class StuffSerializator {
 	}
 	
 	public static Object makeACopyOfObjectUsingSerialization(Object object) throws IOException {
-		String serialized = serializeToString(object);
+		String serialized = serializeToString(object, false);
 		Object copy = deserializeFromString(serialized, object.getClass());
 		return copy;
 	}

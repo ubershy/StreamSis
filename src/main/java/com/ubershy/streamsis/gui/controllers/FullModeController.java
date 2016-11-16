@@ -452,7 +452,7 @@ public class FullModeController implements Initializable {
 
 	@FXML
 	private void quitApplication() {
-		GUIUtil.saveCurrentModeWindowStateAndEverything();
+		GUIManager.saveCoordinatesOfAllWindows();
 		Platform.exit();
 	}
 
@@ -478,7 +478,7 @@ public class FullModeController implements Initializable {
 				GUIUtil.showAlertInPrimaryStageCenter(alert);
 			}
 		}
-		GUIUtil.saveCurrentModeWindowStateAndEverything();
+		GUIManager.saveCoordinatesOfAllWindows();
 	}
 
 	@FXML
@@ -515,7 +515,7 @@ public class FullModeController implements Initializable {
 				saveProjectAs(null);
 			}
 		}
-		GUIUtil.saveCurrentModeWindowStateAndEverything();
+		GUIManager.saveCoordinatesOfAllWindows();
 	}
 
 //	private void searchSisScenes(ActionEvent event) {

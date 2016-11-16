@@ -23,6 +23,7 @@ import org.controlsfx.control.NotificationPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.gui.controllers.CompactModeController;
@@ -96,7 +97,7 @@ public final class GUIManager {
 
 	// GUI classes must use this method
 	public static void createNewProject() {
-		GUIUtil.saveCurrentModeWindowStateAndEverything();
+		GUIManager.saveCoordinatesOfAllWindows();
 		CuteProject project = ProjectManager.createAndSetNewProject();
 		buildGui(project);
 		ProjectManager.initProjectOutsideJavaFXThread();
@@ -111,7 +112,7 @@ public final class GUIManager {
 	}
 
 	public static void loadProject(String path, boolean start) {
-		GUIUtil.saveCurrentModeWindowStateAndEverything();
+		GUIManager.saveCoordinatesOfAllWindows();
 		if (path == null) {
 			logger.error("GUI. Attempt to load Project with NULL path");
 			return;
@@ -182,6 +183,15 @@ public final class GUIManager {
 	 */
 	public static void setCompactModeNotificationPane(NotificationPane notificationPane) {
 		compactModeNotificationPane = notificationPane;
+	}
+
+	/** Save the coordinates of all windows of {@link GUIManager} to config. */
+	public static void saveCoordinatesOfAllWindows() {
+		// Save primary stage coordinates.
+		if (primaryStage != null) {
+			String currentMode = CuteConfig.getString(CuteConfig.UTILGUI, "LastMode") + "Mode";
+			GUIUtil.saveWindowCoordinates(primaryStage, currentMode);
+		}
 	}
 
 }
