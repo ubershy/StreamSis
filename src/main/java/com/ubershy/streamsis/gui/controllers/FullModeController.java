@@ -358,7 +358,7 @@ public class FullModeController implements Initializable {
 	
 	public void setOpacity(double opacity) {
 		opacityLabel.setText(String.format("Opacity: %.0f", opacity) + "%");
-		Window window = getView().getScene().getWindow();
+		Window window = GUIManager.getPrimaryStage();
 		window.setOpacity(opacity / 100.0);
 		// See also setOpacityToConfig() method which is invoked on mouse release.
 	}
