@@ -894,5 +894,29 @@ public class CuteProject implements Serializable {
 	private void setFinishedCountingElements(int count) {
 		allElementsNumber.set(count);
 	}
+	
+	/**
+	 * Moves Actor up in list of {@link #globalActors}.
+	 * 
+	 * @param actor
+	 *            The Actor to move up.
+	 */
+	public void moveUpActorInGlobalActors(Actor actor) {
+		int index = globalActors.indexOf(actor);
+		if (index != 0)
+			Collections.swap(globalActors, index, index - 1);
+	}
+
+	/**
+	 * Moves Actor up down list of {@link #globalActors}.
+	 * 
+	 * @param actor
+	 *            The Actor to move down.
+	 */
+	public void moveDownActorInGlobalActors(Actor actor) {
+		int index = globalActors.indexOf(actor);
+		if (globalActors.size() != index + 1)
+			Collections.swap(globalActors, index, index + 1);
+	}
 
 }

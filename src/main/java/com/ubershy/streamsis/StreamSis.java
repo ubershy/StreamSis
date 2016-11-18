@@ -165,7 +165,7 @@ public class StreamSis extends Application {
 		} else { // GUI mode.
 			primaryStage.setTitle("StreamSis");
 			primaryStage.setOnCloseRequest(event -> stop());
-			GUIManager.setPrimaryStage(primaryStage);
+			GUIManager.setPrimaryStageAndCreateOtherWindows(primaryStage);
 			Thread.setDefaultUncaughtExceptionHandler(eHandler);
 	        try {
 	        	// Always start with showing an empty project instead of loading screen or something

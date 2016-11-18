@@ -30,6 +30,8 @@ import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.Validator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.Util;
@@ -74,6 +76,8 @@ import javafx.stage.PopupWindow.AnchorLocation;
  */
 public final class GUIUtil {
 	
+	static final Logger logger = LoggerFactory.getLogger(GUIUtil.class);
+	
 	final static ScheduledExecutorService withDelayExecutor = Executors
 			.newSingleThreadScheduledExecutor();
 
@@ -102,7 +106,7 @@ public final class GUIUtil {
 				maxY = bounds.getMaxY();
 			}
 		}
-		// System.out.println(minX + ", " + minY + ", " + maxX + ", " + maxY);
+		// FIXME: wrong instantiation of Restangle2D, last two args are width and height.
 		return new Rectangle2D(minX, minY, maxX, maxY);
 	}
 
@@ -152,17 +156,13 @@ public final class GUIUtil {
 	/**
 	 * Position window based on coordinates from config.
 	 * 
-	 * @param window
-	 *            The window to position.
 	 * @param windowName
 	 *            The name of window in config.
-	 * @param defaultWidth
-	 *            Default window width.
-	 * @param defaultHeight
-	 *            Default window height.
+	 * @param window
+	 *            The window to position.
 	 */
 	@SuppressWarnings("unchecked")
-	public static void positionWindowBasedOnConfigCoordinates(Stage window, String windowName) {
+	public static void positionWindowBasedOnConfigCoordinates(String windowName, Window window) {
 		String subKey = windowName + "Coordinates";
 		Rectangle2D fullBounds = getMultiScreenBounds();
 		String defaultCoordsString = CuteConfig.getStringDefault(CuteConfig.UTILGUI, subKey);
@@ -171,16 +171,34 @@ public final class GUIUtil {
 			defaultCoords = (ArrayList<Double>) StuffSerializator
 					.deserializeFromString(defaultCoordsString, ArrayList.class);
 		} catch (IOException e1) {
-			throw new RuntimeException("The default " + subKey + " is not deserializable");
+			throw new RuntimeException("The default " + subKey + "in config is not deserializable");
 		}
 		String coordsString = CuteConfig.getString(CuteConfig.UTILGUI, subKey);
+		boolean usingDefaultCoords = false;
 		ArrayList<Double> coords;
 		try {
 			coords = (ArrayList<Double>) StuffSerializator.deserializeFromString(coordsString,
 					ArrayList.class);
 		} catch (IOException e) {
 			// If there's a problem deserializing values, let's use default coordinates.
+			logger.error("Can't deserialize " + subKey + " from current config,"
+					+ " using coordinates from fallback config.");
 			coords = defaultCoords;
+			usingDefaultCoords = true;
+		}
+		// Let's check if coordinates are actual numbers.
+		for (Object coord : coords) {
+			if (!(coord instanceof Double) || ((Double) coord).isNaN()) {
+				if (usingDefaultCoords) {
+					throw new RuntimeException(
+							"The default " + subKey + " in config contain NaN values");
+				} else {
+					logger.error(subKey + " from current config contain NaN values,"
+							+ " using coordinates from fallback config.");
+					coords = defaultCoords;
+				}
+				break;
+			}
 		}
 		double prefX = coords.get(0);
 		double prefY = coords.get(1);
@@ -189,11 +207,16 @@ public final class GUIUtil {
 		Rectangle2D prefWindow = new Rectangle2D(prefX, prefY, prefWidth, prefHeight);
 		// If window is hardly accessible, we need to reset it's position.
 		if (prefWindow.intersects(fullBounds)) {
+			// Everything is alright, showing window in the specified position.
 			window.setWidth(prefWidth);
 			window.setHeight(prefHeight);
 			window.setX(prefX);
 			window.setY(prefY);
 		} else {
+			// Resetting position.
+			logger.error("The window " + windowName
+					+ " doesn't fit in screen bounds. Resetting position.");
+			logger.error(prefWindow.toString());
 			window.setWidth(defaultCoords.get(2));
 			window.setHeight(defaultCoords.get(3));
 			window.centerOnScreen();
@@ -216,19 +239,25 @@ public final class GUIUtil {
 	}
 
 	/**
-	 * Saves coordinates of window.
+	 * Saves coordinates of window that is currently showing on screen.
 	 *
-	 * @param window
-	 *            The window which coordinates to save.
 	 * @param windowName
 	 *            The name of window in config.
+	 * @param newWindow
+	 *            The window which coordinates to save.
+	 * @throws IllegalArgumentException
+	 *             If window is not currently showing.
 	 */
-	public static void saveWindowCoordinates(Stage window, String windowName) {
+	public static void saveWindowCoordinates(String windowName, Window newWindow) {
+		if (!newWindow.isShowing()) {
+			throw new IllegalArgumentException(
+					"Can't save coordinates of the window that is not showing.");
+		}
 		String subKey = windowName + "Coordinates";
 		String serialized;
 		try {
-			serialized = StuffSerializator.serializeToString(Arrays.asList(window.getX(),
-					window.getY(), window.getWidth(), window.getHeight()), false);
+			serialized = StuffSerializator.serializeToString(Arrays.asList(newWindow.getX(),
+					newWindow.getY(), newWindow.getWidth(), newWindow.getHeight()), false);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

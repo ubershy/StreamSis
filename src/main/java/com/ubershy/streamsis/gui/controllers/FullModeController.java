@@ -74,6 +74,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
@@ -84,6 +85,8 @@ public class FullModeController implements Initializable {
     private VBox rootNode;
     @FXML
     private Menu openRecentMenu;
+    @FXML
+    private Button allActorsButton;
     @FXML
     private Button startStopButton;
     @FXML
@@ -354,6 +357,10 @@ public class FullModeController implements Initializable {
 				}
 			});
 		});
+		
+		// "All Actors" button.
+		Stage aaStage = GUIManager.getAllActorsStage();
+		allActorsButton.disableProperty().bind(aaStage.showingProperty());
 	}
 	
 	public void setOpacity(double opacity) {
@@ -603,6 +610,13 @@ public class FullModeController implements Initializable {
     @FXML
     void showSettings(ActionEvent event) {
     	GUIUtil.showSettingsWindow();
+    }
+
+    @FXML
+    void showAllActorsWindow(ActionEvent event) {
+    	Stage aaStage = GUIManager.getAllActorsStage();
+    	aaStage.show();
+    	aaStage.requestFocus();
     }
 
 }

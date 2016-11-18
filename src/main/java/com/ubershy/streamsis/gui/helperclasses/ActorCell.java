@@ -26,6 +26,7 @@ import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.contextmenu.ActorContextMenuBuilder;
 import com.ubershy.streamsis.gui.contextmenu.PossibleMoves;
+import com.ubershy.streamsis.gui.controllers.AllActorsController;
 import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.ElementInfo.ElementHealth;
 import com.ubershy.streamsis.project.ElementInfo.ElementState;
@@ -57,8 +58,19 @@ import javafx.util.Duration;
  * Is responsive to {@link Actor}'s properties and changes it's view accordingly.
  */
 public class ActorCell extends ListCell<Actor> {
+	
+	/** The type of {@link ActorCell}. */
+	public enum ActorCellType {
+		/** The type of {@link #ActorCell()} that is contained in Structure view's list. */
+		STRUCTUREVIEWCELL,
+		/** The type of {@link #ActorCell()} that is contained in {@link AllActorsController}. */
+		ALLACTORSVIEWCELL;
+	}
 
 	static final Logger logger = LoggerFactory.getLogger(ActorCell.class);
+	
+	/** This {@link ActorCell}'s type. */
+	private ActorCellType actorCellType;
 
 	/** The text field for editing the {@link Actor}'s name. */
 	private TextField textField;
@@ -132,11 +144,12 @@ public class ActorCell extends ListCell<Actor> {
 
 	/** Simple beating heart animation. */
 	private ScaleTransition heartBeatTransition;
-
+	
 	/**
 	 * Instantiates a new Actor Cell. Sets the default values, listeners and animation.
 	 */
-	public ActorCell() {
+	public ActorCell(ActorCellType actorCellType) {
+		this.actorCellType = actorCellType;
 		setMaxHeight(getHeight());
 		setGraphicTextGap(6.0);
 		heart.setSmooth(false);
@@ -266,8 +279,18 @@ public class ActorCell extends ListCell<Actor> {
 				} else {
 					possibleMoves = PossibleMoves.NOWHERE;
 				}
-				setContextMenu(
-						ActorContextMenuBuilder.createActorItemContextMenu(possibleMoves));
+				switch(actorCellType) {
+				case ALLACTORSVIEWCELL:
+					setContextMenu(ActorContextMenuBuilder
+							.createCMForAllActorsViewItem(item,possibleMoves));
+					break;
+				case STRUCTUREVIEWCELL:
+					setContextMenu(ActorContextMenuBuilder
+							.createCMForStructureViewItem(item, possibleMoves));
+					break;
+				default:
+					throw new RuntimeException("Unknown ActorCellType");
+				}
 			}
 		}
 	}

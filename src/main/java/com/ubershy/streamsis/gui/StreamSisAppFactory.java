@@ -30,9 +30,10 @@ import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.checkers.Coordinates;
 import com.ubershy.streamsis.counters.Counter;
-import com.ubershy.streamsis.gui.contextmenu.ActorListContextMenuManager;
+import com.ubershy.streamsis.gui.contextmenu.StructureViewActorListContextMenuManager;
 import com.ubershy.streamsis.gui.contextmenu.SisSceneContextMenuBuilder;
 import com.ubershy.streamsis.gui.contextmenu.TreeViewContextMenuManager;
+import com.ubershy.streamsis.gui.controllers.AllActorsController;
 import com.ubershy.streamsis.gui.controllers.CompactModeController;
 import com.ubershy.streamsis.gui.controllers.CuteController;
 import com.ubershy.streamsis.gui.controllers.CuteElementController;
@@ -42,6 +43,7 @@ import com.ubershy.streamsis.gui.controllers.MainController;
 import com.ubershy.streamsis.gui.controllers.edit.NoSuchElementController;
 import com.ubershy.streamsis.gui.controllers.settings.SettingsController;
 import com.ubershy.streamsis.gui.helperclasses.ActorCell;
+import com.ubershy.streamsis.gui.helperclasses.ActorCell.ActorCellType;
 import com.ubershy.streamsis.gui.helperclasses.AutoTreeItem;
 import com.ubershy.streamsis.gui.helperclasses.CuteTreeCell;
 import com.ubershy.streamsis.gui.helperclasses.SisSceneCell;
@@ -213,6 +215,15 @@ public class StreamSisAppFactory {
 	public static SettingsController buildSettingsController() {
 		return (SettingsController) buildControllerByRelativePath("settings/Settings.fxml");
 	}
+	
+	/**
+	 * Builds the {@link AllActorsController}.
+	 *
+	 * @return the {@link AllActorsController}
+	 */
+	public static AllActorsController buildAllActorsController() {
+		return (AllActorsController) buildControllerByRelativePath("AllActors.fxml");
+	}
 
 	/**
 	 * Builds a {@link ListView} with {@link SisScene SisScenes}.
@@ -287,13 +298,13 @@ public class StreamSisAppFactory {
 		actorList.setEditable(false);
 		actorList.setPlaceholder(new Label("Let's add some Actors!"));
 		if (project != null) {
-			actorList.setCellFactory(view -> new ActorCell());
+			actorList.setCellFactory(view -> new ActorCell(ActorCellType.STRUCTUREVIEWCELL));
 			// Set initial list. We don't set items directly to avoid ObservableList binding.
 			actorList.setItems(FXCollections.observableArrayList(project.getCurrentActors()));
 			if (actorList.getItems().size() != 0) {
 				actorList.getSelectionModel().select(0);
 			}
-			ActorListContextMenuManager contextMenuManager = new ActorListContextMenuManager(
+			StructureViewActorListContextMenuManager contextMenuManager = new StructureViewActorListContextMenuManager(
 					actorList);
 			contextMenuManager.startManaging();
 			AtomicReference<Actor> lastSelectedActor = new AtomicReference<Actor>(null);

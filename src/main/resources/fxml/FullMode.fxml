@@ -104,7 +104,7 @@
          <items>
             <Button fx:id="startStopButton" alignment="CENTER" mnemonicParsing="false" onAction="#startStopProject" prefHeight="50.0" prefWidth="50.0" text="Start" textAlignment="CENTER" />
             <Separator orientation="VERTICAL" prefHeight="50.0" />
-            <Button alignment="CENTER" disable="true" layoutX="74.0" layoutY="10.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" text="All Actors" textAlignment="CENTER" wrapText="true" />
+            <Button fx:id="allActorsButton" alignment="CENTER" layoutX="74.0" layoutY="10.0" mnemonicParsing="false" onAction="#showAllActorsWindow" prefHeight="50.0" prefWidth="50.0" text="All Actors" textAlignment="CENTER" wrapText="true" />
             <Button alignment="CENTER" disable="true" mnemonicParsing="false" prefHeight="50.0" prefWidth="65.0" text="All Variables" textAlignment="CENTER" wrapText="true" />
             <Separator layoutX="276.0" layoutY="10.0" orientation="VERTICAL" prefHeight="50.0" />
             <Button fx:id="stopAllSoundsButton" alignment="CENTER" layoutX="222.0" layoutY="10.0" mnemonicParsing="false" onAction="#stopAllSounds" prefHeight="50.0" prefWidth="60.0" text="Stop All Sounds" textAlignment="CENTER" wrapText="true" />

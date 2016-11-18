@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.actors.UniversalActor;
-import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.ElementInfo;
@@ -41,9 +40,10 @@ public final class ActorContextMenuBuilder {
 
 	static final Logger logger = LoggerFactory.getLogger(ActorContextMenuBuilder.class);
 
-	public static ContextMenu createActorListContextMenu(ListView<Actor> listView) {
+	public static ContextMenu createCMForStructureViewList(ListView<Actor> listView) {
 		ContextMenu cm = new ContextMenu();
-		CustomMenuItem addActorMenuItem = GUIUtil.createTooltipedMenuItem("Add new", "Create new global Actor and add to currently selected SisScene.");
+		CustomMenuItem addActorMenuItem = GUIUtil.createTooltipedMenuItem("Add new",
+				"Create new global Actor and add to currently selected SisScene.");
 		Menu addExistingActorMenuItem = generateAddExistingActorMenu();
 		addActorMenuItem.setOnAction((ActionEvent event) -> {
 			String genericName = "New Actor";
@@ -67,36 +67,36 @@ public final class ActorContextMenuBuilder {
 		return cm;
 	}
 
-	public static ContextMenu createActorItemContextMenu(PossibleMoves possibleMoves) {
+	public static ContextMenu createCMForStructureViewItem(Actor actor,
+			PossibleMoves possibleMoves) {
 		CuteProject project = ProjectManager.getProject();
-		ListView<Actor> actorList = GUIManager.actorList;
 		ContextMenu cm = new ContextMenu();
 		CustomMenuItem deleteActorMenuItem = GUIUtil.createTooltipedMenuItem("Delete from SisScene",
-				"Delete the Actor from the SisScene.\nActor will be still accessible for reuse in other SisScenes.");
-		CustomMenuItem deleteActorGloballyMenuItem = GUIUtil.createTooltipedMenuItem("Delete globally",
-				"Delete the Actor completely.\nActor will be deleted globally from all SisScenes and without recovery.");
+				"Delete the Actor from the SisScene."
+						+ "\nActor will be still accessible for reuse in other SisScenes.");
+		CustomMenuItem deleteActorGloballyMenuItem = GUIUtil
+				.createTooltipedMenuItem("Delete globally", "Delete the Actor completely.\nActor "
+						+ "will be deleted globally from all SisScenes and without recovery.");
 		CustomMenuItem moveUpActorMenuItem = GUIUtil.createTooltipedMenuItem("Move Up",
-				"The order of Actors doesn't matter.\nBut you can still move them around if you want. ;)");
+				"The order of Actors doesn't matter."
+						+ "\nBut you can still move them around if you want. ;)");
 		CustomMenuItem moveDownActorMenuItem = GUIUtil.createTooltipedMenuItem("Move Down",
-				"The order of Actors doesn't matter.\nBut you can still move them around if you want. ;)");
+				"The order of Actors doesn't matter."
+						+ "\nBut you can still move them around if you want. ;)");
 		deleteActorMenuItem.setOnAction((ActionEvent event) -> {
-			Actor actor = actorList.getSelectionModel().getSelectedItem();
 			project.removeActorFromCurrentSisScene(actor);
 			// Initialize whole project
 			ProjectManager.initProjectOutsideJavaFXThread();
 		});
 		deleteActorGloballyMenuItem.setOnAction((ActionEvent event) -> {
-			Actor actor = actorList.getSelectionModel().getSelectedItem();
 			project.removeActorGlobally(actor);
 			// Initialize whole project
 			ProjectManager.initProjectOutsideJavaFXThread();
 		});
 		moveUpActorMenuItem.setOnAction((ActionEvent event) -> {
-			Actor actor = actorList.getSelectionModel().getSelectedItem();
 			project.moveUpActorInSisScene(actor);
 		});
 		moveDownActorMenuItem.setOnAction((ActionEvent event) -> {
-			Actor actor = actorList.getSelectionModel().getSelectedItem();
 			project.moveDownActorInSisScene(actor);
 		});
 		switch (possibleMoves) {
@@ -118,18 +118,21 @@ public final class ActorContextMenuBuilder {
 		return cm;
 	}
 
-	public static Menu generateAddExistingActorMenu() {
+	private static Menu generateAddExistingActorMenu() {
 		Menu addExistingActorMenu = new Menu("Add existing...");
-		ArrayList<Actor> existingActors = new ArrayList<Actor>(ProjectManager.getProject().getGlobalActors());
+		ArrayList<Actor> existingActors = new ArrayList<Actor>(
+				ProjectManager.getProject().getGlobalActors());
 		ObservableList<Actor> currentActors = ProjectManager.getProject().getCurrentActors();
 		existingActors.removeAll(currentActors);
 		for (Actor actor : existingActors) {
 			ElementInfo info = actor.getElementInfo();
-			String params = "Name: " + info.getName() + "\nCheck Interval: " + actor.getCheckInterval() +
-					" ms\nRepeat Interval: " + actor.getRepeatInterval() + " ms\nRepeat On Actions: " +
-					actor.getDoOnRepeat() + "\nRepeat Off Actions: " + actor.getDoOffRepeat() + "\nIs broken: "
+			String params = "Name: " + info.getName() + "\nCheck Interval: "
+					+ actor.getCheckInterval() + " ms\nRepeat Interval: "
+					+ actor.getRepeatInterval() + " ms\nRepeat On Actions: " + actor.getDoOnRepeat()
+					+ "\nRepeat Off Actions: " + actor.getDoOffRepeat() + "\nIs broken: "
 					+ actor.getElementInfo().isBroken();
-			CustomMenuItem existingActorMenuItem = GUIUtil.createTooltipedMenuItem(actor.getElementInfo().getName(), params);
+			CustomMenuItem existingActorMenuItem = GUIUtil
+					.createTooltipedMenuItem(actor.getElementInfo().getName(), params);
 			existingActorMenuItem.setOnAction((ActionEvent event) -> {
 				ProjectManager.getProject().addExistingActorToCurrentSisScene(actor);
 			});
@@ -137,4 +140,47 @@ public final class ActorContextMenuBuilder {
 		}
 		return addExistingActorMenu;
 	}
+
+	public static ContextMenu createCMForAllActorsViewItem(Actor actor,
+			PossibleMoves possibleMoves) {
+		CuteProject project = ProjectManager.getProject();
+		ContextMenu cm = new ContextMenu();
+		CustomMenuItem deleteActorGloballyMenuItem = GUIUtil
+				.createTooltipedMenuItem("Delete globally", "Delete the Actor completely.\nActor "
+						+ "will be deleted globally from all SisScenes and without recovery.");
+		CustomMenuItem moveUpActorMenuItem = GUIUtil.createTooltipedMenuItem("Move Up",
+				"The order of Actors doesn't matter."
+						+ "\nBut you can still move them around if you want. ;)");
+		CustomMenuItem moveDownActorMenuItem = GUIUtil.createTooltipedMenuItem("Move Down",
+				"The order of Actors doesn't matter."
+						+ "\nBut you can still move them around if you want. ;)");
+		deleteActorGloballyMenuItem.setOnAction((ActionEvent event) -> {
+			project.removeActorGlobally(actor);
+			// Initialize whole project
+			ProjectManager.initProjectOutsideJavaFXThread();
+		});
+		moveUpActorMenuItem.setOnAction((ActionEvent event) -> {
+			project.moveUpActorInGlobalActors(actor);
+		});
+		moveDownActorMenuItem.setOnAction((ActionEvent event) -> {
+			project.moveDownActorInGlobalActors(actor);
+		});
+		switch (possibleMoves) {
+		case NOWHERE:
+			break;
+		case ONLYDOWN:
+			cm.getItems().add(moveDownActorMenuItem);
+			break;
+		case ONLYUP:
+			cm.getItems().add(moveUpActorMenuItem);
+			break;
+		case UPORDOWN:
+			cm.getItems().add(moveUpActorMenuItem);
+			cm.getItems().add(moveDownActorMenuItem);
+			break;
+		}
+		cm.getItems().add(deleteActorGloballyMenuItem);
+		return cm;
+	}
+
 }

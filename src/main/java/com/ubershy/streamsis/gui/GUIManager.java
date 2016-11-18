@@ -23,14 +23,15 @@ import org.controlsfx.control.NotificationPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.actors.Actor;
+import com.ubershy.streamsis.gui.controllers.AllActorsController;
 import com.ubershy.streamsis.gui.controllers.CompactModeController;
 import com.ubershy.streamsis.gui.controllers.ElementEditorController;
 import com.ubershy.streamsis.gui.controllers.FullModeController;
 import com.ubershy.streamsis.gui.controllers.MainController;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
+import com.ubershy.streamsis.gui.helperclasses.WindowCoordinatesManager;
 import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.SisScene;
@@ -44,6 +45,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public final class GUIManager {
 	static final Logger logger = LoggerFactory.getLogger(GUIManager.class);
@@ -56,6 +58,7 @@ public final class GUIManager {
 	public static TreeView<CuteElement> onActionsTree;
 	public static ElementEditorController elementEditor;
 	private static Stage primaryStage;
+	private static Stage allActorsStage;
 	private static NotificationPane fullModeNotificationPane;
 	private static NotificationPane compactModeNotificationPane;
 
@@ -69,6 +72,10 @@ public final class GUIManager {
 		CompactModeController compactModeController = StreamSisAppFactory
 				.buildCompactModeController();
 		FullModeController fullModeController = StreamSisAppFactory.buildFullModeController();
+		
+		AllActorsController allActorsController = StreamSisAppFactory.buildAllActorsController();
+		allActorsStage.setScene(new Scene((Parent) allActorsController.getView(),
+				allActorsController.getWidth(), allActorsController.getHeight()));
 
 		// Size will be overridden later by showLastMode()
 		mainScene = new Scene((Parent) mainController.getView(), 777, 777);
@@ -76,7 +83,7 @@ public final class GUIManager {
 		// mainScene.getStylesheets().add("/com/ubershy/streamsis/gui/css/progressIndicators.css");
 		primaryStage.setScene(mainScene);
 		
-		mainController.init(primaryStage, fullModeController.getView(),
+		mainController.setPrimaryStageAndViews(primaryStage, fullModeController.getView(),
 				compactModeController.getView());
 
 		mainController.useLastMode();
@@ -93,6 +100,7 @@ public final class GUIManager {
 
 		fullModeController.bindToProject(project);
 		compactModeController.bindToProject(project);
+		allActorsController.bindToProject(project);
 	}
 
 	// GUI classes must use this method
@@ -109,6 +117,10 @@ public final class GUIManager {
 
 	public static Stage getPrimaryStage() {
 		return primaryStage;
+	}
+	
+	public static Stage getAllActorsStage() {
+		return allActorsStage;
 	}
 
 	public static void loadProject(String path, boolean start) {
@@ -146,8 +158,25 @@ public final class GUIManager {
 		}
 	}
 
-	public static void setPrimaryStage(Stage mainStage) {
+	public static void setPrimaryStageAndCreateOtherWindows(Stage mainStage) {
+		if (primaryStage != null) {
+			throw new RuntimeException("Primary stage is already set and windows are created");
+		}
 		primaryStage = mainStage;
+		// Create allActorsStage window.
+		createAllActorsStage();
+		
+	}
+
+	private static void createAllActorsStage() {
+		allActorsStage = new Stage();
+		allActorsStage.initStyle(StageStyle.UTILITY);
+		WindowCoordinatesManager.manageWindowCoordinates("AllActorsWindow", allActorsStage);
+		// This window doesn't have minimize button, so let's bind it's minimized status to
+		// primaryStage minimized status.
+		primaryStage.iconifiedProperty().addListener((o, oldVal, newVal) -> {
+			allActorsStage.setIconified(newVal);
+		});
 	}
 
 	public static void showLoadingError(IOException e) {
@@ -189,9 +218,10 @@ public final class GUIManager {
 	public static void saveCoordinatesOfAllWindows() {
 		// Save primary stage coordinates.
 		if (primaryStage != null && primaryStage.isShowing()) {
-			String currentMode = CuteConfig.getString(CuteConfig.UTILGUI, "LastMode") + "Mode";
-			GUIUtil.saveWindowCoordinates(primaryStage, currentMode);
+			mainController.saveCurrentModeCoordinates();
 		}
+		// Save coordinates of other windows.
+		WindowCoordinatesManager.saveCoordinatesOfAllManagedWindows();
 	}
 
 }

@@ -21,7 +21,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.ubershy.streamsis.CuteConfig;
-import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 
 import javafx.beans.InvalidationListener;
@@ -49,7 +48,7 @@ public class MainController implements Initializable {
 		return root;
 	}
 
-	public void init(Stage primaryStage, Node fullView, Node compactView) {
+	public void setPrimaryStageAndViews(Stage primaryStage, Node fullView, Node compactView) {
 		this.window = primaryStage;
 		this.fullModeView = fullView;
 		this.compactModeView = compactView;
@@ -75,17 +74,14 @@ public class MainController implements Initializable {
 		String lastMode = "Full";
 		String configModeSubKey = lastMode + "Mode";
 		// Firstly we will save the state of the window of the previous mode
-		GUIManager.saveCoordinatesOfAllWindows();
+		saveCurrentModeCoordinates();
 		CuteConfig.setString(CuteConfig.UTILGUI, "LastMode", lastMode);
 		window.setMaxWidth(1500);
 		window.setMaxHeight(1000);
 		window.setMinWidth(415);
 		window.setMinHeight(600);
 
-		Stage window = GUIManager.getPrimaryStage();
-		if (window != null) {
-			GUIUtil.positionWindowBasedOnConfigCoordinates(window, configModeSubKey);
-		}
+		GUIUtil.positionWindowBasedOnConfigCoordinates(configModeSubKey, window);
 
 		Node view = this.fullModeView;
 		contentPane.getChildren().clear();
@@ -101,7 +97,7 @@ public class MainController implements Initializable {
 		String lastMode = "Compact";
 		String configModeSubKey = lastMode + "Mode";
 		// Firstly we will save the state of the window of the previous mode
-		GUIManager.saveCoordinatesOfAllWindows();
+		saveCurrentModeCoordinates();
 		CuteConfig.setString(CuteConfig.UTILGUI, "LastMode", "Compact");
 
 		window.setMinHeight(200);
@@ -109,10 +105,7 @@ public class MainController implements Initializable {
 		window.setMaxHeight(500);
 		window.setMaxWidth(500);
 
-		Stage window = GUIManager.getPrimaryStage();
-		if (window != null) {
-			GUIUtil.positionWindowBasedOnConfigCoordinates(window, configModeSubKey);
-		}
+		GUIUtil.positionWindowBasedOnConfigCoordinates(configModeSubKey, window);
 
 		Node view = this.compactModeView;
 		contentPane.getChildren().clear();
@@ -142,5 +135,15 @@ public class MainController implements Initializable {
 				root.getScene().getStylesheets().add(url);
 			}
 		});
+	}
+
+	/**
+	 * Saves the coordinates of MainController's window.
+	 */
+	public void saveCurrentModeCoordinates() {
+		if (window.isShowing()) {
+			String currentMode = CuteConfig.getString(CuteConfig.UTILGUI, "LastMode") + "Mode";
+			GUIUtil.saveWindowCoordinates(currentMode, window);
+		}
 	}
 }

@@ -22,22 +22,22 @@ import com.ubershy.streamsis.actors.Actor;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.ListView;
 
-public class ActorListContextMenuManager {
+public class StructureViewActorListContextMenuManager {
 	
 	private ListView<Actor> listView;
 	
-	public ActorListContextMenuManager(ListView<Actor> listView) {
+	public StructureViewActorListContextMenuManager(ListView<Actor> listView) {
 		this.listView = listView;
 	}
 	
 	public void startManaging() {
 		// Lets generate initial context menu for the Actor ListView
-		listView.setContextMenu(ActorContextMenuBuilder.createActorListContextMenu(listView));
+		listView.setContextMenu(ActorContextMenuBuilder.createCMForStructureViewList(listView));
 		ListChangeListener<Actor> childrenChangeListener = new ListChangeListener<Actor>() {
 			@Override
 			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Actor> c) {
 				// Lets generate new context menu
-				listView.setContextMenu(ActorContextMenuBuilder.createActorListContextMenu(listView));
+				listView.setContextMenu(ActorContextMenuBuilder.createCMForStructureViewList(listView));
 			}
 		};
 		// Lets react when ListView children list changes
