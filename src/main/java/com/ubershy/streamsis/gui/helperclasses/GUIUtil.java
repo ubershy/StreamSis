@@ -82,35 +82,6 @@ public final class GUIUtil {
 			.newSingleThreadScheduledExecutor();
 
 	/**
-	 * Gets a rectangle, which coordinates represent bounds of one or multiple user's displays.
-	 *
-	 * @return a {@link Rectangle2D}
-	 * @see <a href="http://sikulix-2014.readthedocs.org/en/latest/_images/multi.jpg">A Wonderful
-	 *      picture, that explains a lot.</a>
-	 */
-	public static Rectangle2D getMultiScreenBounds() {
-		double minX = 0, minY = 0, maxX = 0, maxY = 0;
-		ObservableList<Screen> listOfScreens = Screen.getScreens();
-		for (Screen screen : listOfScreens) {
-			Rectangle2D bounds = screen.getVisualBounds();
-			if (bounds.getMinX() < minX) {
-				minX = bounds.getMinX();
-			}
-			if (bounds.getMinY() < minY) {
-				minY = bounds.getMinY();
-			}
-			if (bounds.getMaxX() > maxX) {
-				maxX = bounds.getMaxX();
-			}
-			if (bounds.getMaxY() > maxY) {
-				maxY = bounds.getMaxY();
-			}
-		}
-		// FIXME: wrong instantiation of Restangle2D, last two args are width and height.
-		return new Rectangle2D(minX, minY, maxX, maxY);
-	}
-
-	/**
 	 * Make {@link Alert} more cute!.
 	 *
 	 * @param alert
@@ -164,7 +135,6 @@ public final class GUIUtil {
 	@SuppressWarnings("unchecked")
 	public static void positionWindowBasedOnConfigCoordinates(String windowName, Window window) {
 		String subKey = windowName + "Coordinates";
-		Rectangle2D fullBounds = getMultiScreenBounds();
 		String defaultCoordsString = CuteConfig.getStringDefault(CuteConfig.UTILGUI, subKey);
 		ArrayList<Double> defaultCoords;
 		try {
@@ -206,7 +176,16 @@ public final class GUIUtil {
 		double prefHeight = coords.get(3);
 		Rectangle2D prefWindow = new Rectangle2D(prefX, prefY, prefWidth, prefHeight);
 		// If window is hardly accessible, we need to reset it's position.
-		if (prefWindow.intersects(fullBounds)) {
+		// Let's find out if it's accessible.
+		boolean prefWindowWillBeAccessible = false;
+		ObservableList<Screen> screens = Screen.getScreens();
+		for (Screen screen: screens) {
+			if (prefWindow.intersects(screen.getVisualBounds())) {
+				prefWindowWillBeAccessible = true;
+				break;
+			}
+		}
+		if (prefWindowWillBeAccessible) {
 			// Everything is alright, showing window in the specified position.
 			window.setWidth(prefWidth);
 			window.setHeight(prefHeight);
