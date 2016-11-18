@@ -31,22 +31,22 @@ import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.checkers.Coordinates;
 import com.ubershy.streamsis.counters.Counter;
 import com.ubershy.streamsis.gui.contextmenu.StructureViewActorListContextMenuManager;
+import com.ubershy.streamsis.gui.cells.ActorCell;
+import com.ubershy.streamsis.gui.cells.CuteTreeCell;
+import com.ubershy.streamsis.gui.cells.SisSceneCell;
+import com.ubershy.streamsis.gui.cells.ActorCell.ActorCellType;
 import com.ubershy.streamsis.gui.contextmenu.SisSceneContextMenuBuilder;
 import com.ubershy.streamsis.gui.contextmenu.TreeViewContextMenuManager;
 import com.ubershy.streamsis.gui.controllers.AllActorsController;
 import com.ubershy.streamsis.gui.controllers.CompactModeController;
-import com.ubershy.streamsis.gui.controllers.CuteController;
-import com.ubershy.streamsis.gui.controllers.CuteElementController;
 import com.ubershy.streamsis.gui.controllers.ElementEditorController;
 import com.ubershy.streamsis.gui.controllers.FullModeController;
 import com.ubershy.streamsis.gui.controllers.MainController;
-import com.ubershy.streamsis.gui.controllers.edit.NoSuchElementController;
+import com.ubershy.streamsis.gui.controllers.editor.CuteController;
+import com.ubershy.streamsis.gui.controllers.editor.CuteElementController;
+import com.ubershy.streamsis.gui.controllers.editor.NoSuchElementController;
 import com.ubershy.streamsis.gui.controllers.settings.SettingsController;
-import com.ubershy.streamsis.gui.helperclasses.ActorCell;
-import com.ubershy.streamsis.gui.helperclasses.ActorCell.ActorCellType;
 import com.ubershy.streamsis.gui.helperclasses.AutoTreeItem;
-import com.ubershy.streamsis.gui.helperclasses.CuteTreeCell;
-import com.ubershy.streamsis.gui.helperclasses.SisSceneCell;
 import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.CuteElementContainer;
 import com.ubershy.streamsis.project.CuteProject;
@@ -451,20 +451,21 @@ public class StreamSisAppFactory {
 	 * Element Editor panel. <br>
 	 * <p>
 	 * Building is <b>only</b> possible when these three conditions are met: <br>
-	 * 1. in "/com/ubershy/streamsis/gui/editspecific" directory exists
-	 * "<b>SimpleClassName</b>.fxml" file <br>
-	 * 2. The controller for such FXML file exists at the right path <br>
+	 * 1. In "/com/ubershy/streamsis/gui/editor" directory exists "<b>SimpleClassName</b>.fxml" file
+	 * in one of the corresponding subdirectories: "actions", "checkers", "counters". <br>
+	 * 2. The controller for such FXML file exists at the right path. <br>
 	 * 3. Such controller implements {@link CuteElementController} interface.
 	 * <p>
 	 * <b>If something is wrong, the method returns {@link NoSuchElementController}</b>.
 	 *
-	 * @param simpleClassName
-	 *            the Simple Class Name of one of the {@link CuteElement CuteElements}
+	 * @param element
+	 *            The {@link CuteElement} which simple class name to use for finding.
 	 * @return the {@link CuteElementController} specific to chosen simpleClassName <br>
 	 *         In the case of <b>fail</b>, returns {@link NoSuchElementController}
 	 */
-	public static CuteElementController buildCuteElementControllerBasedOnCuteElement(CuteElement element) {
-		String editorControllersSubDir = "edit/";
+	public static CuteElementController buildCuteElementControllerBasedOnCuteElement(
+			CuteElement element) {
+		String editorControllersSubDir = "editor/";
 		String specificSubDirName = "";
 		if (element instanceof Checker) {
 			specificSubDirName = "checkers/";
@@ -499,7 +500,7 @@ public class StreamSisAppFactory {
 	 */
 	public static CuteElementController buildSpecialCuteElementController(
 			SpecialCuteElementControllerType scc) {
-		final String subDir = "edit/";
+		final String subDir = "editor/";
 		CuteElementController controller = (CuteElementController) buildControllerByRelativePath(
 				subDir + scc.toString());
 		if (!(controller instanceof CuteElementController) || controller == null) {
@@ -514,7 +515,7 @@ public class StreamSisAppFactory {
 	 * @return the {@link CuteController}.
 	 */
 	public static CuteController buildLittleCuteController(LittleCuteControllerType lil) {
-		final String subDir = "edit/littlethings/";
+		final String subDir = "editor/littlethings/";
 		CuteController controller = (CuteController) buildControllerByRelativePath(
 				subDir + lil.toString());
 		if (!(controller instanceof CuteController) || controller == null) {

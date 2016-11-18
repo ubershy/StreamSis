@@ -34,6 +34,8 @@ import com.ubershy.streamsis.gui.StreamSisAppFactory;
 import com.ubershy.streamsis.gui.StreamSisAppFactory.SpecialCuteElementControllerType;
 import com.ubershy.streamsis.gui.animations.HorizontalShadowAnimation;
 import com.ubershy.streamsis.gui.animations.ThreeDotsAnimation;
+import com.ubershy.streamsis.gui.controllers.editor.CommonElementFieldsController;
+import com.ubershy.streamsis.gui.controllers.editor.CuteElementController;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.ElementInfo;
@@ -69,7 +71,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
-// Under construction. Not working. Please unsee.
+/**
+ * The panel for editing {@link CuteElement}s. <br>
+ * Has "OK", "Apply", "Cancel" and "Perform Test" buttons and view for showing CuteElement's name,
+ * type and status. <br>
+ * It's view contains {@link CommonElementFieldsController}'s view inside.
+ */
 public class ElementEditorController implements Initializable {
 	
 	static final Logger logger = LoggerFactory.getLogger(ElementEditorController.class);
@@ -120,7 +127,7 @@ public class ElementEditorController implements Initializable {
 	@FXML
 	private Label propertiesPaneDots;
 
-	private PropsWithNameController propsWithNameController;
+	private CommonElementFieldsController commonElementFieldsController;
 	
 	private CuteElementController noneSelectedController = StreamSisAppFactory
 			.buildSpecialCuteElementController(SpecialCuteElementControllerType.NONESELECTED);
@@ -158,9 +165,9 @@ public class ElementEditorController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
-		propsWithNameController = (PropsWithNameController) StreamSisAppFactory
-				.buildControllerByRelativePath("PropsWithName.fxml");
-		propsWithNameController.setCuteButtonsStatesManager(buttonStateManager);
+		commonElementFieldsController = (CommonElementFieldsController) StreamSisAppFactory
+				.buildControllerByRelativePath("editor/CommonElementFields.fxml");
+		commonElementFieldsController.setCuteButtonsStatesManager(buttonStateManager);
 		propertiesPane.setContent(noneSelectedController.getView());
 		hsShadowAnima = new HorizontalShadowAnimation(statusLabel);
 		nameShadowAnima = new HorizontalShadowAnimation(nameLabel);
@@ -207,7 +214,7 @@ public class ElementEditorController implements Initializable {
 						tPaneDotsAnima.play();
 					} else {
 						if (getCurrentElement() != null) {
-							// This will disconnect propsWithNameController's view from scene.
+							// This will disconnect commonElementFieldsController's view from scene.
 							// Some buttons will notice that they are not inside the scene and
 							// deactivate Hotkeys associated with them.
 							setViewAsNoneSelected();
@@ -360,9 +367,9 @@ public class ElementEditorController implements Initializable {
 		disconnectFromConnectedCuteElement();
 		
 		// propertiesPane can currently show noneSelectedController's view.
-		// If so, let's show propsWithNameController instead.
-		if (!propertiesPane.getContent().equals(propsWithNameController.getView())) {
-			propertiesPane.setContent(propsWithNameController.getView());
+		// If so, let's show commonElementFieldsController instead.
+		if (!propertiesPane.getContent().equals(commonElementFieldsController.getView())) {
+			propertiesPane.setContent(commonElementFieldsController.getView());
 		}
 		
 		// CuteElements of higher hierarchy levels are referring to current element, and it's hard
@@ -375,7 +382,7 @@ public class ElementEditorController implements Initializable {
 			// No need to make copy. So let's make elementWorkingCopy have same reference.
 			elementWorkingCopy = currentElement;
 			// Restrict user input.
-			propsWithNameController.setInputAllowed(false);
+			commonElementFieldsController.setInputAllowed(false);
 		} else {
 			// Other CuteElements can be edited and serialized.
 			try {
@@ -385,8 +392,8 @@ public class ElementEditorController implements Initializable {
 				throw new RuntimeException(e.getMessage());
 			}
 			// Allow user input.
-			propsWithNameController.setInputAllowed(true);
-			propsWithNameController
+			commonElementFieldsController.setInputAllowed(true);
+			commonElementFieldsController
 					.setEmptyNameAllowed(currentElement.getElementInfo().isEmptyNameAllowed());
 		}
 		
@@ -405,7 +412,7 @@ public class ElementEditorController implements Initializable {
 		whyUnhealthyProperty.bind(infoOfCopyElement.whyUnhealthyProperty());
 		
 		// Let's set up propertiesPane according to CuteElement
-		propsWithNameController.connectToCuteElement(elementWorkingCopy, currentElement);
+		commonElementFieldsController.connectToCuteElement(elementWorkingCopy, currentElement);
 		
 		// Let's reset state manager of buttons
 		buttonStateManager.reset();
@@ -466,7 +473,7 @@ public class ElementEditorController implements Initializable {
 		String NameOfCopyElement = elementWorkingCopy.getElementInfo().getName();
 		String NameOfCurrentElement = getCurrentElement().getElementInfo().getName();
 		// setCuteElementNameSafely() will throw IllegalArgument exception if "name" field
-		// validation in propsWithNameController is not implemented correctly.
+		// validation in commonElementFieldsController is not implemented correctly.
 		if (!NameOfCopyElement.equals(NameOfCurrentElement))
 			ProjectManager.getProject().setCuteElementNameSafely(getCurrentElement(),
 					NameOfCopyElement);

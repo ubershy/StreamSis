@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.ubershy.streamsis.actions.Action;
 import com.ubershy.streamsis.checkers.Checker;
 import com.ubershy.streamsis.counters.Counter;
-import com.ubershy.streamsis.gui.helperclasses.CuteTreeCell;
+import com.ubershy.streamsis.gui.cells.CuteTreeCell;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.CuteElementContainer;

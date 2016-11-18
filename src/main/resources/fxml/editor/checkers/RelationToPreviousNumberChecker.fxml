@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+/** 
+ * StreamSis
+ * Copyright (C) 2016 Eva Balycheva
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+-->
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane fx:id="root" hgap="10.0" maxHeight="1.7976931348623157E308" vgap="10.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ubershy.streamsis.gui.controllers.editor.checkers.RelationToPreviousNumberCheckerController">
+   <columnConstraints>
+      <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints maxHeight="1.7976931348623157E308" minHeight="25.0" vgrow="ALWAYS" />
+      <RowConstraints maxHeight="1.7976931348623157E308" minHeight="25.0" vgrow="ALWAYS" />
+      <RowConstraints maxHeight="1.7976931348623157E308" minHeight="25.0" vgrow="ALWAYS" />
+      <RowConstraints maxHeight="1.7976931348623157E308" minHeight="25.0" vgrow="ALWAYS" />
+      <RowConstraints maxHeight="1.7976931348623157E308" minHeight="25.0" prefHeight="30.0" vgrow="ALWAYS" />
+   </rowConstraints>
+   <children>
+      <Label maxHeight="1.7976931348623157E308" text="Set the initial number to compare Counter's first result with" wrapText="true" />
+      <Pane fx:id="numberPane" prefWidth="200.0" GridPane.rowIndex="1" />
+      <Label maxHeight="1.7976931348623157E308" text="Set the operator (How Counter's result is being compared to it's previous result)" wrapText="true" GridPane.rowIndex="2" />
+      <Pane fx:id="operatorPane" prefWidth="200.0" GridPane.rowIndex="3" />
+      <HBox GridPane.rowIndex="4">
+         <children>
+            <Label maxHeight="1.7976931348623157E308" text="This Checker will return True if Counter's new result is " wrapText="true" />
+            <Label fx:id="operatorHintLabel" maxHeight="1.7976931348623157E308" text="..." textFill="GREEN" />
+            <Label maxHeight="1.7976931348623157E308" text=" it's previous result." />
+         </children>
+      </HBox>
+   </children>
+</GridPane>

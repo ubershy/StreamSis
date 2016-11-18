@@ -22,8 +22,8 @@ import java.util.ResourceBundle;
 
 import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.gui.GUIManager;
-import com.ubershy.streamsis.gui.helperclasses.ActorCell;
-import com.ubershy.streamsis.gui.helperclasses.ActorCell.ActorCellType;
+import com.ubershy.streamsis.gui.cells.ActorCell;
+import com.ubershy.streamsis.gui.cells.ActorCell.ActorCellType;
 import com.ubershy.streamsis.project.CuteProject;
 
 import javafx.application.Platform;
