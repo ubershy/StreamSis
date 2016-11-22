@@ -268,7 +268,7 @@ public class TreeContextMenuBuilder {
 					// Instantiate CuteElement
 					elemToAdd = cuteElementClass.newInstance();
 					// Set Appropriate name for CuteElement
-					elemToAdd.getElementInfo().setName(generateUniqueNameForCuteElement(
+					elemToAdd.getElementInfo().setName(GUIUtil.generateUniqueNameForNewItem(
 							cuteElementClass.getSimpleName(), existingChildrenNames));
 				} catch (Exception e) {
 					throw new RuntimeException(
@@ -315,7 +315,7 @@ public class TreeContextMenuBuilder {
 			
 			try {
 				// Determine proper name for new container
-				String name = generateUniqueNameForCuteElement(params.creationBaseName,
+				String name = GUIUtil.generateUniqueNameForNewItem(params.creationBaseName,
 						existingChildrenNames);
 				// Instantiate Container
 				cuteElementContainerToAdd = CuteElementContainer.createEmptyCuteElementContainer(
@@ -340,32 +340,6 @@ public class TreeContextMenuBuilder {
 		});
 		menu.getItems().add(newContainerMenuItem);
 		return menu;
-	}
-
-	/**
-	 * Generates possible name for {@link CuteElement} which will be created inside parent CuteElement as
-	 * a child. <br>
-	 * The name will be unique only in parent CuteElement's scope, not project scope. <br>
-	 * The name will look like this: "New SomeCuteElementClassName". <br>
-	 * An incrementing number in parentheses might be added to ensure this name is unique.
-	 * 
-	 * @param baseName
-	 *            Base name to use. It is usually CuteElement class's simple name.
-	 * @param existingChildrenNames
-	 *            A list with the names of parent CuteElement's existing children.
-	 * 
-	 * @return A Name which unique in parent CuteElement's scope.
-	 */
-	private static String generateUniqueNameForCuteElement(String baseName,
-			List<String> existingChildrenNames) {
-		String genericName = "New " + baseName;
-		String alteredName = genericName;
-		int counter = 0;
-		while (existingChildrenNames.contains(alteredName)) {
-			counter++;
-			alteredName = String.format("%s(%d)", genericName, counter);
-		}
-		return alteredName;
 	}
 
 	/**

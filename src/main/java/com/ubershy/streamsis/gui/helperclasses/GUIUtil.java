@@ -55,6 +55,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Control;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
@@ -521,5 +523,45 @@ public final class GUIUtil {
     	settingsStage.setTitle("StreamSis Settings");
     	settingsStage.show();
     }
+
+	/**
+	 * Generates possible name for new item that will be added somewhere. <br>
+	 * The name will look like this: "New 'baseName'". <br>
+	 * An incrementing number in parentheses might be added to ensure this name is unique.
+	 * 
+	 * @param baseName
+	 *            Base name to use.
+	 * @param existingNames
+	 *            A list with the existing names.
+	 * 
+	 * @return A Name that contains baseName which unique to the names in the existingNames list.
+	 */
+	public static String generateUniqueNameForNewItem(String baseName,
+			List<String> existingNames) {
+		String genericName = "New " + baseName;
+		String alteredName = genericName;
+		int counter = 0;
+		while (existingNames.contains(alteredName)) {
+			counter++;
+			alteredName = String.format("%s(%d)", genericName, counter);
+		}
+		return alteredName;
+	}
+
+	/**
+	 * Adds listener to TableView's width that changes it's columns sizes to make them equal and
+	 * covering all TableView's width.
+	 * 
+	 * @param tableView The TableView which columns to resize automatically.
+	 */
+	public static void maintainEqualWidthOfTableColumns(TableView<?> tableView) {
+		tableView.widthProperty().addListener((o, oldVal, newVal) -> {
+			double newWidth = newVal.doubleValue() / tableView.getColumns().size();
+			for (TableColumn<?, ?> column: tableView.getColumns()) {
+				column.setMinWidth(newWidth);
+				column.setMinWidth(newWidth);
+			}
+		});
+	}
 	
 }

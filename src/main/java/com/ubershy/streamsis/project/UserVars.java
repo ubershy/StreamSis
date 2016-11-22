@@ -17,13 +17,15 @@
  */
 package com.ubershy.streamsis.project;
 
-import java.io.IOException;
-import java.util.Map;
 import java.util.TreeMap;
 
 import com.ubershy.streamsis.actions.VariableSetterAction;
 import com.ubershy.streamsis.actions.VariableSwitchAction;
 import com.ubershy.streamsis.checkers.VariableChecker;
+
+import javafx.beans.property.ReadOnlyMapProperty;
+import javafx.beans.property.ReadOnlyMapWrapper;
+import javafx.collections.FXCollections;
 
 /**
  * This class is for creating and using string variables the user wants to use in his
@@ -45,10 +47,14 @@ import com.ubershy.streamsis.checkers.VariableChecker;
  */
 public final class UserVars {
 
-	/** The map in format variable(key):value. The comparison of keys is case-insensitive. */
-	private static Map<String, String> variables = new TreeMap<String, String>(
-			String.CASE_INSENSITIVE_ORDER);
-
+	/**
+	 * The map in format variable(key):value where the user can store data that defines
+	 * {@link CuteProject}'s behavior. The comparison of keys is case-insensitive.
+	 */
+	private static ReadOnlyMapWrapper<String, String> variables = new ReadOnlyMapWrapper<>(
+			FXCollections
+					.observableMap(new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+	
 	/**
 	 * Gets the value of the variable stored in {@link UserVars}.
 	 *
@@ -94,18 +100,28 @@ public final class UserVars {
 	public static void clear() {
 		variables.clear();
 	}
-
+	
 	/**
-	 * Gets a deep copy of current map with variables and values.
+	 * Removes the specified variable and associated value with it.
+	 * @param key
+	 *            The name of variable which we want to remove. <br>
+	 *            Can't be null or empty.
+	 * @throws IllegalArgumentException
 	 */
-	@SuppressWarnings("unchecked")
-	public static Map<String, String> getCopyOfCurrentVariables() {
-		try {
-			return (Map<String, String>) StuffSerializator
-					.makeACopyOfObjectUsingSerialization(variables);
-		} catch (IOException e) {
-			throw new RuntimeException("Can't make a copy of current variables.");
+	public static void remove(String key) {
+		if (key == null || key.isEmpty()) {
+			throw new IllegalArgumentException("Provided key is null or empty");
 		}
+		variables.remove(key);
+	}
+	
+	/**
+	 * Gets a read-only map of {@link #variables}.
+	 * 
+	 * @return The read-only map of {@link #variables}.
+	 */
+	public static ReadOnlyMapProperty<String, String> getUserVarsMap() {
+		return variables.getReadOnlyProperty();
 	}
 
 }

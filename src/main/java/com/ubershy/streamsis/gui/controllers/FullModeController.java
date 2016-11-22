@@ -88,6 +88,8 @@ public class FullModeController implements Initializable {
     @FXML
     private Button allActorsButton;
     @FXML
+    private Button allVariablesButton;
+    @FXML
     private Button startStopButton;
     @FXML
     private Button showCompactModeButton;
@@ -361,6 +363,10 @@ public class FullModeController implements Initializable {
 		// "All Actors" button.
 		Stage aaStage = GUIManager.getAllActorsStage();
 		allActorsButton.disableProperty().bind(aaStage.showingProperty());
+		
+		// "All Variables" button.
+		Stage avStage = GUIManager.getAllVariablesStage();
+		allVariablesButton.disableProperty().bind(avStage.showingProperty());
 	}
 	
 	public void setOpacity(double opacity) {
@@ -617,6 +623,13 @@ public class FullModeController implements Initializable {
     	Stage aaStage = GUIManager.getAllActorsStage();
     	aaStage.show();
     	aaStage.requestFocus();
+    }
+
+    @FXML
+    void showAllVariablesWindow(ActionEvent event) {
+    	Stage avStage = GUIManager.getAllVariablesStage();
+    	avStage.show();
+    	avStage.requestFocus();
     }
 
 }

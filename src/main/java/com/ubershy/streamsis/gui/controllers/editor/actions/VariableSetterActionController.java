@@ -73,8 +73,7 @@ public class VariableSetterActionController extends AbstractCuteController
 		vsAction = (VariableSetterAction) editableCopyOfCE;
 		origVsAction = (VariableSetterAction) origCE;
 		bindBidirectionalAndRemember(variableNameTextField.textProperty(), vsAction.keyProperty());
-		TextFields.bindAutoCompletion(variableNameTextField,
-				UserVars.getCopyOfCurrentVariables().keySet());
+		TextFields.bindAutoCompletion(variableNameTextField, UserVars.getUserVarsMap().keySet());
 		bindBidirectionalAndRemember(valueTextField.textProperty(), vsAction.valueProperty());
 		valueTextField.textProperty().addListener((o, oldVal, newVal) -> {
 			buttonStateManager.reportNewValueOfControl(origVsAction.getValue(), newVal,

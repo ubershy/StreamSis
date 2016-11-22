@@ -69,8 +69,7 @@ public class VariableSwitchActionController extends AbstractCuteController
 		vsAction = (VariableSwitchAction) editableCopyOfCE;
 		origVsAction = (VariableSwitchAction) origCE;
 		bindBidirectionalAndRemember(variableNameTextField.textProperty(), vsAction.keyProperty());
-		TextFields.bindAutoCompletion(variableNameTextField,
-				UserVars.getCopyOfCurrentVariables().keySet());
+		TextFields.bindAutoCompletion(variableNameTextField, UserVars.getUserVarsMap().keySet());
 	}
 
 	/*

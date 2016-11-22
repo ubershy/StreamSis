@@ -74,8 +74,7 @@ public class VariableCheckerController extends AbstractCuteController
 		origVarChecker = (VariableChecker) origCE;
 		bindBidirectionalAndRemember(variableNameTextField.textProperty(),
 				varChecker.keyProperty());
-		TextFields.bindAutoCompletion(variableNameTextField,
-				UserVars.getCopyOfCurrentVariables().keySet());
+		TextFields.bindAutoCompletion(variableNameTextField, UserVars.getUserVarsMap().keySet());
 		bindBidirectionalAndRemember(valueTextField.textProperty(),
 				varChecker.expectedValueProperty());
 		valueTextField.textProperty().addListener((o, oldVal, newVal) -> {

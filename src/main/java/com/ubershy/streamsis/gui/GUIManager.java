@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.gui.controllers.AllActorsController;
+import com.ubershy.streamsis.gui.controllers.AllVariablesController;
 import com.ubershy.streamsis.gui.controllers.CompactModeController;
 import com.ubershy.streamsis.gui.controllers.ElementEditorController;
 import com.ubershy.streamsis.gui.controllers.FullModeController;
@@ -61,6 +62,7 @@ public final class GUIManager {
 	private static Stage allActorsStage;
 	private static NotificationPane fullModeNotificationPane;
 	private static NotificationPane compactModeNotificationPane;
+	private static Stage allVariablesStage;
 
 	public static void buildGui(CuteProject project) {
 		if (primaryStage == null) {
@@ -76,6 +78,11 @@ public final class GUIManager {
 		AllActorsController allActorsController = StreamSisAppFactory.buildAllActorsController();
 		allActorsStage.setScene(new Scene((Parent) allActorsController.getView(),
 				allActorsController.getWidth(), allActorsController.getHeight()));
+		
+		AllVariablesController allVariablesController = StreamSisAppFactory
+				.buildAllVariablesController();
+		allVariablesStage.setScene(new Scene((Parent) allVariablesController.getView(),
+				allVariablesController.getWidth(), allVariablesController.getHeight()));
 
 		// Size will be overridden later by showLastMode()
 		mainScene = new Scene((Parent) mainController.getView(), 777, 777);
@@ -101,6 +108,7 @@ public final class GUIManager {
 		fullModeController.bindToProject(project);
 		compactModeController.bindToProject(project);
 		allActorsController.bindToProject(project);
+		allVariablesController.bindToProject(project);
 	}
 
 	// GUI classes must use this method
@@ -121,6 +129,10 @@ public final class GUIManager {
 	
 	public static Stage getAllActorsStage() {
 		return allActorsStage;
+	}
+	
+	public static Stage getAllVariablesStage() {
+		return allVariablesStage;
 	}
 
 	public static void loadProject(String path, boolean start) {
@@ -165,7 +177,19 @@ public final class GUIManager {
 		primaryStage = mainStage;
 		// Create allActorsStage window.
 		createAllActorsStage();
-		
+		createAllVariablesStage();
+	}
+
+	private static void createAllVariablesStage() {
+		allVariablesStage = new Stage();
+		allVariablesStage.initStyle(StageStyle.UTILITY);
+		allVariablesStage.setTitle("All Variables");
+		WindowCoordinatesManager.manageWindowCoordinates("AllVariablesWindow", allVariablesStage);
+		// This window doesn't have minimize button, so let's bind it's minimized status to
+		// primaryStage minimized status.
+		primaryStage.iconifiedProperty().addListener((o, oldVal, newVal) -> {
+			allVariablesStage.setIconified(newVal);
+		});
 	}
 
 	private static void createAllActorsStage() {
