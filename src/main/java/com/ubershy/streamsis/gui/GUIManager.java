@@ -195,6 +195,7 @@ public final class GUIManager {
 	private static void createAllActorsStage() {
 		allActorsStage = new Stage();
 		allActorsStage.initStyle(StageStyle.UTILITY);
+		allActorsStage.setTitle("All Actors");
 		WindowCoordinatesManager.manageWindowCoordinates("AllActorsWindow", allActorsStage);
 		// This window doesn't have minimize button, so let's bind it's minimized status to
 		// primaryStage minimized status.
