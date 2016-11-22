@@ -17,6 +17,7 @@
  */
 package com.ubershy.streamsis.project;
 
+import java.util.Map;
 import java.util.TreeMap;
 
 import com.ubershy.streamsis.actions.VariableSetterAction;
@@ -84,7 +85,7 @@ public final class UserVars {
 	 *            Can't be null, but can be empty
 	 * @throws IllegalArgumentException
 	 */
-	public static void set(String key, String value) {
+	public static void put(String key, String value) {
 		if (key == null || key.isEmpty()) {
 			throw new IllegalArgumentException("Provided key is null or empty");
 		}
@@ -113,6 +114,17 @@ public final class UserVars {
 			throw new IllegalArgumentException("Provided key is null or empty");
 		}
 		variables.remove(key);
+	}
+
+	/**
+	 * Clears up {@link #variables} and sets it to the provided map contents.
+	 * 
+	 * @param map
+	 *            The map which contents to set to {@link #variables}.
+	 */
+	public static void setAll(Map<String, String> map) {
+		variables.clear();
+		variables.putAll(map);
 	}
 	
 	/**

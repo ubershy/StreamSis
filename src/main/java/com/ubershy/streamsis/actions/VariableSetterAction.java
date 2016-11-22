@@ -74,7 +74,7 @@ public class VariableSetterAction extends AbstractCuteElement implements Action 
 				// Such key already has this value, set false result
 				elementInfo.setBooleanResult(false);
 			} else {
-				UserVars.set(key.get(), value.get());
+				UserVars.put(key.get(), value.get());
 				elementInfo.setBooleanResult(true);
 			}
 		}

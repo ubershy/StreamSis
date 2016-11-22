@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +44,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 
 /**
  * CuteProject aka CProject is a Project class for StreamSis program.
@@ -101,6 +104,14 @@ public class CuteProject implements Serializable {
 	 */
 	@JsonProperty
 	private ObservableList<Actor> globalActors = FXCollections.observableArrayList();
+	
+	/**
+	 * Map with Initial Variables and their Values to set to {@link UserVars} on each CuteProject's
+	 * start.
+	 */
+	@JsonProperty
+	private ObservableMap<String, String> initialUserVars = FXCollections
+			.observableMap(new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
 
 	/** A property telling if CuteProject is started or stopped. */
 	@JsonIgnore
@@ -144,7 +155,8 @@ public class CuteProject implements Serializable {
 	 *            the name of CuteProject
 	 */
 	public CuteProject(String name) {
-		this(name, "New SisScene", new ArrayList<SisScene>(), new ArrayList<Actor>());
+		this(name, "New SisScene", new ArrayList<SisScene>(), new ArrayList<Actor>(),
+				new TreeMap<String, String>());
 	}
 
 	/**
@@ -163,11 +175,13 @@ public class CuteProject implements Serializable {
 	private CuteProject(@JsonProperty("name") String name,
 			@JsonProperty("primarySisSceneName") String primarySisSceneName,
 			@JsonProperty("sisScenes") ArrayList<SisScene> sisScenes,
-			@JsonProperty("globalActors") ArrayList<Actor> globalActors) {
+			@JsonProperty("globalActors") ArrayList<Actor> globalActors,
+			@JsonProperty("initialUserVars") Map<String, String> initialUserVars) {
 		this.name.set(name);
 		this.sisScenes.setAll(sisScenes);
 		this.globalActors.setAll(globalActors);
 		this.primarySisSceneName.set(primarySisSceneName);
+		this.initialUserVars.putAll(initialUserVars);
 
 		this.sisScenes.addListener((ListChangeListener.Change<? extends SisScene> c) -> {
 			// For safety lets stop project.
@@ -673,6 +687,7 @@ public class CuteProject implements Serializable {
 				if (!globalActors.isEmpty()) {
 					// Lets initialize everything before starting
 					init();
+					UserVars.setAll(initialUserVars);
 					isStarted.set(true);
 					logger.info("Project '" + getName() + "' started");
 					switchSisSceneTo(getPrimarySisSceneName());
@@ -724,6 +739,7 @@ public class CuteProject implements Serializable {
 	public void stopProject() {
 		if (isStarted()) {
 			stopCurrentActors();
+			UserVars.clear();
 			isStarted.set(false);
 			logger.info("Project '" + getName() + "' stopped");
 		}
@@ -917,6 +933,16 @@ public class CuteProject implements Serializable {
 		int index = globalActors.indexOf(actor);
 		if (globalActors.size() != index + 1)
 			Collections.swap(globalActors, index, index + 1);
+	}
+	
+	
+	/**
+	 * Gets {@link #initialUserVars} of this {@link CuteProject}.
+	 *
+	 * @return {@link #initialUserVars} of this {@link CuteProject}.
+	 */
+	public ObservableMap<String, String> getInitialUserVars() {
+		return initialUserVars;
 	}
 
 }
