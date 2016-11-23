@@ -117,7 +117,6 @@
                </top>
             </BorderPane>
             <Separator orientation="VERTICAL" prefHeight="50.0" />
-            <Button fx:id="showCompactModeButton" alignment="CENTER" mnemonicParsing="false" onAction="#showCompactMode" prefHeight="50.0" prefWidth="65.0" text="Compact Mode" textAlignment="CENTER" wrapText="true" />
             <ToggleButton fx:id="onTopToggleButton" mnemonicParsing="false" prefHeight="50.0" text="On Top" textAlignment="CENTER" wrapText="true" />
             <BorderPane prefHeight="50.0" prefWidth="90.0">
                <center>

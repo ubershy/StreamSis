@@ -92,8 +92,6 @@ public class FullModeController implements Initializable {
     @FXML
     private Button startStopButton;
     @FXML
-    private Button showCompactModeButton;
-    @FXML
     private ToggleButton onTopToggleButton;
     @FXML
     private Button stopAllSoundsButton;
@@ -562,10 +560,10 @@ public class FullModeController implements Initializable {
 				opacitySlider.getValue() / 100.0);
 	}
 
-	@FXML
-	private void showCompactMode() {
-		GUIManager.mainController.useCompactMode();
-	}
+//	@FXML
+//	private void showCompactMode() {
+//		GUIManager.mainController.useCompactMode();
+//	}
 
 	@FXML
 	private void startStopProject() {
