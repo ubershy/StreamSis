@@ -108,7 +108,7 @@ public class SisSceneCell extends ListCell<SisScene> {
 				if (getListView().getItems().size() != 1) {
 					if (getIndex() == 0)
 						possibleMoves = PossibleMoves.ONLYDOWN;
-					if (getIndex() == ProjectManager.getProject().getSisScenes().size() - 1)
+					if (getIndex() == ProjectManager.getProject().getSisScenesUnmodifiable().size() - 1)
 						possibleMoves = PossibleMoves.ONLYUP;
 				} else {
 					possibleMoves = PossibleMoves.NOWHERE;

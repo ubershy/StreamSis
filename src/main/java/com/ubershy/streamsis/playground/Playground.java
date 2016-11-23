@@ -456,7 +456,7 @@ public final class Playground {
 	}
 	
 	private static void setRandomNamesForCheckersActionsCountersInProject(CuteProject project) {
-		for (Actor actor : project.getGlobalActors()) {
+		for (Actor actor : project.getGlobalActorsUnmodifiable()) {
 			setRandomNameForCuteElementRecursively(actor.getChecker());
 			for (Action action : actor.getOnActions()) {
 				setRandomNameForCuteElementRecursively(action);

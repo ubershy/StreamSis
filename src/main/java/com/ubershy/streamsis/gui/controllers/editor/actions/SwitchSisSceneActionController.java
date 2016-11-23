@@ -69,7 +69,7 @@ public class SwitchSisSceneActionController extends AbstractCuteController
 		origSssAction = (SwitchSisSceneAction) origCE;
 		bindBidirectionalAndRemember(ssNameTextField.textProperty(),
 				sssAction.sisSceneNameProperty());
-		TextFields.bindAutoCompletion(ssNameTextField, ProjectManager.getProject().getSisScenes());
+		TextFields.bindAutoCompletion(ssNameTextField, ProjectManager.getProject().getSisScenesUnmodifiable());
 		
 	}
 	

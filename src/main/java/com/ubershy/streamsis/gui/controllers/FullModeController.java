@@ -344,7 +344,7 @@ public class FullModeController implements Initializable {
 			// stoppingAnimation.stop();
 			// startingAnimation.playFromStart();
 		}
-		project.isStartedProperty().addListener((observable, oldValue, newValue) -> {
+		project.startedProperty().addListener((observable, oldValue, newValue) -> {
 			Platform.runLater(() -> {
 				if (newValue) {
 					startStopButton.setText("Stop");

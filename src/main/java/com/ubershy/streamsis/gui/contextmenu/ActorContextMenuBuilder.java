@@ -121,8 +121,8 @@ public final class ActorContextMenuBuilder {
 	private static Menu generateAddExistingActorMenu() {
 		Menu addExistingActorMenu = new Menu("Add existing...");
 		ArrayList<Actor> existingActors = new ArrayList<Actor>(
-				ProjectManager.getProject().getGlobalActors());
-		ObservableList<Actor> currentActors = ProjectManager.getProject().getCurrentActors();
+				ProjectManager.getProject().getGlobalActorsUnmodifiable());
+		ObservableList<Actor> currentActors = ProjectManager.getProject().getCurrentActorsUnmodifiable();
 		existingActors.removeAll(currentActors);
 		for (Actor actor : existingActors) {
 			ElementInfo info = actor.getElementInfo();

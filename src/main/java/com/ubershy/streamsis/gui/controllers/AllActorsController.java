@@ -67,9 +67,9 @@ public class AllActorsController implements Initializable {
 	
 	public void bindToProject(CuteProject project) {
 		// Set initial list. We don't set items directly to avoid ObservableList binding.
-		AllActorsList.setItems(FXCollections.observableArrayList(project.getGlobalActors()));
+		AllActorsList.setItems(FXCollections.observableArrayList(project.getGlobalActorsUnmodifiable()));
 		// Subscribe for changes
-		project.getGlobalActors().addListener((ListChangeListener.Change<? extends Actor> c) -> {
+		project.getGlobalActorsUnmodifiable().addListener((ListChangeListener.Change<? extends Actor> c) -> {
 			@SuppressWarnings("unchecked")
 			ObservableList<Actor> list = (ObservableList<Actor>) c.getList();
 			Platform.runLater(() -> {

@@ -250,11 +250,11 @@ public class StreamSisAppFactory {
 		if (project != null) {
 			sisSceneList.setCellFactory(View -> new SisSceneCell());
 			// Set initial list. We don't set items directly to avoid ObservableList binding.
-			sisSceneList.setItems(FXCollections.observableArrayList(project.getSisScenes()));
+			sisSceneList.setItems(FXCollections.observableArrayList(project.getSisScenesUnmodifiable()));
 			sisSceneList.getSelectionModel()
 					.select(project.getSisSceneByName(project.getCurrentSisSceneName()));
 			// Subscribe for changes
-			project.getSisScenes()
+			project.getSisScenesUnmodifiable()
 					.addListener((ListChangeListener.Change<? extends SisScene> c) -> {
 						@SuppressWarnings("unchecked")
 						ObservableList<SisScene> list = (ObservableList<SisScene>) c.getList();
@@ -310,7 +310,8 @@ public class StreamSisAppFactory {
 		if (project != null) {
 			actorList.setCellFactory(view -> new ActorCell(ActorCellType.STRUCTUREVIEWCELL));
 			// Set initial list. We don't set items directly to avoid ObservableList binding.
-			actorList.setItems(FXCollections.observableArrayList(project.getCurrentActors()));
+			actorList.setItems(
+					FXCollections.observableArrayList(project.getCurrentActorsUnmodifiable()));
 			if (actorList.getItems().size() != 0) {
 				actorList.getSelectionModel().select(0);
 			}
@@ -319,7 +320,7 @@ public class StreamSisAppFactory {
 			contextMenuManager.startManaging();
 			AtomicReference<Actor> lastSelectedActor = new AtomicReference<Actor>(null);
 			// Subscribe for changes
-			project.getCurrentActors()
+			project.getCurrentActorsUnmodifiable()
 					.addListener((ListChangeListener.Change<? extends Actor> c) -> {
 						@SuppressWarnings("unchecked")
 						ObservableList<Actor> list = (ObservableList<Actor>) c.getList();

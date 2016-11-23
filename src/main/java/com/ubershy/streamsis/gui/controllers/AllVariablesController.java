@@ -314,8 +314,8 @@ public class AllVariablesController implements Initializable {
 		project.getInitialUserVars()
 				.addListener(new WeakMapChangeListener<String, String>(initialVarsListener));
 		initialVarsTableView.setItems(readOnlyInitialVarsList);
-		currentVarsTableView.disableProperty().bind(project.isStartedProperty().not());
-		initialVarsTableView.disableProperty().bind(project.isStartedProperty());
+		currentVarsTableView.disableProperty().bind(project.startedProperty().not());
+		initialVarsTableView.disableProperty().bind(project.startedProperty());
 	}
 
 	public double getWidth() {

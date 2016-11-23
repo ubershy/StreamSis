@@ -33,14 +33,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.actors.Actor;
 
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -62,37 +60,54 @@ import javafx.collections.ObservableMap;
  * If Project is working while switching Current SisScene, associated Actors will start
  * automatically.
  * <p>
- * Note: CuteProject and SisScene classes might need some refactoring. I don't sure.
- * 
+ * Note: CuteProject and SisScene classes might need some refactoring. I'm not sure.
  */
 public class CuteProject implements Serializable {
+	
+	// This class is big. To make navigation easier, it is split into sections.
 
-	private static final long serialVersionUID = 0x0626132d0b091a17L;
-
-	static final Logger logger = LoggerFactory.getLogger(CuteProject.class);
+	// ♥ Serializable properties ♥
+	
+	/**
+	 * The name of this CuteProject.
+	 */
+	@JsonProperty("name")
+	private final ReadOnlyStringWrapper name = new ReadOnlyStringWrapper("");
+	public ReadOnlyStringProperty nameProperty() {return name.getReadOnlyProperty();}
+	public String getName() {return name.get();}
+	public void setName(String name) {this.name.set(name);}
 
 	/**
-	 * The current Actors. <br>
-	 * This list updates every time current SisScene changes. <br>
-	 * GUI shows them in list of current Actors.
+	 * The name of primary {@link SisScene}. <br>
+	 * When CuteProject starts, it starts it's primary SisScene after finding it by it's name.
 	 */
-	@JsonIgnore
-	private ObservableList<Actor> currentActors = FXCollections.observableArrayList();
-
-	/**
-	 * Current SisScene name <br>
-	 * GUI shows only Actors of CuteProject's current SisScene.
-	 */
-	@JsonIgnore
-	private StringProperty currentSisSceneName = new SimpleStringProperty();
+	@JsonProperty("primarySisSceneName")
+	private final ReadOnlyStringWrapper primarySisSceneName = new ReadOnlyStringWrapper("");
+	public ReadOnlyStringProperty primarySisSceneNameProperty() {
+		return primarySisSceneName.getReadOnlyProperty();
+		}
+	public String getPrimarySisSceneName() {return primarySisSceneName.get();}
+	public void setPrimarySisSceneName(String name) {
+		logger.info("Changing primary SisScene to '" + name + "'");
+		primarySisSceneName.set(name);
+	}
 
 	/** All CuteProject's SisScenes. */
-	@JsonProperty
-	private ObservableList<SisScene> sisScenes = FXCollections.observableArrayList();;
-
-	/** The name of primary SisScene. */
+	@JsonProperty("sisScenes")
+	private final ObservableList<SisScene> sisScenes = FXCollections.observableArrayList();
 	@JsonIgnore
-	private StringProperty primarySisSceneName = new SimpleStringProperty();
+	private final ObservableList<SisScene> readOnlySisScenes = FXCollections
+			.unmodifiableObservableList(sisScenes);
+
+	/**
+	 * Gets the unmodifiable list of all CuteProject's {@link SisScene}s.
+	 *
+	 * @return The unmodifiable list of all CuteProject's {@link SisScene}s.
+	 */
+	@JsonIgnore
+	public ObservableList<SisScene> getSisScenesUnmodifiable() {
+		return readOnlySisScenes;
+	}
 
 	/**
 	 * All CuteProject's Actors.
@@ -102,57 +117,122 @@ public class CuteProject implements Serializable {
 	 * SisScenes don't contain Actors, they just reference to Actors by names. <br>
 	 * <b>So they all must have unique names</b>.
 	 */
-	@JsonProperty
-	private ObservableList<Actor> globalActors = FXCollections.observableArrayList();
+	@JsonProperty("globalActors")
+	private final ObservableList<Actor> globalActors = FXCollections.observableArrayList();
+	@JsonIgnore
+	private final ObservableList<Actor> readOnlyGlobalActors = FXCollections
+			.unmodifiableObservableList(globalActors);
+	/**
+	 * Gets unmodifiable list of all CuteProject's {@link Actor}s (Global Actors).
+	 *
+	 * @return The unmodifiable list of all CuteProject's {@link Actor}s (Global Actors).
+	 */
+	@JsonIgnore
+	public ObservableList<Actor> getGlobalActorsUnmodifiable() {
+		return readOnlyGlobalActors;
+	}
 	
 	/**
 	 * Map with Initial Variables and their Values to set to {@link UserVars} on each CuteProject's
 	 * start.
 	 */
-	@JsonProperty
-	private ObservableMap<String, String> initialUserVars = FXCollections
+	@JsonProperty("initialUserVars")
+	private final ObservableMap<String, String> initialUserVars = FXCollections
 			.observableMap(new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
-
-	/** A property telling if CuteProject is started or stopped. */
-	@JsonIgnore
-	private BooleanProperty isStarted = new SimpleBooleanProperty(false);
-
-	/** The name of CuteProject */
-	@JsonIgnore
-	private StringProperty name = new SimpleStringProperty();
+	/**
+	 * Gets {@link #initialUserVars} of this CuteProject.
+	 *
+	 * @return {@link #initialUserVars} of this CuteProject.
+	 */
+	public ObservableMap<String, String> getInitialUserVars() {
+		return initialUserVars;
+	}
 	
+	// ♥ Runtime variables and properties ♥
+
+	/**
+	 * The current Actors. <br>
+	 * This list updates every time current SisScene changes to another. <br>
+	 * GUI shows them in the list of current Actors.
+	 */
+	@JsonIgnore
+	private final ObservableList<Actor> currentActors = FXCollections.observableArrayList();
+	@JsonIgnore
+	private final ObservableList<Actor> readOnlyCurrentActors = FXCollections
+			.unmodifiableObservableList(currentActors);
+	/**
+	 * Gets the unmodifiable list of current CuteProject's {@link Actor}s.
+	 *
+	 * @return The unmodifiable list of current CuteProject's {@link Actor}s.
+	 */
+	@JsonIgnore
+	public ObservableList<Actor> getCurrentActorsUnmodifiable() {return readOnlyCurrentActors;}
+
+	/**
+	 * Current SisScene name <br>
+	 * GUI shows only Actors of CuteProject's current SisScene.
+	 */
+	@JsonIgnore
+	private final ReadOnlyStringWrapper currentSisSceneName = new ReadOnlyStringWrapper("");
+	public ReadOnlyStringProperty currentSisSceneNameProperty() {
+		return currentSisSceneName.getReadOnlyProperty();
+	}
+	@JsonIgnore
+	public String getCurrentSisSceneName() {return currentSisSceneName.get();}
+
+	/**
+	 * A property telling if CuteProject is started or stopped.
+	 */
+	@JsonIgnore
+	private final ReadOnlyBooleanWrapper started = new ReadOnlyBooleanWrapper(false);
+	public ReadOnlyBooleanProperty startedProperty() {return started.getReadOnlyProperty();}
+	@JsonIgnore
+	public boolean isStarted() {
+		return started.get();
+	}
+
 	/**
 	 * The current CuteProject's initializing (successfully or not) {@link CuteElement}. When there
 	 * are no mistakes in the code, after {@link CuteProject#init()} this number should equal to the
 	 * quantity of CuteElements in the whole project.
 	 */
+	@JsonIgnore
 	private final ReadOnlyIntegerWrapper initElementsNumber = new ReadOnlyIntegerWrapper(0);
 	public ReadOnlyIntegerProperty initElementsNumberProperty() {
 		return initElementsNumber.getReadOnlyProperty();
 	}
+	@JsonIgnore
 	public int getInitElementsNumber() {return initElementsNumber.get();}
 	
 	/**
 	 * The current CuteProject's number of {@link CuteElement}s.
 	 */
+	@JsonIgnore
 	private final ReadOnlyIntegerWrapper allElementsNumber = new ReadOnlyIntegerWrapper(0);
 	public ReadOnlyIntegerProperty allElementsNumberProperty() {
 		return allElementsNumber.getReadOnlyProperty();
 	}
+	@JsonIgnore
 	public int getAllElementsNumber() {return allElementsNumber.get();}
 	
 	/** Tells if current CuteProject is currently initializing. */
+	@JsonIgnore
 	private final ReadOnlyBooleanWrapper initializing = new ReadOnlyBooleanWrapper(false);
 	public ReadOnlyBooleanProperty initializingProperty() {
 		return initializing.getReadOnlyProperty();
 	}
+
+	private static final long serialVersionUID = 0x0626132d0b091a17L;
+	static final Logger logger = LoggerFactory.getLogger(CuteProject.class);
+
+	// ♥ Constructors ♥
 
 	/**
 	 * Instantiates a new CuteProject with empty {@link #globalActors Global Actors} and
 	 * {@link #sisScenes SisScenes} lists.
 	 *
 	 * @param name
-	 *            the name of CuteProject
+	 *            The name of the CuteProject.
 	 */
 	public CuteProject(String name) {
 		this(name, "New SisScene", new ArrayList<SisScene>(), new ArrayList<Actor>(),
@@ -163,13 +243,13 @@ public class CuteProject implements Serializable {
 	 * Instantiates a new cute project the hard way. Mainly used by deserializator.
 	 *
 	 * @param name
-	 *            the name of CuteProject
+	 *            The name of CuteProject
 	 * @param primarySisSceneName
-	 *            the primary SisScene name
+	 *            The primary SisScene name
 	 * @param sisScenes
-	 *            the list of SisScenes
+	 *            The list of SisScenes
 	 * @param globalActors
-	 *            the list of Actors
+	 *            The list of Actors
 	 */
 	@JsonCreator
 	private CuteProject(@JsonProperty("name") String name,
@@ -196,27 +276,7 @@ public class CuteProject implements Serializable {
 		});
 	}
 
-	private void checkAndFixCurrentAndPrimarySisScenes() {
-		// if some SisScenes still left in list
-		if (sisScenes.size() != 0) {
-			// If we can't find primary SisScene, we will set as primary the first SisScene in
-			// list
-			if (getSisSceneByName(getPrimarySisSceneName()) == null) {
-				if (sisScenes.get(0) != null)
-					setPrimarySisSceneName(sisScenes.get(0).getElementInfo().getName());
-			}
-			// If there's no current SisScene we will switch to the primary SisScene
-			if (currentSisSceneName.get() != null) {
-				if (getSisSceneByName(currentSisSceneName.get()) == null) {
-					switchSisSceneTo(getPrimarySisSceneName());
-				}
-			} else {
-				switchSisSceneTo(getPrimarySisSceneName());
-			}
-		} else {
-			currentActors.clear();
-		}
-	}
+	// ♥ Public methods ♥
 
 	/**
 	 * Add the Actor to the list of CuteProject's Global Actors.
@@ -266,25 +326,6 @@ public class CuteProject implements Serializable {
 	}
 
 	/**
-	 * Gets the current SisScene's name property.
-	 *
-	 * @return current SisScene's name property
-	 */
-	public StringProperty currentSisSceneNameProperty() {
-		return currentSisSceneName;
-	}
-
-	/**
-	 * Primary SisScene name property. <br>
-	 * When CuteProject starts, it starts it's primary SisScene after finding it by it's name.
-	 *
-	 * @return the string property
-	 */
-	public StringProperty primarySisSceneNameProperty() {
-		return primarySisSceneName;
-	}
-
-	/**
 	 * Gets the Actor by name.
 	 *
 	 * @param name
@@ -305,24 +346,6 @@ public class CuteProject implements Serializable {
 	}
 
 	/**
-	 * Gets the list of current Actors.
-	 *
-	 * @return the list of current Actors
-	 */
-	public ObservableList<Actor> getCurrentActors() {
-		return currentActors;
-	}
-
-	/**
-	 * Gets the current SisScene's name.
-	 *
-	 * @return current SisScene's name
-	 */
-	public String getCurrentSisSceneName() {
-		return currentSisSceneName.get();
-	}
-
-	/**
 	 * Gets the SisScene by name.
 	 *
 	 * @param name
@@ -340,46 +363,6 @@ public class CuteProject implements Serializable {
 			}
 		}
 		return result;
-	}
-
-	/**
-	 * Gets CuteProject's SisScenes.
-	 *
-	 * @return the list of SisScenes
-	 */
-	public ObservableList<SisScene> getSisScenes() {
-		return sisScenes;
-	}
-
-	/**
-	 * Gets the name of CuteProject's primary SisScene. <br>
-	 * When CuteProject starts, it starts it's primary SisScene after finding it by it's name.
-	 *
-	 * @return the name of SisScene
-	 */
-	@JsonProperty("primarySisSceneName")
-	public String getPrimarySisSceneName() {
-		return primarySisSceneName.get();
-	}
-
-	/**
-	 * Gets this CuteProject's Global Actors.
-	 *
-	 * @return the list of Actors
-	 */
-	public ObservableList<Actor> getGlobalActors() {
-		return globalActors;
-	}
-
-	/**
-	 * Gets this CuteProject's name.
-	 *
-	 * @return name of the CuteProject
-	 * 
-	 */
-	@JsonProperty("name")
-	public String getName() {
-		return name.get();
 	}
 
 	/**
@@ -420,88 +403,6 @@ public class CuteProject implements Serializable {
 		}
 		logger.info("Project Initialized");
 		setProjectAsInitialized();
-	}
-
-	/**
-	 * @return The number of CuteElements in this Project.
-	 */
-	private int countElementsInProject() {
-		logger.info("Counting all Elements in Project...");
-		int count = 0;
-		for (SisScene scene : sisScenes) {
-			if (scene.getChildren() != null) {
-				// For the future...
-				throw new RuntimeException("As scene can have children now, the counting code "
-						+ "needs be changed.");
-			}
-			count++;
-		}
-		for (Actor actor : globalActors) {
-			count+=actor.countActorAndChildrenRecursivelyWithoutContainersOnTop();
-		}
-		logger.info("Counted all Elements in Project: " + count);
-		return count;
-	}
-	
-	/**
-	 * Validates list with Actors/SisScenes. <br>
-	 * Throws exceptions if something is wrong telling programmer about errors he made.
-	 *
-	 * @param list
-	 *            the list with Actors or SisScenes
-	 */
-	private <T> void validateListOfActorsOrSisScenes(ObservableList<T> list) {
-		if (list.isEmpty()) {
-			return;
-		}
-		if (list.contains(null)) {
-			throw new RuntimeException("One of the elements in list is null");
-		}
-		String elementType = null;
-		Object firstElement = list.get(0);
-		if (firstElement instanceof Actor) {
-			elementType = "Actor";
-		}
-		if (firstElement instanceof SisScene) {
-			elementType = "SisScene";
-		}
-		if (elementType == null) {
-			throw new RuntimeException("This method only checks lists of Actors or SisScenes");
-		}
-
-		ArrayList<String> names = new ArrayList<String>();
-		for (T element : list) {
-			String name = ((CuteElement) element).getElementInfo().getName();
-			if (name != null) {
-				names.add(name);
-			} else {
-				throw new RuntimeException(elementType + " has null name");
-			}
-		}
-		HashSet<String> uniqueNames = new HashSet<String>(names);
-		if (names.size() != uniqueNames.size()) {
-			throw new RuntimeException("Some of " + elementType + "s don't have unique names");
-		}
-	}
-
-	/**
-	 * Checks if CuteProject is started.
-	 *
-	 * @return true, if CuteProject is started
-	 */
-	@JsonIgnore
-	public boolean isStarted() {
-		return isStarted.get();
-	}
-
-	/**
-	 * Gets the CuteProject isStarted property.
-	 *
-	 * @return the boolean property isStarted
-	 */
-	@JsonIgnore
-	public BooleanProperty isStartedProperty() {
-		return isStarted;
 	}
 
 	/**
@@ -643,28 +544,6 @@ public class CuteProject implements Serializable {
 	}
 
 	/**
-	 * Sets the CuteProject primary SisScene by it's name. <br>
-	 * When CuteProject starts, it starts it's primary SisScene after finding it by it's name.
-	 *
-	 * @param name
-	 *            the name of SisScene you want to make primary
-	 */
-	public void setPrimarySisSceneName(String name) {
-		logger.info("Changing primary SisScene to '" + name + "'");
-		primarySisSceneName.set(name);
-	}
-
-	/**
-	 * Sets this CuteProject's name.
-	 *
-	 * @param name
-	 *            the new CuteProject's name
-	 */
-	public void setName(String name) {
-		this.name.set(name);
-	}
-
-	/**
 	 * Starts the chosen Actor. <br>
 	 * If Actor is already started, nothing will happen.
 	 *
@@ -688,7 +567,7 @@ public class CuteProject implements Serializable {
 					// Lets initialize everything before starting
 					init();
 					UserVars.setAll(initialUserVars);
-					isStarted.set(true);
+					started.set(true);
 					logger.info("Project '" + getName() + "' started");
 					switchSisSceneTo(getPrimarySisSceneName());
 				} else {
@@ -740,7 +619,7 @@ public class CuteProject implements Serializable {
 		if (isStarted()) {
 			stopCurrentActors();
 			UserVars.clear();
-			isStarted.set(false);
+			started.set(false);
 			logger.info("Project '" + getName() + "' stopped");
 		}
 	}
@@ -845,7 +724,7 @@ public class CuteProject implements Serializable {
 			if (newName == null || newName.isEmpty()) {
 				throw new IllegalArgumentException("Actor's new name can't be null or empty");
 			}
-			if (getGlobalActors().contains(element)) {
+			if (getGlobalActorsUnmodifiable().contains(element)) {
 				if (getActorByName(newName) != null) {
 					throw new IllegalArgumentException("Can't set new name for Actor. "
 							+ "The Actor with such name already exists in CuteProject");
@@ -883,35 +762,6 @@ public class CuteProject implements Serializable {
 	}
 
 	/**
-	 * Sets the current {@link CuteProject} as currently initializing.
-	 */
-	private void setProjectAsInitializing() {
-		initializing.set(true);
-		initElementsNumber.set(0);
-	}
-
-	/**
-	 * Sets the current {@link CuteProject} as initialized.
-	 */
-	private void setProjectAsInitialized() {
-		initializing.set(false);
-		int all = allElementsNumber.get();
-		int inited = initElementsNumber.get();
-		if (inited != all) {
-			throw new RuntimeException("The number of initialized Elements(" + inited + ") doesn't "
-					+ "match with the " + "number of all Elements(" + all + ") in the Project.");
-		}
-	}
-	
-	private void setStartedCountingElements() {
-		allElementsNumber.set(0);
-	}
-
-	private void setFinishedCountingElements(int count) {
-		allElementsNumber.set(count);
-	}
-	
-	/**
 	 * Moves Actor up in list of {@link #globalActors}.
 	 * 
 	 * @param actor
@@ -935,14 +785,136 @@ public class CuteProject implements Serializable {
 			Collections.swap(globalActors, index, index + 1);
 	}
 	
+	// ♥ Private methods ♥
+
+	/**
+	 * Sets the current {@link CuteProject} as currently counting {@link CuteElement}s inside. <br>
+	 * Internally it resets {@link #allElementsNumber} to "0".
+	 */
+	private void setStartedCountingElements() {
+		allElementsNumber.set(0);
+	}
+
+	/**
+	 * Sets the current {@link CuteProject} as finished counting {@link CuteElement}s inside. <br>
+	 *
+	 * @param count The number of counted CuteElements.
+	 */
+	private void setFinishedCountingElements(int count) {
+		allElementsNumber.set(count);
+	}
 	
 	/**
-	 * Gets {@link #initialUserVars} of this {@link CuteProject}.
-	 *
-	 * @return {@link #initialUserVars} of this {@link CuteProject}.
+	 * Sets the current {@link CuteProject} as currently initializing.
 	 */
-	public ObservableMap<String, String> getInitialUserVars() {
-		return initialUserVars;
+	private void setProjectAsInitializing() {
+		initializing.set(true);
+		initElementsNumber.set(0);
+	}
+
+	/**
+	 * Sets the current {@link CuteProject} as initialized.
+	 */
+	private void setProjectAsInitialized() {
+		initializing.set(false);
+		int all = allElementsNumber.get();
+		int inited = initElementsNumber.get();
+		if (inited != all) {
+			throw new RuntimeException("The number of initialized Elements(" + inited + ") doesn't "
+					+ "match with the " + "number of all Elements(" + all + ") in the Project.");
+		}
+	}
+
+	/**
+	 * Validates list with Actors/SisScenes. <br>
+	 * Throws exceptions if something is wrong telling programmer about errors he made.
+	 *
+	 * @param list
+	 *            the list with Actors or SisScenes
+	 */
+	private <T> void validateListOfActorsOrSisScenes(ObservableList<T> list) {
+		if (list.isEmpty()) {
+			return;
+		}
+		if (list.contains(null)) {
+			throw new RuntimeException("One of the elements in list is null");
+		}
+		String elementType = null;
+		Object firstElement = list.get(0);
+		if (firstElement instanceof Actor) {
+			elementType = "Actor";
+		}
+		if (firstElement instanceof SisScene) {
+			elementType = "SisScene";
+		}
+		if (elementType == null) {
+			throw new RuntimeException("This method only checks lists of Actors or SisScenes");
+		}
+
+		ArrayList<String> names = new ArrayList<String>();
+		for (T element : list) {
+			String name = ((CuteElement) element).getElementInfo().getName();
+			if (name != null) {
+				names.add(name);
+			} else {
+				throw new RuntimeException(elementType + " has null name");
+			}
+		}
+		HashSet<String> uniqueNames = new HashSet<String>(names);
+		if (names.size() != uniqueNames.size()) {
+			throw new RuntimeException("Some of " + elementType + "s don't have unique names");
+		}
+	}
+
+	/**
+	 * Counts the {@link CuteElement}s in CuteProject.
+	 *
+	 * @return The number of CuteElements in this CuteProject.
+	 */
+	private int countElementsInProject() {
+		logger.info("Counting all Elements in Project...");
+		int count = 0;
+		for (SisScene scene : sisScenes) {
+			if (scene.getChildren() != null) {
+				// For the future...
+				throw new RuntimeException("As scene can have children now, the counting code "
+						+ "needs be changed.");
+			}
+			count++;
+		}
+		for (Actor actor : globalActors) {
+			count+=actor.countActorAndChildrenRecursivelyWithoutContainersOnTop();
+		}
+		logger.info("Counted all Elements in Project: " + count);
+		return count;
+	}
+
+	/**
+	 * Checks and fixes current and primary {@link SisScene}s:<br>
+	 * 1. If primary SisScene is missing or undefined, sets primary SisScene to the first SisScene
+	 * in {@link #sisScenes}. <br>
+	 * 2. If current SisScene is missing or undefined, sets it to the primary SisScene.
+	 */
+	private void checkAndFixCurrentAndPrimarySisScenes() {
+		// if some SisScenes still left in list
+		if (sisScenes.size() != 0) {
+			// If we can't find primary SisScene, we will set as primary the first SisScene in
+			// list
+			if (getSisSceneByName(getPrimarySisSceneName()) == null) {
+				if (sisScenes.get(0) != null)
+					setPrimarySisSceneName(sisScenes.get(0).getElementInfo().getName());
+			}
+			// If there's no current SisScene we will switch to the primary SisScene
+			if (currentSisSceneName.get() != null) {
+				if (getSisSceneByName(currentSisSceneName.get()) == null) {
+					switchSisSceneTo(getPrimarySisSceneName());
+				}
+			} else {
+				switchSisSceneTo(getPrimarySisSceneName());
+			}
+		} else {
+			currentActors.clear();
+		}
 	}
 
 }

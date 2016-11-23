@@ -86,7 +86,7 @@ public class CompactModeController implements Initializable {
 	public void searchSisScenes(ActionEvent event) {
 		final javafx.concurrent.Task<List<Actor>> searchTasksActor = new javafx.concurrent.Task<List<Actor>>() {
 			protected List<Actor> call() throws Exception {
-				return ProjectManager.getProject().getGlobalActors();
+				return ProjectManager.getProject().getGlobalActorsUnmodifiable();
 			}
 		};
 
