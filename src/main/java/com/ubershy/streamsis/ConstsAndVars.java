@@ -17,9 +17,6 @@
  */
 package com.ubershy.streamsis;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.ubershy.streamsis.actors.Actor;
 import com.ubershy.streamsis.project.UserVars;
 
@@ -41,9 +38,6 @@ public final class ConstsAndVars {
 	/** If greater than 0, slows down initialization of each CuteElement. */
 	public static int slowDownInitForMs = 0;
 
-	/** The Constant logger. */
-	static final Logger logger = LoggerFactory.getLogger(ConstsAndVars.class);
-	
 	/**
 	 * minimumCheckInterval is a minimum allowed length of time to sleep in milliseconds between
 	 * {@link Actor}'s checks.
