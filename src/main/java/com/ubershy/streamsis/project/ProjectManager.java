@@ -99,7 +99,7 @@ public final class ProjectManager {
 	 */
 	public static CuteProject createAndSetNewProject() {
 		logger.info("Creating new empty Project");
-		CuteProject emptyProject = new CuteProject("Empty Project");
+		CuteProject emptyProject = new CuteProject("New Project");
 		emptyProject.addSisScene(new SisScene("New SisScene", new ArrayList<String>()));
 		ProjectManager.setProject(emptyProject, null);
 		return emptyProject;
