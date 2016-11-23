@@ -90,6 +90,10 @@ public class FullModeController implements Initializable {
     @FXML
     private Button allVariablesButton;
     @FXML
+    private MenuItem allActorsMenuItem;
+    @FXML
+    private MenuItem allVariablesMenuItem;
+    @FXML
     private Button startStopButton;
     @FXML
     private ToggleButton onTopToggleButton;
@@ -457,8 +461,18 @@ public class FullModeController implements Initializable {
 			initializeEditorPanel(GUIManager.elementEditor);
 			initializeToolBar();
 			initializeStatusBar();
-			initializeOpenRecentMenu();
+			initializeMenuBar();
 		}
+	}
+
+	private void initializeMenuBar() {
+		initializeOpenRecentMenu();
+		// "All Actors" menu item.
+		Stage aaStage = GUIManager.getAllActorsStage();
+		allActorsMenuItem.disableProperty().bind(aaStage.showingProperty());
+		// "All Variables" menu item.
+		Stage avStage = GUIManager.getAllVariablesStage();
+		allVariablesMenuItem.disableProperty().bind(avStage.showingProperty());
 	}
 
 	@FXML

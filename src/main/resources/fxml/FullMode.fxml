@@ -77,9 +77,8 @@
         </Menu>
         <Menu mnemonicParsing="false" text="View">
           <items>
-            <MenuItem disable="true" mnemonicParsing="false" text="Compact Mode" />
-                  <MenuItem disable="true" mnemonicParsing="false" text="Variables" />
-                  <MenuItem disable="true" mnemonicParsing="false" text="All Actors" />
+                  <MenuItem fx:id="allVariablesMenuItem" disable="true" mnemonicParsing="false" onAction="#showAllVariablesWindow" text="All Variables" />
+                  <MenuItem fx:id="allActorsMenuItem" disable="true" mnemonicParsing="false" onAction="#showAllActorsWindow" text="All Actors" />
           </items>
         </Menu>
             <Menu mnemonicParsing="false" text="Settings">
