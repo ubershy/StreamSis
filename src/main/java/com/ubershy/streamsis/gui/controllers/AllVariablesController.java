@@ -208,7 +208,8 @@ public class AllVariablesController implements Initializable {
 
 	private void initializeCurrentVarsTable() {
 		// Initialize TableView settings.
-		Label lbl = new Label("No variables are currently set.");
+		Label lbl = new Label("No Variables are currently set. You can add some here,"
+				+ " but they are wiped on Project stop");
 		lbl.setWrapText(true);
 		lbl.setTextAlignment(TextAlignment.CENTER);
 		currentVarsTableView.setPlaceholder(lbl);
