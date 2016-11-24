@@ -135,6 +135,7 @@ public class Coordinates {
 	public void initRegion(ElementInfo elementInfo) {
 		Region potentialRegion = new Region(x.get(), y.get(), w.get(), h.get(), screenNumber.get());
 		if (potentialRegion.isValid()) {
+			potentialRegion.setAutoWaitTimeout(0.0);
 			region = potentialRegion;
 		} else {
 			region = null;
