@@ -35,10 +35,12 @@ import org.sikuli.util.EventSubject;
 import org.sikuli.util.OverlayCapturePrompt;
 
 import com.ubershy.streamsis.HotkeyManager;
+import com.ubershy.streamsis.SneakyExceptionHandler;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.HotkeyManager.Hotkey;
 import com.ubershy.streamsis.checkers.RegionChecker;
 import com.ubershy.streamsis.counters.RegionTargetCounter;
+import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.StreamSisAppFactory;
 import com.ubershy.streamsis.gui.StreamSisAppFactory.LittleCuteControllerType;
 import com.ubershy.streamsis.gui.controllers.editor.AbstractCuteController;
@@ -120,7 +122,14 @@ public class RegionTargetCounterController extends AbstractCuteController
 	
 	private Text crosshairIcon = GlyphsDude.createIcon(FontAwesomeIcon.CROSSHAIRS);
 
+	private boolean selectionErrorOccured = false;
+
 	private Runnable selectImageRunnable = () -> {
+		SneakyExceptionHandler.setTemporaryUncaughtExceptionHandler((e, t) -> {
+			GUIManager.showNotification(null, "An error occurred while selecting the Image.");
+			selectionErrorOccured = true;
+		});
+		selectionErrorOccured = false;
 		Screen.doPrompt("Select Target Image on screen", this);
 	};
 	
@@ -298,7 +307,12 @@ public class RegionTargetCounterController extends AbstractCuteController
 
 	@Override
 	public void update(EventSubject s) {
+		SneakyExceptionHandler.removeTemporaryUncaughtExceptionHandler();
 		Screen.closePrompt();
+		if (selectionErrorOccured) {
+			Screen.resetPrompt((OverlayCapturePrompt) s);
+			return;
+		}
 		// This code is run in AWT thread. Using atomic reference to pass ScreenImage later to
 		// JavaFX thread.
 		AtomicReference<ScreenImage> atomicScreenImage = new AtomicReference<>(null);
@@ -308,7 +322,6 @@ public class RegionTargetCounterController extends AbstractCuteController
 		if (s != null) {
 			OverlayCapturePrompt prompt = (OverlayCapturePrompt) s;
 			atomicScreenImage.set(prompt.getSelection());
-			Screen.closePrompt();
 		}
 		Platform.runLater(() -> {
 			ScreenImage screenImage = atomicScreenImage.get();

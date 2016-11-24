@@ -31,8 +31,10 @@ import org.sikuli.util.EventSubject;
 import org.sikuli.util.OverlayCapturePrompt;
 
 import com.ubershy.streamsis.HotkeyManager;
+import com.ubershy.streamsis.SneakyExceptionHandler;
 import com.ubershy.streamsis.HotkeyManager.Hotkey;
 import com.ubershy.streamsis.checkers.Coordinates;
+import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.controllers.editor.AbstractCuteController;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.gui.helperclasses.IntegerTextField;
@@ -101,15 +103,22 @@ public class CoordinatesController extends AbstractCuteController implements Eve
 	private Text crosshairIcon = GlyphsDude.createIcon(FontAwesomeIcon.CROSSHAIRS);
 
 	private Runnable selectRegionRunnable = () -> {
+		SneakyExceptionHandler.setTemporaryUncaughtExceptionHandler((e, t) -> {
+			GUIManager.showNotification(null, "An error occurred while selecting the Region.");
+			selectionErrorOccured = true;
+		});
+		selectionErrorOccured = false;
 		Screen.doPrompt("Select Region on screen", this);
 	};
-	
+
 	private String selectRegionButtonOrigText;
 	
 	private ChangeListener<? super KeyCodeCombination> selectRegionHotkeyListener = (o, oldVal,
 			newVal) -> {
 		changeSelectRegionButtonBasedOnKeyCombination(newVal);
 	};
+
+	private boolean selectionErrorOccured = false;
 
 	/*
 	 * @inheritDoc
@@ -249,7 +258,12 @@ public class CoordinatesController extends AbstractCuteController implements Eve
     
 	@Override
 	public void update(EventSubject s) {
+		SneakyExceptionHandler.removeTemporaryUncaughtExceptionHandler();
 		Screen.closePrompt();
+		if (selectionErrorOccured ) {
+			Screen.resetPrompt((OverlayCapturePrompt) s);
+			return;
+		}
 		// This code is run in AWT thread. Using atomic reference to pass ScreenImage later to
 		// JavaFX thread.
 		AtomicReference<ScreenImage> atomicScreenImage = new AtomicReference<>(null);
@@ -259,7 +273,6 @@ public class CoordinatesController extends AbstractCuteController implements Eve
 		if (s != null) {
 			OverlayCapturePrompt prompt = (OverlayCapturePrompt) s;
 			atomicScreenImage.set(prompt.getSelection());
-			Screen.closePrompt();
 		}
 		Platform.runLater(() -> {
 			ScreenImage screenImage = atomicScreenImage.get();

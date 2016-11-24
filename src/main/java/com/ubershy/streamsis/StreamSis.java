@@ -17,9 +17,7 @@
  */
 package com.ubershy.streamsis;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,15 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ubershy.streamsis.gui.GUIManager;
-import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.playground.Playground;
 import com.ubershy.streamsis.project.ProjectManager;
 
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
 /**
@@ -51,30 +44,7 @@ public class StreamSis extends Application {
 
 	static final Logger logger = LoggerFactory.getLogger(StreamSis.class);
 	
-	static final UncaughtExceptionHandler eHandler = (t, e) -> {
-		// FIXME: Backup changed project near the current project's path without prompting the user.
-		// Because, if prompted, the user might overwrite the original project file and there's no
-		// guarantee that he will be able to load this project next time. 
-		// If project is new and with unsaved changes, provide a button for the user to save it.
-		logger.error("Catched unhandled Exception", e);
-		Platform.runLater(() -> {
-			Alert alert = new Alert(AlertType.ERROR);
-			GUIUtil.cutifyAlert(alert);
-			alert.setTitle("Nobody expects the " + e.getClass().getSimpleName() + "!");
-			alert.setHeaderText("Something bad happened to StreamSis and it stopped working");
-			alert.setContentText("The problem occured in \"" + t.getName() + "\" thread.\n\n"
-					+ "Click the \"Show details\" button to see the stack trace."
-					+ " If you are not scared.");
-			ByteArrayOutputStream ostream = new ByteArrayOutputStream();
-			e.printStackTrace(new PrintStream(ostream));
-			TextArea stackTraceArea = new TextArea(ostream.toString());
-			stackTraceArea.setEditable(false);
-			stackTraceArea.setMinSize(800, 450);
-			alert.getDialogPane().setExpandableContent(stackTraceArea);
-			GUIUtil.showAlertInPrimaryStageCenter(alert);
-			Platform.exit();
-		});
-	};
+	static final UncaughtExceptionHandler eHandler = new SneakyExceptionHandler();
 
 	/**
 	 * The main method.
