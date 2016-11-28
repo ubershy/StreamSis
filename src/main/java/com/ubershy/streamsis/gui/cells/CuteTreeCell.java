@@ -17,16 +17,16 @@
  */
 package com.ubershy.streamsis.gui.cells;
 
-import com.ubershy.streamsis.actions.Action;
-import com.ubershy.streamsis.checkers.Checker;
-import com.ubershy.streamsis.counters.Counter;
+import com.ubershy.streamsis.elements.CuteElement;
+import com.ubershy.streamsis.elements.CuteElementContainer;
+import com.ubershy.streamsis.elements.ElementInfo;
+import com.ubershy.streamsis.elements.ElementInfo.ElementHealth;
+import com.ubershy.streamsis.elements.ElementInfo.Result;
+import com.ubershy.streamsis.elements.actions.Action;
+import com.ubershy.streamsis.elements.checkers.Checker;
+import com.ubershy.streamsis.elements.counters.Counter;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.contextmenu.TreeContextMenuBuilder;
-import com.ubershy.streamsis.project.CuteElement;
-import com.ubershy.streamsis.project.CuteElementContainer;
-import com.ubershy.streamsis.project.ElementInfo;
-import com.ubershy.streamsis.project.ElementInfo.ElementHealth;
-import com.ubershy.streamsis.project.ElementInfo.Result;
 
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;

@@ -17,7 +17,7 @@
  */
 package com.ubershy.streamsis.gui.controllers.editor;
 
-import com.ubershy.streamsis.project.CuteElement;
+import com.ubershy.streamsis.elements.CuteElement;
 
 /**
  * The Interface CuteElementController represents the view with controls to edit specific

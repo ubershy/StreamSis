@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.StreamSis;
+import com.ubershy.streamsis.elements.SisScene;
 
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;

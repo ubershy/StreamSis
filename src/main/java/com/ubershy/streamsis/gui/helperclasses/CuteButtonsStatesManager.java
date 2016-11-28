@@ -22,11 +22,11 @@ import java.util.Map;
 
 import org.controlsfx.validation.ValidationResult;
 
-import com.ubershy.streamsis.actions.Action;
-import com.ubershy.streamsis.checkers.Checker;
-import com.ubershy.streamsis.counters.Counter;
+import com.ubershy.streamsis.elements.CuteElement;
+import com.ubershy.streamsis.elements.actions.Action;
+import com.ubershy.streamsis.elements.checkers.Checker;
+import com.ubershy.streamsis.elements.counters.Counter;
 import com.ubershy.streamsis.gui.controllers.ElementEditorController;
-import com.ubershy.streamsis.project.CuteElement;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;

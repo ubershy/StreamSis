@@ -22,8 +22,8 @@ import java.util.ResourceBundle;
 
 import org.controlsfx.validation.ValidationSupport;
 
+import com.ubershy.streamsis.elements.CuteElement;
 import com.ubershy.streamsis.gui.animations.ThreeDotsAnimation;
-import com.ubershy.streamsis.project.CuteElement;
 
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;

@@ -21,14 +21,15 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.controlsfx.validation.ValidationSupport;
-import com.ubershy.streamsis.actions.MultiSoundAction;
+
+import com.ubershy.streamsis.elements.CuteElement;
+import com.ubershy.streamsis.elements.actions.MultiSoundAction;
 import com.ubershy.streamsis.gui.StreamSisAppFactory;
 import com.ubershy.streamsis.gui.StreamSisAppFactory.LittleCuteControllerType;
 import com.ubershy.streamsis.gui.controllers.editor.AbstractCuteController;
 import com.ubershy.streamsis.gui.controllers.editor.CuteElementController;
 import com.ubershy.streamsis.gui.controllers.editor.littlethings.MultiSourceFilePickerController;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
-import com.ubershy.streamsis.project.CuteElement;
 
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;

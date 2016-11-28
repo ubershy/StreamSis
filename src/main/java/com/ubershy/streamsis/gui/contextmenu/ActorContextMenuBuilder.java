@@ -22,11 +22,11 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ubershy.streamsis.actors.Actor;
-import com.ubershy.streamsis.actors.UniversalActor;
+import com.ubershy.streamsis.elements.ElementInfo;
+import com.ubershy.streamsis.elements.actors.Actor;
+import com.ubershy.streamsis.elements.actors.UniversalActor;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteProject;
-import com.ubershy.streamsis.project.ElementInfo;
 import com.ubershy.streamsis.project.ProjectManager;
 
 import javafx.collections.ObservableList;

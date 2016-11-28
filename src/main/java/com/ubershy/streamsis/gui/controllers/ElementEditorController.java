@@ -27,9 +27,12 @@ import org.controlsfx.control.MasterDetailPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ubershy.streamsis.actions.Action;
-import com.ubershy.streamsis.checkers.Checker;
-import com.ubershy.streamsis.counters.Counter;
+import com.ubershy.streamsis.elements.CuteElement;
+import com.ubershy.streamsis.elements.ElementInfo;
+import com.ubershy.streamsis.elements.ElementInfo.ElementHealth;
+import com.ubershy.streamsis.elements.actions.Action;
+import com.ubershy.streamsis.elements.checkers.Checker;
+import com.ubershy.streamsis.elements.counters.Counter;
 import com.ubershy.streamsis.gui.StreamSisAppFactory;
 import com.ubershy.streamsis.gui.StreamSisAppFactory.SpecialCuteElementControllerType;
 import com.ubershy.streamsis.gui.animations.HorizontalShadowAnimation;
@@ -37,11 +40,8 @@ import com.ubershy.streamsis.gui.animations.ThreeDotsAnimation;
 import com.ubershy.streamsis.gui.controllers.editor.CommonElementFieldsController;
 import com.ubershy.streamsis.gui.controllers.editor.CuteElementController;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
-import com.ubershy.streamsis.project.CuteElement;
-import com.ubershy.streamsis.project.ElementInfo;
 import com.ubershy.streamsis.project.StuffSerializator;
 import com.ubershy.streamsis.project.ProjectManager;
-import com.ubershy.streamsis.project.ElementInfo.ElementHealth;
 
 import javafx.animation.Animation.Status;
 import javafx.animation.KeyFrame;

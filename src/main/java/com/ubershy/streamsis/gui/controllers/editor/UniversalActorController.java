@@ -24,10 +24,10 @@ import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 
 import com.ubershy.streamsis.ConstsAndVars;
-import com.ubershy.streamsis.actors.Actor;
+import com.ubershy.streamsis.elements.CuteElement;
+import com.ubershy.streamsis.elements.actors.Actor;
 import com.ubershy.streamsis.gui.controllers.editor.AbstractCuteController;
 import com.ubershy.streamsis.gui.helperclasses.IntegerTextField;
-import com.ubershy.streamsis.project.CuteElement;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;

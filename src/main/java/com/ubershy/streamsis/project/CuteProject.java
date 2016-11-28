@@ -31,7 +31,10 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ubershy.streamsis.actors.Actor;
+import com.ubershy.streamsis.UserVars;
+import com.ubershy.streamsis.elements.CuteElement;
+import com.ubershy.streamsis.elements.SisScene;
+import com.ubershy.streamsis.elements.actors.Actor;
 
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;

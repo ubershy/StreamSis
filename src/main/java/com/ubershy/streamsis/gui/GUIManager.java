@@ -24,7 +24,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ubershy.streamsis.Util;
-import com.ubershy.streamsis.actors.Actor;
+import com.ubershy.streamsis.elements.CuteElement;
+import com.ubershy.streamsis.elements.SisScene;
+import com.ubershy.streamsis.elements.actors.Actor;
 import com.ubershy.streamsis.gui.controllers.AllActorsController;
 import com.ubershy.streamsis.gui.controllers.AllVariablesController;
 import com.ubershy.streamsis.gui.controllers.CompactModeController;
@@ -33,9 +35,7 @@ import com.ubershy.streamsis.gui.controllers.FullModeController;
 import com.ubershy.streamsis.gui.controllers.MainController;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.gui.helperclasses.WindowCoordinatesManager;
-import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.CuteProject;
-import com.ubershy.streamsis.project.SisScene;
 import com.ubershy.streamsis.project.ProjectManager;
 
 import javafx.scene.Node;

@@ -21,8 +21,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import org.controlsfx.validation.ValidationSupport;
 
+import com.ubershy.streamsis.elements.CuteElement;
 import com.ubershy.streamsis.gui.controllers.editor.AbstractCuteController;
-import com.ubershy.streamsis.project.CuteElement;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;

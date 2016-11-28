@@ -20,16 +20,16 @@ package com.ubershy.streamsis.gui.cells;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ubershy.streamsis.actors.AbstractActor;
-import com.ubershy.streamsis.actors.Actor;
-import com.ubershy.streamsis.checkers.Checker;
+import com.ubershy.streamsis.elements.CuteElement;
+import com.ubershy.streamsis.elements.ElementInfo.ElementHealth;
+import com.ubershy.streamsis.elements.ElementInfo.ElementState;
+import com.ubershy.streamsis.elements.actors.AbstractActor;
+import com.ubershy.streamsis.elements.actors.Actor;
+import com.ubershy.streamsis.elements.checkers.Checker;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.contextmenu.ActorContextMenuBuilder;
 import com.ubershy.streamsis.gui.contextmenu.PossibleMoves;
 import com.ubershy.streamsis.gui.controllers.AllActorsController;
-import com.ubershy.streamsis.project.CuteElement;
-import com.ubershy.streamsis.project.ElementInfo.ElementHealth;
-import com.ubershy.streamsis.project.ElementInfo.ElementState;
 
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;

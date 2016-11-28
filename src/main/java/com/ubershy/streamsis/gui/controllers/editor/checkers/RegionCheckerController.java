@@ -38,7 +38,8 @@ import com.ubershy.streamsis.HotkeyManager;
 import com.ubershy.streamsis.SneakyExceptionHandler;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.HotkeyManager.Hotkey;
-import com.ubershy.streamsis.checkers.RegionChecker;
+import com.ubershy.streamsis.elements.CuteElement;
+import com.ubershy.streamsis.elements.checkers.RegionChecker;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.StreamSisAppFactory;
 import com.ubershy.streamsis.gui.StreamSisAppFactory.LittleCuteControllerType;
@@ -48,7 +49,6 @@ import com.ubershy.streamsis.gui.controllers.editor.littlethings.CoordinatesCont
 import com.ubershy.streamsis.gui.controllers.editor.littlethings.SimilarityController;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
-import com.ubershy.streamsis.project.CuteElement;
 
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;

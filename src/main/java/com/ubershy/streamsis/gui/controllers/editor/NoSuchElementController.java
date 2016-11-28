@@ -22,7 +22,7 @@ import java.util.ResourceBundle;
 
 import org.controlsfx.validation.ValidationSupport;
 
-import com.ubershy.streamsis.project.CuteElement;
+import com.ubershy.streamsis.elements.CuteElement;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;

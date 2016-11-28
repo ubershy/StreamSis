@@ -17,8 +17,7 @@
  */
 package com.ubershy.streamsis;
 
-import com.ubershy.streamsis.actors.Actor;
-import com.ubershy.streamsis.project.UserVars;
+import com.ubershy.streamsis.elements.actors.Actor;
 
 /**
  * This class stores some constants and manages some variables used in {@link StreamSis}. <br>

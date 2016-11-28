@@ -27,16 +27,16 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ubershy.streamsis.actions.Action;
-import com.ubershy.streamsis.checkers.Checker;
-import com.ubershy.streamsis.counters.Counter;
+import com.ubershy.streamsis.elements.CuteElement;
+import com.ubershy.streamsis.elements.CuteElementContainer;
+import com.ubershy.streamsis.elements.CuteElement.AddableChildrenTypeInfo;
+import com.ubershy.streamsis.elements.CuteElement.ContainerCreationParams;
+import com.ubershy.streamsis.elements.actions.Action;
+import com.ubershy.streamsis.elements.checkers.Checker;
+import com.ubershy.streamsis.elements.counters.Counter;
 import com.ubershy.streamsis.gui.cells.CuteTreeCell;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
-import com.ubershy.streamsis.project.CuteElement;
-import com.ubershy.streamsis.project.CuteElementContainer;
 import com.ubershy.streamsis.project.ProjectManager;
-import com.ubershy.streamsis.project.CuteElement.AddableChildrenTypeInfo;
-import com.ubershy.streamsis.project.CuteElement.ContainerCreationParams;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -54,11 +54,11 @@ public class TreeContextMenuBuilder {
 	static final Logger logger = LoggerFactory.getLogger(TreeContextMenuBuilder.class);
 
 	private static List<Class<? extends Action>> allAvailableNewActions = getAvailableCuteElements(
-			"com.ubershy.streamsis.actions", Action.class);
+			"com.ubershy.streamsis.elements.actions", Action.class);
 	private static List<Class<? extends Checker>> allAvailableNewCheckers = getAvailableCuteElements(
-			"com.ubershy.streamsis.checkers", Checker.class);
+			"com.ubershy.streamsis.elements.checkers", Checker.class);
 	private static List<Class<? extends Counter>> allAvailableNewCounters = getAvailableCuteElements(
-			"com.ubershy.streamsis.counters", Counter.class);
+			"com.ubershy.streamsis.elements.counters", Counter.class);
 
 	/**
 	 * Creates the {@link ContextMenu} for the chosen {@link CuteTreeCell}.

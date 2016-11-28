@@ -31,15 +31,15 @@ import org.controlsfx.validation.decoration.StyleClassValidationDecoration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ubershy.streamsis.actors.Actor;
+import com.ubershy.streamsis.elements.CuteElement;
+import com.ubershy.streamsis.elements.ElementInfo;
+import com.ubershy.streamsis.elements.SisScene;
+import com.ubershy.streamsis.elements.actors.Actor;
 import com.ubershy.streamsis.gui.StreamSisAppFactory;
 import com.ubershy.streamsis.gui.controllers.ElementEditorController;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.gui.helperclasses.CuteGraphicValidationDecoration;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
-import com.ubershy.streamsis.project.CuteElement;
-import com.ubershy.streamsis.project.SisScene;
-import com.ubershy.streamsis.project.ElementInfo;
 import com.ubershy.streamsis.project.ProjectManager;
 
 import javafx.beans.InvalidationListener;

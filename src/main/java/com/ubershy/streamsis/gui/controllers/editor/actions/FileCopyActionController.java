@@ -26,11 +26,11 @@ import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 
 import com.ubershy.streamsis.Util;
-import com.ubershy.streamsis.actions.FileCopyAction;
+import com.ubershy.streamsis.elements.CuteElement;
+import com.ubershy.streamsis.elements.actions.FileCopyAction;
 import com.ubershy.streamsis.gui.controllers.editor.AbstractCuteController;
 import com.ubershy.streamsis.gui.controllers.editor.CuteElementController;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
-import com.ubershy.streamsis.project.CuteElement;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

@@ -31,15 +31,15 @@ import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.LowLevel;
 import com.ubershy.streamsis.SuperSoundManager;
 import com.ubershy.streamsis.Util;
-import com.ubershy.streamsis.actors.Actor;
+import com.ubershy.streamsis.elements.CuteElement;
+import com.ubershy.streamsis.elements.SisScene;
+import com.ubershy.streamsis.elements.actors.Actor;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.gui.helperclasses.OpenRecentManager;
-import com.ubershy.streamsis.project.CuteElement;
 import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.ProjectManager;
 import com.ubershy.streamsis.project.ProjectSerializator;
-import com.ubershy.streamsis.project.SisScene;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;

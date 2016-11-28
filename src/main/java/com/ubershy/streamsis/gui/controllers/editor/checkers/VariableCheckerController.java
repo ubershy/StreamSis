@@ -26,11 +26,11 @@ import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 
-import com.ubershy.streamsis.checkers.VariableChecker;
+import com.ubershy.streamsis.UserVars;
+import com.ubershy.streamsis.elements.CuteElement;
+import com.ubershy.streamsis.elements.checkers.VariableChecker;
 import com.ubershy.streamsis.gui.controllers.editor.AbstractCuteController;
 import com.ubershy.streamsis.gui.controllers.editor.CuteElementController;
-import com.ubershy.streamsis.project.CuteElement;
-import com.ubershy.streamsis.project.UserVars;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;

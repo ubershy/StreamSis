@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+import com.ubershy.streamsis.elements.SisScene;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteProject;
-import com.ubershy.streamsis.project.SisScene;
 import com.ubershy.streamsis.project.ProjectManager;
 
 import javafx.event.ActionEvent;

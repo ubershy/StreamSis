@@ -20,8 +20,9 @@ package com.ubershy.streamsis.gui.controllers.editor.littlethings;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import com.ubershy.streamsis.MultiSourceFileLister;
-import com.ubershy.streamsis.MultiSourceFilePicker;
+import com.ubershy.streamsis.elements.parts.MultiSourceFileLister;
+import com.ubershy.streamsis.elements.parts.MultiSourceFilePicker;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 

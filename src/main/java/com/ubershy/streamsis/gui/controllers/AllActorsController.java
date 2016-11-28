@@ -20,7 +20,7 @@ package com.ubershy.streamsis.gui.controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import com.ubershy.streamsis.actors.Actor;
+import com.ubershy.streamsis.elements.actors.Actor;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.cells.ActorCell;
 import com.ubershy.streamsis.gui.cells.ActorCell.ActorCellType;

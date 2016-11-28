@@ -17,7 +17,7 @@
  */
 package com.ubershy.streamsis.gui.contextmenu;
 
-import com.ubershy.streamsis.actors.Actor;
+import com.ubershy.streamsis.elements.actors.Actor;
 
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.ListView;

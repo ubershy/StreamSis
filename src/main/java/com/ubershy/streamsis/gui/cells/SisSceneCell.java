@@ -17,10 +17,10 @@
  */
 package com.ubershy.streamsis.gui.cells;
 
+import com.ubershy.streamsis.elements.SisScene;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.contextmenu.PossibleMoves;
 import com.ubershy.streamsis.gui.contextmenu.SisSceneContextMenuBuilder;
-import com.ubershy.streamsis.project.SisScene;
 
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;

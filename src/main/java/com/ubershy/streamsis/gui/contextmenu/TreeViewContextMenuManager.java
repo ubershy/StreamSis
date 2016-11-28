@@ -20,7 +20,7 @@ package com.ubershy.streamsis.gui.contextmenu;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.ubershy.streamsis.project.CuteElement;
+import com.ubershy.streamsis.elements.CuteElement;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
