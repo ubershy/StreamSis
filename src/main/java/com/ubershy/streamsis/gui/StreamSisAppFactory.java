@@ -51,7 +51,9 @@ import com.ubershy.streamsis.gui.controllers.editor.CuteController;
 import com.ubershy.streamsis.gui.controllers.editor.CuteElementController;
 import com.ubershy.streamsis.gui.controllers.editor.NoSuchElementController;
 import com.ubershy.streamsis.gui.controllers.settings.SettingsController;
+import com.ubershy.streamsis.gui.controllers.settings.networking.SpecificNetworkSettingsController;
 import com.ubershy.streamsis.gui.helperclasses.AutoTreeItem;
+import com.ubershy.streamsis.networking.ClientType;
 import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.ProjectManager;
 
@@ -217,7 +219,21 @@ public class StreamSisAppFactory {
 	public static SettingsController buildSettingsController() {
 		return (SettingsController) buildControllerByRelativePath("settings/Settings.fxml");
 	}
-	
+
+	/**
+	 * Builds GUI for editing settings related to specific network client for Streaming Program.
+	 * 
+	 * @param clientType,
+	 *            The type of the network client.
+	 * @return the corresponding {@link SpecificNetworkSettingsController}.
+	 */
+	public static SpecificNetworkSettingsController buildSpecificSettingsForNetworkClient(
+			ClientType clientType) {
+		final String subDir = "settings/networking/";
+		String name = clientType.name() + ".fxml";
+		return (SpecificNetworkSettingsController) buildControllerByRelativePath(subDir + name);
+	}
+
 	/**
 	 * Builds the {@link AboutController}.
 	 *
@@ -570,4 +586,5 @@ public class StreamSisAppFactory {
 		}
 		return controller;
 	}
+
 }

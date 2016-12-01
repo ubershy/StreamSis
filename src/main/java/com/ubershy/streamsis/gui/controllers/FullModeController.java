@@ -37,6 +37,8 @@ import com.ubershy.streamsis.elements.actors.Actor;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.gui.helperclasses.OpenRecentManager;
+import com.ubershy.streamsis.networking.ConnectionStatus;
+import com.ubershy.streamsis.networking.StreamingProgramManager;
 import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.ProjectManager;
 import com.ubershy.streamsis.project.ProjectSerializator;
@@ -125,6 +127,12 @@ public class FullModeController implements Initializable {
     private Label numberOfElementsLabel;
     @FXML
     private ProgressBar projectInitProgressBar;
+    @FXML
+    private Label SPStatusLabel;
+    @FXML
+    private Label SPNameLabel;
+    @FXML
+    private ProgressBar SPStatusBar;
 	
 	private int sisSceneToRenameIndex = -1;
 	private NotificationPane notificationPane;
@@ -369,6 +377,50 @@ public class FullModeController implements Initializable {
 		// "All Variables" button.
 		Stage avStage = GUIManager.getAllVariablesStage();
 		allVariablesButton.disableProperty().bind(avStage.showingProperty());
+		
+		// Networking stuff (Communication with Streaming Program).
+		SPNameLabel.setText(StreamingProgramManager.getClientType().toString());
+		StreamingProgramManager.clientTypeProperty().addListener((o, oldVal, newVal) -> {
+			Platform.runLater(() -> {
+				SPNameLabel.setText(newVal.toString());
+			});
+		});
+		SPStatusLabel.setText(StreamingProgramManager.getStatus().toString());
+		setSPStatusBar(StreamingProgramManager.getStatus());
+		StreamingProgramManager.statusProperty().addListener((o, oldVal, newVal) -> {
+			Platform.runLater(() -> {
+				SPStatusLabel.setText(newVal.toString());
+				setSPStatusBar(newVal);
+			});
+		});
+	}
+	
+	private void setSPStatusBar(ConnectionStatus status) {
+		switch (status) {
+		case AUTHENTICATING:
+			SPStatusBar.setProgress(-1.0);
+			break;
+		case AUTHENTICATIONFAIL:
+			SPStatusBar.setProgress(-1.0);
+			break;
+		case CONNECTING:
+			SPStatusBar.setProgress(-1.0);
+			break;
+		case CONNECTIONERROR: 
+			SPStatusBar.setProgress(-1.0);
+			break;
+		case ERROR:
+			SPStatusBar.setProgress(-1.0);
+			break;
+		case OFFLINE:
+			SPStatusBar.setProgress(0.0);
+			break;
+		case ONLINE:
+			SPStatusBar.setProgress(1.0);
+			break;
+		default:
+			throw new RuntimeException("What is this status?");
+		}
 	}
 	
 	public void setOpacity(double opacity) {

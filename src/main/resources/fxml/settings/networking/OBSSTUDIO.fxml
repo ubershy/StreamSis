@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+/** 
+ * StreamSis
+ * Copyright (C) 2016 Eva Balycheva
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+-->
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import org.controlsfx.control.textfield.CustomPasswordField?>
+
+<GridPane fx:id="root" hgap="7.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" vgap="7.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ubershy.streamsis.gui.controllers.settings.networking.OBSSTUDIOSettingsController">
+   <columnConstraints>
+      <ColumnConstraints minWidth="10.0" />
+      <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints fillHeight="false" maxHeight="25.0" minHeight="10.0" prefHeight="25.0" vgrow="NEVER" />
+      <RowConstraints fillHeight="false" maxHeight="25.0" minHeight="10.0" prefHeight="25.0" vgrow="NEVER" />
+      <RowConstraints fillHeight="false" maxHeight="25.0" minHeight="10.0" prefHeight="25.0" vgrow="NEVER" />
+   </rowConstraints>
+   <children>
+      <Label maxHeight="1.7976931348623157E308" text="Password" GridPane.rowIndex="2" />
+      <CustomPasswordField fx:id="passwordField" promptText="Set if authentication is required" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <Label maxHeight="1.7976931348623157E308" text="Note: The IP address of the local machine will be used." wrapText="true" GridPane.columnSpan="2" />
+      <Label maxHeight="1.7976931348623157E308" text="This means OBS Studio has to be running on the same computer." wrapText="true" GridPane.columnSpan="2" GridPane.rowIndex="1" />
+   </children>
+</GridPane>

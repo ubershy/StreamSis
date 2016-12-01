@@ -35,8 +35,8 @@ import com.ubershy.streamsis.elements.actions.Action;
 import com.ubershy.streamsis.elements.actions.DelayedActions;
 import com.ubershy.streamsis.elements.actions.MultiFileCopyAction;
 import com.ubershy.streamsis.elements.actions.MultiSoundAction;
-import com.ubershy.streamsis.elements.actions.OBSHotkeyAction;
 import com.ubershy.streamsis.elements.actions.RunProgramAction;
+import com.ubershy.streamsis.elements.actions.SwitchSPSceneAction;
 import com.ubershy.streamsis.elements.actions.SwitchSisSceneAction;
 import com.ubershy.streamsis.elements.actions.VariableSetterAction;
 import com.ubershy.streamsis.elements.actions.VariableSwitchAction;
@@ -54,10 +54,6 @@ import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.ProjectSerializator;
 
 import javafx.collections.ObservableList;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyCombination.Modifier;
 
 /**
  * The playground for testing things and generating hardcoded Projects.<br>
@@ -178,14 +174,14 @@ public final class Playground {
 				+ " it probably means you don't have required resource files for generating."
 				+ "\nIf you don't see so many, everything is okay. ;)");
 
-		Modifier altMod = KeyCombination.ALT_DOWN;
-		String hkMenu = new KeyCodeCombination(KeyCode.F5, altMod).getName();
-		String hkLobby = new KeyCodeCombination(KeyCode.F6, altMod).getName();
-		String hkMatch = new KeyCodeCombination(KeyCode.PAGE_UP, altMod).getName();
-		String hkDeathMatch = new KeyCodeCombination(KeyCode.PAGE_DOWN, altMod).getName();
-		String hkIkaMusume = new KeyCodeCombination(KeyCode.F1, altMod).getName();
-		String hkSniper = new KeyCodeCombination(KeyCode.F3, altMod).getName();
-		String hkPhysical = new KeyCodeCombination(KeyCode.F7, altMod).getName();
+		// These are names of scenes in streaming program.
+		String SPMenuSceneName = "CSGO Menu Scene";
+		String SPLobbySceneName = "CSGO Lobby Scene";
+		String SPMatchSceneName = "CSGO Match Scene";
+		String SPDeathMatchSceneName = "CSGO DeathMatch Scene";
+		String SPSniperSceneName = "CSGO SniperScope Scene";
+		String SPIkaMusumeSceneName = "CSGO IkaMusume Scene";
+		String SPMessingAroundSceneName = "MessingAround Scene";
 
 		UniversalActor mvpActor = actorBuilder.createUniversalActor("MVP", 2000,
 				defaultRepeatInterval, false, false, new Coordinates(563, 158, 80, 80), 0.7f, true,
@@ -238,24 +234,26 @@ public final class Playground {
 		// sniperActor.addOnAction(new ConfirmedDelayedActions(
 		// Util.singleItemAsList(new OBSHotkeyAction(hkSniper)), 750, sniperChecker));
 		// decided not to use delayed action since hotkeys are working good now =)
-		sniperActor.addOnAction(new OBSHotkeyAction(hkSniper));
-		TreeMap<String, ArrayList<Action>> sniperUndoHotkey = new TreeMap<String, ArrayList<Action>>();
-		sniperUndoHotkey.put("Match", Util.singleItemAsList(new OBSHotkeyAction(hkMatch)));
-		sniperUndoHotkey.put("Deathmatch",
-				Util.singleItemAsList(new OBSHotkeyAction(hkDeathMatch)));
+		sniperActor.addOnAction(new SwitchSPSceneAction(SPSniperSceneName));
+		TreeMap<String, ArrayList<Action>> sniperUndoSPSwitchActions = new TreeMap<String, ArrayList<Action>>();
+		sniperUndoSPSwitchActions.put("Match",
+				Util.singleItemAsList(new SwitchSPSceneAction(SPMatchSceneName)));
+		sniperUndoSPSwitchActions.put("Deathmatch",
+				Util.singleItemAsList(new SwitchSPSceneAction(SPDeathMatchSceneName)));
 		sniperActor.clearOffActions();
-		sniperActor.addOffAction(new VariableSwitchAction("currentMode", sniperUndoHotkey));
+		sniperActor
+				.addOffAction(new VariableSwitchAction("currentMode", sniperUndoSPSwitchActions));
 
 		UniversalActor physicalActor = new UniversalActor("Physical", 150, defaultRepeatInterval,
 				false, false, new RegionChecker(new Coordinates(2755, 1185, 80, 80, 0),
 						resourcesLocation + "Physical\\Targets\\toFind.png", 0.8f),
 				null, null);
-		physicalActor.addOnAction(new OBSHotkeyAction(hkPhysical));
+		physicalActor.addOnAction(new SwitchSPSceneAction(SPMessingAroundSceneName));
 		TreeMap<String, ArrayList<Action>> physicalUndoHotkey = new TreeMap<String, ArrayList<Action>>();
-		physicalUndoHotkey.put("Match", Util.singleItemAsList(new OBSHotkeyAction(hkMatch)));
+		physicalUndoHotkey.put("Match", Util.singleItemAsList(new SwitchSPSceneAction(SPMatchSceneName)));
 		physicalUndoHotkey.put("Deathmatch",
-				Util.singleItemAsList(new OBSHotkeyAction(hkDeathMatch)));
-		physicalUndoHotkey.put("CSGOMenu", Util.singleItemAsList(new OBSHotkeyAction(hkMenu)));
+				Util.singleItemAsList(new SwitchSPSceneAction(SPDeathMatchSceneName)));
+		physicalUndoHotkey.put("CSGOMenu", Util.singleItemAsList(new SwitchSPSceneAction(SPMenuSceneName)));
 		physicalActor.addOffAction(new VariableSwitchAction("currentMode", physicalUndoHotkey));
 
 		UniversalActor killActor = actorBuilder.createUniversalActor("Kill", 500,
@@ -282,7 +280,7 @@ public final class Playground {
 				false,
 				new RegionChecker(new Coordinates(707, 160, 53, 23),
 						resourcesLocation + "Lobby\\Targets\\lobby.png", 0.7f),
-				new Action[] { new OBSHotkeyAction(hkLobby) }, null);
+				new Action[] { new SwitchSPSceneAction(SPLobbySceneName) }, null);
 		lobbyActor.addOnAction(new RunProgramAction("C:\\Windows\\System32\\cmd.exe",
 				"/C \"" + resourcesLocation + "Scripts\\curl_lamp_set_hue.bat\" " + "307", "",
 				false));
@@ -291,7 +289,7 @@ public final class Playground {
 				false,
 				new RegionChecker(new Coordinates(704, 364, 63, 33),
 						resourcesLocation + "Menu\\Targets\\menu.png", 0.7f),
-				new Action[] { new OBSHotkeyAction(hkMenu) }, null);
+				new Action[] { new SwitchSPSceneAction(SPMenuSceneName) }, null);
 		menuActor.addOnAction(new VariableSetterAction("currentMode", "CSGOMenu"));
 		menuActor.addOnAction(new RunProgramAction("C:\\Windows\\System32\\cmd.exe",
 				"/C \"" + resourcesLocation + "Scripts\\curl_lamp_set_hue.bat\" " + "180", "",
@@ -301,7 +299,7 @@ public final class Playground {
 				defaultRepeatInterval, false, false,
 				new RegionChecker(new Coordinates(1065, 327, 154, 19),
 						resourcesLocation + "Modes\\competitive.png", 0.4f),
-				new Action[] { new OBSHotkeyAction(hkMatch) }, null);
+				new Action[] { new SwitchSPSceneAction(SPMatchSceneName) }, null);
 
 		competitiveHotkeyActor.addOnAction(new VariableSetterAction("currentMode", "Match"));
 
@@ -309,14 +307,14 @@ public final class Playground {
 				defaultRepeatInterval, false, false,
 				new RegionChecker(new Coordinates(1065, 327, 154, 19),
 						resourcesLocation + "Modes\\deathmatch.png", 0.4f),
-				new Action[] { new OBSHotkeyAction(hkDeathMatch) }, null);
+				new Action[] { new SwitchSPSceneAction(SPDeathMatchSceneName) }, null);
 		deathmatchHotkeyActor.addOnAction(new VariableSetterAction("currentMode", "Deathmatch"));
 
 		UniversalActor casualHotkeyActor = new UniversalActor("Casual", 300, defaultRepeatInterval,
 				false, false,
 				new RegionChecker(new Coordinates(1065, 327, 154, 19),
 						resourcesLocation + "Modes\\casual.png", 0.4f),
-				new Action[] { new OBSHotkeyAction(hkMatch) }, null);
+				new Action[] { new SwitchSPSceneAction(SPMatchSceneName) }, null);
 		casualHotkeyActor.addOnAction(new VariableSetterAction("currentMode", "Match"));
 
 		float musumePrecision = 0.965f;
@@ -329,11 +327,12 @@ public final class Playground {
 						resourcesLocation + "IkaMusume\\Targets\\musume.png", musumePrecision) };
 		Checker musumeChecker = LogicalChecker.createAnd(musumeCheckers);
 		UniversalActor IkaMusumeActor = new UniversalActor("IkaMusume", 100, defaultRepeatInterval,
-				false, false, musumeChecker, null, new Action[] { new OBSHotkeyAction(hkMatch) });
+				false, false, musumeChecker, null,
+				new Action[] { new SwitchSPSceneAction(SPMatchSceneName) });
 
 		// IkaMusumeActor.addOnAction(
 		// new MultiSoundAction(resourcesLocation + "IkaMusume\\Sounds", 0.3, true));
-		IkaMusumeActor.addOnAction(new OBSHotkeyAction(hkIkaMusume));
+		IkaMusumeActor.addOnAction(new SwitchSPSceneAction(SPIkaMusumeSceneName));
 		IkaMusumeActor
 				.addOnAction(new DelayedActions(
 						Util.singleItemAsList(
@@ -368,7 +367,7 @@ public final class Playground {
 				defaultRepeatInterval, false, false, new Coordinates(567, 125, 1, 1), 0.65f, false,
 				false, false);
 
-		// We don't need actions generated by actorBuilder. Let's wipe them.
+		// We don't need some actions generated by actorBuilder. Let's wipe them.
 		changeMenuActor.clearOnActions();
 		changeMenuActor.clearOffActions();
 		changeLoadingActor.clearOnActions();

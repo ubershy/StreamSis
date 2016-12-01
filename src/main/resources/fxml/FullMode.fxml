@@ -126,23 +126,26 @@
                </top>
             </BorderPane>
             <Pane HBox.hgrow="ALWAYS" />
-            <BorderPane prefHeight="50.0" prefWidth="110.0">
+            <BorderPane maxHeight="50.0" prefHeight="50.0" prefWidth="130.0">
                <bottom>
-                  <Label text="Status" BorderPane.alignment="CENTER">
+                  <Label fx:id="SPStatusLabel" text="Status" textAlignment="CENTER" BorderPane.alignment="CENTER">
                      <padding>
                         <Insets bottom="8.0" />
                      </padding>
+                     <font>
+                        <Font size="10.0" />
+                     </font>
                   </Label>
                </bottom>
                <center>
-                  <ProgressBar prefHeight="0.0" prefWidth="82.0" progress="0.0" BorderPane.alignment="CENTER">
+                  <ProgressBar fx:id="SPStatusBar" prefHeight="0.0" prefWidth="100.0" progress="0.0" BorderPane.alignment="CENTER">
                      <padding>
-                        <Insets top="5.0" />
+                        <Insets top="3.0" />
                      </padding>
                   </ProgressBar>
                </center>
                <top>
-                  <Label text="Streaming Program" BorderPane.alignment="CENTER" />
+                  <Label fx:id="SPNameLabel" text="Streaming Program" textAlignment="CENTER" wrapText="true" BorderPane.alignment="CENTER" />
                </top>
             </BorderPane>
             <Separator orientation="VERTICAL" prefHeight="50.0" />

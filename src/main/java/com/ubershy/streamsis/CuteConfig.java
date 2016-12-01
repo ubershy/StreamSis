@@ -74,6 +74,9 @@ public final class CuteConfig {
 
 	/** The name of the main settings section in {@link Config} for {@link StreamSis}. */
 	public final static String CUTE = "StreamSis";
+	
+	/** The name of the main settings section in {@link Config} for {@link StreamSis}. */
+	public final static String NETWORKING = "Networking";
 
 	/** The name of the GUI settings section in {@link Config} for {@link StreamSis}. */
 	public final static String USERGUI = "UserGUI";
@@ -125,6 +128,46 @@ public final class CuteConfig {
 		} catch (ConfigException e) {
 			throw new RuntimeException("Missing parameter in configuration: " + key + "." + subKey);
 		}
+	}
+
+	/**
+	 * Sets the String value for current configuration's variable to config.
+	 *
+	 * @param key
+	 *            The name of settings section.
+	 * @param subKey
+	 *            The name of needed variable.
+	 * @param value
+	 *            The value to set.
+	 */
+	private static void setStringToConfig(String key, String subKey, String newValue,
+			boolean hideValue) {
+		String fullPath = MAINKEY + "." + key + "." + subKey;
+		if (getString(key, subKey).equals(newValue)) {
+			String messageToLog = hideValue
+					? String.format("Setting secret configuration value. Key: %s.%s", key, subKey)
+					: String.format("Configuration value unchanged. Key: %s.%s Value: %s", key,
+							subKey, newValue);
+			logger.info(messageToLog);
+			return;
+		}
+		String processedNewValue = ConfigUtil.quoteString(newValue);
+		// Lets make new Config object with just a single variable.
+		// Also lets preserve the comments from the original Config.
+		ConfigOrigin or = conf.getValue(fullPath).origin();
+		StringBuilder toParse = new StringBuilder();
+		for (String comment : or.comments()) {
+			toParse.append("#").append(comment).append("\n");
+		}
+		toParse.append(fullPath).append("=").append(processedNewValue);
+		Config newLittleConfig = ConfigFactory.parseString(toParse.toString());
+		// Now we have our little Config with the single variable and old comments.
+		// Let's merge it with the old Config.
+		conf = newLittleConfig.withFallback(conf);
+		if (!hideValue) {
+			logger.info(String.format("Configuration update in RAM. Key: %s.%s Value: %s", key, subKey, newValue));
+		}
+		needsSave = true;
 	}
 
 	/**
@@ -296,28 +339,22 @@ public final class CuteConfig {
 	 *            The value to set.
 	 */
 	public static void setString(String key, String subKey, String newValue) {
-		String fullPath = MAINKEY + "." + key + "." + subKey;
-		if (getString(key, subKey).equals(newValue)) {
-			logger.debug(String.format("Configuration value unchanged. Key: %s.%s Value: %s", key,
-					subKey, newValue));
-			return;
-		}
-		String processedNewValue = ConfigUtil.quoteString(newValue);
-		// Lets make new Config object with just a single variable.
-		// Also lets preserve the comments from the original Config.
-		ConfigOrigin or = conf.getValue(fullPath).origin();
-		StringBuilder toParse = new StringBuilder();
-		for (String comment : or.comments()) {
-			toParse.append("#").append(comment).append("\n");
-		}
-		toParse.append(fullPath).append("=").append(processedNewValue);
-		Config newLittleConfig = ConfigFactory.parseString(toParse.toString());
-		// Now we have our little Config with the single variable and old comments.
-		// Let's merge it with the old Config.
-		conf = newLittleConfig.withFallback(conf);
-		logger.info(String.format("Configuration update in RAM. Key: %s.%s Value: %s", key, subKey,
-				newValue));
-		needsSave = true;
+		setStringToConfig(key, subKey, newValue, false);
 	}
-
+	
+	/**
+	 * Sets the String value for current configuration's variable, but unlike
+	 * {@link #setString(String, String, String)} it doesn't show the value in the log.
+	 *
+	 * @param key
+	 *            The name of settings section.
+	 * @param subKey
+	 *            The name of needed variable.
+	 * @param value
+	 *            The value to set.
+	 */
+	public static void setSecretString(String key, String subKey, String newValue) {
+		setStringToConfig(key, subKey, newValue, true);
+	}
+	
 }

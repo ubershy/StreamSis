@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ubershy.streamsis.gui.GUIManager;
+import com.ubershy.streamsis.networking.StreamingProgramManager;
 import com.ubershy.streamsis.playground.Playground;
 import com.ubershy.streamsis.project.ProjectManager;
 
@@ -70,6 +71,11 @@ public class StreamSis extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		logger.info("StreamSis has started =)");
+		
+		Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+			logger.error("Unexpected error occured in " + thread.getName() + " thread.", throwable);
+			System.exit(1);
+		});
 		
 		// Start of developer stuff
 
@@ -119,6 +125,9 @@ public class StreamSis extends Application {
 			System.exit(1);
 		}
 		
+		// Initialize network connection to Streaming Program.
+		StreamingProgramManager.start();
+		
 		if (quietMode) { // Non-GUI mode.
 			try {
 				ProjectManager.loadProjectAndSet(projectToLoadPath);
@@ -136,6 +145,7 @@ public class StreamSis extends Application {
 			primaryStage.setTitle("StreamSis");
 			primaryStage.setOnCloseRequest(event -> stop());
 			GUIManager.setPrimaryStageAndCreateOtherWindows(primaryStage);
+			// Change exception handler to special GUI-specific handler.
 			Thread.setDefaultUncaughtExceptionHandler(eHandler);
 	        try {
 	        	// Always start with showing an empty project instead of loading screen or something
@@ -157,6 +167,7 @@ public class StreamSis extends Application {
 		logger.info("Safely exiting StreamSis...");
 		if (GUIManager.getPrimaryStage() != null)
 			GUIManager.saveCoordinatesOfAllWindows();
+		StreamingProgramManager.stopForever();
 		System.exit(0);
     }
 

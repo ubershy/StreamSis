@@ -29,10 +29,15 @@ import org.controlsfx.validation.decoration.StyleClassValidationDecoration;
 import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.HotkeyManager;
 import com.ubershy.streamsis.HotkeyManager.Hotkey;
+import com.ubershy.streamsis.gui.StreamSisAppFactory;
+import com.ubershy.streamsis.gui.controllers.settings.networking.SpecificNetworkSettingsController;
 import com.ubershy.streamsis.gui.helperclasses.CuteGraphicValidationDecoration;
+import com.ubershy.streamsis.networking.ClientType;
+import com.ubershy.streamsis.networking.StreamingProgramManager;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -40,6 +45,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -60,8 +66,14 @@ public class SettingsController implements Initializable {
     private GridPane hotkeysGridPane;
     @FXML
     private ButtonBar buttonBar;
+    @FXML
+    private ChoiceBox<ClientType> SPChoiceBox;
+    @FXML
+    private VBox networkingSpecificPane;
+    
     private ValidationSupport validationSupport;
     private ArrayList<HotkeyRow> allHotkeyRows = new ArrayList<>();
+	private SpecificNetworkSettingsController specificClientSettingsController;
 
 	public AnchorPane getView() {
 		return root;
@@ -88,7 +100,9 @@ public class SettingsController implements Initializable {
 			}
 		});
 		
-		fillHotkeysTab();
+		initializeHotkeysTab();
+		
+		initializeNetworkingTab();
 		
 		initializeBottomButtons();
 
@@ -111,7 +125,7 @@ public class SettingsController implements Initializable {
 	/**
 	 * Fills Hotkeys tab with fields and values to edit KeyCodeCombinations of Hotkeys.
 	 */
-	private void fillHotkeysTab() {
+	private void initializeHotkeysTab() {
 		int rowToFill = 1; // Start filling from second row, because first row is column names.
 		for (Entry<Hotkey, ObjectProperty<KeyCodeCombination>> entry : HotkeyManager
 				.getRegisteredHotkeys().entrySet()) {
@@ -126,6 +140,23 @@ public class SettingsController implements Initializable {
 			hkRow.setValidationSupport(validationSupport);
 			rowToFill++;
 		}
+	}
+
+	private void initializeNetworkingTab() {
+		// General settings.
+		SPChoiceBox.setItems(FXCollections.observableArrayList(ClientType.values()));
+		ClientType initialClientType = StreamingProgramManager.clientTypeProperty().get();
+		SPChoiceBox.getSelectionModel().select(initialClientType);
+		// Specific settings to selected client type.
+		specificClientSettingsController = StreamSisAppFactory
+				.buildSpecificSettingsForNetworkClient(initialClientType);
+		networkingSpecificPane.getChildren().add(specificClientSettingsController.getView());
+		SPChoiceBox.getSelectionModel().selectedItemProperty().addListener((o, oldVal, newVal) -> {
+			specificClientSettingsController = StreamSisAppFactory
+					.buildSpecificSettingsForNetworkClient(newVal);
+			networkingSpecificPane.getChildren().clear();
+			networkingSpecificPane.getChildren().add(specificClientSettingsController.getView());
+		});
 	}
 
 	/**
@@ -171,10 +202,13 @@ public class SettingsController implements Initializable {
 	 * Applies new settings.
 	 */
 	private void applySettings() {
+		// Main settings tab.
 		CuteConfig.setBoolean(CuteConfig.CUTE, "ProjectAutoLoad",
 				projectAutoLoadCheckBox.isSelected());
 		CuteConfig.setBoolean(CuteConfig.CUTE, "ProjectAutoStart",
 				projectAutoStartCheckBox.isSelected());
+		
+		// Hotkeys tab.
 		for (HotkeyRow hr : allHotkeyRows) {
 			Hotkey hk = hr.getHotkey();
 			ObjectProperty<KeyCodeCombination> kccp = HotkeyManager
@@ -189,6 +223,14 @@ public class SettingsController implements Initializable {
 			}
 			CuteConfig.setString(CuteConfig.HOTKEYS, hk.name(), toWriteToConfig);
 		}
+		
+		// Networking tab.
+		// This method also automatically sets new value to config.
+		StreamingProgramManager.setClientType(SPChoiceBox.getValue());
+		// Apply settings of the pane specific to network client type.
+		specificClientSettingsController.applySettings();
+		
+		// Save config to disk to remember all settings.
 		CuteConfig.saveConfig();
 	}
 
