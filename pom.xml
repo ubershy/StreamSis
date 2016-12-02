@@ -34,57 +34,7 @@
 					<excludes>
 						<exclude>logback-test.xml</exclude>
 					</excludes>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<classpathPrefix>classes/lib</classpathPrefix>
-							<mainClass>com.ubershy.streamsis.StreamSis</mainClass>
-							<useUniqueVersions>false</useUniqueVersions>
-						</manifest>
-					</archive>
 				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.0.0</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<classpathPrefix>classes/lib</classpathPrefix>
-							<mainClass>com.ubershy.streamsis.StreamSis</mainClass>
-							<useUniqueVersions>false</useUniqueVersions>
-						</manifest>
-					</archive>
-					<descriptorRefs>
-						<descriptorRef>bin</descriptorRef>
-					</descriptorRefs>
-				</configuration>
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.10</version>
-				<executions>
-					<execution>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/classes/lib</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -116,6 +66,23 @@
 				<version>2.6</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>appassembler-maven-plugin</artifactId>
+				<version>2.0.0</version>
+				<configuration>
+					<programs>
+						<program>
+							<mainClass>com.ubershy.streamsis.StreamSis</mainClass>
+							<name>StreamSis</name>
+						</program>
+					</programs>
+					<platforms>
+            			<platform>windows</platform>
+            			<platform>unix</platform>
+          			</platforms>
 				</configuration>
 			</plugin>
 		</plugins>

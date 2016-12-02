@@ -54,5 +54,5 @@ Alright. Then:
 Assembling StreamSis.
 --------------
 Maven and JDK 8 are required.  
-If you want to assembly a runnable JAR file, execute ```build.sh``` or ```build.bat``` in the StreamSis repository directory.  
-After that, if everything went smooth, you can find the assembled JAR in ```/target``` subdirectory.
+Execute ```build.sh``` or ```build.bat``` in the StreamSis repository directory.  
+After that, if everything went smooth, you can find the assembled JARs with StreamSis and its dependencies in ```target/appassembler/repo``` subdirectory and platform-specific scripts for running StreamSis in ```target/appassembler/bin``` subdirectory.
