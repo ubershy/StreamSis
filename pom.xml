@@ -29,36 +29,60 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.6</version>
+				<version>3.0.2</version>
 				<configuration>
-					<!-- <includes> -->
-					<!-- <include>**/service/*</include> -->
-					<!-- </includes> -->
 					<excludes>
 						<exclude>logback-test.xml</exclude>
 					</excludes>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>classes/lib</classpathPrefix>
+							<mainClass>com.ubershy.streamsis.StreamSis</mainClass>
+							<useUniqueVersions>false</useUniqueVersions>
+						</manifest>
+					</archive>
 				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.5.5</version>
+				<version>3.0.0</version>
 				<configuration>
 					<archive>
 						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>classes/lib</classpathPrefix>
 							<mainClass>com.ubershy.streamsis.StreamSis</mainClass>
+							<useUniqueVersions>false</useUniqueVersions>
 						</manifest>
 					</archive>
 					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
+						<descriptorRef>bin</descriptorRef>
 					</descriptorRefs>
 				</configuration>
 				<executions>
 					<execution>
-						<id>make-assembly</id> <!-- this is used for inheritance merges -->
-						<phase>package</phase> <!-- bind to the packaging phase -->
+						<id>make-assembly</id>
+						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.10</version>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/classes/lib</outputDirectory>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -159,9 +183,9 @@
 			<version>1.1.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-		    <groupId>commons-beanutils</groupId>
-		    <artifactId>commons-beanutils</artifactId>
-		    <version>1.9.3</version>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.9.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.1stleg</groupId>
@@ -175,5 +199,4 @@
 			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 		</repository>
 	</repositories>
-	
 </project>
