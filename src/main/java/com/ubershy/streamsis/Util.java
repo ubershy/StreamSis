@@ -384,7 +384,7 @@ public final class Util {
 		if (fileList == null) {
 			logger.debug("This Directory is not valid: " + path);
 		} else if (fileList.length == 0) {
-			logger.debug("This Directory does not contain files with specified extensions: " + path);
+			logger.debug("No files with specified extensions are found in directory: " + path);
 		}
 		return fileList;
 	}
