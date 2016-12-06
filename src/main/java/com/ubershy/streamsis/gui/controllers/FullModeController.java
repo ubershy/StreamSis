@@ -644,4 +644,9 @@ public class FullModeController implements Initializable {
     	avStage.requestFocus();
     }
 
+    @FXML
+    void showAboutWindow(ActionEvent event) {
+    	GUIUtil.showAboutWindow();
+    }
+
 }

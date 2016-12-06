@@ -17,9 +17,11 @@
  */
 package com.ubershy.streamsis;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -28,7 +30,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -598,6 +599,33 @@ public final class Util {
 		ArrayList<ModifierValue> modifiers = new ArrayList<ModifierValue>(
 				Collections.nCopies(5, ModifierValue.ANY));
 		return modifiers;
+	}
+
+	/**
+	 * Reads text from resource file on specified path, assumes the file has UTF-8 encoding.
+	 *
+	 * @param path
+	 *            The path of resource text file.
+	 * @return The text.
+	 * @throws IOException
+	 *             If file can't be read or path is wrong.
+	 */
+	public static String readTextFromResourceFile(String path) throws IOException {
+		StringBuffer sb = new StringBuffer();
+		try (BufferedReader br = new BufferedReader(
+				new InputStreamReader(Util.class.getResourceAsStream(path)))) {
+			boolean reading = true;
+			while (reading) {
+				String line = br.readLine();
+				if (line != null) {
+					sb.append(line);
+					sb.append("\n");
+				} else {
+					reading = false;
+				}
+			}
+			return sb.toString();
+		}
 	}
 
 }

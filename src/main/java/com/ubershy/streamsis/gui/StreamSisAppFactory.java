@@ -40,6 +40,7 @@ import com.ubershy.streamsis.gui.cells.SisSceneCell;
 import com.ubershy.streamsis.gui.cells.ActorCell.ActorCellType;
 import com.ubershy.streamsis.gui.contextmenu.SisSceneContextMenuBuilder;
 import com.ubershy.streamsis.gui.contextmenu.TreeViewContextMenuManager;
+import com.ubershy.streamsis.gui.controllers.AboutController;
 import com.ubershy.streamsis.gui.controllers.AllActorsController;
 import com.ubershy.streamsis.gui.controllers.AllVariablesController;
 import com.ubershy.streamsis.gui.controllers.CompactModeController;
@@ -215,6 +216,15 @@ public class StreamSisAppFactory {
 	 */
 	public static SettingsController buildSettingsController() {
 		return (SettingsController) buildControllerByRelativePath("settings/Settings.fxml");
+	}
+	
+	/**
+	 * Builds the {@link AboutController}.
+	 *
+	 * @return the {@link AboutController}
+	 */
+	public static AboutController buildAboutController() {
+		return (AboutController) buildControllerByRelativePath("About.fxml");
 	}
 	
 	/**

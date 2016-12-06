@@ -17,8 +17,11 @@
  */
 package com.ubershy.streamsis.gui.helperclasses;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +40,7 @@ import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.StreamSisAppFactory;
+import com.ubershy.streamsis.gui.controllers.AboutController;
 import com.ubershy.streamsis.gui.controllers.settings.SettingsController;
 import com.ubershy.streamsis.project.StuffSerializator;
 
@@ -562,6 +566,38 @@ public final class GUIUtil {
 				column.setMinWidth(newWidth);
 			}
 		});
+	}
+
+	/**
+	 * Shows "About" window.
+	 */
+	public static void showAboutWindow() {
+    	AboutController aController = StreamSisAppFactory.buildAboutController();
+    	Stage aboutStage = new Stage();
+    	Scene aboutScene = new Scene(aController.getView());
+    	aboutStage.setMinWidth(400);
+    	aboutStage.setMinHeight(300);
+    	aboutStage.setWidth(540);
+    	aboutStage.setHeight(640);
+    	aboutStage.setScene(aboutScene);
+    	aboutStage.initOwner(GUIManager.getPrimaryStage());
+    	aboutStage.initModality(Modality.APPLICATION_MODAL);
+    	aboutStage.setTitle("About StreamSis");
+    	aboutStage.show();
+	}
+
+	/**
+	 * Opens web page at specified path.
+	 * 
+	 * @param path
+	 *            The string URL of web page.
+	 */
+	public static void openWebPage(String path) {
+		try {
+			Desktop.getDesktop().browse(new URL(path).toURI());
+		} catch (IOException | URISyntaxException e) {
+			logger.error("Can't open web page", e);
+		}
 	}
 	
 }

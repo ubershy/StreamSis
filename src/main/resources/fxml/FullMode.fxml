@@ -93,8 +93,8 @@
             </Menu>
         <Menu mnemonicParsing="false" text="Help">
           <items>
+            <MenuItem mnemonicParsing="false" onAction="#showAboutWindow" text="About StreamSis" />
                   <MenuItem disable="true" mnemonicParsing="false" text="Check for updates" />
-            <MenuItem disable="true" mnemonicParsing="false" text="About StreamSis =)" />
           </items>
         </Menu>
       </menus>

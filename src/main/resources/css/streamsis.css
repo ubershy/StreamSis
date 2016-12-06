@@ -15,3 +15,11 @@
     -fx-background-insets: 2 0 0 2;
     -fx-padding: 0.15em;
 }
+
+.text-area {
+    -fx-text-fill: dimgrey;
+}
+
+.text-area .content {
+	-fx-background-color: #EEEEEE;
+}
