@@ -62,7 +62,7 @@ public class SwitchSisSceneAction extends AbstractCuteElement implements Action 
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
 			// Lets not change SisScene without need
-			if (ProjectManager.getProject().getCurrentSisSceneName().equals(sisSceneName)) {
+			if (ProjectManager.getProject().getCurrentSisSceneName().equals(sisSceneName.get())) {
 				elementInfo.setBooleanResult(false);;
 			} else {
 				ProjectManager.getProject().switchSisSceneTo(sisSceneName.get());
