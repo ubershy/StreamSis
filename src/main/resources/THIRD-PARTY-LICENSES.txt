@@ -8,39 +8,39 @@ following is a list of these components (links to full text copies of the
 license agreements used by these components are included below):
 
 Components included under "The Apache Software License, Version 2.0":
-    1. (The Apache Software License, Version 2.0) Jackson-annotations (http://github.com/FasterXML/jackson)
-    2. (The Apache Software License, Version 2.0) Jackson-core (https://github.com/FasterXML/jackson)
-    3. (The Apache Software License, Version 2.0) jackson-databind (http://github.com/FasterXML/jackson)
+	1. (The Apache Software License, Version 2.0) Jackson-annotations (http://github.com/FasterXML/jackson)
+	2. (The Apache Software License, Version 2.0) Jackson-core (https://github.com/FasterXML/jackson)
+	3. (The Apache Software License, Version 2.0) jackson-databind (http://github.com/FasterXML/jackson)
 	4. (The Apache Software License, Version 2.0) jadb (https://github.com/vidstige/jadb)
 	5. (Apache 2.0) Android SDK's dx Tool (http://developer.android.com/guide/developing/tools/index.html)
-    6. (The Apache Software License, Version 2.0) Guava: Google Core Libraries for Java (http://code.google.com/p/guava-libraries/guava)
-    7. (The Apache Software License, Version 2.0) JIntellitype (http://www.melloware.com)
+	6. (The Apache Software License, Version 2.0) Guava: Google Core Libraries for Java (http://code.google.com/p/guava-libraries/guava)
+	7. (The Apache Software License, Version 2.0) JIntellitype (http://www.melloware.com)
 	8. (Apache License, Version 2.0) config (https://github.com/typesafehub/config)
-    9. (Apache License, Version 2.0) Apache Commons BeanUtils (https://commons.apache.org/proper/commons-beanutils/)
-    10. (The Apache Software License, Version 2.0) Commons CLI (http://commons.apache.org/cli/)
-    11. (The Apache Software License, Version 2.0) Apache Commons Codec (http://commons.apache.org/proper/commons-codec/)
-    12. (Apache License, Version 2.0) Apache Commons Collections (http://commons.apache.org/collections/)
-    13. (The Apache Software License, Version 2.0) Apache Commons Logging (http://commons.apache.org/proper/commons-logging/)
-    14. (Apache License, Version 2.0) Apache Commons Net (http://commons.apache.org/proper/commons-net/)
-    15. (Apache License, Version 2.0) FontAwesomeFX (http://www.jensd.de)
-    16. (Apache License, Version 2.0) Apache Commons Exec (http://commons.apache.org/proper/commons-exec/)
-    17. (Apache License, Version 2.0) Apache HttpClient (http://hc.apache.org/httpcomponents-client)
-    18. (Apache License, Version 2.0) Apache HttpCore (http://hc.apache.org/httpcomponents-core-ga)
+	9. (Apache License, Version 2.0) Apache Commons BeanUtils (https://commons.apache.org/proper/commons-beanutils/)
+	10. (The Apache Software License, Version 2.0) Commons CLI (http://commons.apache.org/cli/)
+	11. (The Apache Software License, Version 2.0) Apache Commons Codec (http://commons.apache.org/proper/commons-codec/)
+	12. (Apache License, Version 2.0) Apache Commons Collections (http://commons.apache.org/collections/)
+	13. (The Apache Software License, Version 2.0) Apache Commons Logging (http://commons.apache.org/proper/commons-logging/)
+	14. (Apache License, Version 2.0) Apache Commons Net (http://commons.apache.org/proper/commons-net/)
+	15. (Apache License, Version 2.0) FontAwesomeFX (http://www.jensd.de)
+	16. (Apache License, Version 2.0) Apache Commons Exec (http://commons.apache.org/proper/commons-exec/)
+	17. (Apache License, Version 2.0) Apache HttpClient (http://hc.apache.org/httpcomponents-client)
+	18. (Apache License, Version 2.0) Apache HttpCore (http://hc.apache.org/httpcomponents-core-ga)
 	19. (Apache License 2.0) (LGPL 2.1) (MPL 1.1) Javassist (http://www.javassist.org/)
 Full text of "The Apache Software License, Version 2.0" is available:
 	1. On website https://www.apache.org/licenses/LICENSE-2.0.txt
 	2. In StreamSis installation directory in "repo/third-party-licenses/apache-2.0.txt" file.
 
 Components included under "GNU Lesser General Public License version 2.1":
-    1. (Eclipse Public License - v 1.0) (GNU Lesser General Public License) Logback Classic Module (http://logback.qos.ch/logback-classic)
-    2. (Eclipse Public License - v 1.0) (GNU Lesser General Public License) Logback Core Module (http://logback.qos.ch/logback-core)
+	1. (Eclipse Public License - v 1.0) (GNU Lesser General Public License) Logback Classic Module (http://logback.qos.ch/logback-classic)
+	2. (Eclipse Public License - v 1.0) (GNU Lesser General Public License) Logback Core Module (http://logback.qos.ch/logback-core)
 Full text of "GNU Lesser General Public License version 2.1" is available:
 	1. On website https://www.gnu.org/licenses/lgpl-2.1.txt
 	2. In StreamSis installation directory in "repo/third-party-licenses/lgpl-2.1.txt" file.
 Sources of these components are available in StreamSis installation directory in "repo/lgpl_sources" subdirectory.
 
 Components included under "GNU Lesser General Public License version 3.0":
-    1. (GNU General Public License (GPL), Version 3.0) (GNU Lesser General Public License (LGPL), Version 3.0) JNativeHook (https://github.com/kwhat/jnativehook)
+	1. (GNU General Public License (GPL), Version 3.0) (GNU Lesser General Public License (LGPL), Version 3.0) JNativeHook (https://github.com/kwhat/jnativehook)
 	2. (GNU Lesser Public License) FindBugs-Annotations (http://findbugs.sourceforge.net/)
 Full text of "GNU Lesser General Public License version 3.0" is available:
 	1. On website https://www.gnu.org/licenses/lgpl-3.0.txt
@@ -52,11 +52,11 @@ Components included under "WTFPL" license:
 Full text of "WTFPL" license is available in StreamSis installation directory in "repo/third-party-licenses/wtfpl.txt" file.
 
 Components included under "The 3-clause BSD License" ("New BSD License"):
-    1. (New BSD License (GPL-compatible)) BridJ (NativeLibs4Java C/C++ Interop Layer) (http://code.google.com/p/bridj/). See full text in StreamSis installation directory in "repo/third-party-licenses/newbsd-bridj.txt" file.
-    2. (The 3-Clause BSD License) ControlsFX (http://www.controlsfx.org/). See full text in StreamSis installation directory in "repo/third-party-licenses/newbsd-controlsfx.txt" file.
-    3. (The 3-Clause BSD License) FXSampler (http://www.controlsfx.org/). See full text in StreamSis installation directory in "repo/third-party-licenses/newbsd-controlsfx.txt" file.
+	1. (New BSD License (GPL-compatible)) BridJ (NativeLibs4Java C/C++ Interop Layer) (http://code.google.com/p/bridj/). See full text in StreamSis installation directory in "repo/third-party-licenses/newbsd-bridj.txt" file.
+	2. (The 3-Clause BSD License) ControlsFX (http://www.controlsfx.org/). See full text in StreamSis installation directory in "repo/third-party-licenses/newbsd-controlsfx.txt" file.
+	3. (The 3-Clause BSD License) FXSampler (http://www.controlsfx.org/). See full text in StreamSis installation directory in "repo/third-party-licenses/newbsd-controlsfx.txt" file.
 
 Components included under "MIT License":
-     1. (MIT License) SikuliX API (http://www.sikulix.com). See full text in StreamSis installation directory in "repo/third-party-licenses/mit-sikulix.txt" file.
-     2. (MIT License) SikuliX Libs Windows (http://www.sikulix.com). See full text in StreamSis installation directory in "repo/third-party-licenses/mit-sikulix.txt" file.
-     3. (MIT License) SLF4J API Module (http://www.slf4j.org). See full text in StreamSis installation directory in "repo/third-party-licenses/mit-sl4j.txt" file.
+	1. (MIT License) SikuliX API (http://www.sikulix.com). See full text in StreamSis installation directory in "repo/third-party-licenses/mit-sikulix.txt" file.
+	2. (MIT License) SikuliX Libs Windows (http://www.sikulix.com). See full text in StreamSis installation directory in "repo/third-party-licenses/mit-sikulix.txt" file.
+	3. (MIT License) SLF4J API Module (http://www.slf4j.org). See full text in StreamSis installation directory in "repo/third-party-licenses/mit-sl4j.txt" file.
