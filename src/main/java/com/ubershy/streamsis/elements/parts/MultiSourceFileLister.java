@@ -195,8 +195,8 @@ public class MultiSourceFileLister {
 			if (result != null) {
 				if (result.length == 0) {
 					elementInfo.setAsBroken("Can't find files with extensions: '"
-							+ acceptableExtensions + "') in the " + sourceDirectorySymbolicName
-							+ " directory " + srcPath.get());
+							+ acceptableExtensions.getValue() + "') in the "
+							+ sourceDirectorySymbolicName + " directory " + srcPath.get());
 					return null;
 				}
 			} else {
