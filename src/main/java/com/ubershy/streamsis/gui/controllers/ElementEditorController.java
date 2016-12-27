@@ -239,8 +239,10 @@ public class ElementEditorController implements Initializable {
 				});
 		whyUnhealthyProperty
 				.addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
-					whyUnhealthyLabel.setText(newValue);
-					whyShadowAnima.play();
+					Platform.runLater(() -> {
+						whyUnhealthyLabel.setText(newValue);
+						whyShadowAnima.play();
+					});
 				});
 		
 		// TODO: gain some wisdom and beautify the code below.
