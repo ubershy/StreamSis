@@ -19,7 +19,7 @@ package com.ubershy.streamsis.networking.responses;
 
 import javax.json.JsonObject;
 
-import com.ubershy.streamsis.networking.TypicalClient;
+import com.ubershy.streamsis.networking.clients.TypicalClient;
 
 /**
  * Just a typical Response from the {@link TypicalClient}.

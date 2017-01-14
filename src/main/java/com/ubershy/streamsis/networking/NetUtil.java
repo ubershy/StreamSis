@@ -17,12 +17,17 @@
  */
 package com.ubershy.streamsis.networking;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ubershy.streamsis.networking.responses.Response;
 
 /**
  * NetUtil contains useful static stuff for networking.
  */
 public class NetUtil {
+	
+	static final Logger logger = LoggerFactory.getLogger(NetUtil.class);
 
 	/**
 	 * Starts runnable in a new thread and returns this thread.
@@ -45,16 +50,15 @@ public class NetUtil {
 	 * 
 	 * @throws IllegalArgumentException If the error text is null or empty.
 	 */
-	static Response buildErrorResponseAndLog(String errorText, Throwable cause) {
+	public static Response buildErrorResponseAndLog(String errorText, Throwable cause) {
 		if (errorText == null || errorText.isEmpty()) {
 			throw new IllegalArgumentException("Error text can't be null or empty.");
 		}
 		if (cause != null)
-			OBSStudioClient.logger.error(errorText, cause);
+			logger.error(errorText, cause);
 		else
-			OBSStudioClient.logger.error(errorText);
+			logger.error(errorText);
 		return new Response(errorText, null);
 	}
-	
 
 }

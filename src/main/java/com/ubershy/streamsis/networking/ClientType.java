@@ -17,6 +17,10 @@
  */
 package com.ubershy.streamsis.networking;
 
+import com.ubershy.streamsis.networking.clients.NoneClient;
+import com.ubershy.streamsis.networking.clients.OBSStudioClient;
+import com.ubershy.streamsis.networking.clients.TypicalClient;
+
 /**
  * The Enum with possible clients that support {@link TypicalClient} interface.
  */

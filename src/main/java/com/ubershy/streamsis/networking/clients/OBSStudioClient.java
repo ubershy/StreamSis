@@ -1,4 +1,4 @@
-package com.ubershy.streamsis.networking;
+package com.ubershy.streamsis.networking.clients;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -36,6 +36,9 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
 import com.ubershy.streamsis.CuteConfig;
+import com.ubershy.streamsis.networking.ConnectionStatus;
+import com.ubershy.streamsis.networking.CuteDecoder;
+import com.ubershy.streamsis.networking.NetUtil;
 import com.ubershy.streamsis.networking.responses.GetSceneNameResponse;
 
 /**
@@ -271,7 +274,11 @@ public class OBSStudioClient implements TypicalClient {
 			if (!responseReceivedInTime) {
 				return NetUtil.buildErrorResponseAndLog("Timeout exceeded, no response.", null);
 			}
-			return new Response(atomicErrorMessage.get(), atomicRawResponse.get());
+			String errorMessage = atomicErrorMessage.get();
+			if ("Not Authenticated".equals(errorMessage)) {
+				status.set(ConnectionStatus.AUTHENTICATIONFAIL);
+			}
+			return new Response(errorMessage, atomicRawResponse.get());
 		} catch (InterruptedException e) {
 			requestCallbacks.remove(messageID);
 			return NetUtil.buildErrorResponseAndLog("Response waiting was interrupted.", e);

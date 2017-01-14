@@ -15,11 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.ubershy.streamsis.networking;
+package com.ubershy.streamsis.networking.clients;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ubershy.streamsis.networking.ConnectionStatus;
 import com.ubershy.streamsis.networking.responses.GetSceneNameResponse;
 import com.ubershy.streamsis.networking.responses.Response;
 

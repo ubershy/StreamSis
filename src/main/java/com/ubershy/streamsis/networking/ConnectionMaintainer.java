@@ -19,6 +19,9 @@ package com.ubershy.streamsis.networking;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.ubershy.streamsis.networking.clients.TypicalClient;
+
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ReadOnlyObjectProperty;
 
@@ -47,7 +50,8 @@ public class ConnectionMaintainer {
 		case AUTHENTICATIONFAIL:
 			// Scheduling disconnect for the user to see the status. After disconnect, there will be
 			// reconnect.
-			scheduleDisconnectBecauseOfError();
+			if (disconnectOnErrorThread == null) // If it's not already scheduled.
+				scheduleDisconnectBecauseOfError();
 			break;
 		case CONNECTING:
 			break;
@@ -56,8 +60,9 @@ public class ConnectionMaintainer {
 			break;
 		case ERROR:
 			// Scheduling disconnect for the user to see the status. After disconnect, there will be
-						// reconnect.
-			scheduleDisconnectBecauseOfError();
+			// reconnect.
+			if (disconnectOnErrorThread == null) // If it's not already scheduled.
+				scheduleDisconnectBecauseOfError();
 			break;
 		case OFFLINE:
 			cancelScheduledDisconnect();
@@ -119,12 +124,14 @@ public class ConnectionMaintainer {
 	private void cancelScheduledReconnect() {
 		if (reconnectionWaitingThread != null && reconnectionWaitingThread.isAlive()) {
 			reconnectionWaitingThread.interrupt();
+			reconnectionWaitingThread = null;
 		}
 	}
 	
 	private void cancelScheduledDisconnect() {
 		if (disconnectOnErrorThread != null && disconnectOnErrorThread.isAlive()) {
 			disconnectOnErrorThread.interrupt();
+			disconnectOnErrorThread = null;
 		}
 	}
 
@@ -139,6 +146,7 @@ public class ConnectionMaintainer {
 				return;
 			}
 			logger.info("Executing scheduled disconnect...");
+			disconnectOnErrorThread = null;
 			client.disconnect();
 		});
 	}
@@ -157,6 +165,7 @@ public class ConnectionMaintainer {
 		} else {
 			logger.info("Reconnecting immediately...");
 		}
+		reconnectionWaitingThread = null;
 		if (!sleepWasInterrupted) {
 			reconnectFailedBefore = true;
 			client.connect();
