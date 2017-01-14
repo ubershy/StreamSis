@@ -6,9 +6,9 @@ import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -59,7 +59,7 @@ public class OBSStudioClient implements TypicalClient {
 
 	private static final String PASSCONFIGSUBKEY = "OBSSTUDIOPASS";
 
-	private final Map<String, RequestCallback> requestCallbacks = new HashMap<>();
+	private final Map<String, RequestCallback> requestCallbacks = new ConcurrentHashMap<>();
 
 	private Session session;
 
@@ -217,7 +217,7 @@ public class OBSStudioClient implements TypicalClient {
 		}
 	}
 
-	private boolean sendRequest(String requestType, JsonObject optionalRequestSpecificFields,
+	private synchronized boolean sendRequest(String requestType, JsonObject optionalRequestSpecificFields,
 			UUID messageID) {
 		// Create request builder with common fields.
 		JsonObjectBuilder requestBuilder = factory.createObjectBuilder()
