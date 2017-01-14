@@ -205,15 +205,11 @@ public final class Playground {
 		UniversalActor smokeActor = actorBuilder.createUniversalActor("Smoke", 150,
 				defaultRepeatInterval, false, false, new Coordinates(1740, 72, 178, 176), 0.85f,
 				false, false, true);
-		float smokePrecision = 0.970f;
+		float smokePrecision = 0.99f;
 		Checker[] smokeCheckers = new Checker[] {
-				new RegionChecker(new Coordinates(53, 1026, 1, 1),
+				new RegionChecker(new Coordinates(475, 220, 150, 1),
 						resourcesLocation + "Smoke\\Targets\\1.png", smokePrecision),
-				new RegionChecker(new Coordinates(413, 453, 1, 1),
-						resourcesLocation + "Smoke\\Targets\\1.png", smokePrecision),
-				new RegionChecker(new Coordinates(950, 540, 1, 1),
-						resourcesLocation + "Smoke\\Targets\\1.png", smokePrecision),
-				new RegionChecker(new Coordinates(1356, 356, 1, 1),
+				new RegionChecker(new Coordinates(975, 500, 150, 1),
 						resourcesLocation + "Smoke\\Targets\\1.png", smokePrecision) };
 		Checker smokeChecker = LogicalChecker.createAnd(smokeCheckers);
 		smokeActor.setChecker(smokeChecker);
@@ -338,7 +334,7 @@ public final class Playground {
 						Util.singleItemAsList(
 								new MultiFileCopyAction(resourcesLocation + "IkaMusume\\Images",
 										resourcesLocation + "IkaMusume\\current.png", true)),
-						2500));
+						3500));
 
 		UniversalActor changeMenuActor = new UniversalActor("ChangeMenu", 3000,
 				defaultRepeatInterval, false, false,
