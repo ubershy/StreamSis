@@ -408,6 +408,10 @@ public class StreamSisAppFactory {
 			if (e.getCode() == KeyCode.LEFT) {
 				TreeItem<CuteElement> selectedItem = resultTreeView.getSelectionModel()
 						.getSelectedItem();
+				if (selectedItem == null) {
+					// Sometimes no item inside is selected, just a tree, so return.
+					return;
+				}
 				if (selectedItem.getParent() == resultTreeView.getRoot()) {
 					// The item is a child of root. A single wrong move will select root item!
 					if (selectedItem.getChildren().size() == 0) {
