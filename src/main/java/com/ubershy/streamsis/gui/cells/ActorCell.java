@@ -30,7 +30,10 @@ import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.contextmenu.ActorContextMenuBuilder;
 import com.ubershy.streamsis.gui.contextmenu.PossibleMoves;
 import com.ubershy.streamsis.gui.controllers.AllActorsController;
+import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
@@ -44,11 +47,15 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
+import javafx.geometry.Pos;
+import javafx.scene.CacheHint;
+import javafx.scene.Node;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -72,54 +79,52 @@ public class ActorCell extends ListCell<Actor> {
 	/** This {@link ActorCell}'s type. */
 	private ActorCellType actorCellType;
 
-	/** The text field for editing the {@link Actor}'s name. */
+	/** The text field for editing the {@link Actor}'s name. (not working, unused) */
 	private TextField textField;
 
-	/** The default character used in {@link #heart}. */
-	private final static String heartDefaultCharacter = "💛";
-	// private final static String heartDefaultCharacter = "♥";
-	// private final static String heartDefaultCharacter = "❤";
+	/** The graphic to use when {@link Actor}'s heart is broken. =( */
+	private Node brokenHeartGraphic;
 
-	/** The character to use when the {@link Actor}'s {@link #heart} is 'broken'. Aww. <3 */
-	private final static String heartBrokenCharacter = "💔";
+	/** The graphic to use when {@link Actor}'s health is ok and it's checkinterval. */
+	private Text normalHeartGraphic;
 
-	/**
-	 * The character used in {@link #heart} when the {@link Actor} is running and it's check
-	 * interval is quick.
-	 */
-	private final static String heartRunAndQuickCheckCharacter = "💗";
-
-	/** The {@link Actor}'s heart and soul. With fancy animation. */
-	private final Text heart = new Text(heartDefaultCharacter);
-
-	/** The default {@link #heart} size. */
-	private final static double heartDefaultSize = 1.5;
+	/** How long the heart beating animation should be played. */
+	private final static int animationDuration = 100;
+	
+	/** The size of a font used to render the heart. */
+	private final static int graphicFontSize = 18;
 
 	/**
-	 * The additional heart scale X multiplier {@link #heart} <br>
-	 * Used to eliminate size difference between different characters set as heart's text.
+	 * The relative coordinates on axis X that will allow the heart to be rendered more beautiful.
 	 */
-	private double currentHeartCharacterScaleX = 1.0;
+	private final static double graphicTranslateX = -3.0;
+	
+	/** The gap between the heart graphic and text. */
+	private final static double graphicTextGap = 1.0;
 
-	/**
-	 * The additional heart scale Y multiplier {@link #heart} <br>
-	 * Used to eliminate size difference between different characters set as heart's text.
-	 */
-	private double currentHeartCharacterScaleY = 1.0;
+	/** The default heart size. */
+	private final static double heartDefaultScale = 0.85;
 
-	private String heartPreviousCharacter = heartDefaultCharacter;
+	/** The size of heart when it's beating. */
+	private final static double heartBeatScale = 1.0;
 
-	/** The original bounds of the {@link #heart} with default character. */
-	private Bounds originalHeartBounds;
+	/** The color to use for the heart graphic when the {@link Actor} is normal. */
+	private final static Color heartDefaultColor = Color.HOTPINK;
 
-	/** The size of {@link #heart} when it's beating. */
-	private final static double heartBeatSize = 2.0;
+	/** The color to use for the heart graphic when the {@link Actor} is switched on. */
+	private final static Color heartSwitchedOnColor = Color.DEEPSKYBLUE;
 
+	/** The color to use for the heart graphic when the {@link Actor} is broken. */
+	private final static Color heartBrokenColor = Color.INDIGO;
+
+	/** The color to use for the heart graphic when the {@link Actor} is sick. */
+	private final static Color heartSickColor = Color.YELLOW;
+	
 	/** Defines if {@link #heart} animates. */
 	private boolean animationOn = true;
 
 	/** The property linked to the {@link CuteElement}'s state. */
-	private ObjectProperty<ElementState> elementElementStateProperty = new SimpleObjectProperty<>(
+	private ObjectProperty<ElementState> elementStateProperty = new SimpleObjectProperty<>(
 			ElementState.READY);
 
 	/** The property linked to the {@link CuteElement}'s health. */
@@ -137,10 +142,8 @@ public class ActorCell extends ListCell<Actor> {
 	 */
 	private BooleanProperty isSwitchOnProperty = new SimpleBooleanProperty(false);
 
-	/**
-	 * The boolean property that tells if Actor is started.
-	 */
-	private boolean isActorStarted = false;
+	/** The boolean property that tells if Actor is started. */
+	private boolean actorStarted = false;
 
 	/** Simple beating heart animation. */
 	private ScaleTransition heartBeatTransition;
@@ -151,30 +154,29 @@ public class ActorCell extends ListCell<Actor> {
 	public ActorCell(ActorCellType actorCellType) {
 		this.actorCellType = actorCellType;
 		setMaxHeight(getHeight());
-		setGraphicTextGap(6.0);
-		heart.setSmooth(false);
-		heartBeatTransition = new ScaleTransition(Duration.millis(150), heart);
-		heartBeatTransition.setToX(heartDefaultSize);
-		heartBeatTransition.setToY(heartDefaultSize);
-		heartBeatTransition.setFromX(heartBeatSize);
-		heartBeatTransition.setFromY(heartBeatSize);
+		setGraphicTextGap(graphicTextGap);
+		brokenHeartGraphic = generateBrokenHeartGraphic();
+		normalHeartGraphic = generateNormalHeartGraphic();
+		heartBeatTransition = new ScaleTransition(Duration.millis(animationDuration),
+				normalHeartGraphic);
+		heartBeatTransition.setToX(heartDefaultScale);
+		heartBeatTransition.setToY(heartDefaultScale);
+		heartBeatTransition.setFromX(heartBeatScale);
+		heartBeatTransition.setFromY(heartBeatScale);
 		heartBeatTransition.setAutoReverse(false);
 		heartBeatTransition.interpolatorProperty().setValue(Interpolator.DISCRETE);
 		heartBeatTransition.setCycleCount(1);
-		// Lets make heart's animation a bit easier on CPU (not working -_-)
-		// heart.setCache(true);
-		// heart.setCacheHint(CacheHint.SCALE);
-		// Let's remember original size of heart
-		originalHeartBounds = heart.getBoundsInLocal();
 		// Let's set heart's initial view
-		refreshHeartStyle(isActorStarted, isSwitchOnProperty.get(), checkIntervalProperty.get(),
+		refreshHeartLook(actorStarted, isSwitchOnProperty.get(), checkIntervalProperty.get(),
 				elementHealthProperty.get());
 		ChangeListener<ElementState> elementStateListener = (observableValue, oldElementState,
 				newElementState) -> Platform.runLater(() -> {
-					if (isActorStarted != findIfActorStarted(newElementState)) {
-						isActorStarted = findIfActorStarted(newElementState);
-						synchronized (heart) {
-							refreshHeartStyle(isActorStarted, isSwitchOnProperty.get(),
+					boolean isActorStartedNow = findIfActorStarted(newElementState);
+					if (actorStarted != isActorStartedNow) {
+						// Things have changed, need to update heart look.
+						actorStarted = isActorStartedNow;
+						synchronized (normalHeartGraphic) {
+							refreshHeartLook(actorStarted, isSwitchOnProperty.get(),
 									checkIntervalProperty.get(), elementHealthProperty.get());
 						}
 					}
@@ -190,33 +192,80 @@ public class ActorCell extends ListCell<Actor> {
 				});
 		ChangeListener<ElementHealth> elementHealthListener = (observableValue, oldElementHealth,
 				newElementHealth) -> Platform.runLater(() -> {
-					synchronized (heart) {
-						refreshHeartStyle(isActorStarted, isSwitchOnProperty.get(),
+					synchronized (normalHeartGraphic) {
+						refreshHeartLook(actorStarted, isSwitchOnProperty.get(),
 								checkIntervalProperty.get(), newElementHealth);
 					}
 				});
 		ChangeListener<? super Number> checkIntervalListener = (observable, oldValue,
 				newValue) -> Platform.runLater(() -> {
-					synchronized (heart) {
-						refreshHeartStyle(isActorStarted, isSwitchOnProperty.get(),
+					synchronized (normalHeartGraphic) {
+						refreshHeartLook(actorStarted, isSwitchOnProperty.get(),
 								newValue.intValue(), elementHealthProperty.get());
 					}
 				});
 		ChangeListener<? super Boolean> isSwitchOnListener = (observable, oldValue,
 				newValue) -> Platform.runLater(() -> {
-					synchronized (heart) {
-						refreshHeartStyle(isActorStarted, newValue, checkIntervalProperty.get(),
+					synchronized (normalHeartGraphic) {
+						refreshHeartLook(actorStarted, newValue, checkIntervalProperty.get(),
 								elementHealthProperty.get());
 					}
 				});
-		elementElementStateProperty.addListener(elementStateListener);
+		elementStateProperty.addListener(elementStateListener);
 		elementHealthProperty.addListener(elementHealthListener);
 		checkIntervalProperty.addListener(checkIntervalListener);
 		isSwitchOnProperty.addListener(isSwitchOnListener);
 		setOnMouseClicked(event -> GUIManager.elementEditor.setCurrentElement(getItem()));
 	}
 
-	protected boolean findIfActorStarted(ElementState newElementState) {
+	private Text generateNormalHeartGraphic() {
+		FontAwesomeIconView generated = new FontAwesomeIconView(FontAwesomeIcon.HEART);
+		generated.setGlyphSize(graphicFontSize);
+		generated.setFill(heartDefaultColor);
+		generated.setTranslateX(graphicTranslateX);
+		scaleNodeToSizeIfNeeded(generated, heartDefaultScale, heartDefaultScale);
+		generated.setSmooth(false);
+		generated.setCache(true);
+		generated.setCacheHint(CacheHint.SPEED);
+		return generated;
+	}
+
+	private Node generateBrokenHeartGraphic() {
+		// FIXME: The "crack" on heart is just white, it is not transparent. So violet shadow isn't
+		// there, when it's supposed to be there. Also when StreamSis will have skins, it will just
+		// look ugly on dark backgrounds. I tried to use Shape.substract(), but it's hard to align
+		// images and borders end up strange.
+		// FIXME: Need to render picture once and reuse it later in imageviews.
+		FontAwesomeIconView newHeart = new FontAwesomeIconView(FontAwesomeIcon.HEART);
+		newHeart.setGlyphSize(graphicFontSize);
+		newHeart.setSmooth(false);
+		
+		FontAwesomeIconView newBolt = new FontAwesomeIconView(FontAwesomeIcon.BOLT);
+		newBolt.setGlyphSize(graphicFontSize);
+		newBolt.setSmooth(false);
+		newBolt.setScaleX(0.6);
+		newBolt.setScaleY(0.6);
+		newBolt.setX(5.0);
+		newHeart.setFill(heartBrokenColor);
+		newBolt.setFill(Color.WHITE);
+		StackPane generated = new StackPane(
+				newHeart,
+				newBolt
+		);
+		StackPane.setAlignment(newBolt, Pos.TOP_CENTER);
+		StackPane.setAlignment(newHeart, Pos.BOTTOM_CENTER);
+		generated.setBlendMode(BlendMode.MULTIPLY);
+
+		generated.setTranslateX(graphicTranslateX);
+		scaleNodeToSizeIfNeeded(generated, heartDefaultScale, heartDefaultScale);
+		generated.setStyle("-fx-effect: dropshadow(gaussian, "
+				+ GUIUtil.getNameOfColorInstance(heartDefaultColor) + ", 10,0.25,0,0);");
+		generated.setCache(true);
+		generated.setCacheHint(CacheHint.SPEED);
+		return generated;
+	}
+
+	private boolean findIfActorStarted(ElementState newElementState) {
 		switch (newElementState) {
 		case FINISHED:
 			// Seems like Actor was started
@@ -242,11 +291,11 @@ public class ActorCell extends ListCell<Actor> {
 			setText(null);
 			setGraphic(null);
 			setContextMenu(null);
-			elementElementStateProperty.unbind();
+			elementStateProperty.unbind();
 			elementHealthProperty.unbind();
 			checkIntervalProperty.unbind();
 			isSwitchOnProperty.unbind();
-			isActorStarted = false;
+			actorStarted = false;
 		} else {
 			if (isEditing()) {
 				if (textField != null) {
@@ -257,14 +306,13 @@ public class ActorCell extends ListCell<Actor> {
 				setGraphic(textField);
 			} else {
 				textProperty().unbind();
-				setGraphic(heart);
 				// Lets set initial heart style
-				refreshHeartStyle(
+				refreshHeartLook(
 						findIfActorStarted(item.getElementInfo().elementStateProperty().get()),
 						item.isSwitchOnProperty().get(), item.checkIntervalProperty().get(),
 						item.getElementInfo().elementHealthProperty().get());
 				checkIntervalProperty.bind(item.checkIntervalProperty());
-				elementElementStateProperty.bind(item.getElementInfo().elementStateProperty());
+				elementStateProperty.bind(item.getElementInfo().elementStateProperty());
 				textProperty().bind(getTextBinding(item));
 				isSwitchOnProperty.bind(item.isSwitchOnProperty());
 				elementHealthProperty.bind(item.getElementInfo().elementHealthProperty());
@@ -355,7 +403,7 @@ public class ActorCell extends ListCell<Actor> {
 	}
 
 	/**
-	 * Refresh the {@link #heart}'s style. <br>
+	 * Refresh the heart's style. <br>
 	 * Heart can vary it's base look under different circumstances. <br>
 	 * Note: this method should not be called too often.
 	 *
@@ -369,84 +417,63 @@ public class ActorCell extends ListCell<Actor> {
 	 *            current Actor's health
 	 *
 	 */
-	private final void refreshHeartStyle(boolean isStarted, boolean isSwitchOn, int checkInterval,
+	private final void refreshHeartLook(boolean isStarted, boolean isSwitchOn, int checkInterval,
 			ElementHealth elementHealth) {
 		if (getItem() == null)
 			return;
-		Color heartColor = null;
+		Color heartColorModifier = null;
+		boolean actorIsAbleToWork;
+		Node graphicToUse = null;
 		switch (elementHealth) {
 		case BROKEN:
-			heartColor = Color.INDIGO;
-			setHeartText(heartBrokenCharacter);
-			setHeartEffect("-fx-effect: dropshadow(gaussian, hotpink, 3,0,0,0);");
+			actorIsAbleToWork = false;
+			graphicToUse = brokenHeartGraphic;
 			break;
 		case HEALTHY:
-			heartColor = Color.HOTPINK; // default color for heart of the healthy Actor
-			if (isStarted && checkInterval < 150) {
-				setHeartText(heartRunAndQuickCheckCharacter);
-				// Let's turn animation off, because it's consuming too much CPU with such check
-				// interval.
-				animationOn = false;
-			} else {
-				setHeartText(heartDefaultCharacter);
-				animationOn = true;
-				;
-			}
-			setHeartEffect("");
+			actorIsAbleToWork = true;
+			heartColorModifier = heartDefaultColor;
 			break;
 		case SICK:
-			heartColor = Color.YELLOW;
-			if (isStarted && checkInterval < 150) {
-				setHeartText(heartRunAndQuickCheckCharacter);
-				// Let's turn animation off, because it's consuming too much CPU with such check
-				// interval.
-				animationOn = false;
-			} else {
-				setHeartText(heartDefaultCharacter);
-				animationOn = true;
-				;
-			}
-			setHeartEffect("");
+			actorIsAbleToWork = true;
+			heartColorModifier = heartSickColor;
 			break;
 		default:
-			break;
+			throw new RuntimeException("What is this status?");
 		}
-		// Resize heart to fit original bounds if new character's size differs
-		if (!heart.getText().equals(heartPreviousCharacter)) {
-			// Let's stop animation which might interfere in finding new character's size
-			heartBeatTransition.stop();
-			// With new character set, lets scale heart to default scale size
-			scaleHeartToSize(heartDefaultSize, heartDefaultSize);
-			// Let's get new bounds and find scale that will allow to fit heart with new character
-			// to original bounds
-			Bounds newBounds = heart.getBoundsInLocal();
-			currentHeartCharacterScaleX = originalHeartBounds.getWidth() / newBounds.getWidth();
-			currentHeartCharacterScaleY = originalHeartBounds.getHeight() / newBounds.getHeight();
-			heartPreviousCharacter = heart.getText();
+		if (actorIsAbleToWork) {
+			if (isStarted && checkInterval < animationDuration) {
+				// No need to animate in that case, because it will just consume CPU cycles.
+				// Let's just make the heart big.
+				scaleNodeToSizeIfNeeded(normalHeartGraphic, heartBeatScale, heartBeatScale);
+				animationOn = false;
+			} else {
+				animationOn = true;
+			}
+			if (!isStarted) {
+				// When the Actor is not started, but able to work, let's reset its size to default,
+				// because it might end up with wrong size after stopped animation.
+				scaleNodeToSizeIfNeeded(normalHeartGraphic, heartDefaultScale, heartDefaultScale);
+			}
+			// When the Actor is switched On, lets paint the heart with special color.
+			if (isSwitchOn) {
+				fillHeartTextByColorIfNeeded(normalHeartGraphic, heartSwitchedOnColor);
+			} else {
+				fillHeartTextByColorIfNeeded(normalHeartGraphic, heartColorModifier);
+			}
+			graphicToUse = normalHeartGraphic;
 		}
-		// When the Actor is not started, lets reset it's color and size to defaults.
-		if (!isStarted) {
-			scaleHeartToSize(heartDefaultSize * currentHeartCharacterScaleX,
-					heartDefaultSize * currentHeartCharacterScaleY);
-			fillHeartByColor(heartColor);
-		}
-		// When the Actor is switched On, lets paint the heart to gentle blue
-		if (isSwitchOn) {
-			fillHeartByColor(Color.DEEPSKYBLUE);
-		} else {
-			fillHeartByColor(heartColor);
-		}
+		setGraphicIfNeeded(graphicToUse);
 	}
 
 	/**
-	 * Scale the {@link #heart} to the chosen size. <br>
+	 * Scale the heart to the chosen size. <br>
 	 * Checks if heart already have the proper size.
 	 *
 	 * @param size
 	 *            the size to set.<br>
 	 *            1.0 means 100%
 	 */
-	private void scaleHeartToSize(double scaleX, double scaleY) {
+	private static void scaleNodeToSizeIfNeeded(Node heart, double scaleX, double scaleY) {
 		if (heart.getScaleX() != scaleX)
 			heart.setScaleX(scaleX);
 		if (heart.getScaleY() != scaleY)
@@ -454,25 +481,20 @@ public class ActorCell extends ListCell<Actor> {
 	}
 
 	/**
-	 * Fill the {@link #heart} by the chosen color. <br>
+	 * Fill the heart by the chosen color. <br>
 	 * Checks if heart already have the proper color.
 	 *
 	 * @param color
 	 *            the color to use to fill the heart
 	 */
-	private void fillHeartByColor(Color color) {
+	private static void fillHeartTextByColorIfNeeded(Text heart, Color color) {
 		if (heart.getFill() != color)
 			heart.setFill(color);
 	}
 
-	private void setHeartText(String newText) {
-		if (!heart.getText().equals(newText))
-			heart.setText(newText);
-	}
-
-	private void setHeartEffect(String newEffect) {
-		if (!heart.getStyle().equals(newEffect))
-			heart.setStyle(newEffect);
+	private void setGraphicIfNeeded(Node newGraphic) {
+		if (getGraphic() == null || !getGraphic().equals(newGraphic))
+			setGraphic(newGraphic);
 	}
 
 	/**

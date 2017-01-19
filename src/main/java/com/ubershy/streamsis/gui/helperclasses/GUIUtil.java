@@ -20,10 +20,12 @@ package com.ubershy.streamsis.gui.helperclasses;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
@@ -83,6 +85,31 @@ import javafx.stage.PopupWindow.AnchorLocation;
 public final class GUIUtil {
 	
 	static final Logger logger = LoggerFactory.getLogger(GUIUtil.class);
+	
+	private final static HashMap<Color, String> fxColors;
+	
+	static {
+		fxColors = new HashMap<>();
+		Class<?> clazz;
+		try {
+			clazz = Class.forName("javafx.scene.paint.Color");
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("Is JavaFX available?", e);
+		}
+		Field[] fields = clazz.getFields();
+		for (int i = 0; i < fields.length; i++) {
+			Field field = fields[i];
+			Object obj;
+			try {
+				obj = field.get(null);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+			if (obj instanceof Color) {
+				fxColors.put((Color) obj, field.getName());
+			}
+		}
+	}
 	
 	final static ScheduledExecutorService withDelayExecutor = Executors
 			.newSingleThreadScheduledExecutor();
@@ -598,6 +625,22 @@ public final class GUIUtil {
 		} catch (IOException | URISyntaxException e) {
 			logger.error("Can't open web page", e);
 		}
+	}
+
+	/**
+	 * Gets the name of Color. If Color is one of the pre-defined instances in the {@link Color}
+	 * class, returns the instance's name. If not - returns "UnknownColor".
+	 * 
+	 * @param color
+	 *            The pre-defined instance of Color inside {@link Color} class.
+	 * @return If found, returns the Color instance's name inside the Class. If not - returns
+	 *         "UnknownColor".
+	 */
+	public static String getNameOfColorInstance(Color color) {
+		String colorName = fxColors.get(color);
+		if (colorName == null)
+			colorName = "UnknownColor";
+	    return colorName;
 	}
 	
 }
