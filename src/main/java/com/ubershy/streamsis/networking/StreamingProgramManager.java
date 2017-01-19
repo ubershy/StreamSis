@@ -77,9 +77,7 @@ public class StreamingProgramManager {
 			throw new UnsupportedOperationException(
 					"Can't start again after it was forever stopped");
 		}
-		NetUtil.startInNewThread(() -> {
-			setClientTypeAndRemember(getClientTypeFromConfig());
-		});
+		setClientTypeAndRemember(getClientTypeFromConfig());
 		logger.info("Streaming Program Manager is on.");
 	}
 
@@ -117,7 +115,9 @@ public class StreamingProgramManager {
 		boolean needNewInstance = true;
 		if (connectionMaintainer != null) {
 			// Stop existing client.
-			connectionMaintainer.stopMaintainingConnection();
+			NetUtil.startInNewThread(() -> {
+				connectionMaintainer.stopMaintainingConnection();
+			});
 			if (type.equals(clientType.get())) {
 				// If type is the same, instantiation of the new client is not needed.
 				needNewInstance = false;
@@ -137,7 +137,9 @@ public class StreamingProgramManager {
 			}
 			connectionMaintainer = new ConnectionMaintainer(newClient);
 		}
-		connectionMaintainer.maintainConnection();
+		NetUtil.startInNewThread(() -> {
+			connectionMaintainer.maintainConnection();
+		});
 		// If everything went alright, let's save the client type to config.
 		CuteConfig.setString(CuteConfig.CUTE, "StreamingProgramName", type.name());
 	}
