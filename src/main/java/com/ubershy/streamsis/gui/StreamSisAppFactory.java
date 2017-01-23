@@ -76,6 +76,8 @@ import javafx.scene.input.KeyEvent;
 public class StreamSisAppFactory {
 
 	static final Logger logger = LoggerFactory.getLogger(StreamSisAppFactory.class);
+	
+	private static final double cellSize = 23.0;
 
 	/**
 	 * The Enum with special {@link CuteElementController}s like "No Such Element" or
@@ -273,6 +275,7 @@ public class StreamSisAppFactory {
 		// There are some problems with editable list with ability
 		// to rename items... I can't handle them.
 		sisSceneList.setEditable(false);
+		sisSceneList.setFixedCellSize(cellSize);
 		if (project != null) {
 			sisSceneList.setCellFactory(View -> new SisSceneCell());
 			// Set initial list. We don't set items directly to avoid ObservableList binding.
@@ -333,6 +336,7 @@ public class StreamSisAppFactory {
 		// handle them.
 		actorList.setEditable(false);
 		actorList.setPlaceholder(new Label("Let's add some Actors!"));
+		actorList.setFixedCellSize(cellSize);
 		if (project != null) {
 			actorList.setCellFactory(view -> new ActorCell(ActorCellType.STRUCTUREVIEWCELL));
 			// Set initial list. We don't set items directly to avoid ObservableList binding.
@@ -400,6 +404,7 @@ public class StreamSisAppFactory {
 		TreeView<CuteElement> resultTreeView = new TreeView<CuteElement>();
 		AutoTreeItem<CuteElement> emptyRoot = new AutoTreeItem<CuteElement>();
 		resultTreeView.setCellFactory(p -> new CuteTreeCell());
+		resultTreeView.setFixedCellSize(cellSize);
 		resultTreeView.setShowRoot(false);
 		resultTreeView.setRoot(emptyRoot);
 		// This EventFilter will prevent selecting the hidden root item. Still children will be able

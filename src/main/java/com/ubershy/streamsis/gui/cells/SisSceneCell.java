@@ -21,9 +21,10 @@ import com.ubershy.streamsis.elements.SisScene;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.contextmenu.PossibleMoves;
 import com.ubershy.streamsis.gui.contextmenu.SisSceneContextMenuBuilder;
+import com.ubershy.streamsis.gui.helperclasses.CuteColor;
 
-import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 
 import com.ubershy.streamsis.project.ProjectManager;
 
@@ -32,16 +33,14 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.scene.control.Label;
+import javafx.scene.Node;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 
 /**
  * SisScene Cell. <br>
@@ -49,36 +48,42 @@ import javafx.scene.text.Text;
  */
 public class SisSceneCell extends ListCell<SisScene> {
 
-	/** The text field for editing the SisScene's name. */
+	/** The text field for editing the SisScene's name. (currently not in use) */
 	private TextField textField;
 
 	private StringProperty primarySisSceneName = new SimpleStringProperty();
 
-	/** The icon for {@link SisScene} used in {@link #primaryLabel}. */
-	private Text primaryLabelIcon = GlyphsDude.createIcon(FontAwesomeIcon.FILM);
-	
-	private DropShadow selectedShadow = new DropShadow();
+	/** The gap between the graphic and text. */
+	private final static double graphicTextGap = 3.0;
 
-	/** The Label that indicates if {@link SisScene} primary or not by the color of it's shadow. */
-	private Label primaryLabel = new Label();
+	/** Defines how many pixels graphic should be shifted on X axis. */
+	private final static double graphicTranslateX = -2.0;
+
+	/** The size of a font used to render the graphic. */
+	private final static int graphicFontSize = 16;
+
+	/** The videoCameraGraphic icon for {@link SisScene}. */
+	private FontAwesomeIconView videoCameraGraphic = new FontAwesomeIconView(
+			FontAwesomeIcon.VIDEO_CAMERA);
+	
+//	/** The shadow to apply to graphic when {@link SisScene} is selected. */
+//	private DropShadow shadowForSelected = new DropShadow();
 
 	public SisSceneCell() {
-		setGraphicTextGap(6.0);
-		primaryLabelIcon.setScaleX(1.25);
-		primaryLabelIcon.setScaleY(1.25);
-		primaryLabel.setMinWidth(14);
-		primaryLabel.setGraphic(primaryLabelIcon);
-        selectedShadow.setColor(Color.BLACK);
-        selectedShadow.setSpread(0.75);
-        selectedShadow.setRadius(2);
-		setGraphic(primaryLabel);
+		setGraphicTextGap(graphicTextGap);
+		videoCameraGraphic.setGlyphSize(graphicFontSize);
+		videoCameraGraphic.setTranslateX(graphicTranslateX);
+//        shadowForSelected.setColor(Color.BLACK);
+//        shadowForSelected.setSpread(0.5);
+//        shadowForSelected.setRadius(1);
+		setGraphicIfNeeded(videoCameraGraphic);
 		primarySisSceneName.bind(ProjectManager.getProject().primarySisSceneNameProperty());
 		ChangeListener<String> defaultSisSceneListener = (observable, oldValue,
 				newValue) -> refreshSisSceneLook(newValue, this.selectedProperty().get());
 		primarySisSceneName.addListener(defaultSisSceneListener);
-		ChangeListener<? super Boolean> selectedListener = (observable, oldValue,
-				newValue) -> refreshSisSceneLook(primarySisSceneName.get(), newValue);
-		this.selectedProperty().addListener(selectedListener);
+//		ChangeListener<? super Boolean> selectedListener = (observable, oldValue,
+//				newValue) -> refreshSisSceneLook(primarySisSceneName.get(), newValue);
+//		this.selectedProperty().addListener(selectedListener);
 		setOnMouseClicked(event -> GUIManager.elementEditor.setCurrentElement(getItem()));
 	}
 
@@ -98,9 +103,9 @@ public class SisSceneCell extends ListCell<SisScene> {
 				}
 				textProperty().unbind();
 				setText(null);
-				setGraphic(textField);
+				setGraphicIfNeeded(textField);
 			} else {
-				setGraphic(primaryLabel);
+				setGraphicIfNeeded(videoCameraGraphic);
 				textProperty().bind(item.getElementInfo().nameProperty());
 				refreshSisSceneLook(ProjectManager.getProject().getPrimarySisSceneName(), 
 						selectedProperty().get());
@@ -136,7 +141,7 @@ public class SisSceneCell extends ListCell<SisScene> {
 		textProperty().unbind();
 		setText(null);
 		textField.setText(getName());
-		setGraphic(textField);
+		setGraphicIfNeeded(textField);
 		textField.requestFocus();
 		textField.selectAll();
 	}
@@ -200,30 +205,22 @@ public class SisSceneCell extends ListCell<SisScene> {
 	private void refreshSisSceneLook(String primarySisSceneName, boolean isSelected) {
 		if (primarySisSceneName != null) {
 			if (getItem() != null) {
-				Effect effect;
+				Effect effect = null;
 				String style;
 				Color finalColor;
 				boolean isPrimary = primarySisSceneName
 						.equals(getItem().getElementInfo().getName());
-				if (isSelected) {
-					effect = selectedShadow;
-				} else {
-					effect = null;
-				}
+//				if (isSelected) {
+//					effect = shadowForSelected;
+//				} else {
+//					effect = null;
+//				}
 				if (isPrimary) {
 					style = "-fx-font-weight: bold;";
-					if (isSelected) {
-						finalColor = Color.LIGHTCYAN;
-					} else {
-						finalColor = Color.DEEPPINK;
-					}
+					finalColor = Color.HOTPINK;
 				} else {
 					style = "-fx-font-weight: normal;";
-					if (isSelected) {
-						finalColor = Color.LIGHTSKYBLUE;
-					} else {
-						finalColor = Color.HOTPINK;
-					}
+					finalColor = CuteColor.GENTLEPINK;
 				}
 				applySisSceneLook(effect, style, finalColor);
 			}
@@ -233,9 +230,16 @@ public class SisSceneCell extends ListCell<SisScene> {
 	private void applySisSceneLook(Effect effect, String style, Color finalColor) {
 		if (!getStyle().equals(style))
 			setStyle(style);
-		primaryLabelIcon.setEffect(effect);
-		if (!finalColor.equals(primaryLabelIcon.getFill()))
-			primaryLabelIcon.setFill(finalColor);
+		if (videoCameraGraphic.getEffect() == null
+				|| !videoCameraGraphic.getEffect().equals(effect))
+			videoCameraGraphic.setEffect(effect);
+		if (!finalColor.equals(videoCameraGraphic.getFill()))
+			videoCameraGraphic.setFill(finalColor);
+	}
+
+	private void setGraphicIfNeeded(Node newGraphic) {
+		if (getGraphic() == null || !getGraphic().equals(newGraphic))
+			setGraphic(newGraphic);
 	}
 
 }

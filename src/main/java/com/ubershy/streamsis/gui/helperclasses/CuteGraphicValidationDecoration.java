@@ -118,7 +118,7 @@ public class CuteGraphicValidationDecoration extends GraphicValidationDecoration
 	@Override
 	protected Node createWarningNode() {
 		Text icon = GlyphsDude.createIcon(FontAwesomeIcon.SQUARE);
-		icon.setFill(Color.LEMONCHIFFON);
+		icon.setFill(CuteColor.GENTLEYELLOW);
 		icon.setScaleX(0.8);
 		icon.setScaleY(0.8);
 		return icon;

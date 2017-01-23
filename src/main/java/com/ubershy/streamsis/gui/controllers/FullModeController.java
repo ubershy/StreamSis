@@ -35,6 +35,7 @@ import com.ubershy.streamsis.elements.CuteElement;
 import com.ubershy.streamsis.elements.SisScene;
 import com.ubershy.streamsis.elements.actors.Actor;
 import com.ubershy.streamsis.gui.GUIManager;
+import com.ubershy.streamsis.gui.helperclasses.CuteColor;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.gui.helperclasses.OpenRecentManager;
 import com.ubershy.streamsis.networking.ConnectionStatus;
@@ -43,6 +44,8 @@ import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.ProjectManager;
 import com.ubershy.streamsis.project.ProjectSerializator;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -254,6 +257,13 @@ public class FullModeController implements Initializable {
 	}
 
 	private void initializeToolBar() {
+		// "Love button"
+		// Replace heart rendered with system font with the awesome font's heart.
+		FontAwesomeIconView newHeart = new FontAwesomeIconView(FontAwesomeIcon.HEART);
+		newHeart.setGlyphSize(30);
+		newHeart.setFill(CuteColor.GENTLEPINK);
+		loveButton.setGraphic(newHeart);
+		
 		// Volume slider and label
 		double initialVolume = CuteConfig.getDouble(CuteConfig.CUTE, "GlobalVolume") * 100;
 		volumeLabel.setText(String.format("Global Volume: %.0f", initialVolume) + "%");

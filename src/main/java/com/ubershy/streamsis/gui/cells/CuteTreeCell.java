@@ -27,9 +27,10 @@ import com.ubershy.streamsis.elements.checkers.Checker;
 import com.ubershy.streamsis.elements.counters.Counter;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.contextmenu.TreeContextMenuBuilder;
+import com.ubershy.streamsis.gui.helperclasses.CuteColor;
 
-import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
 import javafx.application.Platform;
@@ -37,12 +38,12 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -68,73 +69,110 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 	 */
 	private ElementInfo.Result<Void> unknownResult = new ElementInfo.Result<Void>(null);
 	
-	/** The Color of {@link #resultLabel}, when the {@link Result} is unknown. */
-	private Color unknownResultColor = Color.HOTPINK;
+	/** The Color of {@link #paneGraphic}, when the {@link Result} is unknown. */
+	private Color unknownResultColor = defaultColor;
 
 	/** The property linked to the {@link CuteElement}'s last result of working. */
 	private ObjectProperty<ElementInfo.Result<?>> lastResultProperty = new SimpleObjectProperty<>(
 			unknownResult);
 
-	/** The FAIL icon for {@link Checker} used in {@link #resultLabel}. */
-	private Text resultFailTextForChecker = GlyphsDude.createIcon(FontAwesomeIcon.MINUS_SQUARE);
+	/** The FAIL icon for {@link Checker} used in {@link #paneGraphic}. */
+	private FontAwesomeIconView resultFailTextForChecker = new FontAwesomeIconView(
+			FontAwesomeIcon.MINUS_SQUARE);
 
-	/** The SUCCESS icon for {@link Checker} used in {@link #resultLabel}. */
-	private Text resultSuccessTextForChecker = GlyphsDude.createIcon(FontAwesomeIcon.CHECK_SQUARE);
+	/** The SUCCESS icon for {@link Checker} used in {@link #paneGraphic}. */
+	private FontAwesomeIconView resultSuccessTextForChecker = new FontAwesomeIconView(
+			FontAwesomeIcon.CHECK_SQUARE);
 
-	/** The FAIL icon for {@link Action} used in {@link #resultLabel}. */
-	private Text resultFailTextForAction = GlyphsDude.createIcon(FontAwesomeIcon.MINUS_CIRCLE);
+	/** The FAIL icon for {@link Action} used in {@link #paneGraphic}. */
+	private FontAwesomeIconView resultFailTextForAction = new FontAwesomeIconView(
+			FontAwesomeIcon.MINUS_CIRCLE);
 
-	/** The SUCCESS icon for {@link Action} used in {@link #resultLabel}. */
-	private Text resultSuccessTextForAction = GlyphsDude.createIcon(FontAwesomeIcon.CHECK_CIRCLE);
+	/** The SUCCESS icon for {@link Action} used in {@link #paneGraphic}. */
+	private FontAwesomeIconView resultSuccessTextForAction = new FontAwesomeIconView(
+			FontAwesomeIcon.CHECK_CIRCLE);
 
-	/** The PROCESSING icon for {@link Action} used in {@link #resultLabel}. */
-	private Text resultUnknownTextForAction = GlyphsDude.createIcon(FontAwesomeIcon.CIRCLE);
+	/** The PROCESSING icon for {@link Action} used in {@link #paneGraphic}. */
+	private FontAwesomeIconView resultUnknownTextForAction = new FontAwesomeIconView(
+			FontAwesomeIcon.CIRCLE);
 
-	/** The UNKNOWN icon for {@link Checker} used in {@link #resultLabel}. */
-	private Text resultUnknownTextForChecker = GlyphsDude.createIcon(FontAwesomeIcon.SQUARE);
+	/** The UNKNOWN icon for {@link Checker} used in {@link #paneGraphic}. */
+	private FontAwesomeIconView resultUnknownTextForChecker = new FontAwesomeIconView(
+			FontAwesomeIcon.SQUARE);
 
-	/** The UNKNOWN icon for {@link Counter} used in {@link #resultLabel}. */
-	private Text resultUnknownTextForCounter = GlyphsDude.createIcon(FontAwesomeIcon.TH_LARGE);
-	
-	/** The UNKNOWN icon for {@link CuteElementContainer} used in {@link #resultLabel}. */
-	private Text resultUnknownTextForContainer = GlyphsDude.createIcon(FontAwesomeIcon.CUBES);
+	/** The UNKNOWN icon for {@link Counter} used in {@link #paneGraphic}. */
+	private FontAwesomeIconView resultUnknownTextForCounter = new FontAwesomeIconView(
+			FontAwesomeIcon.TH_LARGE);
 
-	/** The text with number used in {@link #resultLabel} for {@link Counter}. */
+	/** The UNKNOWN icon for {@link CuteElementContainer} used in {@link #paneGraphic}. */
+	private FontAwesomeIconView resultUnknownTextForContainer = new FontAwesomeIconView(
+			FontAwesomeIcon.CUBES);
+
+	/** The text with number used in {@link #paneGraphic} for {@link Counter}. */
 	private Text numberResultText = new Text("0");
 
-	/** Simple animation for Action result icon for changing color from pink to green on success. */
+	/** The color to use for the graphic when the {@link CuteElement}'s result is not available. */
+	private static final Color defaultColor = CuteColor.GENTLEPINK;
+
+	/** The color to use for the graphic when the {@link CuteElement} got success result. */
+	private static final Color successColor = CuteColor.GENTLEBLUE;
+
+	/** The color to use for the graphic when the {@link CuteElement} got fail result. */
+	private static final Color failColor = CuteColor.GENTLERED;
+
+	/** The color to use for the graphic when the {@link CuteElement} is broken. */
+	private final static Color brokenColor = CuteColor.GENTLEDARKPURPLE;
+
+	/** The color to use for the  graphic when the {@link CuteElement} is sick. */
+	private final static Color sickColor = CuteColor.GENTLEYELLOW;
+
+	/** Simple animation for Action result icon on success. */
 	FillTransition actionSuccessAnimation = new FillTransition(Duration.millis(300),
-			resultSuccessTextForAction, unknownResultColor, Color.DEEPSKYBLUE);
+			resultSuccessTextForAction, unknownResultColor, successColor);
 	
-	/** Simple animation for Action result icon for changing color from pink to red on fail. */
+	/** Simple animation for Action result icon on fail. */
 	FillTransition actionFailAnimation = new FillTransition(Duration.millis(300),
-			resultFailTextForAction, unknownResultColor, Color.RED);
+			resultFailTextForAction, unknownResultColor, failColor);
 
 	/**
-	 * The Label with icon representing current {@link Result} of {@link CuteElement} inside this cell.
+	 * The Label with icon representing current {@link Result} of {@link CuteElement} inside this
+	 * cell.
 	 */
-	private final Label resultLabel = new Label("");
+	private final StackPane paneGraphic = new StackPane();
 
 	/**
 	 * Instantiates a new CuteTree Cell.
 	 */
 	public CuteTreeCell() {
-		setGraphicTextGap(6.0);
-		resultLabel.setScaleX(1.25);
-		resultLabel.setScaleY(1.25);
-		resultFailTextForChecker.setFill(Color.HOTPINK);
-		resultSuccessTextForChecker.setFill(Color.DEEPSKYBLUE);
-		resultUnknownTextForChecker.setFill(Color.HOTPINK);
-		resultFailTextForAction.setFill(Color.RED);
-		resultSuccessTextForAction.setFill(Color.DEEPSKYBLUE);
-		resultUnknownTextForAction.setFill(Color.HOTPINK);
-		resultUnknownTextForCounter.setFill(Color.HOTPINK);
-		resultUnknownTextForContainer.setFill(Color.HOTPINK);
+		setGraphicTextGap(0.0);
+		// Set up a pane that will contain the icon.
+		paneGraphic.setMinWidth(23);
+		// Set up icons for Checkers.
+		resultFailTextForChecker.setFill(defaultColor);
+		resultSuccessTextForChecker.setFill(successColor);
+		resultUnknownTextForChecker.setFill(defaultColor);
+		applyCommonStyleToIcon(resultFailTextForChecker);
+		applyCommonStyleToIcon(resultSuccessTextForChecker);
+		applyCommonStyleToIcon(resultUnknownTextForChecker);
+		// Set up icons for Actions.
+		resultFailTextForAction.setFill(failColor);
+		resultSuccessTextForAction.setFill(successColor);
+		resultUnknownTextForAction.setFill(defaultColor);
+		applyCommonStyleToIcon(resultFailTextForAction);
+		applyCommonStyleToIcon(resultSuccessTextForAction);
+		applyCommonStyleToIcon(resultUnknownTextForAction);
+		// Set up icons for Counters.
+		resultUnknownTextForCounter.setFill(defaultColor);
+		applyCommonStyleToIcon(resultUnknownTextForCounter);
+		numberResultText.setFill(defaultColor);
+		numberResultText.setFont(Font.font(null, FontWeight.BOLD, 15));
+		// Set up icon for Containers.
+		resultUnknownTextForContainer.setFill(defaultColor);
+		applyCommonStyleToIcon(resultUnknownTextForContainer);
+		
 		actionSuccessAnimation.setInterpolator(Interpolator.DISCRETE);
 		actionFailAnimation.setInterpolator(Interpolator.DISCRETE);
-		numberResultText.setFill(Color.DEEPPINK);
-		numberResultText.setFont(Font.font(null, FontWeight.BOLD, 10));
-		resultLabel.setMinWidth(14);
+		
 		ChangeListener<ElementHealth> elementHealthListener = (observableValue, oldElementHealth,
 				newElementHealth) -> Platform.runLater(() -> {
 					refreshResultIconBasedOnHealth(newElementHealth);
@@ -148,6 +186,12 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 		setOnMouseClicked(event -> GUIManager.elementEditor.setCurrentElement(getItem()));
 	}
 
+	private void applyCommonStyleToIcon(FontAwesomeIconView icon) {
+		icon.setGlyphSize(15);
+//		icon.setCache(true);
+//		icon.setCacheHint(CacheHint.SPEED);
+	}
+
 	@Override
 	public void updateItem(CuteElement item, boolean empty) {
 		super.updateItem(item, empty);
@@ -156,7 +200,7 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 			elementHealthProperty.unbind();
 			textProperty().unbind();
 			setText(null);
-			setGraphic(null);
+			CellUtils.setGraphicIfNotAlready(this, null);
 			setContextMenu(null);
 			setTooltip(null);
 		} else {
@@ -168,18 +212,18 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 				}
 				textProperty().unbind();
 				setText(null);
-				setGraphic(textField);
+				CellUtils.setGraphicIfNotAlready(this, textField);
 			} else {
 				refreshResultIconBasedOnResult(item.getElementInfo().lastResultProperty().get());
 				refreshResultIconBasedOnHealth(item.getElementInfo().elementHealthProperty().get());
 				lastResultProperty.bind(item.getElementInfo().lastResultProperty());
 				elementHealthProperty.bind(item.getElementInfo().elementHealthProperty());
-				setGraphic(resultLabel);
+				CellUtils.setGraphicIfNotAlready(this, paneGraphic);
 				textProperty().bind(item.getElementInfo().nameProperty());
 				Tooltip tooltip = new Tooltip(item.getElementInfo().getUnhealthyMessage());
 				setTooltip(tooltip);
 				// if (getTreeItem() != null)
-				// setGraphic(getTreeItem().getGraphic());
+				// setGraphicIfNeeded(getTreeItem().getGraphic());
 				setContextMenu(TreeContextMenuBuilder.createCuteTreeCellContextMenu(this));
 			}
 		}
@@ -193,15 +237,15 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 	private void refreshResultIconBasedOnHealth(ElementHealth currentHealth) {
 		switch (currentHealth) {
 		case BROKEN:
-			setTextColorForUnknownResult(Color.INDIGO);
+			setTextColorForUnknownResult(brokenColor);
 			refreshResultIconBasedOnResult(unknownResult);
 			return;
 		case SICK:
-			setTextColorForUnknownResult(Color.GOLDENROD);
+			setTextColorForUnknownResult(sickColor);
 			refreshResultIconBasedOnResult(unknownResult);
 			return;
 		case HEALTHY:
-			setTextColorForUnknownResult(Color.HOTPINK);
+			setTextColorForUnknownResult(defaultColor);
 			return;
 		default:
 			throw new RuntimeException("Unknown Health value");
@@ -228,7 +272,7 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 	}
 	
 	/**
-	 * Process result to change {@link #resultLabel} view.
+	 * Process result to change {@link #paneGraphic} view.
 	 *
 	 * @param newResult the new result
 	 */
@@ -250,53 +294,53 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 	}
 
 	/**
-	 * Process result for Checker to change {@link #resultLabel} view.
+	 * Process result for Checker to change {@link #paneGraphic} view.
 	 *
 	 * @param newResult the new result
 	 */
 	private void processResultForChecker(Result<?> newResult) {
 		Object object = newResult.get();
 		if (object == null) {
-			resultLabel.setGraphic(resultUnknownTextForChecker);
+			CellUtils.setSingleChildIfNotAlready(paneGraphic, resultUnknownTextForChecker);
 			return;
 		}
 		if (object instanceof Boolean) {
 			Boolean bool = (Boolean) object;
 			if (bool) {
-				resultLabel.setGraphic(resultSuccessTextForChecker);
+				CellUtils.setSingleChildIfNotAlready(paneGraphic, resultSuccessTextForChecker);
 			} else {
-				resultLabel.setGraphic(resultFailTextForChecker);
+				CellUtils.setSingleChildIfNotAlready(paneGraphic, resultFailTextForChecker);
 			}
 		}
 	}
 
 	/**
-	 * Process result for Counter to change {@link #resultLabel} view.
+	 * Process result for Counter to change {@link #paneGraphic} view.
 	 *
 	 * @param newResult the new result
 	 */
 	private void processResultForCounter(Result<?> newResult) {
 		Object object = newResult.get();
 		if (object == null) {
-			resultLabel.setGraphic(resultUnknownTextForCounter);
+			CellUtils.setSingleChildIfNotAlready(paneGraphic, resultUnknownTextForCounter);
 			return;
 		}
 		if (object instanceof Integer) {
 			Integer number = (Integer) object;
 			numberResultText.setText(number.toString());
-			resultLabel.setGraphic(numberResultText);
+			CellUtils.setSingleChildIfNotAlready(paneGraphic, numberResultText);
 		}
 	}
 
 	/**
-	 * Process result for Action to change {@link #resultLabel} view.
+	 * Process result for Action to change {@link #paneGraphic} view.
 	 *
 	 * @param newResult the new result
 	 */
 	private void processResultForAction(Result<?> newResult) {
 		Object object = newResult.get();
 		if (object == null) {
-			resultLabel.setGraphic(resultUnknownTextForAction);
+			CellUtils.setSingleChildIfNotAlready(paneGraphic, resultUnknownTextForAction);
 			return;
 		}
 		if (object instanceof Boolean) {
@@ -304,24 +348,24 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 			// Actions are usually rarely and quickly executed, so let's play animation to make
 			// it easy for the user to notice the change in execution state.
 			if (bool) {
-				resultLabel.setGraphic(resultSuccessTextForAction);
+				CellUtils.setSingleChildIfNotAlready(paneGraphic, resultSuccessTextForAction);
 				actionSuccessAnimation.playFromStart();
 			} else {
-				resultLabel.setGraphic(resultFailTextForAction);
+				CellUtils.setSingleChildIfNotAlready(paneGraphic, resultFailTextForAction);
 				actionFailAnimation.playFromStart();
 			}
 		}
 	}
 	
 	/**
-	 * Process result for {@link CuteElementContainer} to change {@link #resultLabel} view.
+	 * Process result for {@link CuteElementContainer} to change {@link #paneGraphic} view.
 	 *
 	 * @param newResult the new result
 	 */
 	private void processResultForContainer(Result<?> newResult) {
 		Object object = newResult.get();
 		if (object == null) {
-			resultLabel.setGraphic(resultUnknownTextForContainer);
+			CellUtils.setSingleChildIfNotAlready(paneGraphic, resultUnknownTextForContainer);
 		} else {
 			throw new RuntimeException("CuteElementContainer can only have null as result.");
 		}
@@ -337,7 +381,7 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 		elementHealthProperty.unbind();
 		textProperty().unbind();
 		setText(null);
-		setGraphic(textField);
+		CellUtils.setGraphicIfNotAlready(this, textField);
 		textField.selectAll();
 	}
 
@@ -347,8 +391,8 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 		lastResultProperty.bind(getItem().getElementInfo().lastResultProperty());
 		elementHealthProperty.bind(getItem().getElementInfo().elementHealthProperty());
 		textProperty().bind(getItem().getElementInfo().nameProperty());
-		// setGraphic(getTreeItem().getGraphic());
-		setGraphic(resultLabel);
+		// setGraphicIfNeeded(getTreeItem().getGraphic());
+		CellUtils.setGraphicIfNotAlready(this, paneGraphic);
 	}
 
 	private void createTextField() {
@@ -384,4 +428,5 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 		}
 		return result;
 	}
+
 }

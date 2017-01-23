@@ -56,6 +56,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Control;
@@ -131,25 +132,25 @@ public final class GUIUtil {
 			break;
 		case CONFIRMATION:
 			Label confirmationLove = new Label("♥");
-			confirmationLove.setTextFill(Color.HOTPINK);
+			confirmationLove.setTextFill(CuteColor.GENTLEPINK);
 			confirmationLove.setStyle(" -fx-font-size: 36");
 			alert.setGraphic(confirmationLove);
 			break;
 		case INFORMATION:
 			Label informationLove = new Label("♥");
-			informationLove.setTextFill(Color.HOTPINK);
+			informationLove.setTextFill(CuteColor.GENTLEPINK);
 			informationLove.setStyle(" -fx-font-size: 60");
 			alert.setGraphic(informationLove);
 			break;
 		case WARNING:
 			Label warningLove = new Label("💓 ");
-			warningLove.setTextFill(Color.HOTPINK);
+			warningLove.setTextFill(CuteColor.GENTLEPINK);
 			warningLove.setStyle(" -fx-font-size: 60");
 			alert.setGraphic(warningLove);
 			break;
 		default: // NONE
 			Label noneLove = new Label("♥");
-			noneLove.setTextFill(Color.HOTPINK);
+			noneLove.setTextFill(CuteColor.GENTLEPINK);
 			noneLove.setStyle(" -fx-font-size: 60");
 			alert.setGraphic(noneLove);
 			break;
@@ -522,16 +523,16 @@ public final class GUIUtil {
 	 */
 	public static void setImageViewTooltip(Node nodeToHaveTooltip,
 			ImageView imageView) {
-		// Add blue shadow to ImageView so the actual image will be clearly distinguishable from
+		// Add shadow to ImageView so the actual image will be clearly distinguishable from
 		// tooltip's background.
-		DropShadow shadow = new DropShadow(25, Color.LIGHTGREY);
+		DropShadow shadow = new DropShadow(BlurType.ONE_PASS_BOX, Color.GREY, 5.0, 1.0, 0.0, 0.0);
 		imageView.setEffect(shadow);
 		// TODO: If image is big and StreamSis window is close to the edge, Tooltip is hiding right
 		// after it is shown. Need to find workaround.
 		Tooltip fullPreviewTP = new Tooltip();
 		fullPreviewTP.setGraphic(imageView);
 		fullPreviewTP.setAnchorLocation(AnchorLocation.WINDOW_BOTTOM_LEFT);
-		fullPreviewTP.setStyle("-fx-effect: dropshadow(three-pass-box, black, 10,0.5,0,0);");
+//		fullPreviewTP.setStyle("-fx-effect: dropshadow(three-pass-box, black, 10,0.5,0,0);");
 		Tooltip.install(nodeToHaveTooltip, fullPreviewTP);
 	}
 	
