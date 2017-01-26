@@ -543,5 +543,15 @@ public class ElementInfo {
 	public BooleanProperty emptyNameAllowedProperty() {
 		return emptyNameAllowed;
 	}
+
+	/**
+	 * Sets health information to this {@link ElementInfo} from the other ElementInfo instance.
+	 * 
+	 * @param otherElementInfo The ElementInfo instance to copy health from.
+	 */
+	public void setHealthFromAnotherInstance(ElementInfo otherElementInfo) {
+		elementHealthProperty.set(otherElementInfo.elementHealthProperty().get());
+		whyUnhealthyProperty.set(otherElementInfo.getUnhealthyMessage());
+	}
 	
 }

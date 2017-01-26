@@ -116,11 +116,14 @@ public class ActorCell extends ListCell<Actor> {
 	/** The color to use for the heart graphic when the {@link Actor} is switched on. */
 	private final static Color heartSwitchedOnColor = CuteColor.GENTLEBLUE;
 
-	/** The color to use for the heart graphic when the {@link Actor} is broken. */
-	private final static Color heartBrokenColor = CuteColor.GENTLEDARKPURPLE;
+	/** The color to use when the {@link Actor} is broken. */
+	private final static Color brokenColor = CuteColor.GENTLEDARKPURPLE;
 
-	/** The color to use for the heart graphic when the {@link Actor} is sick. */
-	private final static Color heartSickColor = CuteColor.GENTLEYELLOW;
+	/** The color to use when the {@link Actor} is sick. */
+	private final static Color sickColor = CuteColor.GENTLEDARKYELLOW;
+	
+	/** The color to use when the {@link Actor} is healthy. */
+	private final static Color healthyTextColor = Color.BLACK;
 	
 	private final static Image brokenHeartImage;
 	
@@ -161,7 +164,7 @@ public class ActorCell extends ListCell<Actor> {
 	static {
 		brokenHeartImage = generateBrokenHeartImage();
 		defaultHeartImage = generateHeartImage(heartDefaultColor);
-		sickHeartImage = generateHeartImage(heartSickColor);
+		sickHeartImage = generateHeartImage(sickColor);
 		switchedOnHeartImage = generateHeartImage(heartSwitchedOnColor);
 	}
 
@@ -198,7 +201,7 @@ public class ActorCell extends ListCell<Actor> {
 		heartBeatTransition.interpolatorProperty().setValue(Interpolator.DISCRETE);
 		heartBeatTransition.setCycleCount(1);
 		// Let's set heart's initial view
-		refreshHeartLook(actorStarted, isSwitchOnProperty.get(), checkIntervalProperty.get(),
+		refreshLook(actorStarted, isSwitchOnProperty.get(), checkIntervalProperty.get(),
 				elementHealthProperty.get());
 		ChangeListener<ElementState> elementStateListener = (observableValue, oldElementState,
 				newElementState) -> Platform.runLater(() -> {
@@ -207,7 +210,7 @@ public class ActorCell extends ListCell<Actor> {
 						// Things have changed, need to update heart look.
 						actorStarted = isActorStartedNow;
 						synchronized (heartImageView) {
-							refreshHeartLook(actorStarted, isSwitchOnProperty.get(),
+							refreshLook(actorStarted, isSwitchOnProperty.get(),
 									checkIntervalProperty.get(), elementHealthProperty.get());
 						}
 					}
@@ -224,21 +227,21 @@ public class ActorCell extends ListCell<Actor> {
 		ChangeListener<ElementHealth> elementHealthListener = (observableValue, oldElementHealth,
 				newElementHealth) -> Platform.runLater(() -> {
 					synchronized (heartImageView) {
-						refreshHeartLook(actorStarted, isSwitchOnProperty.get(),
+						refreshLook(actorStarted, isSwitchOnProperty.get(),
 								checkIntervalProperty.get(), newElementHealth);
 					}
 				});
 		ChangeListener<? super Number> checkIntervalListener = (observable, oldValue,
 				newValue) -> Platform.runLater(() -> {
 					synchronized (heartImageView) {
-						refreshHeartLook(actorStarted, isSwitchOnProperty.get(),
+						refreshLook(actorStarted, isSwitchOnProperty.get(),
 								newValue.intValue(), elementHealthProperty.get());
 					}
 				});
 		ChangeListener<? super Boolean> isSwitchOnListener = (observable, oldValue,
 				newValue) -> Platform.runLater(() -> {
 					synchronized (heartImageView) {
-						refreshHeartLook(actorStarted, newValue, checkIntervalProperty.get(),
+						refreshLook(actorStarted, newValue, checkIntervalProperty.get(),
 								elementHealthProperty.get());
 					}
 				});
@@ -265,7 +268,7 @@ public class ActorCell extends ListCell<Actor> {
 		newBolt.setScaleX(0.65);
 		newBolt.setScaleY(0.65);
 		newBolt.setTranslateX(-1.0);
-		newHeart.setFill(heartBrokenColor);
+		newHeart.setFill(brokenColor);
 		newBolt.setFill(Color.WHITE);
 		StackPane generated = new StackPane(
 				newHeart,
@@ -321,9 +324,8 @@ public class ActorCell extends ListCell<Actor> {
 			} else {
 				textProperty().unbind();
 				CellUtils.setGraphicIfNotAlready(this, paneGraphic);
-				// Lets set initial heart style
-				refreshHeartLook(
-						findIfActorStarted(item.getElementInfo().elementStateProperty().get()),
+				// Lets set initial style
+				refreshLook(findIfActorStarted(item.getElementInfo().elementStateProperty().get()),
 						item.isSwitchOnProperty().get(), item.checkIntervalProperty().get(),
 						item.getElementInfo().elementHealthProperty().get());
 				checkIntervalProperty.bind(item.checkIntervalProperty());
@@ -331,7 +333,6 @@ public class ActorCell extends ListCell<Actor> {
 				textProperty().bind(getTextBinding(item));
 				isSwitchOnProperty.bind(item.isSwitchOnProperty());
 				elementHealthProperty.bind(item.getElementInfo().elementHealthProperty());
-				// refreshHeartStyle();
 				PossibleMoves possibleMoves = PossibleMoves.UPORDOWN;
 				int sizeOfList = getListView().getItems().size();
 				if (sizeOfList != 1) {
@@ -342,14 +343,14 @@ public class ActorCell extends ListCell<Actor> {
 				} else {
 					possibleMoves = PossibleMoves.NOWHERE;
 				}
-				switch(actorCellType) {
+				switch (actorCellType) {
 				case ALLACTORSVIEWCELL:
-					setContextMenu(ActorContextMenuBuilder
-							.createCMForAllActorsViewItem(item,possibleMoves));
+					setContextMenu(ActorContextMenuBuilder.createCMForAllActorsViewItem(item,
+							possibleMoves));
 					break;
 				case STRUCTUREVIEWCELL:
-					setContextMenu(ActorContextMenuBuilder
-							.createCMForStructureViewItem(item, possibleMoves));
+					setContextMenu(ActorContextMenuBuilder.createCMForStructureViewItem(item,
+							possibleMoves));
 					break;
 				default:
 					throw new RuntimeException("Unknown ActorCellType");
@@ -418,7 +419,7 @@ public class ActorCell extends ListCell<Actor> {
 	}
 
 	/**
-	 * Refresh the heart's style. <br>
+	 * Refresh the heart's style and text style. <br>
 	 * Heart can vary it's base look under different circumstances. <br>
 	 * Note: this method should not be called too often.
 	 *
@@ -432,7 +433,7 @@ public class ActorCell extends ListCell<Actor> {
 	 *            current Actor's health
 	 *
 	 */
-	private final void refreshHeartLook(boolean isStarted, boolean isSwitchOn, int checkInterval,
+	private final void refreshLook(boolean isStarted, boolean isSwitchOn, int checkInterval,
 			ElementHealth elementHealth) {
 		if (getItem() == null)
 			return;
@@ -442,14 +443,17 @@ public class ActorCell extends ListCell<Actor> {
 		case BROKEN:
 			actorIsAbleToWork = false;
 			imageToUse = brokenHeartImage;
+			CellUtils.setLabeledTextFillIfNotAlready(this, brokenColor);
 			break;
 		case HEALTHY:
 			actorIsAbleToWork = true;
 			imageToUse = defaultHeartImage;
+			CellUtils.setLabeledTextFillIfNotAlready(this, healthyTextColor);
 			break;
 		case SICK:
 			actorIsAbleToWork = true;
 			imageToUse = sickHeartImage;
+			CellUtils.setLabeledTextFillIfNotAlready(this, sickColor);
 			break;
 		default:
 			throw new RuntimeException("What is this status?");

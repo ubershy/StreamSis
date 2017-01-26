@@ -32,6 +32,8 @@ public class CuteColor {
 	
 	public static final Color GENTLEYELLOW = Color.web("#f0f0a8");
 	
-	public static final Color GENTLERED = Color.web("#ff8080");
+	public static final Color GENTLEDARKYELLOW = Color.web("#aeae1e");
+	
+	public static final Color GENTLERED = Color.web("#ff6666");
 	
 }

@@ -112,5 +112,18 @@ public final class CellUtils {
 		WritableImage image = node.snapshot(snapSettings, null);
 		return image;
 	}
+	
+	/**
+	 * Sets the color to {@link Labeled}'s text, but only if the same color is not already set.
+	 *
+	 * @param whereToSet
+	 *            The Labeled where to set the text color.
+	 * @param newColor
+	 *            The new color to set.
+	 */
+	public static void setLabeledTextFillIfNotAlready(Labeled whereToSet, Color newColor) {
+		if (whereToSet.getTextFill() == null || !whereToSet.getTextFill().equals(newColor))
+			whereToSet.setTextFill(newColor);
+	}
 
 }

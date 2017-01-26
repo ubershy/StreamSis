@@ -399,11 +399,14 @@ public class ElementEditorController implements Initializable {
 					.setEmptyNameAllowed(currentElement.getElementInfo().isEmptyNameAllowed());
 		}
 		
-		elementWorkingCopy.init();
-		
-		// Let's set up initial values of visible textLabels describing the CuteElement
-		String simpleClassName = elementWorkingCopy.getClass().getSimpleName();
 		ElementInfo infoOfCopyElement = elementWorkingCopy.getElementInfo();
+		// In some situations Element might get "sick" while working and it's "whyUnhealthy" message
+		// will contain the information why it became sick. We need to show this message to the
+		// user. To accomplish that let's transfer the original health to the copy.
+		infoOfCopyElement.setHealthFromAnotherInstance(currentElement.getElementInfo());
+		
+		// Let's set up initial values of visible Labels describing the CuteElement
+		String simpleClassName = elementWorkingCopy.getClass().getSimpleName();
 		typeLabel.setText(simpleClassName);
 		defineStyleByElementHealth(infoOfCopyElement.elementHealthProperty().get());
 		whyUnhealthyLabel.setText(infoOfCopyElement.getUnhealthyMessage());
