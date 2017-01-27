@@ -399,6 +399,9 @@ public class ElementEditorController implements Initializable {
 					.setEmptyNameAllowed(currentElement.getElementInfo().isEmptyNameAllowed());
 		}
 		
+		// Initialize a copy
+		elementWorkingCopy.init();
+		
 		ElementInfo infoOfCopyElement = elementWorkingCopy.getElementInfo();
 		// In some situations Element might get "sick" while working and it's "whyUnhealthy" message
 		// will contain the information why it became sick. We need to show this message to the
