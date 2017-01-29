@@ -168,6 +168,10 @@ public class SoundAction extends AbstractCuteElement implements Action {
 			soundToPlay.play();
 			logger.info(String.format("Playing(%.2f): %s", soundToPlay.getVolume(),
 					Paths.get(URI.create(soundToPlay.getMedia().getSource()))));
+			// Element might got sick on a previous iteration. Time to make it healthy again.
+			if (elementInfo.isSick()) {
+				elementInfo.setAsHealthy();
+			}
 			return true;
 		} else {
 			logger.error("Can't play the sound. MediaPlayer is not defined.");

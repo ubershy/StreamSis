@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.elements.AbstractCuteElement;
+import com.ubershy.streamsis.elements.ElementInfo.ElementHealth;
 import com.ubershy.streamsis.networking.StreamingProgramManager;
 import com.ubershy.streamsis.networking.responses.GetSceneNameResponse;
 import com.ubershy.streamsis.networking.responses.Response;
@@ -65,7 +66,7 @@ public class SwitchSPSceneAction extends AbstractCuteElement implements Action {
 			// Lets not change scene without need.
 			GetSceneNameResponse getSceneNameResponse = StreamingProgramManager.getSceneName();
 			if (getSceneNameResponse.getErrorText() != null) { // Got an error response.
-				reactOnError(getSceneNameResponse.getErrorText(), "Set current scene by name");
+				reactOnErrorAndGetSick(getSceneNameResponse.getErrorText());
 				return;
 			}
 			if (this.sceneName.get().equals(getSceneNameResponse.getSceneName())) {
@@ -76,8 +77,12 @@ public class SwitchSPSceneAction extends AbstractCuteElement implements Action {
 			// Lets change the scene in Streaming Program.
 			Response setSceneResponse = StreamingProgramManager.setSceneName(sceneName.get());
 			if (setSceneResponse.getErrorText() != null) { // Got an error response.
-				reactOnError(setSceneResponse.getErrorText(), "Set current scene by name");
+				reactOnErrorAndGetSick(setSceneResponse.getErrorText());
 				return;
+			}
+			// Element might got sick on a previous iteration. Time to make it healthy again.
+			if (elementInfo.isSick()) {
+				elementInfo.setAsHealthy();
 			}
 			elementInfo.setBooleanResult(true);
 		}
@@ -91,10 +96,9 @@ public class SwitchSPSceneAction extends AbstractCuteElement implements Action {
 		}
 	}
 	
-	private void reactOnError(String errorText, String readableRequestName){
+	private void reactOnErrorAndGetSick(String errorText){
 		elementInfo.setBooleanResult(false);
-		elementInfo.setAsSick("Got error from Streaming Program during sending a request '"
-				+ readableRequestName + "': \"" + errorText + "\"");
+		elementInfo.setAsSick("Got error during request ': \"" + errorText + "\"");
 	}
 
 }

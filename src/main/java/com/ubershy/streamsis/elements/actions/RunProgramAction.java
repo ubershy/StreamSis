@@ -184,6 +184,10 @@ public class RunProgramAction extends AbstractCuteElement implements Action {
 				}
 			}
 			if (!skipSettingStatus) {
+				// Element might got sick on a previous iteration. Time to make it healthy again.
+				if (elementInfo.isSick()) {
+					elementInfo.setAsHealthy();
+				}
 				elementInfo.setBooleanResult(success);
 			}
 		}

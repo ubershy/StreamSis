@@ -54,6 +54,8 @@ import javafx.beans.property.StringProperty;
  * 
  * }
  * </pre>
+ * 
+ * TODO: this class is a mess. Refactor it.
  */
 public class ElementInfo {
 
@@ -276,7 +278,17 @@ public class ElementInfo {
 	 */
 	@JsonIgnore
 	public boolean isBroken() {
-		return elementHealthProperty.get().equals(ElementHealth.BROKEN);
+		return ElementHealth.BROKEN.equals(elementHealthProperty.get());
+	}
+	
+	/**
+	 * Checks if the {@link CuteElement} is sick. Sick CuteElements can work, but not ideally.
+	 *
+	 * @return true, if the CuteElement is sick
+	 */
+	@JsonIgnore
+	public boolean isSick() {
+		return ElementHealth.SICK.equals(elementHealthProperty.get());
 	}
 
 	/**
@@ -358,9 +370,9 @@ public class ElementInfo {
 	}
 
 	/**
-	 * Resets the message why the {@link CuteElement} is unhealthy<br>
-	 * . Sets the CuteElement's health as {@link ElementHealth#HEALTHY} <br>
-	 * . Sets the CuteElement's state as {@link ElementState#READY}.
+	 * Resets the message why the {@link CuteElement} is unhealthy. <br>
+	 * Sets the CuteElement's health as {@link ElementHealth#HEALTHY}. <br>
+	 * Sets the CuteElement's state as {@link ElementState#READY}.
 	 */
 	public void setAsReadyAndHealthy() {
 		elementStateProperty.set(ElementState.READY);
@@ -373,6 +385,14 @@ public class ElementInfo {
 	 */
 	public void setAsReady() {
 		elementStateProperty.set(ElementState.READY);
+	}
+
+	/**
+	 * Sets the CuteElement's state as {@link ElementHealth#HEALTHY}.
+	 */
+	public void setAsHealthy() {
+		elementHealthProperty.set(ElementHealth.HEALTHY);
+		whyUnhealthyProperty.set("");
 	}
 
 	/**
