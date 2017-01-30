@@ -38,6 +38,6 @@
    <children>
       <Label text="Specify the scene you want to make active in Streaming Program." wrapText="true" GridPane.columnSpan="2" GridPane.vgrow="ALWAYS" />
       <Label maxHeight="1.7976931348623157E308" text="Scene name" GridPane.rowIndex="1" />
-      <CustomTextField fx:id="sceneNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <CustomTextField fx:id="sceneNameTextField" maxWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
    </children>
 </GridPane>

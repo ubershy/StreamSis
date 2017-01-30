@@ -154,6 +154,8 @@ public class CommonElementFieldsController implements Initializable {
 	 */
 	private void recreateNameTextField() {
 		TextField newTextField = new TextField();
+		newTextField.setMaxWidth(250.0);
+		newTextField.setPrefWidth(250.0);
 		GUIUtil.replaceChildInPane(nameTextField, newTextField);
 		nameTextField = newTextField;
 		nameTextField.setDisable(!inputAllowed);

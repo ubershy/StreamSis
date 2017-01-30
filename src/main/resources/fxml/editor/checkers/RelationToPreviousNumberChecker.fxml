@@ -40,9 +40,9 @@
    </rowConstraints>
    <children>
       <Label maxHeight="1.7976931348623157E308" text="Set the initial number to compare Counter's first result with" wrapText="true" />
-      <Pane fx:id="numberPane" prefWidth="200.0" GridPane.rowIndex="1" />
+      <Pane fx:id="numberPane" maxWidth="200.0" GridPane.rowIndex="1" />
       <Label maxHeight="1.7976931348623157E308" text="Set the operator (How Counter's result is being compared to it's previous result)" wrapText="true" GridPane.rowIndex="2" />
-      <Pane fx:id="operatorPane" prefWidth="200.0" GridPane.rowIndex="3" />
+      <Pane fx:id="operatorPane" maxWidth="200.0" GridPane.rowIndex="3" />
       <HBox GridPane.rowIndex="4">
          <children>
             <Label maxHeight="1.7976931348623157E308" text="This Checker will return True if Counter's new result is " wrapText="true" />

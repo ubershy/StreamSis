@@ -41,7 +41,7 @@
    <children>
       <Label text="Specify the Variable which Value you want to check during this Action." wrapText="true" GridPane.columnSpan="2" GridPane.vgrow="ALWAYS" />
       <Label maxHeight="1.7976931348623157E308" text="Variable name" GridPane.rowIndex="1" />
-      <CustomTextField fx:id="variableNameTextField" promptText="For example, &quot;Current game mode&quot;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <CustomTextField fx:id="variableNameTextField" maxWidth="200.0" promptText="For example, &quot;Current game mode&quot;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <Label text="The Variable will be checked for possible Values. If Variable's current Value equals to one of the possible Values, the Actions corresponding to the possible Value will run." wrapText="true" GridPane.columnSpan="2" GridPane.rowIndex="2" />
       <Label text="Specify possible Values for the Variable. Use right click on VariableSwitchAction to add each possible Value.  Then you can add Actions inside of them." wrapText="true" GridPane.columnSpan="2" GridPane.rowIndex="3" />
       <Label text="Note: cases of letters do not matter." wrapText="true" GridPane.columnSpan="2" GridPane.rowIndex="4" />

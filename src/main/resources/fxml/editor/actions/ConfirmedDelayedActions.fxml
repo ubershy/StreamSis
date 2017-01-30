@@ -36,6 +36,6 @@
    </rowConstraints>
    <children>
       <Label maxHeight="1.7976931348623157E308" text="Delay for contained Actions in milliseconds" />
-      <Pane fx:id="delayFieldContainer" prefWidth="200.0" GridPane.columnIndex="1" />
+      <Pane fx:id="delayFieldContainer" maxWidth="200.0" GridPane.columnIndex="1" />
    </children>
 </GridPane>
