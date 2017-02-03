@@ -141,18 +141,18 @@ public class StreamingProgramManager {
 			connectionMaintainer.maintainConnection();
 		});
 		// If everything went alright, let's save the client type to config.
-		CuteConfig.setString(CuteConfig.CUTE, "StreamingProgramName", type.name());
+		CuteConfig.setString(CuteConfig.NETWORKING, "StreamingProgramName", type.name());
 	}
 	
 	private static ClientType getClientTypeFromConfig() {
-		String name = CuteConfig.getString(CuteConfig.CUTE, "StreamingProgramName");
+		String name = CuteConfig.getString(CuteConfig.NETWORKING, "StreamingProgramName");
 		ClientType clientType;
 		try {
 			clientType = ClientType.valueOf(name);
 		} catch (IllegalArgumentException e) { 
 			// If there's wrong value in config, let's reset it to default.
-			name = CuteConfig.getStringDefault(CuteConfig.CUTE, "StreamingProgramName");
-			CuteConfig.setString(CuteConfig.CUTE, "StreamingProgramName", name);
+			name = CuteConfig.getStringDefault(CuteConfig.NETWORKING, "StreamingProgramName");
+			CuteConfig.setString(CuteConfig.NETWORKING, "StreamingProgramName", name);
 			clientType = ClientType.valueOf(name);
 		}
 		return clientType;
