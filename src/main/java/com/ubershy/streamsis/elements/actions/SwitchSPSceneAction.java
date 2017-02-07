@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.elements.AbstractCuteElement;
-import com.ubershy.streamsis.elements.ElementInfo.ElementHealth;
 import com.ubershy.streamsis.networking.StreamingProgramManager;
 import com.ubershy.streamsis.networking.responses.GetSceneNameResponse;
 import com.ubershy.streamsis.networking.responses.Response;
