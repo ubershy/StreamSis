@@ -361,7 +361,7 @@ public class ElementEditorController implements Initializable {
 		buttonStateManager.reset();
 	}
 
-	private void connectToCuteElement(CuteElement currentElement) {
+	private synchronized void connectToCuteElement(CuteElement currentElement) {
 		if (currentElement == null) {
 			setViewAsNoneSelected();
 			return;
