@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.ubershy.streamsis.elements.checkers;
+package com.ubershy.streamsis.elements.checkers.regional;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,6 +34,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.elements.AbstractCuteElement;
+import com.ubershy.streamsis.elements.checkers.Checker;
+import com.ubershy.streamsis.elements.parts.Coordinates;
 import com.ubershy.streamsis.elements.parts.MultiSourceFileLister;
 
 import javafx.beans.property.BooleanProperty;

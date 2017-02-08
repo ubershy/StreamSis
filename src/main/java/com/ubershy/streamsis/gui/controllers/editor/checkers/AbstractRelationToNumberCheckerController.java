@@ -27,8 +27,8 @@ import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 
 import com.ubershy.streamsis.elements.CuteElement;
-import com.ubershy.streamsis.elements.checkers.RelationToNumberChecker;
-import com.ubershy.streamsis.elements.checkers.AbstractRelationToNumberChecker.BooleanNumberOperator;
+import com.ubershy.streamsis.elements.checkers.numeric.RelationToNumberChecker;
+import com.ubershy.streamsis.elements.checkers.numeric.AbstractRelationToNumberChecker.BooleanNumberOperator;
 import com.ubershy.streamsis.gui.controllers.editor.AbstractCuteController;
 import com.ubershy.streamsis.gui.controllers.editor.CuteElementController;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;

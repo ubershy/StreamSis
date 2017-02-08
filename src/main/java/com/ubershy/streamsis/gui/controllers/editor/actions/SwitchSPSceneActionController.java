@@ -26,7 +26,7 @@ import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 
 import com.ubershy.streamsis.elements.CuteElement;
-import com.ubershy.streamsis.elements.actions.SwitchSPSceneAction;
+import com.ubershy.streamsis.elements.actions.networking.SwitchSPSceneAction;
 import com.ubershy.streamsis.gui.controllers.editor.AbstractCuteController;
 import com.ubershy.streamsis.gui.controllers.editor.CuteElementController;
 import javafx.fxml.FXML;

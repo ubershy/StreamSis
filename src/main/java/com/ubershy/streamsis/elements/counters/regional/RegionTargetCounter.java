@@ -15,9 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.ubershy.streamsis.elements.checkers;
+package com.ubershy.streamsis.elements.counters.regional;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.sikuli.script.FindFailed;
 import org.sikuli.script.Image;
+import org.sikuli.script.Match;
 import org.sikuli.script.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,38 +32,34 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.elements.AbstractCuteElement;
+import com.ubershy.streamsis.elements.counters.Counter;
+import com.ubershy.streamsis.elements.parts.Coordinates;
 
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 /**
- * Region Checker. <br>
- * This {@link Checker} can scan a region(represented by {@link Coordinates}) on the display screen for the presence of the targetPattern image. <br>
- * Returns true on {@link #check()} when the targetPattern image is contained within the region. <br>
- * The region can be bigger than the targetPattern image we search inside it. <br>
- * <p>
- * The tolerance of how different the searched image can look in region is specified by {@link #similarity} parameter from 0 to 1.0, e.g.: <br>
- * "1.0" - exact image. <br>
- * "0.9" - almost exact image. <br>
- * "0.5" - everything that slightly reminds the targetPattern image. <br>
- * "0" - everything.
+ * Region Target Counter. <br>
+ * This {@link Counter} finds and counts how many image instances are located inside the specified
+ * region on the screen. <br>
+ * For example, it can count how many shortcuts the user have on his OS desktop by finding all
+ * instances of shortcut arrow image.
  */
-public class RegionChecker extends AbstractCuteElement implements Checker {
+public class RegionTargetCounter extends AbstractCuteElement implements Counter {
+	// TODO: fix duplicate code shared with RegionChecker.
 
-	static final Logger logger = LoggerFactory.getLogger(RegionChecker.class);
+	static final Logger logger = LoggerFactory.getLogger(RegionTargetCounter.class);
 
 	/** 
-	 * The {@link Coordinates} of region where to search the image. 
+	 * The {@link Coordinates} of region where to search instances of the Target image. 
 	 */
 	@JsonProperty
 	protected Coordinates coords = new Coordinates(0, 0, 100, 100);
 	public Coordinates getCoords() {return coords;}
 	public void setCoords(Coordinates coords) {this.coords = coords;}
-	
+
 	/**
 	 * The similarity. <br>
 	 * A float number from 0 to 1.00 specifying the tolerance of how different the searched image
@@ -72,7 +73,7 @@ public class RegionChecker extends AbstractCuteElement implements Checker {
 	public void setSimilarity(float similarity) {this.similarity.set(similarity);}
 
 	/** 
-	 * The file path of target image which this Checker will try to find on screen.
+	 * The file path of target image which instances this Checker will try to find on screen.
 	 */
 	@JsonProperty
 	protected StringProperty targetImagePath = new SimpleStringProperty("");
@@ -96,14 +97,13 @@ public class RegionChecker extends AbstractCuteElement implements Checker {
 	 * while this user provided very compressed *.jpg image as Target.
 	 */
 	@JsonIgnore
-	public final static ObservableList<String> allowedExtensions = FXCollections
-			.observableArrayList("*.png");
+	public final static List<String> allowedExtensions = Util.singleItemAsList("*.png");
 
-	public RegionChecker() {
+	public RegionTargetCounter() {
 	}
 
 	/**
-	 * Instantiates a new RegionChecker.
+	 * Instantiates a new RegionTargetCounter.
 	 *
 	 * @param coords
 	 *            the {@link Coordinates} of region where to search the image.
@@ -113,25 +113,29 @@ public class RegionChecker extends AbstractCuteElement implements Checker {
 	 *            the image {@link #similarity} from 0 to 1.0
 	 */
 	@JsonCreator
-	public RegionChecker(@JsonProperty("coords") Coordinates coords,
+	public RegionTargetCounter(@JsonProperty("coords") Coordinates coords,
 			@JsonProperty("targetImagePath") String targetImagePath,
 			@JsonProperty("similarity") float similarity) {
-		this.targetImagePath.set(targetImagePath);
 		this.similarity.set(similarity);
+		this.targetImagePath.set(targetImagePath);
 		this.coords = coords;
 	}
 
 	@Override
-	public boolean check() {
-		boolean result = false;
+	public int count() {
+		int result = 0;
 		if (elementInfo.canWork()) {
 			elementInfo.setAsWorking();
-			// TODO: debug mode variable in config
-			// if (Util.debugMode) {
-			// coords.highlightRegion();
-			// }
-			result = (coords.getRegion().exists(targetPattern, 0) != null);
-			elementInfo.setBooleanResult(result);
+			Iterator<Match> matchResult = null;
+			try {
+				matchResult = coords.getRegion().findAll(targetPattern);
+			} catch (FindFailed notImportant) {
+				// Really, it's not that important. =)
+			}
+			if (matchResult != null)
+				for (; matchResult.hasNext(); ++result)
+					matchResult.next();
+			elementInfo.setNumericResult(result);
 		}
 		return result;
 	}
@@ -139,19 +143,13 @@ public class RegionChecker extends AbstractCuteElement implements Checker {
 	@Override
 	public void init() {
 		super.init();
-		targetPattern = null;
 		coords.initRegion(elementInfo);
 		if (elementInfo.isBroken()) {
 			// already broken by coords.initRegion();
 			return;
 		}
-		// Let's not accept zero value even though SikuliX library accepts such values. Why?
-		// 1. It's pointless to find image with zero similarity.
-		// 2. For some reason SikuliX library's Region.exists() method stops working correctly after
-		// the first try to find image with zero similarity.
 		if (similarity.get() > 1 || similarity.get() <= 0) {
-			elementInfo.setAsBroken("Similarity parameter must be from 0 to 1.00");
-			return;
+			elementInfo.setAsBroken("Similarity parameter must be from 0.0 to 1.00");
 		}
 		if (targetImagePath.get().isEmpty()) {
 			elementInfo.setAsBroken("Target image file is not defined");

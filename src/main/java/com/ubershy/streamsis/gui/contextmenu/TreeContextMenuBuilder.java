@@ -21,7 +21,9 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -52,13 +54,17 @@ import javafx.scene.control.TreeItem;
 public class TreeContextMenuBuilder {
 
 	static final Logger logger = LoggerFactory.getLogger(TreeContextMenuBuilder.class);
+	
+	private static final String actionsPackageName = "com.ubershy.streamsis.elements.actions";
+	private static final String checkersPackageName = "com.ubershy.streamsis.elements.checkers";
+	private static final String countersPackageName = "com.ubershy.streamsis.elements.counters";
 
 	private static List<Class<? extends Action>> allAvailableNewActions = getAvailableCuteElements(
-			"com.ubershy.streamsis.elements.actions", Action.class);
+			actionsPackageName, Action.class);
 	private static List<Class<? extends Checker>> allAvailableNewCheckers = getAvailableCuteElements(
-			"com.ubershy.streamsis.elements.checkers", Checker.class);
+			checkersPackageName, Checker.class);
 	private static List<Class<? extends Counter>> allAvailableNewCounters = getAvailableCuteElements(
-			"com.ubershy.streamsis.elements.counters", Counter.class);
+			countersPackageName, Counter.class);
 
 	/**
 	 * Creates the {@link ContextMenu} for the chosen {@link CuteTreeCell}.
@@ -227,18 +233,22 @@ public class TreeContextMenuBuilder {
 		AddableChildrenTypeInfo typeInfo = whereToAdd.getAddableChildrenTypeInfo();
 		Class<? extends CuteElement> type = typeInfo.getType();
 		List<Class<? extends CuteElement>> listWithCuteElementClasses;
+		String typePackage;
 		switch (typeInfo) {
 		case ACTION:
 			listWithCuteElementClasses = new ArrayList<Class<? extends CuteElement>>(
 					allAvailableNewActions);
+			typePackage = actionsPackageName;
 			break;
 		case CHECKER:
 			listWithCuteElementClasses = new ArrayList<Class<? extends CuteElement>>(
 					allAvailableNewCheckers);
+			typePackage = checkersPackageName;
 			break;
 		case COUNTER:
 			listWithCuteElementClasses = new ArrayList<Class<? extends CuteElement>>(
 					allAvailableNewCounters);
+			typePackage = countersPackageName;
 			break;
 		case CONTAINER:
 			// This case is very specific. Handle it in another method.
@@ -250,19 +260,20 @@ public class TreeContextMenuBuilder {
 		}
 		
 		Menu addNewCuteElementMenu = new Menu("Add new " + type.getSimpleName() + "...");
+		Map<String, Menu> subMenuMap = new HashMap<>();
 		
 		for (Class<? extends CuteElement> cuteElementClass : listWithCuteElementClasses) {
 			// TODO: Set good description of CuteElements instead of smile :3
 			CustomMenuItem newCuteElementMenuItem = GUIUtil
 					.createTooltipedMenuItem(cuteElementClass.getSimpleName(), ":3");
+			
+			// Let's create action for menuItem.
 			newCuteElementMenuItem.setOnAction((ActionEvent event) -> {
-				
 				// This list will later help to generate name for the new CuteElement.
 				List<String> existingChildrenNames = new ArrayList<String>();
 				for (CuteElement node : whereToAdd.getChildren()) {
 					existingChildrenNames.add(node.getElementInfo().getName());
 				}
-				
 				CuteElement elemToAdd = null;
 				try {
 					// Instantiate CuteElement
@@ -285,7 +296,24 @@ public class TreeContextMenuBuilder {
 					ProjectManager.initProjectOutsideJavaFXThread();
 				}
 			});
-			addNewCuteElementMenu.getItems().add(newCuteElementMenuItem);
+
+			// Let's put menuItem to the top menu or in submenu.
+			String subPackage = cuteElementClass.getPackage().getName().replace(typePackage, "");
+			if (!subPackage.isEmpty()) { // Means the MenuItem needs to be inside a subMenu.
+				Menu subMenu = subMenuMap.get(subPackage);
+				if (subMenu == null) { // Let's create new subMenu if it wasn't created before.
+					// Let's remove a period and capitalize the first letter for the user view.
+					String subPackageUserFriendly = Character.toUpperCase(subPackage.charAt(1))
+							+ subPackage.substring(2);
+					subMenu = new Menu(subPackageUserFriendly);
+					subMenuMap.put(subPackage, subMenu);
+					// Let's add submenu to the top menu to the top.
+					addNewCuteElementMenu.getItems().add(0, subMenu);
+				}
+				subMenu.getItems().add(newCuteElementMenuItem);
+			} else { // The item needs not to be inside a subMenu, but in the top menu.
+				addNewCuteElementMenu.getItems().add(newCuteElementMenuItem);
+			}
 		}
 		return addNewCuteElementMenu;
 	}

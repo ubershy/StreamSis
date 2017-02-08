@@ -15,12 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.ubershy.streamsis.elements.checkers;
+package com.ubershy.streamsis.elements.checkers.numeric;
 
 import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ubershy.streamsis.elements.checkers.Checker;
 import com.ubershy.streamsis.elements.counters.Counter;
 
 /**

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.ubershy.streamsis.elements.actions;
+package com.ubershy.streamsis.elements.actions.networking;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.elements.AbstractCuteElement;
+import com.ubershy.streamsis.elements.actions.Action;
 import com.ubershy.streamsis.networking.StreamingProgramManager;
 import com.ubershy.streamsis.networking.responses.GetSceneNameResponse;
 import com.ubershy.streamsis.networking.responses.Response;

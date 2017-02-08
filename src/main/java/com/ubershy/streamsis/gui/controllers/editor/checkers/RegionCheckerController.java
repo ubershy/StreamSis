@@ -39,7 +39,7 @@ import com.ubershy.streamsis.SneakyExceptionHandler;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.HotkeyManager.Hotkey;
 import com.ubershy.streamsis.elements.CuteElement;
-import com.ubershy.streamsis.elements.checkers.RegionChecker;
+import com.ubershy.streamsis.elements.checkers.regional.RegionChecker;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.StreamSisAppFactory;
 import com.ubershy.streamsis.gui.StreamSisAppFactory.LittleCuteControllerType;

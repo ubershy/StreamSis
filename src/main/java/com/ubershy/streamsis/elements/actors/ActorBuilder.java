@@ -30,8 +30,8 @@ import com.ubershy.streamsis.elements.actions.FileCopyAction;
 import com.ubershy.streamsis.elements.actions.MultiFileCopyAction;
 import com.ubershy.streamsis.elements.actions.MultiSoundAction;
 import com.ubershy.streamsis.elements.checkers.Checker;
-import com.ubershy.streamsis.elements.checkers.Coordinates;
-import com.ubershy.streamsis.elements.checkers.MultiTargetRegionChecker;
+import com.ubershy.streamsis.elements.checkers.regional.MultiTargetRegionChecker;
+import com.ubershy.streamsis.elements.parts.Coordinates;
 
 /**
  * This class will be probably deleted after {@link StreamSis} will get fully functional GUI.<br>

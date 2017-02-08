@@ -33,7 +33,7 @@ import org.sikuli.util.OverlayCapturePrompt;
 import com.ubershy.streamsis.HotkeyManager;
 import com.ubershy.streamsis.SneakyExceptionHandler;
 import com.ubershy.streamsis.HotkeyManager.Hotkey;
-import com.ubershy.streamsis.elements.checkers.Coordinates;
+import com.ubershy.streamsis.elements.parts.Coordinates;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.controllers.editor.AbstractCuteController;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;

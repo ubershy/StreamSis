@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.ubershy.streamsis.elements.checkers;
+package com.ubershy.streamsis.elements.checkers.numeric;
 
-import com.ubershy.streamsis.elements.checkers.AbstractRelationToNumberChecker.BooleanNumberOperator;
+import com.ubershy.streamsis.elements.checkers.numeric.AbstractRelationToNumberChecker.BooleanNumberOperator;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
