@@ -47,11 +47,17 @@ import javafx.scene.media.MediaPlayer.Status;
  * Sound Action. <br>
  * This {@link Action} plays sound. <br>
  * Supports ".wav", ".mp3" and ".ogg" files <br>
- * TODO: some ".wav" files can't be played as they have different format. Find a solution.
+ * Can't play "*.wav" files in compressed PCM format.
  */
 public class SoundAction extends AbstractCuteElement implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(SoundAction.class);
+	
+	/** The description of this CuteElement type. */
+	public final static String description = SoundAction.class.getSimpleName()
+			+ " on execution plays a specified sound.\n"
+			+ "Note: some *.wav files (with sound encoded in compressed PCM format) can't be"
+			+ " played.";
 
 	/** The acceptable extensions of sound files. */
 	@JsonIgnore

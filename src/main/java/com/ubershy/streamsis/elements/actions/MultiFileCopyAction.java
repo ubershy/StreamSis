@@ -40,6 +40,14 @@ public class MultiFileCopyAction extends FileCopyAction {
 
 	static final Logger logger = LoggerFactory.getLogger(MultiFileCopyAction.class);
 	
+	/** The description of this CuteElement type. */
+	public final static String description = MultiFileCopyAction.class.getSimpleName()
+			+ " on execution copies one of the files from the predefined list of files to the"
+			+ " destination path.\n"
+			+ "If another file already exists on the destination path, it will be overwritten.\n"
+			+ MultiFileCopyAction.class.getSimpleName()
+			+ " chooses a file to copy either randomly or sequentially.";
+	
 	/** The file picker that helps to choose each next source file. */
 	@JsonProperty
 	private MultiSourceFilePicker filePicker = new MultiSourceFilePicker();

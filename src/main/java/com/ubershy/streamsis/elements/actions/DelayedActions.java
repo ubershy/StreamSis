@@ -35,11 +35,17 @@ import javafx.collections.ObservableList;
 
 /**
  * Delayed Actions. <br>
- * This {@link Action} executes a list of {@link Action Actions} after a specified delay in milliseconds.
+ * This {@link Action} executes a list of {@link Action Actions} after a specified delay in
+ * milliseconds.
  */
 public class DelayedActions extends AbstractCuteElement implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(DelayedActions.class);
+	
+	/** The description of this CuteElement type. */
+	public final static String description = DelayedActions.class.getSimpleName()
+			+ " can have other Actions inside.\n"
+			+ "On execution it runs these Actions after a specified delay in milliseconds.";
 
 	/** The list of {@link Action Actions} to execute with delay. */
 	@JsonProperty("actions")

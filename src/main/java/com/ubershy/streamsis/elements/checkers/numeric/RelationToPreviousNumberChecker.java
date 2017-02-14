@@ -38,6 +38,17 @@ import com.ubershy.streamsis.elements.counters.Counter;
 @SuppressWarnings("unchecked")
 public class RelationToPreviousNumberChecker extends AbstractRelationToNumberChecker {
 	
+	/** The description of this CuteElement type. */
+	public final static String description = RelationToConstantNumberChecker.class.getSimpleName()
+			+ " on check it asks the contained inside Counter to count something.\n"
+			+ "Then it compares the count result of the Counter with a previous result of the"
+			+ " Counter.\n"
+			+ "If the count result matches condition specified by user, this "
+			+ RelationToPreviousNumberChecker.class.getSimpleName()
+			+ " returns True. False otherwise.\n" + "If there is no previous result yet, "
+			+ RelationToPreviousNumberChecker.class.getSimpleName()
+			+ " compares the count result of the Counter with a number specified by user.";
+	
 	/**
 	 * The runtime variable for storing previous result. On {@link #init()} it acquires it's initial
 	 * value from {@link #compareNumberProperty()}. After {@link #check()} it has previous Counter's

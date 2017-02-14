@@ -39,6 +39,11 @@ import javafx.beans.property.StringProperty;
 public class FileCopyAction extends AbstractCuteElement implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(FileCopyAction.class);
+	
+	/** The description of this CuteElement type. */
+	public final static String description = FileCopyAction.class.getSimpleName()
+			+ " on execution copies a file from the source path to the destination path.\n"
+			+ "If another file already exists on the destination path, it will be overwritten.";
 
 	/** The Destination file's path. */
 	@JsonIgnore

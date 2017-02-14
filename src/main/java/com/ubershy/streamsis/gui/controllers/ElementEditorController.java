@@ -41,6 +41,10 @@ import com.ubershy.streamsis.gui.controllers.editor.CommonElementFieldsControlle
 import com.ubershy.streamsis.gui.controllers.editor.CuteElementController;
 import com.ubershy.streamsis.gui.helperclasses.CuteButtonsStatesManager;
 import com.ubershy.streamsis.project.StuffSerializator;
+
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+
 import com.ubershy.streamsis.project.ProjectManager;
 
 import javafx.animation.Animation.Status;
@@ -65,9 +69,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
@@ -112,8 +118,14 @@ public class ElementEditorController implements Initializable {
 	@FXML
 	private Label nameLabel;
 
-	@FXML
-	private Label typeLabel;
+    @FXML
+    private Label typeLabel;
+
+    @FXML
+    private Label typeDescriptionLabel;
+
+    @FXML
+    private Text typeDescriptionIcon;
 
 	@FXML
 	private Label statusLabel;
@@ -158,6 +170,10 @@ public class ElementEditorController implements Initializable {
 	private StringProperty awaitingForInputTextProperty = new SimpleStringProperty();
 	
 	private CuteElement elementWorkingCopy = null;
+	
+	private final Color typeDescriptionActiveColor = Color.GREY;
+	
+	private final Color typeDescriptionInactiveColor = Color.GAINSBORO;
 
 	public Node getView() {
 		return root;
@@ -187,6 +203,15 @@ public class ElementEditorController implements Initializable {
         performTestPane.setDetailNode(performTestStatusFakeButton);
 		performTestPane.dividerPositionProperty().set(0.5);
 		performTestPane.showDetailNodeProperty().set(false);
+		
+		// Replace non-awesome description icon with awesome one.
+		FontAwesomeIconView newDescriptionIcon = new FontAwesomeIconView(
+				FontAwesomeIcon.QUESTION_CIRCLE);
+		newDescriptionIcon.setGlyphSize(14);
+		newDescriptionIcon.setFill(typeDescriptionInactiveColor);
+		typeDescriptionLabel.setGraphic(newDescriptionIcon);
+		typeDescriptionIcon = newDescriptionIcon;
+		
 		KeyFrame hideTestResultFrame = new KeyFrame(Duration.seconds(2), event -> {
 			performTestPane.showDetailNodeProperty().set(false);
 		});
@@ -353,6 +378,8 @@ public class ElementEditorController implements Initializable {
 		disconnectFromConnectedCuteElement();
 		nameLabel.setText("-");
 		typeLabel.setText("-");
+		typeDescriptionLabel.setTooltip(null);
+		typeDescriptionIcon.setFill(typeDescriptionInactiveColor);
 		statusLabel.setText("-");
 		statusLabel.setTextFill(Color.BLACK);
 		whyUnhealthyLabel.setText("-");
@@ -367,6 +394,11 @@ public class ElementEditorController implements Initializable {
 			return;
 		}
 		disconnectFromConnectedCuteElement();
+		
+		// Set description of CuteElement type in a tooltip.
+		typeDescriptionLabel.setTooltip(
+				new Tooltip(CuteElement.getDescriptionOfType(currentElement.getClass())));
+		typeDescriptionIcon.setFill(typeDescriptionActiveColor);
 		
 		// propertiesPane can currently show noneSelectedController's view.
 		// If so, let's show commonElementFieldsController instead.

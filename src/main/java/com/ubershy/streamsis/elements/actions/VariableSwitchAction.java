@@ -48,6 +48,11 @@ public class VariableSwitchAction extends AbstractCuteElement implements Action 
 
 	/** The Constant logger. */
 	static final Logger logger = LoggerFactory.getLogger(VariableSwitchAction.class);
+	
+	/** The description of this CuteElement type. */
+	public final static String description = VariableSwitchAction.class.getSimpleName()
+			+ " on execution checks the specified Variable for expected Values and runs the"
+			+ " associated Actions with one of the Values.";
 
 	/**
 	 * List with cases (possible Variable's Values) ({@link CuteElementContainer}) each one

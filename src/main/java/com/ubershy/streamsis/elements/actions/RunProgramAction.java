@@ -45,6 +45,10 @@ public class RunProgramAction extends AbstractCuteElement implements Action {
 
 	/** The Constant logger. */
 	static final Logger logger = LoggerFactory.getLogger(RunProgramAction.class);
+	
+	/** The description of this CuteElement type. */
+	public final static String description = RunProgramAction.class.getSimpleName()
+			+ " on execution runs the specified program or script.";
 
 	/**
 	 * The arguments which will be passed to the program.

@@ -45,6 +45,11 @@ import javafx.collections.ObservableList;
 public class SisScene extends AbstractCuteElement {
 
 	static final Logger logger = LoggerFactory.getLogger(SisScene.class);
+	
+	/** The description of this CuteElement type. */
+	public final static String description = SisScene.class.getSimpleName()
+			+ " is a set of Actors.\nOnly one " + SisScene.class.getSimpleName()
+			+ " can be active at one time.";
 
 	/** The SisScene's list of Actor names */
 	@JsonProperty

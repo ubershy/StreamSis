@@ -37,6 +37,16 @@ import javafx.concurrent.Worker.State;
 
 /** The main implementation of {@link Actor} that is used in {@link StreamSis}. */
 public class UniversalActor extends AbstractActor implements Actor {
+	
+	/** The description of this CuteElement type. */
+	public final static String description = "Actor periodically checks its Checker and executes"
+			+ " its Actions.\n"
+			+ "The \"Check interval\" is in milliseconds and can be set manually.\n"
+			+ "If the Checker returns True, Actor executes its \"On Actions\".\n"
+			+ "If the Checker returns False after returning True, Actor executes its"
+			+ " \"Off Actions\".\n"
+			+ "Actor can be asked to repeat Actions periodically with the specified"
+			+ " \"Repeat interval\" during specific state of check.";
 
 	static final Logger logger = LoggerFactory.getLogger(UniversalActor.class);
 

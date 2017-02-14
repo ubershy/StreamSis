@@ -36,15 +36,23 @@ import javafx.scene.media.MediaPlayer;
  * It can choose a particular sound file either <b>randomly</b> or
  * <b>sequentially</b>. <br>
  * Supports ".wav", ".mp3" and ".ogg" files. <br>
- * TODO: some wav files can't be played as they have different format. Find a solution.
+ * Can't play "*.wav" files with sound encoded in compressed PCM format.
  */
 public class MultiSoundAction extends SoundAction {
+	
+	static final Logger logger = LoggerFactory.getLogger(MultiSoundAction.class);
+	
+	/** The description of this CuteElement type. */
+	public final static String description = MultiSoundAction.class.getSimpleName()
+			+ " on execution plays one of the sounds from the predefined list of sounds.\n"
+			+ MultiSoundAction.class.getSimpleName()
+			+ " chooses a file to play either randomly or sequentially.\n"
+			+ "Note: some *.wav files (with sound encoded in compressed PCM format) can't be"
+			+ " played.";
 
 	/** The file picker that helps to choose each next sound file. */
 	@JsonProperty
 	private MultiSourceFilePicker filePicker = new MultiSourceFilePicker();
-
-	static final Logger logger = LoggerFactory.getLogger(MultiSoundAction.class);
 
 	public MultiSoundAction() {
 		filePicker.setAcceptableExtensions(allowedExtensions);

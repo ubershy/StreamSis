@@ -17,22 +17,52 @@
  */
 package com.ubershy.streamsis.elements;
 
+import java.lang.reflect.Field;
+
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.elements.actions.Action;
 import com.ubershy.streamsis.elements.checkers.Checker;
 import com.ubershy.streamsis.elements.counters.Counter;
 import com.ubershy.streamsis.gui.helperclasses.RecursiveParent;
+import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.ProjectManager;
 
 /**
- * CuteElement is a {@link CuteElement} and {@link RecursiveParent} simultaneously with additional
- * methods useful in Hierarchical structures.
- * <p>
- * Very useful for {@link com.ubershy.streamsis.StreamSis StreamSis} GUI rendering. <br>
+ * CuteElement is a main user-manageable thingy, part of a {@link CuteProject} structure.<br>
+ * It is called "Element" in GUI.
+ * @note Each CuteElement should have a public final static String field named "description".
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public interface CuteElement extends RecursiveParent<CuteElement> {
-	
+
+	/**
+	 * Gets the description of what this CuteElement type is.
+	 *
+	 * @return The description of what this CuteElement type is.
+	 */
+	public static String getDescriptionOfType(Class<? extends CuteElement> clazz) {
+		// TODO: find a solution better than reflection. I feel dirty.
+		Field descriptionField;
+		boolean error = false;
+		String description = null;
+		try {
+			descriptionField = clazz.getField("description");
+			error = descriptionField.getModifiers() != 25; // 25 = "public final static"
+			description = (String) descriptionField.get(null);
+		} catch (IllegalArgumentException | NoSuchFieldException | SecurityException
+				| IllegalAccessException e) {
+			error = true;
+		} finally {
+			if (error) {
+				throw new RuntimeException(
+						"Each CuteElement class must have a public static field named 'description'"
+								+ " of type String. The type '" + clazz.getSimpleName()
+								+ "' don't have it or have it declared wrong.");
+			}
+		}
+		return description;
+	}
+
 	/**
 	 * Gets the {@link ElementInfo}. <br>
 	 * ElementInfo allows to see {@link CuteElement}'s name, state.
@@ -42,8 +72,8 @@ public interface CuteElement extends RecursiveParent<CuteElement> {
 	public ElementInfo getElementInfo();
 
 	/**
-	 * Initializes the {@link CuteElement} so it's ready to work.
-	 * If this CuteElement is a {@link CuteElement}, initializes it's children.
+	 * Initializes the {@link CuteElement} so it's ready to work. If this CuteElement is a
+	 * {@link CuteElement}, initializes it's children.
 	 * <p>
 	 * Optional things it can do: <br>
 	 * 1. Decide if CuteElement is fully functional and not {@link ElementInfo#isBroken() broken}.
@@ -73,14 +103,14 @@ public interface CuteElement extends RecursiveParent<CuteElement> {
 	 * @return the MaxAddableChildrenCount <br>
 	 */
 	public MaxAddableChildrenCount getMaxAddableChildrenCount();
-	
+
 	/**
 	 * Gets this {@link CuteElement}'s {@link MinAddableChildrenCount}.
 	 *
 	 * @return the MinAddableChildrenCount
 	 */
 	public MinAddableChildrenCount getMinAddableChildrenCount();
-	
+
 	/**
 	 * Gets {@link ContainerCreationParams} of this {@link CuteElement} if it can have
 	 * CuteElementContainers as children.
@@ -89,7 +119,7 @@ public interface CuteElement extends RecursiveParent<CuteElement> {
 	 *         null if this CuteElement can't have CuteElementContainers as children.
 	 */
 	public ContainerCreationParams getChildContainerCreationParams();
-	
+
 	/**
 	 * ContainerParams has all information required for creating {@link CuteElementContainer} as
 	 * CuteElement's child by request of the user. This class is only useful when CuteElement can
@@ -105,7 +135,7 @@ public interface CuteElement extends RecursiveParent<CuteElement> {
 		public final String GUIDescription;
 		public final boolean editable;
 		public final boolean emptyNameAllowed;
-		
+
 		public ContainerCreationParams(AddableChildrenTypeInfo childrenType,
 				MaxAddableChildrenCount childrenMaxCount, MinAddableChildrenCount childrenMinCount,
 				boolean editable, boolean emptyNameAllowed, String containerFakeTypeName,
@@ -134,7 +164,7 @@ public interface CuteElement extends RecursiveParent<CuteElement> {
 		/** Means can add infinity children. */
 		INFINITY
 	}
-	
+
 	/**
 	 * MinChildrenCount contains information describing the minimum amount of children this
 	 * {@link CuteElement} needs to have. <br>

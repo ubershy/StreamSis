@@ -39,6 +39,12 @@ import javafx.scene.input.KeyCodeCombination;
 public class OBSHotkeyAction extends HotkeyAction implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(OBSHotkeyAction.class);
+	
+	/** The description of this CuteElement type. */
+	public final static String description = OBSHotkeyAction.class.getSimpleName()
+			+ " on execution simulates pressing keyboard key combination in OS.\n Unlike "
+			+ HotkeyAction.class.getSimpleName()
+			+ ", it is tuned up to work with OBS classic, for example, to switch scenes by hotkey.";
 
 	/**
 	 * Instantiates a new HotkeyAction with stub {@link KeyCodeCombination} inside.

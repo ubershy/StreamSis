@@ -40,6 +40,10 @@ import javafx.collections.ObservableList;
  *      ObservableList.
  */
 public class CuteElementContainer<T extends CuteElement> extends AbstractCuteElement {
+	
+	/** The description of this CuteElement type. */
+	public final static String description = "Container can have other elements inside.\n"
+			+ "The allowed elements are usually restricted to only one type.";
 
 	/** The children with {@link CuteElement}s. */
 	@JsonProperty("children")

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+import com.ubershy.streamsis.elements.CuteElement;
 import com.ubershy.streamsis.elements.SisScene;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
@@ -38,11 +39,14 @@ import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.ListView;
 
 public class SisSceneContextMenuBuilder {
+	
+	private static final String aboutSisScene = "About SisScene:\n"
+			+ CuteElement.getDescriptionOfType(SisScene.class);
 
 	public static ContextMenu createSisSceneListContextMenu() {
 		ContextMenu cm = new ContextMenu();
 		CustomMenuItem addSisSceneMenuItem = GUIUtil.createTooltipedMenuItem("Add new",
-				"Add new SisScene in which you can add Actors later.");
+				"Add new SisScene in which you can add Actors later.\n\n" + aboutSisScene);
 		addSisSceneMenuItem.setOnAction((ActionEvent event) -> {
 			addSisScene();
 		});
@@ -88,7 +92,8 @@ public class SisSceneContextMenuBuilder {
 				"The order of SisScenes doesn't matter."
 				+ "\nBut you can still move them around if you want. ;)");
 		CustomMenuItem addSisSceneMenuItem = GUIUtil.createTooltipedMenuItem(
-				"Add new SisScene to the list", "Add new SisScene to the end of the list.");
+				"Add new SisScene to the list",
+				"Add new SisScene to the end of the list.\n\n" + aboutSisScene);
 		addSisSceneMenuItem.setOnAction((ActionEvent event) -> {
 			addSisScene();
 		});

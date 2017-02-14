@@ -49,6 +49,12 @@ import javafx.beans.property.StringProperty;
  */
 public class RegionTargetCounter extends AbstractCuteElement implements Counter {
 	// TODO: fix duplicate code shared with RegionChecker.
+	
+	/** The description of this CuteElement type. */
+	public final static String description = RegionTargetCounter.class.getSimpleName()
+			+ " on count performs 2D image recognition in the specified region on the screen.\n"
+			+ "Counts appearances of the specified image in this region and returns a number"
+			+ " starting from zero.";
 
 	static final Logger logger = LoggerFactory.getLogger(RegionTargetCounter.class);
 

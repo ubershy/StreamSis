@@ -42,7 +42,7 @@ import javafx.scene.input.KeyCombination.ModifierValue;
 
 /**
  * Hotkey Action. <br>
- * This {@link Action} simulates sending keyboard key combination to OS(current focused element in
+ * This {@link Action} simulates sending keyboard key combination to OS (current focused element in
  * OS), i.e. hotkey. <br>
  * <p>
  * 
@@ -51,6 +51,10 @@ import javafx.scene.input.KeyCombination.ModifierValue;
 public class HotkeyAction extends AbstractCuteElement implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(HotkeyAction.class);
+	
+	/** The description of this CuteElement type. */
+	public final static String description = HotkeyAction.class.getSimpleName()
+			+ " on execution simulates pressing keyboard key combination in OS.";
 
 	/**
 	 * Lets define this {@link KeyCode} as empty main key in {@link KeyCodeCombination}. <br>
@@ -100,6 +104,7 @@ public class HotkeyAction extends AbstractCuteElement implements Action {
 	public HotkeyAction() {
 		shortcutKeyEvent = defineShortcutKeyEvent();
 		keysProperty.set(generateStubKeyCombinationString());
+		getClass().getSimpleName();
 	}
 
 	/**

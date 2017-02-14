@@ -36,6 +36,10 @@ import javafx.beans.property.StringProperty;
 public class VariableSetterAction extends AbstractCuteElement implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(VariableSetterAction.class);
+	
+	/** The description of this CuteElement type. */
+	public final static String description = VariableSetterAction.class.getSimpleName()
+			+ " on execution sets the specified Variable to the specified Value.";
 
 	/** The name of user variable(key) to set value to. */
 	@JsonProperty

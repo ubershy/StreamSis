@@ -40,6 +40,12 @@ import javafx.collections.ObservableList;
 public class ConfirmedDelayedActions extends DelayedActions {
 
 	static final Logger logger = LoggerFactory.getLogger(ConfirmedDelayedActions.class);
+	
+	/** The description of this CuteElement type. */
+	public final static String description = ConfirmedDelayedActions.class.getSimpleName()
+			+ " can have other Actions inside.\n"
+			+ "On execution runs these Actions after a specified delay in milliseconds,\n"
+			+ "but only if the specified additional Checker returns True in that moment.";
 
 	/**
 	 * The list of {@link Checker Checkers} <br>

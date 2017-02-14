@@ -56,6 +56,14 @@ import javafx.beans.property.SimpleObjectProperty;
  * {@link #check()} if <b>at least one</b> of the targets is found within the region. <br>
  */
 public class MultiTargetRegionChecker extends AbstractCuteElement implements Checker {
+	
+	/** The description of this CuteElement type. */
+	public final static String description = MultiTargetRegionChecker.class.getSimpleName()
+			+ " on check performs 2D image recognition in the specified region on the screen.\n"
+			+ "If it's able to recognize the specified image(s) in this region, returns True."
+			+ " False otherwise.\n"
+			+ "The user can choose should it return True only if all images are found or when any"
+			+ " one of the images are found.";
 
 	static final Logger logger = LoggerFactory.getLogger(MultiTargetRegionChecker.class);
 

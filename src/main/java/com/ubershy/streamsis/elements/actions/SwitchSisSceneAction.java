@@ -38,6 +38,10 @@ import com.ubershy.streamsis.project.ProjectManager;
 public class SwitchSisSceneAction extends AbstractCuteElement implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(SwitchSisSceneAction.class);
+	
+	/** The description of this CuteElement type. */
+	public final static String description = SwitchSisSceneAction.class.getSimpleName()
+			+ " on execution makes the specified " + SisScene.class.getSimpleName() + " active.";
 
 	/** The name of SisScene to which to switch. */
 	@JsonProperty

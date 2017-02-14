@@ -37,6 +37,13 @@ import javafx.beans.property.StringProperty;
 public class SwitchSPSceneAction extends AbstractCuteElement implements Action {
 
 	static final Logger logger = LoggerFactory.getLogger(SwitchSPSceneAction.class);
+	
+	/** The description of this CuteElement type. */
+	public final static String description = SwitchSPSceneAction.class.getSimpleName()
+			+ " on execution sets the specified scene as current in the Streaming Program.\n"
+			+ "Note: It requires Streaming Program to be configured to allow it to be controlled"
+			+ " over the network.\n" + "Note: Streaming Program should be set in the StreamSis"
+					+ " Settings.\n";
 
 	/** The name of Streaming Program scene to which to switch. */
 	@JsonProperty

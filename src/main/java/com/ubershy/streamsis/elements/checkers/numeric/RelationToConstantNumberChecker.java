@@ -41,6 +41,15 @@ public class RelationToConstantNumberChecker extends AbstractRelationToNumberChe
 
 	static final Logger logger = LoggerFactory.getLogger(RelationToConstantNumberChecker.class);
 	
+	/** The description of this CuteElement type. */
+	public final static String description = RelationToConstantNumberChecker.class.getSimpleName()
+			+ " on check it asks the contained inside Counter to count something.\n"
+			+ "Then it compares the count result of the Counter with a constant number specified by"
+			+ " user.\n"
+			+ "If the count result matches condition specified by user, this "
+			+ RelationToConstantNumberChecker.class.getSimpleName()
+			+ " returns True. False otherwise.";
+	
 	static {
 		compareNumberDescription = "provided constant number";
 	}

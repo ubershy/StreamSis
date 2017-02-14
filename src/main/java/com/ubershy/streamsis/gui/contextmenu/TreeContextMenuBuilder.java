@@ -263,9 +263,9 @@ public class TreeContextMenuBuilder {
 		Map<String, Menu> subMenuMap = new HashMap<>();
 		
 		for (Class<? extends CuteElement> cuteElementClass : listWithCuteElementClasses) {
-			// TODO: Set good description of CuteElements instead of smile :3
-			CustomMenuItem newCuteElementMenuItem = GUIUtil
-					.createTooltipedMenuItem(cuteElementClass.getSimpleName(), ":3");
+			CustomMenuItem newCuteElementMenuItem = GUIUtil.createTooltipedMenuItem(
+					cuteElementClass.getSimpleName(),
+					CuteElement.getDescriptionOfType(cuteElementClass));
 			
 			// Let's create action for menuItem.
 			newCuteElementMenuItem.setOnAction((ActionEvent event) -> {

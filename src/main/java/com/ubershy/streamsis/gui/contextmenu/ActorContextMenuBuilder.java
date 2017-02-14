@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ubershy.streamsis.elements.CuteElement;
 import com.ubershy.streamsis.elements.ElementInfo;
 import com.ubershy.streamsis.elements.actors.Actor;
 import com.ubershy.streamsis.elements.actors.UniversalActor;
@@ -43,7 +44,8 @@ public final class ActorContextMenuBuilder {
 	public static ContextMenu createCMForStructureViewList(ListView<Actor> listView) {
 		ContextMenu cm = new ContextMenu();
 		CustomMenuItem addActorMenuItem = GUIUtil.createTooltipedMenuItem("Add new",
-				"Create new global Actor and add to currently selected SisScene.");
+				"Create new global Actor and add it to currently selected SisScene.\n" +
+		"Description of Actor:\n" + CuteElement.getDescriptionOfType(UniversalActor.class));
 		Menu addExistingActorMenuItem = generateAddExistingActorMenu();
 		addActorMenuItem.setOnAction((ActionEvent event) -> {
 			String genericName = "New Actor";

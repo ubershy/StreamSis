@@ -38,6 +38,12 @@ import javafx.beans.property.StringProperty;
 public class VariableChecker extends AbstractCuteElement implements Checker {
 
 	static final Logger logger = LoggerFactory.getLogger(VariableChecker.class);
+	
+	/** The description of this CuteElement type. */
+	public final static String description = VariableChecker.class.getSimpleName()
+			+ " on check it checks if the specified Variable has the specified expected Value.\n"
+			+ "If the Variable has such Value, " + VariableChecker.class.getSimpleName()
+			+ " returns True. False otherwise.";
 
 	/** The value to expect under the variable in {@link UserVars}. */
 	@JsonProperty

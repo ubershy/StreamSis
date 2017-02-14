@@ -41,6 +41,11 @@ import javafx.collections.ObservableList;
 public class TrueCheckerCounter extends AbstractCuteElement implements Counter {
 
 	static final Logger logger = LoggerFactory.getLogger(TrueCheckerCounter.class);
+	
+	/** The description of this CuteElement type. */
+	public final static String description = TrueCheckerCounter.class.getSimpleName()
+			+ " on count performs checks on contained inside Checkers. Then it returns a number of"
+			+ " how many of them have returned True result.";
 
 	/** The checkers to {@link Checker#check() check()} and count their true results. */
 	@JsonProperty

@@ -51,6 +51,14 @@ import javafx.collections.ObservableList;
  * @see {@link BooleanOperator#XOR}
  */
 public class LogicalChecker extends AbstractCuteElement implements Checker {
+	
+	/** The description of this CuteElement type. */
+	public final static String description = LogicalChecker.class.getSimpleName()
+			+ " on check it checks the contained inside Checkers.\n"
+			+ "Then it performs a specified logical operation on the results of these Checkers"
+			+ " which transforms either to True or False.\n"
+			+ "This final result is then used as the result of this "
+			+ LogicalChecker.class.getSimpleName() + ".";
 
 	/**
 	 * Enum of boolean operators (logical operations that produce boolean result).

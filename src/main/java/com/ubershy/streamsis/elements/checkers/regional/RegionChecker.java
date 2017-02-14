@@ -52,6 +52,12 @@ import javafx.collections.ObservableList;
 public class RegionChecker extends AbstractCuteElement implements Checker {
 
 	static final Logger logger = LoggerFactory.getLogger(RegionChecker.class);
+	
+	/** The description of this CuteElement type. */
+	public final static String description = RegionChecker.class.getSimpleName()
+			+ " on check performs 2D image recognition in the specified region on the screen.\n"
+			+ "If it's able to recognize the specified image in this region, returns True."
+			+ " False otherwise.";
 
 	/** 
 	 * The {@link Coordinates} of region where to search the image. 
