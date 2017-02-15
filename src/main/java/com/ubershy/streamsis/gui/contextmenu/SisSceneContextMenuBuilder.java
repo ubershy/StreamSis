@@ -92,7 +92,7 @@ public class SisSceneContextMenuBuilder {
 				"The order of SisScenes doesn't matter."
 				+ "\nBut you can still move them around if you want. ;)");
 		CustomMenuItem addSisSceneMenuItem = GUIUtil.createTooltipedMenuItem(
-				"Add new SisScene to the list",
+				"Add new SisScene below",
 				"Add new SisScene to the end of the list.\n\n" + aboutSisScene);
 		addSisSceneMenuItem.setOnAction((ActionEvent event) -> {
 			addSisScene();

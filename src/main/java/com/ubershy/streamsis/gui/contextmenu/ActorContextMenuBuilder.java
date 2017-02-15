@@ -40,26 +40,33 @@ import javafx.scene.control.Menu;
 public final class ActorContextMenuBuilder {
 
 	static final Logger logger = LoggerFactory.getLogger(ActorContextMenuBuilder.class);
+	
+	private static final String aboutActor = "About Actor:\n"
+			+ CuteElement.getDescriptionOfType(UniversalActor.class);
+	
+	private static void addNewActor() {
+		String genericName = "New Actor";
+		String alteredName = genericName;
+		int counter = 0;
+		while (ProjectManager.getProject().getActorByName(alteredName) != null) {
+			counter++;
+			alteredName = String.format("%s(%d)", genericName, counter);
+		}
+		Actor newActor = new UniversalActor(alteredName, 1000, 1000, false, false);
+		ProjectManager.getProject().addActorToGlobalActors(newActor);
+		ProjectManager.getProject().addExistingActorToCurrentSisScene(newActor);
+		// Initialize whole project
+		ProjectManager.initProjectOutsideJavaFXThread();
+	}
 
 	public static ContextMenu createCMForStructureViewList(ListView<Actor> listView) {
 		ContextMenu cm = new ContextMenu();
 		CustomMenuItem addActorMenuItem = GUIUtil.createTooltipedMenuItem("Add new",
-				"Create new global Actor and add it to currently selected SisScene.\n" +
-		"Description of Actor:\n" + CuteElement.getDescriptionOfType(UniversalActor.class));
-		Menu addExistingActorMenuItem = generateAddExistingActorMenu();
+				"Create new global Actor and add it to currently selected SisScene.\n\n"
+						+ aboutActor);
+		Menu addExistingActorMenuItem = generateAddExistingActorMenu(false);
 		addActorMenuItem.setOnAction((ActionEvent event) -> {
-			String genericName = "New Actor";
-			String alteredName = genericName;
-			int counter = 0;
-			while (ProjectManager.getProject().getActorByName(alteredName) != null) {
-				counter++;
-				alteredName = String.format("%s(%d)", genericName, counter);
-			}
-			Actor newActor = new UniversalActor(alteredName, 1000, 1000, false, false);
-			ProjectManager.getProject().addActorToGlobalActors(newActor);
-			ProjectManager.getProject().addExistingActorToCurrentSisScene(newActor);
-			// Initialize whole project
-			ProjectManager.initProjectOutsideJavaFXThread();
+			addNewActor();
 		});
 		cm.getItems().addAll(addActorMenuItem);
 		if (addExistingActorMenuItem.getItems().size() != 0) {
@@ -73,6 +80,10 @@ public final class ActorContextMenuBuilder {
 			PossibleMoves possibleMoves) {
 		CuteProject project = ProjectManager.getProject();
 		ContextMenu cm = new ContextMenu();
+		Menu addExistingActorMenuItem = generateAddExistingActorMenu(true);
+		CustomMenuItem addActorMenuItem = GUIUtil.createTooltipedMenuItem(
+				"Add new Actor below",
+				"Add new Actor to the end of the list.\n\n" + aboutActor);
 		CustomMenuItem deleteActorMenuItem = GUIUtil.createTooltipedMenuItem("Delete from SisScene",
 				"Delete the Actor from the SisScene."
 						+ "\nActor will be still accessible for reuse in other SisScenes.");
@@ -85,6 +96,9 @@ public final class ActorContextMenuBuilder {
 		CustomMenuItem moveDownActorMenuItem = GUIUtil.createTooltipedMenuItem("Move Down",
 				"The order of Actors doesn't matter."
 						+ "\nBut you can still move them around if you want. ;)");
+		addActorMenuItem.setOnAction((ActionEvent event) -> {
+			addNewActor();
+		});
 		deleteActorMenuItem.setOnAction((ActionEvent event) -> {
 			project.removeActorFromCurrentSisScene(actor);
 			// Initialize whole project
@@ -115,13 +129,20 @@ public final class ActorContextMenuBuilder {
 			cm.getItems().add(moveDownActorMenuItem);
 			break;
 		}
-		cm.getItems().addAll(deleteActorGloballyMenuItem, deleteActorMenuItem);
+		cm.getItems().addAll(deleteActorGloballyMenuItem, deleteActorMenuItem, addActorMenuItem,
+				addExistingActorMenuItem);
 		cm.autoHideProperty().set(true);
 		return cm;
 	}
 
-	private static Menu generateAddExistingActorMenu() {
-		Menu addExistingActorMenu = new Menu("Add existing...");
+	private static Menu generateAddExistingActorMenu(boolean onItem) {
+		String menuText;
+		if (onItem) {
+			menuText = "Add existing Actor below...";
+		} else {
+			menuText = "Add existing...";
+		}
+		Menu addExistingActorMenu = new Menu(menuText);
 		ArrayList<Actor> existingActors = new ArrayList<Actor>(
 				ProjectManager.getProject().getGlobalActorsUnmodifiable());
 		ObservableList<Actor> currentActors = ProjectManager.getProject().getCurrentActorsUnmodifiable();
