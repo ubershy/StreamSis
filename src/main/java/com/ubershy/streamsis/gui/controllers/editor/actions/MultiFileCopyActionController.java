@@ -75,6 +75,8 @@ public class MultiFileCopyActionController extends AbstractCuteController
 	public void initialize(URL location, ResourceBundle resources) {
 		MSFCPontroller.replaceFileTypeNameTagInLabeledControls("source");
 		filePickerHBox.getChildren().add(MSFCPontroller.getView());
+		// Set tooltip showing file path.
+		GUIUtil.createAndBindTooltipToTextfield(destinationTextField);
 	}
 	
 	/*

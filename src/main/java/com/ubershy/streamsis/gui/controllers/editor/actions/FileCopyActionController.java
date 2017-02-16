@@ -73,7 +73,9 @@ public class FileCopyActionController extends AbstractCuteController
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		// Do nothing
+		// Set tooltips showing file paths.
+		GUIUtil.createAndBindTooltipToTextfield(sourceTextField);
+		GUIUtil.createAndBindTooltipToTextfield(destinationTextField);
 	}
 
 	/*

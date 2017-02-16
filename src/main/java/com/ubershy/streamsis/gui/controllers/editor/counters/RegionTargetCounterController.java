@@ -178,6 +178,9 @@ public class RegionTargetCounterController extends AbstractCuteController
 				HotkeyManager.setSelectImageRunnable(null);
 			}
 		});
+
+		// Set tooltip showing file path.
+		GUIUtil.createAndBindTooltipToTextfield(targetTextField);
 	}
 
 	/**

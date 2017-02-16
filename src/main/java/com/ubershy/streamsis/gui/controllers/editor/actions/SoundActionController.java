@@ -88,6 +88,8 @@ public class SoundActionController extends AbstractCuteController
 		volumeSlider.valueProperty().addListener((o, oldVal, newVal) -> {
 			soundVolumeLabel.setText(soundVolumeLabelOrigText + newVal.intValue() + "%");
 		});
+		// Set tooltips showing file paths.
+		GUIUtil.createAndBindTooltipToTextfield(soundFileTextField);
 	}
 
 	/*

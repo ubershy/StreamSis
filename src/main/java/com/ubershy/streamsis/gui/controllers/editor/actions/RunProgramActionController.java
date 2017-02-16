@@ -31,6 +31,7 @@ import com.ubershy.streamsis.elements.CuteElement;
 import com.ubershy.streamsis.elements.actions.RunProgramAction;
 import com.ubershy.streamsis.gui.controllers.editor.AbstractCuteController;
 import com.ubershy.streamsis.gui.controllers.editor.CuteElementController;
+import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -79,7 +80,9 @@ public class RunProgramActionController extends AbstractCuteController
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		// Do nothing
+		// Set tooltips showing file paths.
+		GUIUtil.createAndBindTooltipToTextfield(pathTextField);
+		GUIUtil.createAndBindTooltipToTextfield(workingDirTextField);
 	}
 
 	/*

@@ -643,5 +643,18 @@ public final class GUIUtil {
 			colorName = "UnknownColor";
 	    return colorName;
 	}
+
+	/**
+	 * Creates a tooltip for the TextField which is bound to the TextField's text.<br>
+	 * Useful for textfields containing file paths.
+	 * 
+	 * @param textField
+	 *            The TextField for which to create a tooltip.
+	 */
+	public static void createAndBindTooltipToTextfield(TextField textField) {
+		Tooltip filePathTP = new Tooltip();
+		filePathTP.textProperty().bind(textField.textProperty());
+		textField.setTooltip(filePathTP);
+	}
 	
 }

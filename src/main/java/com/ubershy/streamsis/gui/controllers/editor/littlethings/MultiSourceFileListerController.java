@@ -195,6 +195,8 @@ public class MultiSourceFileListerController extends AbstractCuteController {
 			sampleFile.set(newVal);
 		});
 		initializeListeners();
+		// Set tooltips showing file paths.
+		GUIUtil.createAndBindTooltipToTextfield(srcPathTextField);
 	}
 	
 	private void initializeListeners() {
