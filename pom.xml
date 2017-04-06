@@ -7,10 +7,13 @@
 	<packaging>jar</packaging>
 	<name>StreamSis</name>
 	<description>Streamer's little helper</description>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<assembly.dir>${project.build.directory}/appassembler</assembly.dir>
-		<assembly.reponame>repo</assembly.reponame>
+		<assembly.dir>${project.build.directory}/assembled</assembly.dir>
+		<assembly.libdirname>lib</assembly.libdirname>
+		<sisapp.author>Eva Balycheva</sisapp.author>
+		<sisapp.filename>${project.name}</sisapp.filename>
 	</properties>
 
 	<licenses>
@@ -21,6 +24,7 @@
 	</licenses>
 
 	<build>
+		<finalName>${sisapp.filename}</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -43,6 +47,15 @@
 					<excludes>
 						<exclude>logback-test.xml</exclude>
 					</excludes>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>${assembly.libdirname}</classpathPrefix>
+							<mainClass>com.ubershy.streamsis.StreamSis</mainClass>
+							<useUniqueVersions>false</useUniqueVersions>
+						</manifest>
+					</archive>
+					<outputDirectory>${assembly.dir}</outputDirectory>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -84,7 +97,7 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${assembly.dir}/repo/third-party-licenses</outputDirectory>
+							<outputDirectory>${assembly.dir}/${assembly.libdirname}/third-party-licenses</outputDirectory>
 							<resources>
 								<resource>
 									<directory>src/main/resources/third-party-licenses</directory>
@@ -116,23 +129,30 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>appassembler-maven-plugin</artifactId>
-				<version>2.0.0</version>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.0.0</version>
 				<configuration>
-					<assembleDirectory>${assembly.dir}</assembleDirectory>
-					<repositoryName>${assembly.reponame}</repositoryName>
-					<programs>
-						<program>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>${assembly.libdirname}</classpathPrefix>
 							<mainClass>com.ubershy.streamsis.StreamSis</mainClass>
-							<name>StreamSis</name>
-						</program>
-					</programs>
-					<platforms>
-						<platform>windows</platform>
-						<platform>unix</platform>
-					</platforms>
+							<useUniqueVersions>false</useUniqueVersions>
+						</manifest>
+					</archive>
+					<descriptorRefs>
+						<descriptorRef>bin</descriptorRef>
+					</descriptorRefs>
 				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -140,16 +160,71 @@
 				<version>2.10</version>
 				<executions>
 					<execution>
+						<id>copy-dependencies-to-lib-subdir</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${assembly.dir}/${assembly.libdirname}</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
 						<id>include-lgpl-libs-sources-in-assembly</id>
 						<phase>package</phase>
 						<goals>
 							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-						  <classifier>sources</classifier>
-						  <failOnMissingClassifierArtifact>true</failOnMissingClassifierArtifact>
-						  <outputDirectory>${assembly.dir}/${assembly.reponame}/lgpl_sources</outputDirectory>
-						  <includeArtifactIds>logback-classic,logback-core,jnativehook,annotations</includeArtifactIds>
+							<classifier>sources</classifier>
+							<failOnMissingClassifierArtifact>true</failOnMissingClassifierArtifact>
+							<outputDirectory>${assembly.dir}/${assembly.libdirname}/lgpl_sources</outputDirectory>
+							<includeArtifactIds>logback-classic,logback-core,jnativehook,annotations</includeArtifactIds>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.akathist.maven.plugins.launch4j</groupId>
+				<artifactId>launch4j-maven-plugin</artifactId>
+				<version>1.7.16</version>
+				<executions>
+					<execution>
+						<id>generate-exe</id>
+						<phase>package</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<errTitle>${project.name}</errTitle>
+							<dontWrapJar>true</dontWrapJar>
+							<classPath>
+								<mainClass>com.ubershy.streamsis.StreamSis</mainClass>
+							</classPath>
+							<headerType>gui</headerType>
+							<jre>
+								<bundledJre64Bit>false</bundledJre64Bit>
+								<bundledJreAsFallback>false</bundledJreAsFallback>
+								<jdkPreference>preferJre</jdkPreference>
+								<minVersion>1.8.0</minVersion>
+								<runtimeBits>64/32</runtimeBits>
+							</jre>
+							<versionInfo>
+								<copyright>${sisapp.author}</copyright>
+								<productName>${project.name}</productName>
+								<internalName>${project.name}</internalName>
+								<productVersion>1.0.0.0</productVersion>
+								<fileVersion>1.0.0.0</fileVersion>
+								<txtProductVersion>${project.version}</txtProductVersion>
+								<txtFileVersion>${project.version}</txtFileVersion>
+								<fileDescription>${project.name}</fileDescription>
+								<originalFilename>${sisapp.filename}.exe</originalFilename>
+							</versionInfo>
+							<jar>${sisapp.filename}.jar</jar>
+							<outfile>${assembly.dir}/${sisapp.filename}.exe</outfile>
+							<singleInstance>
+								<mutexName>${project.name}</mutexName>
+							</singleInstance>
 						</configuration>
 					</execution>
 				</executions>
@@ -158,9 +233,9 @@
 	</build>
 
 	<dependencies>
-	<!-- After adding or deleting dependency do not forget to update "THIRD-PARTY-LICENSES.txt" 
-		file. Note that dependencies can have dependencies. The profile "generate-third-party-licenses" 
-		can help you to find them and their licenses. -->
+		<!-- After adding or deleting dependency do not forget to update "THIRD-PARTY-LICENSES.txt" 
+			file. Note that dependencies can have dependencies. The profile "generate-third-party-licenses" 
+			can help you to figure out which licenses should be listed there. -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -263,15 +338,17 @@
 			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 		</repository>
 	</repositories>
-	
+
 	<profiles>
 		<profile>
-			<!-- You can run this profile after adding or deleting a dependency, the generated file
-			"target\generated-sources\THIRD-PARTY.txt" can be used as reference when manually
-			editing "src\main\resources\THIRD-PARTY-LICENSES.txt" file.
-			To run this profile use the command:
-			mvn generate-resources -Pgenerate-third-party-licenses 
-			-->
+			<!-- You can run this profile after adding or deleting a dependency, the 
+				generated file "target\generated-sources\THIRD-PARTY.txt" can be used as 
+				reference for comparison with the previous version when manually editing 
+				"src\main\resources\THIRD-PARTY-LICENSES.txt" file. To run this profile use 
+				the command: "mvn generate-resources -Pgenerate-third-party-licenses".
+				NOTE: some dependencies have their full licenses (including copyright and year) 
+				only on their official sites. For example, "controlsfx" dependency with it's 
+				New BSD license. -->
 			<id>generate-third-party-licenses</id>
 			<build>
 				<plugins>
@@ -280,7 +357,7 @@
 						<artifactId>license-maven-plugin</artifactId>
 						<version>1.10</version>
 						<configuration>
-							<useMissingFile>true</useMissingFile>
+							<useMissingFile>false</useMissingFile>
 						</configuration>
 						<executions>
 							<execution>
