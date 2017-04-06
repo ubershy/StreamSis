@@ -8,6 +8,19 @@
 	<name>StreamSis</name>
 	<description>Streamer's little helper</description>
 
+	<developers>
+		<developer>
+			<id>ubershy</id>
+			<name>Eva Balycheva</name>
+			<email>ubershy@gmail.com</email>
+			<roles>
+				<role>Original Author</role>
+				<role>Developer</role>
+				<role>Multi-trick Pony</role>
+			</roles>
+		</developer>
+	</developers>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<assembly.dir>${project.build.directory}/assembled</assembly.dir>
