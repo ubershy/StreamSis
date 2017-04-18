@@ -21,9 +21,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.ubershy.streamsis.CuteConfig;
+import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 
-import javafx.beans.InvalidationListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -128,13 +128,7 @@ public class MainController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		root.sceneProperty().addListener((InvalidationListener) o -> {
-			if (root.getScene() != null) {
-				String url = MainController.class.getResource("/css/streamsis.css")
-						.toExternalForm();
-				root.getScene().getStylesheets().add(url);
-			}
-		});
+		GUIManager.manageWindowStyleOfRootNode(root);
 	}
 
 	/**

@@ -27,7 +27,6 @@ import com.ubershy.streamsis.gui.cells.ActorCell.ActorCellType;
 import com.ubershy.streamsis.project.CuteProject;
 
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -54,14 +53,7 @@ public class AllActorsController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		root.sceneProperty().addListener((InvalidationListener) o -> {
-			if (root.getScene() != null) {
-				// Set scene style.
-				String url = AllActorsController.class.getResource("/css/streamsis.css")
-						.toExternalForm();
-				root.getScene().getStylesheets().add(url);
-			}
-		});
+		GUIManager.manageWindowStyleOfRootNode(root);
 		AllActorsList.setCellFactory(view -> new ActorCell(ActorCellType.ALLACTORSVIEWCELL));
 	}
 	

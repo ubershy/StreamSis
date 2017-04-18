@@ -603,10 +603,12 @@ public final class GUIUtil {
     	AboutController aController = StreamSisAppFactory.buildAboutController();
     	Stage aboutStage = new Stage();
     	Scene aboutScene = new Scene(aController.getView());
-    	aboutStage.setMinWidth(400);
-    	aboutStage.setMinHeight(300);
-    	aboutStage.setWidth(540);
-    	aboutStage.setHeight(640);
+    	double width = 640.0;
+    	double height = 430.0;
+    	aboutStage.setMinWidth(width);
+    	aboutStage.setMinHeight(height);
+    	aboutStage.setWidth(width);
+    	aboutStage.setHeight(height);
     	aboutStage.setScene(aboutScene);
     	aboutStage.initOwner(GUIManager.getPrimaryStage());
     	aboutStage.initModality(Modality.APPLICATION_MODAL);

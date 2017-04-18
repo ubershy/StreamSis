@@ -235,6 +235,7 @@
 							</versionInfo>
 							<jar>${sisapp.filename}.jar</jar>
 							<outfile>${assembly.dir}/${sisapp.filename}.exe</outfile>
+							<icon>src/main/resources/images/icon/icon.ico</icon>
 							<singleInstance>
 								<mutexName>${project.name}</mutexName>
 							</singleInstance>

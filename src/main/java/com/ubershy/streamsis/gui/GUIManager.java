@@ -38,11 +38,13 @@ import com.ubershy.streamsis.gui.helperclasses.WindowCoordinatesManager;
 import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.ProjectManager;
 
+import javafx.beans.InvalidationListener;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
@@ -247,6 +249,32 @@ public final class GUIManager {
 		}
 		// Save coordinates of other windows.
 		WindowCoordinatesManager.saveCoordinatesOfAllManagedWindows();
+	}
+	
+	/**
+	 * Maintains default Window style including stage icon for the specified root {@link Node}.
+	 * 
+	 * @param root
+	 *            The root Node which Window and Stage should be styled.
+	 */
+	public static void manageWindowStyleOfRootNode(Node root) {
+		root.sceneProperty().addListener((InvalidationListener) o -> {
+			Scene scene = root.getScene();
+			if (scene != null) {
+				// Apply CSS.
+				String url = MainController.class.getResource("/css/streamsis.css")
+						.toExternalForm();
+				scene.getStylesheets().add(url);
+				// Set window icon.
+				scene.windowProperty().addListener((InvalidationListener) wo -> {
+					Stage stage = (Stage) scene.getWindow();
+					if (stage != null) {
+						stage.getIcons()
+								.add(new Image("images/icon/icon_big.png", 0.0, 0.0, true, false));
+					}
+				});
+			}
+		});
 	}
 
 }

@@ -28,7 +28,6 @@ import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 import com.ubershy.streamsis.project.CuteProject;
 
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
@@ -112,14 +111,7 @@ public class AllVariablesController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		// Set style.
-		root.sceneProperty().addListener((InvalidationListener) o -> {
-			if (root.getScene() != null) {
-				// Set scene style.
-				String url = AllVariablesController.class.getResource("/css/streamsis.css")
-						.toExternalForm();
-				root.getScene().getStylesheets().add(url);
-			}
-		});
+		GUIManager.manageWindowStyleOfRootNode(root);
 		// Set readOnlyCurrentVarsList to UserVars entry set.
 		readOnlyCurrentVarsList.setAll(UserVars.getUserVarsMap().entrySet());
 		// Subscribe to UserVars changes.

@@ -21,6 +21,7 @@
 -->
 
 <?import javafx.geometry.Insets?>
+<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -32,88 +33,109 @@
 <?import javafx.scene.effect.Light.Distant?>
 <?import javafx.scene.effect.Lighting?>
 <?import javafx.scene.effect.Shadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="root" cache="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ubershy.streamsis.gui.controllers.AboutController">
+<HBox fx:id="root" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ubershy.streamsis.gui.controllers.AboutController">
    <children>
-      <VBox alignment="CENTER">
+      <BorderPane>
+         <center>
+            <ImageView fx:id="iconImageView" fitHeight="128.0" fitWidth="128.0" pickOnBounds="true" preserveRatio="true" smooth="false" style="-fx-effect: ;" BorderPane.alignment="TOP_CENTER">
+               <image>
+                  <Image url="@../images/icon/icon_big.png" />
+               </image>
+               <viewport>
+                  <Rectangle2D />
+               </viewport>
+               <BorderPane.margin>
+                  <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+               </BorderPane.margin>
+               <effect>
+                  <DropShadow height="7.0" radius="3.0" spread="0.5" width="7.0" />
+               </effect>
+            </ImageView>
+         </center>
+      </BorderPane>
+      <Separator orientation="VERTICAL" prefHeight="200.0" />
+      <VBox cache="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="5.0" HBox.hgrow="ALWAYS">
          <children>
-            <HBox alignment="BASELINE_CENTER" layoutX="10.0" layoutY="10.0" spacing="5.0">
+            <VBox alignment="CENTER">
                <children>
-                  <Label fx:id="applicationNameLabel" alignment="CENTER" cache="true" contentDisplay="CENTER" text="StreamSis" HBox.hgrow="ALWAYS">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                     <effect>
-                        <Lighting diffuseConstant="0.99" specularConstant="0.6" specularExponent="1.39" surfaceScale="10.0">
-                           <bumpInput>
-                              <Shadow />
-                           </bumpInput>
-                           <light>
-                              <Light.Distant azimuth="65.93" color="#5abaff" elevation="166.4" />
-                           </light>
-                        </Lighting>
-                     </effect>
-                  </Label>
-                  <Label fx:id="versionLabel" alignment="CENTER" cache="true" contentDisplay="CENTER" text="version" HBox.hgrow="ALWAYS">
-                     <font>
-                        <Font size="10.0" />
-                     </font>
-                     <effect>
-                        <DropShadow color="#0000001a" height="5.0" radius="2.0" spread="0.6" width="5.0" />
-                     </effect></Label>
+                  <HBox alignment="BASELINE_CENTER" layoutX="10.0" layoutY="10.0" spacing="5.0">
+                     <children>
+                        <Label fx:id="applicationNameLabel" alignment="CENTER" cache="true" contentDisplay="CENTER" text="StreamSis" HBox.hgrow="ALWAYS">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <effect>
+                              <Lighting diffuseConstant="0.99" specularConstant="0.6" specularExponent="1.39" surfaceScale="10.0">
+                                 <bumpInput>
+                                    <Shadow />
+                                 </bumpInput>
+                                 <light>
+                                    <Light.Distant azimuth="65.93" color="#5abaff" elevation="166.4" />
+                                 </light>
+                              </Lighting>
+                           </effect>
+                        </Label>
+                        <Label fx:id="versionLabel" alignment="CENTER" cache="true" contentDisplay="CENTER" text="version" HBox.hgrow="ALWAYS">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                           <effect>
+                              <DropShadow color="#0000001a" height="5.0" radius="2.0" spread="0.6" width="5.0" />
+                           </effect>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <Label text="Copyright © 2015-2017 Eva Balycheva and" />
+                        <Hyperlink focusTraversable="false" onAction="#openContributorsPage" text="Dear Contributors" />
+                     </children>
+                  </HBox>
                </children>
-            </HBox>
-            <HBox alignment="CENTER">
-               <children>
-                  <Label text="Copyright © 2015-2016 Eva Balycheva and" />
-                  <Hyperlink focusTraversable="false" onAction="#openContributorsPage" text="Dear Contributors" />
-               </children>
-            </HBox>
+            </VBox>
+            <Separator prefWidth="200.0" />
+            <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+              <tabs>
+                <Tab closable="false" text="StreamSis License">
+                  <content>
+                        <ScrollPane fitToHeight="true" fitToWidth="true">
+                           <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <TextArea fx:id="mainLicenseTextArea" editable="false" text="Main license" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </ScrollPane>
+                  </content>
+                </Tab>
+                <Tab closable="false" text="Third-party Libs Licenses">
+                  <content>
+                        <ScrollPane fitToHeight="true" fitToWidth="true">
+                           <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <TextArea fx:id="thirdPartyLicensesTextArea" editable="false" text="Third party licenses" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </ScrollPane>
+                  </content>
+                </Tab>
+              </tabs>
+            </TabPane>
          </children>
+         <padding>
+            <Insets bottom="12.0" left="4.0" right="12.0" top="12.0" />
+         </padding>
       </VBox>
-      <Separator prefWidth="200.0" />
-      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="One day there will be a beautiful logo" textAlignment="CENTER" wrapText="true">
-         <effect>
-            <DropShadow color="#00000026" height="5.0" radius="2.0" width="5.0" />
-         </effect>
-      </Label>
-      <Separator prefWidth="200.0" />
-      <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
-        <tabs>
-          <Tab closable="false" text="StreamSis License">
-            <content>
-                  <ScrollPane fitToHeight="true" fitToWidth="true">
-                     <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                              <TextArea fx:id="mainLicenseTextArea" editable="false" text="Main license" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                           </children>
-                        </AnchorPane>
-                     </content>
-                  </ScrollPane>
-            </content>
-          </Tab>
-          <Tab closable="false" text="Third-party Libs Licenses">
-            <content>
-                  <ScrollPane fitToHeight="true" fitToWidth="true">
-                     <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                              <TextArea fx:id="thirdPartyLicensesTextArea" editable="false" text="Third party licenses" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                           </children>
-                        </AnchorPane>
-                     </content>
-                  </ScrollPane>
-            </content>
-          </Tab>
-        </tabs>
-      </TabPane>
    </children>
-   <padding>
-      <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
-   </padding>
-</VBox>
+</HBox>

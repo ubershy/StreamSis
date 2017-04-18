@@ -22,22 +22,26 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import com.ubershy.streamsis.LowLevel;
 import com.ubershy.streamsis.Util;
+import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 
-import javafx.beans.InvalidationListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 
 /**
  * The controller for the view inside "About" window.
  */
 public class AboutController implements Initializable {
-	@FXML
-    private VBox root;
+    @FXML
+    private HBox root;
+    @FXML
+    private ImageView iconImageView;
     @FXML
     private Label applicationNameLabel;
     @FXML
@@ -46,26 +50,42 @@ public class AboutController implements Initializable {
     private TextArea mainLicenseTextArea;
     @FXML
     private TextArea thirdPartyLicensesTextArea;
+    
+	private Image iconEyesClosed = new Image(
+			getClass().getResource("/images/icon/icon_big.png").toExternalForm());
 
-	public VBox getView() {
+	private Image iconEyesOpen = new Image(
+			getClass().getResource("/images/icon/icon_big_eyes_open.png").toExternalForm());
+
+	public HBox getView() {
 		return root;
 	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		root.sceneProperty().addListener((InvalidationListener) o -> {
-			if (root.getScene() != null) {
-				String url = MainController.class.getResource("/css/streamsis.css")
-						.toExternalForm();
-				root.getScene().getStylesheets().add(url);
-			}
-		});
+		GUIManager.manageWindowStyleOfRootNode(root);
 		applicationNameLabel.setText(LowLevel.getApplicationName());
 		versionLabel.setText(LowLevel.getApplicationVersion());
 		setFileTextForTextArea(mainLicenseTextArea, "/LICENSE.txt");
 		setFileTextForTextArea(thirdPartyLicensesTextArea, "/THIRD-PARTY-LICENSES.txt");
+		iconImageView.setOnMousePressed((e) -> {
+			toggleEyes();
+		});
 	}
 	
+	/**
+	 * Closes or opens girl's eyes.
+	 */
+	private void toggleEyes() {
+		Image toSet;
+		if (iconEyesClosed.equals(iconImageView.getImage())) {
+			toSet = iconEyesOpen;
+		} else {
+			toSet = iconEyesClosed;
+		}
+		iconImageView.setImage(toSet);
+	}
+
 	private void setFileTextForTextArea(TextArea textArea, String path) {
 		try {
 			String text = Util.readTextFromResourceFile(path);
