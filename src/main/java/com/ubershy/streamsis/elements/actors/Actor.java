@@ -113,7 +113,15 @@ public interface Actor extends CuteElement {
 	 * @return the check interval in milliseconds
 	 */
 	public int getCheckInterval();
-	
+
+	/**
+	 * Gets the duration of time in milliseconds the Actor should sleep after the first successful
+	 * check in a row.
+	 *
+	 * @return the duration in milliseconds
+	 */
+	public int getSleepOnSuccessDuration();
+
 	/**
 	 * Sets the Actor's check interval. <br>
 	 * It's the interval of time in milliseconds between Actor's checks.
@@ -167,6 +175,15 @@ public interface Actor extends CuteElement {
 	 *            The interval in milliseconds to use for repeating Actions.
 	 */
 	public void setRepeatInterval(int interval);
+	
+	/**
+	 * Sets the duration of time in milliseconds the Actor should sleep after the first successful
+	 * check in a row.
+	 * 
+	 * @param duration
+	 *            The duration of sleep in milliseconds.
+	 */
+	public void setSleepOnSuccessDuration(int duration);
 
 	/**
 	 * Tells if Actor will repeat executing "Off" Actions when it's switched off.
@@ -210,6 +227,14 @@ public interface Actor extends CuteElement {
 	 * @return the integer repeat interval property
 	 */
 	public IntegerProperty repeatIntervalProperty();
+
+	/**
+	 * Gets the duration of time in milliseconds the Actor should sleep after the first successful
+	 * check in a row.
+	 * 
+	 * @return the integer sleep on success property
+	 */
+	public IntegerProperty sleepOnSuccessDurationProperty();
 
 	/**
 	 * Sets the Actor's {@link Checker}.

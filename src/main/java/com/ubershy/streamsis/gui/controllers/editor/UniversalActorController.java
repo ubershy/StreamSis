@@ -54,6 +54,10 @@ public class UniversalActorController extends AbstractCuteController
 	@FXML
 	private Pane repeatIntervalFieldContainer;
 
+	/** The container for {@link #sleepOnSuccessIntegerTextField}. */
+    @FXML
+    private Pane sleepOnSuccessFieldContainer;
+
 	/** The CheckBox for {@link Actor#doOnRepeatProperty()}. */
 	@FXML
 	private CheckBox repeatOnActionsCheckBox;
@@ -67,6 +71,9 @@ public class UniversalActorController extends AbstractCuteController
 
 	/** The IntegerTextField for editing {@link Actor#repeatIntervalProperty()}. */
 	private IntegerTextField repeatIntervalIntegerTextField = new IntegerTextField(10000000, true);
+	
+	/** The IntegerTextField for editing {@link Actor#sleepOnSuccessDurationProperty()}. */
+	private IntegerTextField sleepOnSuccessIntegerTextField = new IntegerTextField(10000000, true);
 
 	/** The {@link Actor} to edit. */
 	private Actor actor;
@@ -86,6 +93,7 @@ public class UniversalActorController extends AbstractCuteController
 				.selectedProperty().or(repeatOnActionsCheckBox.selectedProperty())).not());
 		checkIntervalFieldContainer.getChildren().add(checkIntervalIntegerTextField);
 		repeatIntervalFieldContainer.getChildren().add(repeatIntervalIntegerTextField);
+		sleepOnSuccessFieldContainer.getChildren().add(sleepOnSuccessIntegerTextField);
 	}
 
 	/*
@@ -106,6 +114,8 @@ public class UniversalActorController extends AbstractCuteController
 		// Bind to the new Actor.
 		bindBidirectionalAndRemember(checkIntervalIntegerTextField.numberProperty(),
 				actor.checkIntervalProperty());
+		bindBidirectionalAndRemember(sleepOnSuccessIntegerTextField.numberProperty(),
+				actor.sleepOnSuccessDurationProperty());
 		bindBidirectionalAndRemember(repeatIntervalIntegerTextField.numberProperty(),
 				actor.repeatIntervalProperty());
 		bindBidirectionalAndRemember(repeatOnActionsCheckBox.selectedProperty(),
@@ -146,6 +156,24 @@ public class UniversalActorController extends AbstractCuteController
 					finalResult);
 			return finalResult;
 		};
+		Validator<String> sleepOnSuccessFieldValidator = (c, newValue) -> {
+			IntegerTextField tf = (IntegerTextField) c;
+			int number = tf.numberProperty().get();
+			ValidationResult emptyResult = ValidationResult.fromErrorIf(c,
+					"This field can't be empty.", newValue.isEmpty());
+			ValidationResult justMinusResult = ValidationResult.fromErrorIf(c,
+					"Oh, come on, you can't input just minus!", newValue.equals("-"));
+			ValidationResult tooSmallResult = ValidationResult.fromErrorIf(c,
+					"The number can't be smaller than " + 0 + ".",
+					number < 0);
+			ValidationResult finalResult = ValidationResult.fromResults(emptyResult,
+					tooSmallResult, justMinusResult);
+			buttonStateManager.reportNewValueOfControl(origActor.getSleepOnSuccessDuration(),
+					number, c, finalResult);
+			return finalResult;
+		};
+		this.validationSupport.registerValidator(sleepOnSuccessIntegerTextField,
+				sleepOnSuccessFieldValidator);
 		this.validationSupport.registerValidator(repeatOnActionsCheckBox,
 				RepeanOnActionsCheckBoxValidator);
 		this.validationSupport.registerValidator(repeatOffActionsCheckBox,
@@ -205,5 +233,5 @@ public class UniversalActorController extends AbstractCuteController
 		};
 		return intervalFieldValidator;
 	}
-
+	
 }

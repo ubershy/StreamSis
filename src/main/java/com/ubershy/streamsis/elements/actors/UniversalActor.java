@@ -155,13 +155,22 @@ public class UniversalActor extends AbstractActor implements Actor {
 			logger.info(elementInfo.getName() + ": Target aquired!");
 			runEnable();
 			isSwitchOn.set(true);
+			if (getSleepOnSuccessDuration() > 0) {
+				logger.info("Sleeping after success check result for " + getSleepOnSuccessDuration()
+						+ " milliseconds.");
+				try {
+					Thread.sleep(getSleepOnSuccessDuration());
+				} catch (InterruptedException e) {
+					logger.debug("Sleep after success check result was interrupted.");
+				}
+			}
 		} else if (isSwitchOn.get() && !state) {
 			logger.info(elementInfo.getName() + ": Target lost!");
 			runDisable();
 			isSwitchOn.set(false);
 		}
 	}
-
+	
 	@Override
 	public void init() {
 		initWithoutChildrenStuff();
@@ -177,7 +186,10 @@ public class UniversalActor extends AbstractActor implements Actor {
 			elementInfo.setAsBroken("Actor repeat interval must not be less than "
 					+ ConstsAndVars.minimumCheckInterval + " ms");
 		}
-		if (checkers.isEmpty()) {
+		if (sleepOnSuccessDuration.get() < 0) {
+			elementInfo.setAsBroken("Actor sleep duration must not be less than 0 ms");
+		}
+		if (checkers.isEmpty()) {		
 			elementInfo.setAsBroken("You must assign a Checker to Actor before it can work");
 		} else {
 			checkers.get(0).init();

@@ -95,6 +95,14 @@ public abstract class AbstractActor extends AbstractCuteElement implements Actor
 	 */
 	@JsonIgnore
 	protected IntegerProperty repeatInterval = new SimpleIntegerProperty();
+	
+	/**
+	 * The duration of time in milliseconds the Actor should sleep after the first successful check
+	 * in a row. <br>
+	 * Defined by the user.
+	 */
+	@JsonIgnore
+	protected IntegerProperty sleepOnSuccessDuration = new SimpleIntegerProperty();
 
 	/**
 	 * The Actor's CheckService. <br>
@@ -170,6 +178,23 @@ public abstract class AbstractActor extends AbstractCuteElement implements Actor
 	@Override
 	public IntegerProperty checkIntervalProperty() {
 		return checkInterval;
+	}
+	
+	@Override
+	@JsonProperty("sleepOnSuccessDuration")
+	public int getSleepOnSuccessDuration() {
+		return sleepOnSuccessDuration.get();
+	}
+	
+	@Override
+	@JsonProperty("sleepOnSuccessDuration")
+	public void setSleepOnSuccessDuration(int interval) {
+		sleepOnSuccessDuration.set(interval);
+	}
+
+	@Override
+	public IntegerProperty sleepOnSuccessDurationProperty() {
+		return sleepOnSuccessDuration;
 	}
 
 	@Override
