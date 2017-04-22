@@ -192,7 +192,7 @@ public class ElementEditorController implements Initializable {
 		tPaneDotsAnima = new ThreeDotsAnimation("Editing", '.', root.textProperty(), 1, 1000,
 				Timeline.INDEFINITE);
 		buttonsBeforeInitDotsAnima = new ThreeDotsAnimation("", '❤', awaitingForInputTextProperty,
-				1, 500, 1);
+				1, 300, 1);
 		performTestButton.setOnAction(this::hitPerformTestButton);
 		performTestButton.wrapTextProperty().set(true);
 		performTestButton.setTextAlignment(TextAlignment.CENTER);
