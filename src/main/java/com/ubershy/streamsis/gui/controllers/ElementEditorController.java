@@ -633,9 +633,11 @@ public class ElementEditorController implements Initializable {
 	}
 	
 	public void setCurrentElement(CuteElement element) {
-		currentElement.set(element);
-		if (root.isExpanded()) {
-			connectToCuteElement(element);
+		if (element != currentElement.get()) {
+			currentElement.set(element);
+			if (root.isExpanded()) {
+				connectToCuteElement(element);
+			}
 		}
 	}
 	
