@@ -183,7 +183,6 @@ public class ElementEditorController implements Initializable {
 	public void initialize(URL url, ResourceBundle resourceBundle) {
 		commonElementFieldsController = (CommonElementFieldsController) StreamSisAppFactory
 				.buildControllerByRelativePath("editor/CommonElementFields.fxml");
-		commonElementFieldsController.setCuteButtonsStatesManager(buttonStateManager);
 		propertiesPane.setContent(noneSelectedController.getView());
 		hsShadowAnima = new HorizontalShadowAnimation(statusLabel);
 		nameShadowAnima = new HorizontalShadowAnimation(nameLabel);
@@ -217,19 +216,18 @@ public class ElementEditorController implements Initializable {
 		});
 		hideTestResultAnimation.getKeyFrames().add(hideTestResultFrame);
         buttonsGridPane.add(performTestPane, 0, 3);
-		initializeAllListeners();
-		bindButtons();
+		initializeListeners();
+		recreateButtonStateManager();
+	}
+	
+	private void recreateButtonStateManager() {
+		buttonStateManager = new CuteButtonsStatesManager();
+		unbindTextsOfButtons();
+		restoreDefaultTextsOfButtons();
+		bindButtonsToButtonStateManager(buttonStateManager);
 	}
 
-	private void bindButtons() {
-		applyButton.disableProperty().bind((buttonStateManager.applyButtonOnProperty().not()));
-		OKButton.disableProperty()
-				.bind(buttonStateManager.okButtonOnProperty().not());
-		performTestButton.disableProperty()
-				.bind(buttonStateManager.performTestButtonOnProperty().not());
-	}
-
-	private void initializeAllListeners() {
+	private void initializeListeners() {
 		root.expandedProperty()
 				.addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 					if (newValue) {
@@ -269,65 +267,6 @@ public class ElementEditorController implements Initializable {
 						whyShadowAnima.play();
 					});
 				});
-		
-		// TODO: gain some wisdom and beautify the code below.
-		// <Start of a very ugly code that hardly tries to be thread safe>
-		this.buttonStateManager.needToScheduleCuteElementReinitProperty().addListener(o -> {
-			if (this.buttonStateManager.needToScheduleCuteElementReinitProperty().get()) {
-				logger.debug("Start of reinitialization animation is requested.");
-				// CuteElement initialization is a resource hungry operation. Let's not initialize
-				// instantly, because the user might not finished typing into fields. Instead let's
-				// play a text animation and when the text animation will finish playing itself to
-				// the end, let's do initialization. The animation can be interrupted by new user
-				// input and started over.
-				OKButton.textProperty().bind(awaitingForInputTextProperty);
-				applyButton.textProperty().bind(awaitingForInputTextProperty);
-				performTestButton.textProperty().bind(awaitingForInputTextProperty);
-				logger.debug("Text properties of buttons are bound to animation.");
-				// This animation will internally animate awaitingForInputTextProperty's text.
-				buttonsBeforeInitDotsAnima.play();
-				logger.debug("Animation started.");
-			}
-		});
-		this.buttonStateManager.needToCancelScheduledCuteElementReinitProperty().addListener(o -> {
-			if (this.buttonStateManager.needToCancelScheduledCuteElementReinitProperty().get()) {
-				logger.debug("Cancel of reinitialization animation is requested.");
-				buttonsBeforeInitDotsAnima.stop();
-				this.buttonStateManager.setCuteElementReinitSuccessfullyCancelled();
-				logger.debug("Animation stopped by cancel request.");
-				unbindTextsOfButtons();
-				restoreDefaultTextsOfButtons();
-			}
-		});
-		buttonsBeforeInitDotsAnima.setOnFinished(evt -> {
-			logger.debug("Animation finished.");
-			boolean reinitWasCancelled = this.buttonStateManager
-					.needToCancelScheduledCuteElementReinitProperty().get();
-			// After animation is done or was interrupted, let's unbind button text properties from
-			// the property which is animated - buttonsBeforeInitDotsAnima.
-			unbindTextsOfButtons();
-			if (reinitWasCancelled) {
-				logger.debug("Reinitialization is cancelled. Doing nothing with the CuteElement.");
-				this.buttonStateManager.setCuteElementReinitSuccessfullyCancelled();
-			} else {
-				logger.debug("Reinitializing the CuteElement...");
-				String initText = "Initializing...";
-				OKButton.setText(initText);
-				applyButton.setText(initText);
-				performTestButton.setText(initText);
-				// TODO: run init() in another thread, as JavaFX thread may hang.
-				if (elementWorkingCopy != null)
-					elementWorkingCopy.init();
-				logger.debug("Reinitialization of the CuteElement finished.");
-			}
-			buttonStateManager.setCuteElementAsInitialized();
-			logger.debug("Element set as initialized.");
-			// Restore texts of buttons
-			restoreDefaultTextsOfButtons();
-			logger.debug("Texts are restored");
-		});
-		// </End of a very ugly code that hardly tries to be thread safe>
-		
 		OKButton.disabledProperty().addListener((o, oldValue, newValue) -> {
 			// "OK" button is disabled only when field validation fails, see to which property it's
 			// bound in bindButtons() method. While field validation is failed let's set
@@ -357,6 +296,70 @@ public class ElementEditorController implements Initializable {
 				}
 			});
 		});
+	}
+	
+	private void bindButtonsToButtonStateManager(CuteButtonsStatesManager cbsm) {
+		applyButton.disableProperty().bind((cbsm.applyButtonOnProperty().not()));
+		OKButton.disableProperty().bind(cbsm.okButtonOnProperty().not());
+		performTestButton.disableProperty().bind(cbsm.performTestButtonOnProperty().not());
+		
+		// TODO: gain some wisdom and beautify the code below.
+		// <Start of a very ugly code that hardly tries to be thread safe>
+		cbsm.needToScheduleCuteElementReinitProperty().addListener(o -> {
+			if (cbsm.needToScheduleCuteElementReinitProperty().get()) {
+				logger.debug("Start of reinitialization animation is requested.");
+				// CuteElement initialization is a resource hungry operation. Let's not initialize
+				// instantly, because the user might not finished typing into fields. Instead let's
+				// play a text animation and when the text animation will finish playing itself to
+				// the end, let's do initialization. The animation can be interrupted by new user
+				// input and started over.
+				OKButton.textProperty().bind(awaitingForInputTextProperty);
+				applyButton.textProperty().bind(awaitingForInputTextProperty);
+				performTestButton.textProperty().bind(awaitingForInputTextProperty);
+				logger.debug("Text properties of buttons are bound to animation.");
+				// This animation will internally animate awaitingForInputTextProperty's text.
+				buttonsBeforeInitDotsAnima.play();
+				logger.debug("Animation started.");
+			}
+		});
+		cbsm.needToCancelScheduledCuteElementReinitProperty().addListener(o -> {
+			if (cbsm.needToCancelScheduledCuteElementReinitProperty().get()) {
+				logger.debug("Cancel of reinitialization animation is requested.");
+				buttonsBeforeInitDotsAnima.stop();
+				cbsm.setCuteElementReinitSuccessfullyCancelled();
+				logger.debug("Animation stopped by cancel request.");
+				unbindTextsOfButtons();
+				restoreDefaultTextsOfButtons();
+			}
+		});
+		buttonsBeforeInitDotsAnima.setOnFinished(evt -> {
+			logger.debug("Animation finished.");
+			boolean reinitWasCancelled = cbsm
+					.needToCancelScheduledCuteElementReinitProperty().get();
+			// After animation is done or was interrupted, let's unbind button text properties from
+			// the property which is animated - buttonsBeforeInitDotsAnima.
+			unbindTextsOfButtons();
+			if (reinitWasCancelled) {
+				logger.debug("Reinitialization is cancelled. Doing nothing with the CuteElement.");
+				cbsm.setCuteElementReinitSuccessfullyCancelled();
+			} else {
+				logger.debug("Reinitializing the CuteElement...");
+				String initText = "Initializing...";
+				OKButton.setText(initText);
+				applyButton.setText(initText);
+				performTestButton.setText(initText);
+				// TODO: run init() in another thread, as JavaFX thread may hang.
+				if (elementWorkingCopy != null)
+					elementWorkingCopy.init();
+				logger.debug("Reinitialization of the CuteElement finished.");
+			}
+			cbsm.setCuteElementAsInitialized();
+			logger.debug("Element set as initialized.");
+			// Restore texts of buttons
+			restoreDefaultTextsOfButtons();
+			logger.debug("Texts are restored");
+		});
+		// </End of a very ugly code that hardly tries to be thread safe>
 	}
 	
 	private void unbindTextsOfButtons() {
@@ -394,6 +397,10 @@ public class ElementEditorController implements Initializable {
 			return;
 		}
 		disconnectFromConnectedCuteElement();
+		
+		recreateButtonStateManager();
+		
+		commonElementFieldsController.setCuteButtonsStatesManager(buttonStateManager);
 		
 		// Set description of CuteElement type in a tooltip.
 		typeDescriptionLabel.setTooltip(
@@ -454,8 +461,8 @@ public class ElementEditorController implements Initializable {
 		// Let's set up propertiesPane according to CuteElement
 		commonElementFieldsController.connectToCuteElement(elementWorkingCopy, currentElement);
 		
-		// Let's reset state manager of buttons
-		buttonStateManager.reset();
+//		// Let's reset state manager of buttons
+//		buttonStateManager.reset();
 		
 		buttonStateManager.allowOrNotPerformTestButtonBasedOnElementClass(elementWorkingCopy);
 	}
