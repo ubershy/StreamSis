@@ -50,7 +50,7 @@ public class DelayedActionsController extends AbstractCuteController
     private Pane delayFieldContainer;
 
     /** The IntegerTextField for editing {@link DelayedActions#delayProperty()}. */
-    private IntegerTextField delayIntegerTextField = new IntegerTextField(10000, false);
+    private IntegerTextField delayIntegerTextField = new IntegerTextField(100000, false);
 	
     /** The {@link DelayedActions} to edit. */
     private DelayedActions delayedActions;

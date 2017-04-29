@@ -134,6 +134,9 @@ public class DelayedActions extends AbstractCuteElement implements Action {
 	@Override
 	public void init() {
 		super.init();
+		if (delay.get() < 0) {
+			elementInfo.setAsBroken("Delay can't be less than 0.");
+		}
 	}
 
 	/**
