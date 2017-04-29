@@ -72,15 +72,22 @@ public final class SuperSoundManager {
 	}
 
 	/**
-	 * Stops all controlled sounds controlled by {@link SuperSoundManager}.
+	 * Stops all sounds controlled by {@link SuperSoundManager}.
+	 *
+	 * @return True, if at least one sound was stopped. False, if no sounds were playing at the
+	 *         moment.
 	 */
-	public static void stopAllSounds() {
+	public static boolean stopAllSounds() {
 		MediaPlayer[] snapshotOfAllSounds = allControlledSounds.toArray(new MediaPlayer[0]);
+		boolean atLeastOneStopped = false;
 		for (MediaPlayer sound : snapshotOfAllSounds) {
 			Status status = sound.getStatus();
-			if (status != Status.DISPOSED && status != Status.STOPPED)
+			if (status != Status.DISPOSED && status != Status.STOPPED) {
 				sound.stop();
+				atLeastOneStopped = true;
+			}
 		}
+		return atLeastOneStopped;
 	}
 
 }
