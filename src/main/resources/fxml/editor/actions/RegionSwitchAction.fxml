@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+/** 
+ * StreamSis
+ * Copyright (C) 2017 Eva Balycheva
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+-->
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<GridPane fx:id="root" hgap="7.0" maxHeight="1.7976931348623157E308" vgap="7.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ubershy.streamsis.gui.controllers.editor.actions.RegionSwitchActionController">
+   <columnConstraints>
+      <ColumnConstraints minWidth="10.0" />
+      <ColumnConstraints />
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="25.0" vgrow="NEVER" />
+      <RowConstraints fillHeight="false" maxHeight="50.0" minHeight="25.0" prefHeight="50.0" vgrow="ALWAYS" />
+      <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="25.0" prefHeight="25.0" vgrow="ALWAYS" />
+      <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="25.0" vgrow="ALWAYS" />
+      <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="25.0" vgrow="ALWAYS" />
+   </rowConstraints>
+   <children>
+      <Label layoutX="10.0" layoutY="113.0" maxHeight="1.7976931348623157E308" text="Add target images with associated Actions inside this Element by right clicking on the Element in the Structure View." wrapText="true" />
+      <VBox fx:id="similarityVBox" prefHeight="200.0" prefWidth="100.0" GridPane.columnSpan="3" GridPane.rowIndex="1" />
+      <Label maxHeight="1.7976931348623157E308" text="Specify Region where to find on screen" wrapText="true" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+      <VBox fx:id="coordsVBox" GridPane.columnSpan="3" GridPane.rowIndex="3" />
+      <CheckBox fx:id="findBestCheckBox" mnemonicParsing="false" text="Find best match. When unchecked, finds the first acceptable match (more CPU-friendly)." wrapText="true" GridPane.rowIndex="4" />
+   </children>
+</GridPane>

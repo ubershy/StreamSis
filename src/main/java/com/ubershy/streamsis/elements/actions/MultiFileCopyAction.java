@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.Util;
-import com.ubershy.streamsis.elements.parts.MultiSourceFilePicker;
+import com.ubershy.streamsis.elements.helpers.MultiSourceFilePicker;
 
 /**
  * Multi File Copy Action. <br>

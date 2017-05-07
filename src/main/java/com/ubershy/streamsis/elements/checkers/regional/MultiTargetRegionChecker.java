@@ -35,8 +35,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.elements.AbstractCuteElement;
 import com.ubershy.streamsis.elements.checkers.Checker;
-import com.ubershy.streamsis.elements.parts.Coordinates;
-import com.ubershy.streamsis.elements.parts.MultiSourceFileLister;
+import com.ubershy.streamsis.elements.helpers.Coordinates;
+import com.ubershy.streamsis.elements.helpers.MultiSourceFileLister;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.FloatProperty;

@@ -49,7 +49,7 @@ import com.ubershy.streamsis.elements.checkers.numeric.RelationToPreviousNumberC
 import com.ubershy.streamsis.elements.checkers.numeric.AbstractRelationToNumberChecker.BooleanNumberOperator;
 import com.ubershy.streamsis.elements.checkers.regional.RegionChecker;
 import com.ubershy.streamsis.elements.counters.TrueCheckerCounter;
-import com.ubershy.streamsis.elements.parts.Coordinates;
+import com.ubershy.streamsis.elements.helpers.Coordinates;
 import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.ProjectSerializator;
 

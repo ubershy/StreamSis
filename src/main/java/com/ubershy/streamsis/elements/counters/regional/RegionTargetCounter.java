@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.elements.AbstractCuteElement;
 import com.ubershy.streamsis.elements.counters.Counter;
-import com.ubershy.streamsis.elements.parts.Coordinates;
+import com.ubershy.streamsis.elements.helpers.Coordinates;
 
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleFloatProperty;

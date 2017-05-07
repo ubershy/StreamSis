@@ -31,8 +31,9 @@ import com.ubershy.streamsis.elements.actions.Action;
 import com.ubershy.streamsis.elements.actors.Actor;
 import com.ubershy.streamsis.elements.checkers.Checker;
 import com.ubershy.streamsis.elements.counters.Counter;
-import com.ubershy.streamsis.elements.parts.Coordinates;
-import com.ubershy.streamsis.elements.parts.MultiSourceFilePicker;
+import com.ubershy.streamsis.elements.helpers.Coordinates;
+import com.ubershy.streamsis.elements.helpers.MultiSourceFilePicker;
+import com.ubershy.streamsis.elements.parts.PartElement;
 import com.ubershy.streamsis.gui.contextmenu.StructureViewActorListContextMenuManager;
 import com.ubershy.streamsis.gui.cells.ActorCell;
 import com.ubershy.streamsis.gui.cells.CuteTreeCell;
@@ -519,6 +520,8 @@ public class StreamSisAppFactory {
 			specificSubDirName = "actions/";
 		} else if (element instanceof Counter) {
 			specificSubDirName = "counters/";
+		} else if (element instanceof PartElement) {
+			specificSubDirName = "other/";
 		}
 		String elementSimpleClassName = element.getClass().getSimpleName();
 		CuteElementController controller = null;

@@ -25,6 +25,7 @@ import com.ubershy.streamsis.elements.ElementInfo.Result;
 import com.ubershy.streamsis.elements.actions.Action;
 import com.ubershy.streamsis.elements.checkers.Checker;
 import com.ubershy.streamsis.elements.counters.Counter;
+import com.ubershy.streamsis.elements.parts.TargetImageWithActions;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.contextmenu.TreeContextMenuBuilder;
 import com.ubershy.streamsis.gui.helperclasses.CuteColor;
@@ -107,6 +108,10 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 	/** The UNKNOWN icon for {@link CuteElementContainer} used in {@link #paneGraphic}. */
 	private FontAwesomeIconView resultUnknownIconForContainer = new FontAwesomeIconView(
 			FontAwesomeIcon.CUBES);
+	
+	/** The UNKNOWN icon for {@link TargetImageWithActions} used in {@link #paneGraphic}. */
+	private FontAwesomeIconView resultUnknownIconForTIWA = new FontAwesomeIconView(
+			FontAwesomeIcon.IMAGE);
 
 	/** The text with number used in {@link #paneGraphic} for {@link Counter}. */
 	private Text numberResultText = new Text("0");
@@ -172,6 +177,9 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 		// Set up icon for Containers.
 		resultUnknownIconForContainer.setFill(defaultColor);
 		applyCommonStyleToIcon(resultUnknownIconForContainer);
+		// Set up icon for TargetImageWithActions.
+		resultUnknownIconForTIWA.setFill(defaultColor);
+		applyCommonStyleToIcon(resultUnknownIconForTIWA);
 		
 		actionSuccessAnimation.setInterpolator(Interpolator.DISCRETE);
 		actionFailAnimation.setInterpolator(Interpolator.DISCRETE);
@@ -268,6 +276,8 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 			processResultForAction(newResult);
 		} else if (currentElement instanceof CuteElementContainer) {
 			processResultForContainer(newResult);
+		} else if (currentElement instanceof TargetImageWithActions) {
+			processResultForTIWA(newResult);
 		} else if (currentElement == null) {
 			return;
 		} else {
@@ -349,7 +359,22 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 		if (object == null) {
 			CellUtils.setSingleChildIfNotAlready(paneGraphic, resultUnknownIconForContainer);
 		} else {
-			throw new RuntimeException("CuteElementContainer can only have null as result.");
+			throw new RuntimeException("Element container can only have null as result.");
+		}
+	}
+	
+	/**
+	 * Process result for {@link TargetImageWithActions} to change {@link #paneGraphic} view.
+	 *
+	 * @param newResult the new result
+	 */
+	private void processResultForTIWA(Result<?> newResult) {
+		Object object = newResult.get();
+		if (object == null) {
+			CellUtils.setSingleChildIfNotAlready(paneGraphic, resultUnknownIconForTIWA);
+		} else {
+			throw new RuntimeException(TargetImageWithActions.class.getSimpleName()
+					+ " can only have null as result.");
 		}
 	}
 

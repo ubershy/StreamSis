@@ -28,8 +28,8 @@ import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 
 import com.ubershy.streamsis.Util;
-import com.ubershy.streamsis.elements.parts.MultiSourceFileLister;
-import com.ubershy.streamsis.elements.parts.MultiSourceFilePicker;
+import com.ubershy.streamsis.elements.helpers.MultiSourceFileLister;
+import com.ubershy.streamsis.elements.helpers.MultiSourceFilePicker;
 import com.ubershy.streamsis.gui.GUIManager;
 import com.ubershy.streamsis.gui.animations.ThreeDotsAnimation;
 import com.ubershy.streamsis.gui.cells.FileNameCell;

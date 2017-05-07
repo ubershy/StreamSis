@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ubershy.streamsis.elements.actions.Action;
 import com.ubershy.streamsis.elements.checkers.Checker;
 import com.ubershy.streamsis.elements.counters.Counter;
+import com.ubershy.streamsis.elements.parts.TargetImageWithActions;
 import com.ubershy.streamsis.gui.helperclasses.RecursiveParent;
 import com.ubershy.streamsis.project.CuteProject;
 import com.ubershy.streamsis.project.ProjectManager;
@@ -204,7 +205,13 @@ public interface CuteElement extends RecursiveParent<CuteElement> {
 		 * Indicates that a {@link CuteElementContainer} can be added by user to this
 		 * {@link CuteElement} 's children.
 		 */
-		CONTAINER(CuteElementContainer.class);
+		CONTAINER(CuteElementContainer.class), 
+		
+		/**
+		 * Indicates that a {@link TargetImageWithActions} can be added by user to this
+		 * {@link CuteElement} 's children.
+		 */
+		TARGETIMAGEWITHACTIONS(TargetImageWithActions.class);
 
 		/** The type. */
 		private final Class<? extends CuteElement> type;

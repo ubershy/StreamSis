@@ -29,6 +29,7 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ubershy.streamsis.Util;
 import com.ubershy.streamsis.elements.CuteElement;
 import com.ubershy.streamsis.elements.CuteElementContainer;
 import com.ubershy.streamsis.elements.CuteElement.AddableChildrenTypeInfo;
@@ -58,6 +59,7 @@ public class TreeContextMenuBuilder {
 	private static final String actionsPackageName = "com.ubershy.streamsis.elements.actions";
 	private static final String checkersPackageName = "com.ubershy.streamsis.elements.checkers";
 	private static final String countersPackageName = "com.ubershy.streamsis.elements.counters";
+	private static final String subelementsPackageName = "com.ubershy.streamsis.elements.parts";
 
 	private static List<Class<? extends Action>> allAvailableNewActions = getAvailableCuteElements(
 			actionsPackageName, Action.class);
@@ -249,6 +251,11 @@ public class TreeContextMenuBuilder {
 			listWithCuteElementClasses = new ArrayList<Class<? extends CuteElement>>(
 					allAvailableNewCounters);
 			typePackage = countersPackageName;
+			break;
+		case TARGETIMAGEWITHACTIONS:
+			listWithCuteElementClasses = Util
+					.singleItemAsList(AddableChildrenTypeInfo.TARGETIMAGEWITHACTIONS.getType());
+			typePackage = subelementsPackageName;
 			break;
 		case CONTAINER:
 			// This case is very specific. Handle it in another method.
