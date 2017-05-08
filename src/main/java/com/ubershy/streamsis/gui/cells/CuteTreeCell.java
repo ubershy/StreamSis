@@ -38,12 +38,9 @@ import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.event.EventHandler;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -358,8 +355,6 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 		Object object = newResult.get();
 		if (object == null) {
 			CellUtils.setSingleChildIfNotAlready(paneGraphic, resultUnknownIconForContainer);
-		} else {
-			throw new RuntimeException("Element container can only have null as result.");
 		}
 	}
 	
@@ -372,48 +367,45 @@ public class CuteTreeCell extends TreeCell<CuteElement> {
 		Object object = newResult.get();
 		if (object == null) {
 			CellUtils.setSingleChildIfNotAlready(paneGraphic, resultUnknownIconForTIWA);
-		} else {
-			throw new RuntimeException(TargetImageWithActions.class.getSimpleName()
-					+ " can only have null as result.");
 		}
 	}
 
-	@Override
-	public void startEdit() {
-		super.startEdit();
-		if (textField == null) {
-			createTextField();
-		}
-		lastResultProperty.unbind();
-		elementHealthProperty.unbind();
-		textProperty().unbind();
-		setText(null);
-		CellUtils.setGraphicIfNotAlready(this, textField);
-		textField.selectAll();
-	}
-
-	@Override
-	public void cancelEdit() {
-		super.cancelEdit();
-		lastResultProperty.bind(getItem().getElementInfo().lastResultProperty());
-		elementHealthProperty.bind(getItem().getElementInfo().elementHealthProperty());
-		textProperty().bind(getItem().getElementInfo().nameProperty());
-		CellUtils.setGraphicIfNotAlready(this, paneGraphic);
-	}
-
-	private void createTextField() {
-		textField = new TextField(getString());
-		textField.setOnKeyReleased(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent t) {
-				if (t.getCode() == KeyCode.ENTER) {
-					commitEdit(getItem());
-				} else if (t.getCode() == KeyCode.ESCAPE) {
-					cancelEdit();
-				}
-			}
-		});
-	}
+//	@Override
+//	public void startEdit() {
+//		super.startEdit();
+//		if (textField == null) {
+//			createTextField();
+//		}
+//		lastResultProperty.unbind();
+//		elementHealthProperty.unbind();
+//		textProperty().unbind();
+//		setText(null);
+//		CellUtils.setGraphicIfNotAlready(this, textField);
+//		textField.selectAll();
+//	}
+//
+//	@Override
+//	public void cancelEdit() {
+//		super.cancelEdit();
+//		lastResultProperty.bind(getItem().getElementInfo().lastResultProperty());
+//		elementHealthProperty.bind(getItem().getElementInfo().elementHealthProperty());
+//		textProperty().bind(getItem().getElementInfo().nameProperty());
+//		CellUtils.setGraphicIfNotAlready(this, paneGraphic);
+//	}
+//
+//	private void createTextField() {
+//		textField = new TextField(getString());
+//		textField.setOnKeyReleased(new EventHandler<KeyEvent>() {
+//			@Override
+//			public void handle(KeyEvent t) {
+//				if (t.getCode() == KeyCode.ENTER) {
+//					commitEdit(getItem());
+//				} else if (t.getCode() == KeyCode.ESCAPE) {
+//					cancelEdit();
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Gets the string to show as cell's text.
