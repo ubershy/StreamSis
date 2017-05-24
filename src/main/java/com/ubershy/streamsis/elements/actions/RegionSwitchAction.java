@@ -113,6 +113,10 @@ public class RegionSwitchAction extends AbstractCuteElement implements Action {
 	@JsonIgnore
 	protected Pattern[] targets;
 	
+	/** The {@link Finder} instance to use for non-multithreaded image matching. */
+	@JsonIgnore
+	private Finder finder = new Finder();
+	
 	ExecutorService executorService = Executors.newFixedThreadPool(4);
 	
 	/** The list of Actor's External children needed just for {@link #getChildren()} method. */
@@ -120,15 +124,12 @@ public class RegionSwitchAction extends AbstractCuteElement implements Action {
 	protected ObservableList<CuteElement> children = generateExternalChildrenList();
 	
 	public static class FinderTask implements Callable<Match> {
-		
 		private Finder finder; 
 		private Pattern pattern;
-
-	    public FinderTask(Finder finder, Pattern pattern) {
-	        this.finder = finder;
+	    public FinderTask(ScreenImage image, Pattern pattern) {
+	        this.finder = new Finder(image);
 	        this.pattern = pattern;
 	    }
-
 	    @Override
 	    public Match call() {
 			finder.find(pattern);
@@ -215,12 +216,11 @@ public class RegionSwitchAction extends AbstractCuteElement implements Action {
 			Region region = coords.get().getRegion();
 			Screen screen = (Screen) region.getScreen();
 			ScreenImage screenImage = screen.capture(region);
-			Finder finder = new Finder(screenImage);
 			int foundMatchIndex;
 			if (findingBest.get()) {
-				foundMatchIndex = findBestMatchIndex(finder, targets);
+				foundMatchIndex = findBestMatchIndexMultithreaded(screenImage, targets);
 			} else {
-				foundMatchIndex = findFirstMatchIndex(finder, targets);
+				foundMatchIndex = findFirstMatchIndex(screenImage, targets);
 			}
 			if (foundMatchIndex == -1) { // No targets found. Need to execute Default Actions.
 				logger.info(elementInfo.getName()
@@ -247,14 +247,15 @@ public class RegionSwitchAction extends AbstractCuteElement implements Action {
 	 * Finds the first match that satisfies minimum acceptable similarity and returns index of it
 	 * according to the provided array of Patterns.
 	 *
-	 * @param finder
-	 *            The Finder with captured image inside.
+	 * @param screenImage
+	 *            The captured image.
 	 * @param targetList
 	 *            The array with targets (Patterns) with specified minimum similarity.
 	 * @return The first target index in array that matches screen capture, -1 if there are no
 	 *         matches.
 	 */
-	private int findFirstMatchIndex(Finder finder, Pattern[] targetList) {
+	private int findFirstMatchIndex(ScreenImage screenImage, Pattern[] targetList) {
+		finder.resetImage(new Image(screenImage));
 		for (int i = 0; i < targetList.length; i++) {
 			finder.find(targetList[i]);
 			if (finder.next() != null) {
@@ -268,16 +269,16 @@ public class RegionSwitchAction extends AbstractCuteElement implements Action {
 	 * Finds the best match among matches that satisfy minimum acceptable similarity and returns
 	 * index of it according to the provided array of Patterns.
 	 *
-	 * @param finder
-	 *            The Finder with captured image inside.
+	 * @param screenImage
+	 *            The captured image.
 	 * @param targetList
 	 *            The array with targets (Patterns) with specified minimum similarity.
 	 * @return The target index in array with the best score, -1 if there are no matches.
 	 */
-	private int findBestMatchIndex(Finder finder, Pattern[] targetList) {
+	private int findBestMatchIndexMultithreaded(ScreenImage screenImage, Pattern[] targetList) {
 		int bestIndex = -1;
 		double bestScore = 0.0;
-		Match[] matches = getMatchesMultithreaded(finder, targetList);
+		Match[] matches = getMatchesMultithreaded(screenImage, targetList);
 		if (matches == null) {
 			return -1;
 		}
@@ -296,18 +297,18 @@ public class RegionSwitchAction extends AbstractCuteElement implements Action {
 	}
 
 	/**
-	 * Gets the array of matches on screen corresponding to targetArray's targets.
+	 * Gets the array of matches on image corresponding to targetArray's targets.
 	 *
-	 * @param finder The Finder with captured image inside.
+	 * @param screenImage The captured image.
 	 * @param targetsArray The array with targets (Patterns) with specified minimum similarity.
 	 * @return The array with matches corresponding to targetArray's targets.
 	 */
-	private Match[] getMatchesMultithreaded(Finder finder, Pattern[] targetsArray) {
+	private Match[] getMatchesMultithreaded(ScreenImage screenImage, Pattern[] targetsArray) {
 		Match[] matches = new Match[targetsArray.length];
 		ArrayList<Future<Match>> futures = new ArrayList<Future<Match>>(targetsArray.length);
 		// Run tasks.
 		for (Pattern p: targetsArray) {
-			Future<Match> future = executorService.submit(new FinderTask(finder, p));
+			Future<Match> future = executorService.submit(new FinderTask(screenImage, p));
 			futures.add(future);
 		}
 		// Wait for results and collect them.

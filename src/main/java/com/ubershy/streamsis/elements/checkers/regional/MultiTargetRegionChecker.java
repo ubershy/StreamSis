@@ -112,6 +112,10 @@ public class MultiTargetRegionChecker extends AbstractCuteElement implements Che
 	/** The acceptable extensions of Target image files. */
 	@JsonIgnore
 	public final static List<String> allowedExtensions = Util.singleItemAsList("*.png");
+	
+	/** The {@link Finder} instance to use. */
+	@JsonIgnore
+	private Finder finder = new Finder();
 
 	public MultiTargetRegionChecker() {
 		fileLister.get().setAcceptableExtensions(allowedExtensions);
@@ -200,7 +204,7 @@ public class MultiTargetRegionChecker extends AbstractCuteElement implements Che
 			// }
 			Screen screen = (Screen) coords.get().getRegion().getScreen();
 			ScreenImage screenImage = screen.capture(coords.get().getRegion());
-			Finder finder = new Finder(screenImage);
+			finder.resetImage(new Image(screenImage));
 			if (useANDOperator.get() == true) { // AND operator
 				result = true;
 				for (Pattern p : targets) {
@@ -217,7 +221,6 @@ public class MultiTargetRegionChecker extends AbstractCuteElement implements Che
 						break;
 				}
 			}
-			finder.destroy();
 			elementInfo.setBooleanResult(result);
 		}
 		return result;
