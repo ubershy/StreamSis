@@ -56,7 +56,7 @@ public final class ActorContextMenuBuilder {
 		ProjectManager.getProject().addActorToGlobalActors(newActor);
 		ProjectManager.getProject().addExistingActorToCurrentSisScene(newActor);
 		// Initialize whole project
-		ProjectManager.initProjectOutsideJavaFXThread();
+		ProjectManager.initProjectFromGUI();
 	}
 
 	public static ContextMenu createCMForStructureViewList(ListView<Actor> listView) {
@@ -102,12 +102,12 @@ public final class ActorContextMenuBuilder {
 		deleteActorMenuItem.setOnAction((ActionEvent event) -> {
 			project.removeActorFromCurrentSisScene(actor);
 			// Initialize whole project
-			ProjectManager.initProjectOutsideJavaFXThread();
+			ProjectManager.initProjectFromGUI();
 		});
 		deleteActorGloballyMenuItem.setOnAction((ActionEvent event) -> {
 			project.removeActorGlobally(actor);
 			// Initialize whole project
-			ProjectManager.initProjectOutsideJavaFXThread();
+			ProjectManager.initProjectFromGUI();
 		});
 		moveUpActorMenuItem.setOnAction((ActionEvent event) -> {
 			project.moveUpActorInSisScene(actor);
@@ -180,7 +180,7 @@ public final class ActorContextMenuBuilder {
 		deleteActorGloballyMenuItem.setOnAction((ActionEvent event) -> {
 			project.removeActorGlobally(actor);
 			// Initialize whole project
-			ProjectManager.initProjectOutsideJavaFXThread();
+			ProjectManager.initProjectFromGUI();
 		});
 		moveUpActorMenuItem.setOnAction((ActionEvent event) -> {
 			project.moveUpActorInGlobalActors(actor);

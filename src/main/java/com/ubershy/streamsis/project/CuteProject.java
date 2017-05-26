@@ -371,7 +371,7 @@ public class CuteProject implements Serializable {
 	/**
 	 * Initializes the CuteProject. This will also initialize all of it's Actors and SisScenes.
 	 */
-	public void init() {
+	public synchronized void init() {
 		setStartedCountingElements();
 		int count = countElementsInProject();
 		setFinishedCountingElements(count);
@@ -563,7 +563,7 @@ public class CuteProject implements Serializable {
 	 * <p>
 	 * Also automatically performs {@link #init()}
 	 */
-	public void startProject() {
+	public synchronized void startProject() {
 		if (!isStarted()) {
 			if (!sisScenes.isEmpty()) {
 				if (!globalActors.isEmpty()) {

@@ -544,7 +544,7 @@ public class ElementEditorController implements Initializable {
 		}
 		// Initialize whole project, it may fix parents and it may highlight problems in this
 		// CuteElement.
-		ProjectManager.initProjectOutsideJavaFXThread();
+		ProjectManager.initProjectFromGUI();
 		connectToCuteElement(getCurrentElement());
 	}
 	

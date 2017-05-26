@@ -118,7 +118,7 @@ public final class GUIManager {
 		GUIManager.saveCoordinatesOfAllWindows();
 		CuteProject project = ProjectManager.createAndSetNewProject();
 		buildGui(project);
-		ProjectManager.initProjectOutsideJavaFXThread();
+		ProjectManager.initProjectFromGUI();
 	}
 
 	public static Scene getMainScene() {
@@ -166,9 +166,9 @@ public final class GUIManager {
 		}
 		buildGui(project);
 		if (start) {
-			ProjectManager.startProjectOutsideJavaFXThread();
+			ProjectManager.startProjectFromGUI();
 		} else {
-			ProjectManager.initProjectOutsideJavaFXThread();
+			ProjectManager.initProjectFromGUI();
 		}
 	}
 

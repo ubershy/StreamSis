@@ -39,7 +39,24 @@ import javafx.scene.control.Alert.AlertType;
  * exceptions are thrown by threads we can't control (for example, a tread that was started in a
  * library), but we want to handle such exceptions.
  */
-public final class SneakyExceptionHandler implements UncaughtExceptionHandler {
+public final class SneakyExceptionHandler  {
+	
+	/**
+	 * The general exception handler which behavior can change depending on if
+	 * {@link #temporaryExceptionHandler} is set.
+	 */
+	private static class AlteringExceptionHandler implements UncaughtExceptionHandler {
+		@Override
+		public void uncaughtException(Thread t, Throwable e) {
+			if (temporaryExceptionHandler == null) {
+				defaultUncaughtException(t, e);
+			} else {
+				logger.error(e.getClass().getSimpleName() + " occured in " + t.getName() + " thread."
+						+ " Using temporary uncaught exception handler...");
+				temporaryExceptionHandler.uncaughtException(t, e);
+			}
+		}
+	}
 	
 	/** The Constant logger. */
 	static final Logger logger = LoggerFactory.getLogger(SneakyExceptionHandler.class);
@@ -47,29 +64,18 @@ public final class SneakyExceptionHandler implements UncaughtExceptionHandler {
 	/** The temporary exception handler to use instead of default one if set. */
 	private static UncaughtExceptionHandler temporaryExceptionHandler;
 	
-	/**
-	 * This variable prevents creation of more than one instance of {@link SneakyExceptionHandler}.
-	 */
-	private static int numOfInstances = 0;
+	private static AlteringExceptionHandler alteringExceptionHandler;
 	
-	public SneakyExceptionHandler() {
-		if (numOfInstances != 0) {
-			throw new RuntimeException("There is already one instance of SneakyExceptionHandler."
-					+ " Why do you need a second one? Are you crazy?!");
+	private SneakyExceptionHandler() {
+	}
+	
+	public static UncaughtExceptionHandler getSingleton() {
+		if (alteringExceptionHandler == null) {
+			alteringExceptionHandler = new AlteringExceptionHandler();
 		}
-		numOfInstances++;
+		return alteringExceptionHandler;
 	}
 
-	@Override
-	public void uncaughtException(Thread t, Throwable e) {
-		if (temporaryExceptionHandler == null) {
-			defaultUncaughtException(t, e);
-		} else {
-			logger.error(e.getClass().getSimpleName() + " occured in " + t.getName() + " thread."
-					+ " Using temporary uncaught exception handler...");
-			temporaryExceptionHandler.uncaughtException(t, e);
-		}
-	}
 	
 	/**
 	 * Default uncaught exception handler. <br>
@@ -81,7 +87,7 @@ public final class SneakyExceptionHandler implements UncaughtExceptionHandler {
 	 * @param e
 	 *            The exception.
 	 */
-	private void defaultUncaughtException(Thread t, Throwable e) {
+	private static void defaultUncaughtException(Thread t, Throwable e) {
 		// FIXME: Backup changed project near the current project's path without prompting the user.
 		// Because, if prompted, the user might overwrite the original project file and there's no
 		// guarantee that he will be able to load this project next time. 

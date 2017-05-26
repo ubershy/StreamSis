@@ -45,7 +45,7 @@ public class StreamSis extends Application {
 
 	static final Logger logger = LoggerFactory.getLogger(StreamSis.class);
 	
-	static final UncaughtExceptionHandler eHandler = new SneakyExceptionHandler();
+	static final UncaughtExceptionHandler eHandler = SneakyExceptionHandler.getSingleton();
 
 	/**
 	 * The main method.

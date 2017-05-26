@@ -17,8 +17,11 @@
  */
 package com.ubershy.streamsis.project;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,10 +29,14 @@ import org.slf4j.LoggerFactory;
 import com.ubershy.streamsis.CuteConfig;
 import com.ubershy.streamsis.StreamSis;
 import com.ubershy.streamsis.elements.SisScene;
+import com.ubershy.streamsis.gui.helperclasses.GUIUtil;
 
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.concurrent.Task;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.Alert.AlertType;
 
 /**
  * This class manages current StreamSis's CuteProject. <br>
@@ -56,7 +63,9 @@ public final class ProjectManager {
 	/** The current CuteProject. */
 	private static CuteProject currentProject;
 	public static CuteProject getProject() {return currentProject;}
-
+	
+	private static CountDownLatch changeProjectLatch;
+	
 	/**
 	 * Sets the current CuteProject.
 	 *
@@ -67,11 +76,21 @@ public final class ProjectManager {
 	 *            can be null, if project is not yet saved.
 	 */
 	public static void setProject(CuteProject currentProject, String path) {
+		if (changeProjectLatch != null) {
+			try {
+				changeProjectLatch.await();
+			} catch (InterruptedException e) {
+				throw new RuntimeException("I don't like when someone interrupts me.");
+			}
+			changeProjectLatch = null;
+		}
 		ProjectManager.currentProject = currentProject;
 		ProjectManager.projectFilePath.set(path);
 		if (path != null && !path.isEmpty()) {
 			CuteConfig.setString(CuteConfig.CUTE, "LastProjectLocation", path);
 		}
+		logger.info(
+				"Project is set to: '" + currentProject.getName() + "' with path: '" + path + "'.");
 	}
 
 	/**
@@ -106,28 +125,60 @@ public final class ProjectManager {
 		return emptyProject;
 	}
 
-	public static void initProjectOutsideJavaFXThread() {
+	public synchronized static void initProjectFromGUI() {
+		CuteProject toInit = currentProject;
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
-				currentProject.init();
+				changeProjectLatch = new CountDownLatch(1);
+				toInit.init();
+				changeProjectLatch.countDown();
 				return null;
 			}
 		};
-		Thread th = new Thread(task);
-		th.start();
+		task.setOnFailed((e) -> {
+			// Fail harshly.
+			if (task.getException() == null) {
+				throw new RuntimeException("Project initialization failed for some reason.");
+			} else {
+				throw new RuntimeException("Project can't be initialized", task.getException());
+			}
+		});
+		new Thread(task).start();
 	}
 
-	public static void startProjectOutsideJavaFXThread() {
+	public synchronized static void startProjectFromGUI() {
+		CuteProject toStart = currentProject;
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
-				currentProject.startProject();
+				toStart.startProject();
 				return null;
 			}
 		};
-		Thread th = new Thread(task);
-		th.start();
+		task.setOnFailed((e) -> {
+			// Fail gently and show the error to the user. The user will be able to save project.
+			currentProject.stopProject();
+			Throwable ex = task.getException();
+			String errorText;
+			if (ex == null) {
+				errorText = "Project failed after start for unknown reason.";
+			} else {
+				ByteArrayOutputStream ostream = new ByteArrayOutputStream();
+				ex.printStackTrace(new PrintStream(ostream));
+				errorText = ostream.toString();
+			}
+			Alert alert = new Alert(AlertType.ERROR);
+			GUIUtil.cutifyAlert(alert);
+			alert.setTitle("Project failed after start");
+			alert.setHeaderText("A scary internal error occured while running the project.");
+			TextArea stackTraceArea = new TextArea(errorText);
+			stackTraceArea.setEditable(false);
+			stackTraceArea.setMinSize(800, 450);
+			alert.getDialogPane().setExpandableContent(stackTraceArea);
+			GUIUtil.showAlertInPrimaryStageCenter(alert);
+		});
+		new Thread(task).start();
 	}
 
 }

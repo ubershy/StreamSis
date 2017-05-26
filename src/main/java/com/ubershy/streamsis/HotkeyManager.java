@@ -32,7 +32,6 @@ import com.ubershy.streamsis.project.ProjectManager;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.concurrent.Task;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination.ModifierValue;
 
@@ -134,20 +133,13 @@ public final class HotkeyManager {
 						+ "\". Running the associated action.");
 				hotkeyIsPressed = true;
 				hotkeyIsRunning = true;
-				Task<Void> task = new Task<Void>() {
-					@Override
-					protected Void call() {
-						hotkey.run();
-						return null;
-					}
-				};
-				task.setOnSucceeded(succededEvent -> {
+				Runnable task = () -> {
+					hotkey.run();
 					logger.info("Finished running the action associated with the Hotkey: \""
 							+ hotkey.name() + "\".");
 					hotkeyIsRunning = false;
-				});
-				task.run();
-				new Thread(task).run();
+				};
+				new Thread(task).start();
 				break;
 			}
 		}
