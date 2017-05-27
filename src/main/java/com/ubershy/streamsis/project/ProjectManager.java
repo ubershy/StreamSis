@@ -130,8 +130,13 @@ public final class ProjectManager {
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
+				if (changeProjectLatch != null) {
+					changeProjectLatch.await();
+				}
 				changeProjectLatch = new CountDownLatch(1);
+				logger.info("Initializing project from GUI...");
 				toInit.init();
+				logger.info("Project was initialized from GUI");
 				changeProjectLatch.countDown();
 				return null;
 			}

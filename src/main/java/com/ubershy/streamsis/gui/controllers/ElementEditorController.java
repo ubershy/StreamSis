@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.controlsfx.control.MasterDetailPane;
@@ -438,8 +439,29 @@ public class ElementEditorController implements Initializable {
 					.setEmptyNameAllowed(currentElement.getElementInfo().isEmptyNameAllowed());
 		}
 		
-		// Initialize a copy
+		// Initialize a copy, but not while the whole Project is initializing, because during init()
+		// the copy will report to the Project to increment the number of initialized CuteElements,
+		// and this will lead to error in counting.
+		// TODO: fix this ugly workaround.
+		if (ProjectManager.getProject().initializingProperty().get()) {
+			CountDownLatch latch = new CountDownLatch(1);
+			ChangeListener<Boolean> changeL = (ChangeListener<Boolean>) (observable, oldValue,
+					newValue) -> {
+				if (!newValue) {
+					latch.countDown();
+					
+				}
+			};
+			ProjectManager.getProject().initializingProperty().addListener(changeL);
+			try {
+				latch.await();
+			} catch (InterruptedException e) {
+				throw new RuntimeException("Await for project to initialize was interrupted", e);
+			}
+			ProjectManager.getProject().initializingProperty().removeListener(changeL);
+		}
 		elementWorkingCopy.init();
+		
 		
 		ElementInfo infoOfCopyElement = elementWorkingCopy.getElementInfo();
 		// In some situations Element might get "sick" while working and it's "whyUnhealthy" message

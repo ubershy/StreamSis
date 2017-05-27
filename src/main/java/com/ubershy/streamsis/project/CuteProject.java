@@ -404,7 +404,6 @@ public class CuteProject implements Serializable {
 			String firstSisSceneName = this.sisScenes.get(0).getElementInfo().getName();
 			setPrimarySisSceneName(firstSisSceneName);
 		}
-		logger.info("Project Initialized");
 		setProjectAsInitialized();
 	}
 
@@ -826,6 +825,7 @@ public class CuteProject implements Serializable {
 			throw new RuntimeException("The number of initialized Elements(" + inited + ") doesn't "
 					+ "match with the " + "number of all Elements(" + all + ") in the Project.");
 		}
+		logger.info("Project Initialized");
 	}
 
 	/**

@@ -160,6 +160,7 @@ public abstract class AbstractCuteElement implements CuteElement {
 	}
 
 	protected void initWithoutChildrenStuff() {
+		abstractLogger.debug(getElementInfo().getName() + " (" + hashCode() + "): Initialization.");
 		if (ConstsAndVars.slowDownInitForMs > 0) {
 			try {
 				Thread.sleep(ConstsAndVars.slowDownInitForMs);
