@@ -6,13 +6,13 @@ What is it and what does it do
 ------------------------------
 No explicit explanation here.  
 *Recently I decided to fill up my GitHub profile and from now on I want my future commits to be publicly trackable.  
-Still now I want any public attention to be less as possible.*  
-But if you are a programmer, I'm sure you can figure it out. =)  
+Still now I want any public attention to be less as possible.*
 
 Not ready for release
 ---------------------
-Currently StreamSis is unusable for the end user.  
-GUI is under active development and few must-have things are not yet implemented.  
+Currently few must-have things are not yet implemented in StreamSis. There are plenty of bugs. And no documentation.  
+Though it works, I do not recommend constructing user projects now as they might get incompatible with the final 1.0 version of StreamSis.  
+After 1.0 version release, backward compatibility for projects is guaranteed till version 2.0.  
 - StreamSis runs on:
   - Windows: Yes
   - Linux: Not yet tested
@@ -38,10 +38,10 @@ Dear developer, before you start, please make sure you have these things:
   - Download and unpack it somewhere on your computer. Or ```git clone``` it from the link using a program called Git.
 - Basic knowledge for working with Maven.
   - Download and unpack it in your head. Here's the nice link: https://maven.apache.org/guides/getting-started/index.html
-  - I really recommend you to take some time and get to know Maven. Maven is used in many Java projects, because it's so convenient.
+  - Take some time and get to know Maven. Maven is used in many Java projects, because it's so convenient.
 
 Alright. Then, to be able to run and debug StreamSis from IDE:
-- Execute the command ```mvn clean install``` in StreamSis repository directory to check if it assembles.
+- Using command line execute the command ```mvn clean package``` in StreamSis repository directory to check if it assembles.
   - If you haven't executed this command before, Maven will start downloading plugins for himself and libraries for StreamSis. **It might take some time.** 
   - Successful execution should create ```target/assembled``` subdirectory with a runnable JAR file.
 - **Import** the StreamSis repository directory **as Maven project** into your favorite IDE that supports Java 8 and Maven. 
@@ -53,7 +53,7 @@ Alright. Then, to be able to run and debug StreamSis from IDE:
 Assembling StreamSis Quickly (without IDE)
 ----------------------------------------------
 Maven and JDK 8 are required.  
-Execute ```build.bat``` or ```build.sh``` in the StreamSis repository directory.  
+Execute ```build.bat``` or ```build.sh``` (or run ```mvn clean package``` in the command line) in the StreamSis repository directory.  
 After that, if everything went smooth, you can find the assembled StreamSis JAR file and its dependencies in ```target/assembled``` subdirectory.
 
 Installing StreamSis
